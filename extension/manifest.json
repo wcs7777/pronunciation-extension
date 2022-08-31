@@ -1,0 +1,52 @@
+{
+  "manifest_version": 2,
+  "name": "Pronunciation",
+  "version": "1.0.11",
+  "description": "Pronunciation for American English words with phonetic IPA and audio",
+  "icons": {
+    "48": "icons/icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://dictionary.cambridge.org/us/dictionary/english/*"],
+      "js": ["src/content/bundle/cambridge.js"]
+    },
+    {
+      "matches": ["https://howjsay.com/*"],
+      "js": ["src/content/bundle/howjsay.js"]
+    },
+    {
+      "matches": ["https://tophonetics.com/"],
+      "js": ["src/content/bundle/tophonetics.js"]
+    },
+    {
+      "matches": ["https://www.linguee.com/*","https://www.linguee.com.br/*"],
+      "js": ["src/content/bundle/linguee.js"]
+    },
+    {
+      "matches": ["https://www.oxfordlearnersdictionaries.com/*"],
+      "js": ["src/content/bundle/oxford.js"]
+    }
+  ],
+  "background": {
+    "page": "src/background/main.html",
+    "persistent": false
+  },
+  "options_ui": {
+    "page": "src/options/main.html"
+  },
+  "permissions": [
+    "https://www.google.com/",
+    "https://ssl.gstatic.com/",
+    "https://dictionary.cambridge.org/",
+    "https://www.linguee.com/",
+    "https://www.linguee.com.br/",
+    "https://www.oxfordlearnersdictionaries.com/",
+    "https://dictionary.cambridge.org/us/",
+    "https://d1qx7pbj0dvboc.cloudfront.net/",
+    "activeTab",
+    "menus",
+    "storage",
+    "unlimitedStorage"
+  ]
+}
