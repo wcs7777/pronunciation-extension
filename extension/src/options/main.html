@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<form id="options">
+		<label for="accessKey">Context Menu Access Key</label>
+		<input type="text" id="accessKey">
+		<hr>
+		<label for="useWordColors">Use Word Colors in Popup</label>
+		<select id="useWordColors">
+			<option value="true" selected>True</option>
+			<option value="false">False</option>
+		</select>
+		<hr>
+		<label for="ipaTimeout">IPA Timeout</label>
+		<input type="text" id="ipaTimeout">
+		<label for="fetchFileAudioTimeout">Fetch File Audio Timeout</label>
+		<input type="text" id="fetchFileAudioTimeout">
+		<label for="fetchScrapAudioTimeout">Fetch Scrap Audio Timeout</label>
+		<input type="text" id="fetchScrapAudioTimeout">
+		<hr>
+		<label for="googleSpeechSpeed">Google Speech Speed</label>
+		<input type="text" id="googleSpeechSpeed">
+		<hr>
+		<label for="audioEnabled">Audio Enabled</label>
+		<select id="audioEnabled">
+			<option value="true" selected>True</option>
+			<option value="false">False</option>
+		</select>
+		<hr>
+		<label for="setAudioShortcut">Set Audio Shortcut</label>
+		<input type="text" id="setAudioShortcut">
+		<label for="setIpaShortcut">Set IPA Shortcut</label>
+		<input type="text" id="setIpaShortcut">
+		<label for="defaultIpaShortcut">Default IPA Shortcut</label>
+		<input type="text" id="defaultIpaShortcut">
+		<hr>
+		<label for="popupFontFamily">Popup Font Family</label>
+		<input type="text" id="popupFontFamily">
+		<label for="popupFontSizepx">Popup Font Size(px)</label>
+		<input type="text" id="popupFontSizepx">
+		<hr>
+		<button type="submit">Save</button>
+	</form>
+	<hr>
+	<form id="setIPa">
+		<label for="ipaWord">Word</label>
+		<input type="text" id="ipaWord" >
+		<label for="ipa">IPA</label>
+		<input type="text" id="ipa">
+		<button type="submit">Set</button>
+	</form>
+	<hr>
+	<form id="removeAudio">
+		<label for="word">Remove Audio</label>
+		<input type="text" id="word">
+		<button type="submit">Remove</button>
+	</form>
+	<hr>
+	<button id="restoreDefaultOptions">Restore Default Options</button>
+	<hr>
+	<button id="clearAudioTable">Clear Audio Table</button>
+	<hr>
+	<button id="printIpaTable">Print IPA Table</button>
+	<button id="printAudioTable">Print Audio Table</button>
+	<button id="printOptionsTable">Print Options Table</button>
+	<button id="printAllTables">Print All Tables</button>
+	<script type="module" src="main.js"></script>
+</body>
+</html>
