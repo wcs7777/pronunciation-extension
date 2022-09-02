@@ -15,7 +15,7 @@ import fallbackIpa from "./fallback-ipa.js";
 		populate(
 			ipaTable,
 			populateIpa,
-			async () => await ipaDefaultTable.set(await ipaTable.getAll()),
+			async () => ipaDefaultTable.set(await ipaTable.getAll()),
 		)
 			.then(console.log)
 			.catch(console.error);
@@ -46,7 +46,7 @@ async function populate(table, populateFn, afterPopulateFn) {
 			return `${table.name} is already populated`;
 		}
 	} catch (error) {
-		throw new Error(`Error populating ${table.name}`, error);
+		throw new Error(`Error populating ${table.name}: ${error?.message}`);
 	}
 }
 

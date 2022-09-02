@@ -72,6 +72,14 @@
 		});
 	}
 
+	async function asyncReduce(arr, initialValue, callback) {
+		let currentValue = initialValue;
+		for (const element of arr) {
+			currentValue = await callback(currentValue, element);
+		}
+		return currentValue;
+	}
+
 	var localStorage = {
 		async set(key, value) {
 			const keys = value !== undefined ? { [key]: value } : key;
@@ -341,12 +349,16 @@
 			getAudio=nothing,
 		}={},
 	) {
-		const shortcuts = {};
-		for (const option of Object.keys(options)) {
-			if (options[option]) {
-				shortcuts[await optionsTable.get(option)] = option;
-			}
-		}
+		const shortcuts = await asyncReduce(
+			Object.entries(options).filter(([, value]) => value === true),
+			{},
+			async (obj, [key]) => {
+				return {
+					...obj,
+					[await optionsTable.get(key)]: key,
+				};
+			},
+		);
 		console.log("shortcuts", shortcuts);
 		const keys = Object.keys(shortcuts);
 		document.addEventListener("keydown", async (e) => {

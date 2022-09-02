@@ -175,3 +175,11 @@ export function promiseTimeout(promise, timeout, defaultValue) {
 		delayResolve(timeout, defaultValue),
 	]);
 }
+
+export async function asyncReduce(arr, initialValue, callback) {
+	let currentValue = initialValue;
+	for (const element of arr) {
+		currentValue = await callback(currentValue, element);
+	}
+	return currentValue;
+}

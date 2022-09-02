@@ -5,6 +5,7 @@ import {
 	ipaDefaultTable,
 } from "../background/tables.js";
 import showPopup from "../show-popup.js";
+import { asyncReduce } from "../utils.js";
 
 export default async function updateDatabaseWithWebsite(
 	options={
@@ -18,12 +19,16 @@ export default async function updateDatabaseWithWebsite(
 		getAudio=nothing,
 	}={},
 ) {
-	const shortcuts = {};
-	for (const option of Object.keys(options)) {
-		if (options[option]) {
-			shortcuts[await optionsTable.get(option)] = option;
-		}
-	}
+	const shortcuts = await asyncReduce(
+		Object.entries(options).filter(([, value]) => value === true),
+		{},
+		async (obj, [key]) => {
+			return {
+				...obj,
+				[await optionsTable.get(key)]: key,
+			};
+		},
+	);
 	console.log("shortcuts", shortcuts);
 	const keys = Object.keys(shortcuts);
 	document.addEventListener("keydown", async (e) => {
