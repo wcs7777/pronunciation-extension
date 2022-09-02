@@ -273,7 +273,6 @@
 		const closeButton = tag("span");
 		const closeButtonColor = "#737373";
 		const timeoutID  = setTimeout(closePopup, timeout);
-		let disabled = false;
 		popup.style.cssText = `
 		position: fixed;
 		top: ${position.top}px;
@@ -317,10 +316,8 @@
 		target.appendChild(popup);
 
 		function disableTimeout() {
-			if (!disabled) {
-				clearTimeout(timeoutID);
-				disabled = true;
-			}
+			clearTimeout(timeoutID);
+			document.removeEventListener("click", disableTimeout);
 		}
 
 		function closePopup() {
