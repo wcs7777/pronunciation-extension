@@ -190,7 +190,7 @@
 				return await this.database.get(this.name + fragment) || {};
 			} else {
 				return asyncReduce(
-					(alphanumeric() + symbolsFragment()).slice(""),
+					`${alphanumeric()}${symbolsFragment()}`.slice(""),
 					{},
 					async (obj, fragment) => {
 						return {

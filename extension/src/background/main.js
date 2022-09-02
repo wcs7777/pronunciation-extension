@@ -29,8 +29,9 @@ import fallbackIpa from "./fallback-ipa.js";
 	} catch (error) {
 		console.error(error);
 	}
+	return "Initialization finished";
 })()
-	.then(() => console.log("Initialization finished"))
+	.then(console.log)
 	.catch(console.error);
 
 async function populate(table, populateFn, afterPopulateFn) {
