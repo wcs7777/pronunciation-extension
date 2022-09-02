@@ -163,10 +163,8 @@ function isNavigationKey(keydownEvent) {
 
 async function setFieldValues() {
 	try {
-		const keys = await optionsTable.getKeys();
-		const values = await optionsTable.get(keys);
-		for (let i = 0; i < keys.length; ++i) {
-			setField(keys[i], values[i]);
+		for (const [key, value] of Object.entries(await optionsTable.getAll())) {
+			setField(key, value);
 		}
 	} catch (error) {
 		console.error(error);
