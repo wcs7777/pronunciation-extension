@@ -305,7 +305,7 @@
 
 		function disableTimeout() {
 			clearTimeout(timeoutID);
-			document.removeEventListener("click", disableTimeout);
+			popup.removeEventListener("mousedown", disableTimeout);
 		}
 
 		function closePopup() {
