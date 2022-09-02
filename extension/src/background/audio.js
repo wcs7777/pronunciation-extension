@@ -1,4 +1,3 @@
-import { audioTable, optionsTable } from "./tables.js";
 import {
 	$,
 	isTooManyRequests,
@@ -12,21 +11,39 @@ import {
 
 const speech = "s";
 
-export async function playAudio(word) {
+export async function playAudio(
+	word,
+	{
+		audioTable,
+		fetchFileAudioTimeout=2000,
+		fetchScrapAudioTimeout=2000,
+		googleSpeechSpeed="0.5",
+	}={},
+) {
 	console.time(`playAudio - ${word}`);
-	let playable = await canPlayFromTable(word);
+	let playable = await canPlayFromTable(word, audioTable);
 	if (!playable || isTooManyRequests(playable)) {
 		let audio = "";
-		const fetchFileAudioTimeout = await optionsTable.get(
-			"fetchFileAudioTimeout",
-		);
-		const fetchScrapAudioTimeout = await optionsTable.get(
-			"fetchScrapAudioTimeout",
-		);
 		const canPlayFns = [
-			() => canPlayTimeout(canPlayFromOxford, fetchFileAudioTimeout),
-			() => canPlayTimeout(canPlayFromGstatic, fetchFileAudioTimeout),
-			() => canPlayTimeout(canPlayFromGoogleDefine, fetchScrapAudioTimeout),
+			() => {
+				return canPlayTimeout(
+					canPlayFromOxford,
+					fetchFileAudioTimeout,
+				);
+			},
+			() => {
+				return canPlayTimeout(
+					canPlayFromGstatic,
+					fetchFileAudioTimeout,
+				);
+			},
+			() => {
+				return canPlayTimeout(
+					canPlayFromGoogleDefine,
+					fetchScrapAudioTimeout,
+					googleSpeechSpeed,
+				);
+			},
 		];
 		let statusCode = 0;
 		for (const canPlayFn of canPlayFns) {
@@ -47,7 +64,7 @@ export async function playAudio(word) {
 				audio = speech;
 			}
 		}
-		await setAudio(word, audio);
+		await setAudio(word, audio, audioTable);
 
 		function canPlayTimeout(canPlayFn, timeout, ...args) {
 			return promiseTimeout(canPlayFn(word, ...args), timeout, false);
@@ -65,7 +82,7 @@ export function canPlay(url) {
 	});
 }
 
-export async function setAudio(word, audio) {
+export async function setAudio(word, audio, audioTable) {
 	const value = (
 		isUrl(audio) ? await url2base64(audio) : audio
 	);
@@ -76,14 +93,14 @@ export async function setAudio(word, audio) {
 	return message;
 }
 
-export async function removeAudio(word) {
+export async function removeAudio(word, audioTable) {
 	await audioTable.remove(word);
 	const message = `${word} audio removed`;
 	console.log(message);
 	return message;
 }
 
-async function canPlayFromTable(word) {
+async function canPlayFromTable(word, audioTable) {
 	const url = await audioTable.get(word);
 	if (url) {
 		return url !== speech ? canPlay(url) : canPlayFromGoogleSpeech(word);
@@ -92,13 +109,13 @@ async function canPlayFromTable(word) {
 	}
 }
 
-async function canPlayFromGoogleSpeech(word, speed) {
+async function canPlayFromGoogleSpeech(word, googleSpeechSpeed="0.5") {
 	const base = "https://www.google.com/speech-api/v1/synthesize?";
 	const params = new URLSearchParams({
 		text: word,
 		enc: "mpeg",
 		lang: "en",
-		speed: speed || await optionsTable.get("googleSpeechSpeed"),
+		speed: googleSpeechSpeed,
 		client: "lr-language-tts",
 		use_google_only_voices: 1,
 	}).toString();

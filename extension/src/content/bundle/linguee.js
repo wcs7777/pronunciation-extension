@@ -95,6 +95,29 @@
 		return currentValue;
 	}
 
+	function canPlay(url) {
+		return new Promise((resolve, reject) => {
+			const audio = new Audio(url);
+			audio.addEventListener("canplay", () => resolve(audio));
+			audio.addEventListener("error", reject);
+		});
+	}
+
+	async function setAudio(word, audio, audioTable) {
+		const value = (
+			isUrl(audio) ? await url2base64(audio) : audio
+		);
+		await audioTable.set(word, value);
+		const message = `${word} audio saved`;
+		console.log(message);
+		console.log(audio);
+		return message;
+	}
+
+	function isUrl(value) {
+		return isString(value) && value.startsWith("http");
+	}
+
 	var localStorage = {
 		async set(key, value) {
 			const keys = value !== undefined ? { [key]: value } : key;
@@ -230,29 +253,6 @@
 	const audioTable = new Table("audio", database);
 	new Table("utils", database);
 
-	function canPlay(url) {
-		return new Promise((resolve, reject) => {
-			const audio = new Audio(url);
-			audio.addEventListener("canplay", () => resolve(audio));
-			audio.addEventListener("error", reject);
-		});
-	}
-
-	async function setAudio(word, audio) {
-		const value = (
-			isUrl(audio) ? await url2base64(audio) : audio
-		);
-		await audioTable.set(word, value);
-		const message = `${word} audio saved`;
-		console.log(message);
-		console.log(audio);
-		return message;
-	}
-
-	function isUrl(value) {
-		return isString(value) && value.startsWith("http");
-	}
-
 	function showPopup({
 		message="message",
 		timeout=3000,
@@ -357,7 +357,7 @@
 						"setAudioShortcut": async () => {
 							const playable = await canPlay(getAudio());
 							if (playable) {
-								feedback(await setAudio(getWord(), playable.src));
+								feedback(await setAudio(getWord(), playable.src, audioTable));
 							}
 						},
 						"setIpaShortcut": async () => {

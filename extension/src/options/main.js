@@ -12,6 +12,7 @@ import {
 	isAlphanumeric,
 	isNumber,
 } from "../utils.js";
+import { removeAudio } from "../background/audio.js";
 
 document.addEventListener("DOMContentLoaded", setFieldValues);
 
@@ -76,7 +77,7 @@ element("removeAudio").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const field = element("word");
-		await audioTable.remove(field.value);
+		await removeAudio(field.value, audioTable);
 		field.value = "";
 	} catch (error) {
 		console.error(error);

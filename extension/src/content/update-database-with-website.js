@@ -3,6 +3,7 @@ import {
 	optionsTable,
 	ipaTable,
 	ipaDefaultTable,
+	audioTable,
 } from "../background/tables.js";
 import showPopup from "../show-popup.js";
 import { asyncReduce } from "../utils.js";
@@ -40,7 +41,7 @@ export default async function updateDatabaseWithWebsite(
 					"setAudioShortcut": async () => {
 						const playable = await canPlay(getAudio());
 						if (playable) {
-							feedback(await setAudio(getWord(), playable.src));
+							feedback(await setAudio(getWord(), playable.src, audioTable));
 						}
 					},
 					"setIpaShortcut": async () => {

@@ -3,6 +3,7 @@ import {
 	ipaTable,
 	ipaDefaultTable,
 	optionsTable,
+	audioTable,
 } from "./tables.js";
 import populateIpa from "./ipa/populate-ipa.js";
 import populateOptions from "../options/populate-options.js";
@@ -66,7 +67,22 @@ async function menuItemOnClick(info, tab) {
 	try {
 		const word = normalizeWord(info.selectionText);
 		if (await optionsTable.get("audioEnabled")) {
-			playAudio(word).catch(console.error);
+			playAudio(
+				word,
+				{
+					audioTable: audioTable,
+					fetchFileAudioTimeout: (
+						await optionsTable.get("fetchFileAudioTimeout")
+					),
+					fetchScrapAudioTimeout: (
+						await optionsTable.get("fetchScrapAudioTimeout")
+					),
+					googleSpeechSpeed: (
+						await optionsTable.get("googleSpeechSpeed")
+					),
+				},
+			)
+				.catch(console.error);
 		}
 		let ipa = await ipaTable.get(word);
 		if (!ipa) {
