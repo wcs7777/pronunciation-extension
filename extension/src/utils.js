@@ -111,6 +111,14 @@ export function isAlphanumeric(character) {
 	return isLetter(character) || isNumber(character);
 }
 
+export function toArray(value) {
+	return Array.isArray(value) ? value : [value];
+}
+
+export function toObject(value) {
+	return typeof value === "object" ? value : { [value]: value };
+}
+
 export function print(message) {
 	console.clear();
 	console.log(message);

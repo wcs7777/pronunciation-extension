@@ -34,19 +34,15 @@ import fallbackIpa from "./fallback-ipa.js";
 	.catch(console.error);
 
 async function populate(table, populateFn, afterPopulateFn) {
-	try {
-		if (!await utilsTable.get(table.name)) {
-			await populateFn(table);
-			if (afterPopulateFn) {
-				await afterPopulateFn();
-			}
-			await utilsTable.set(table.name, true);
-			return `${table.name} populated`;
-		} else {
-			return `${table.name} is already populated`;
+	if (!await utilsTable.get(table.name)) {
+		await populateFn(table);
+		if (afterPopulateFn) {
+			await afterPopulateFn();
 		}
-	} catch (error) {
-		throw new Error(`Error populating ${table.name}: ${error?.message}`);
+		await utilsTable.set(table.name, true);
+		return `${table.name} populated`;
+	} else {
+		return `${table.name} is already populated`;
 	}
 }
 

@@ -1,4 +1,12 @@
-import { alphanumeric, isAlphanumeric, isString, symbolsFragment } from "../utils.js";
+import {
+	alphanumeric,
+	asyncReduce,
+	isAlphanumeric,
+	isString,
+	symbolsFragment,
+	toArray,
+	toObject,
+} from "../utils.js";
 
 export default class TableFragmented {
 	constructor(name="table", database) {
@@ -8,15 +16,7 @@ export default class TableFragmented {
 
 	async get(key) {
 		const table = await this.getAll(key2fragment(key));
-		if (!Array.isArray(key)) {
-			return table[key];
-		} else {
-			const values = [];
-			for (const k of key) {
-				values.push(table[k]);
-			}
-			return values;
-		}
+		return !Array.isArray(key) ? table[key] : key.map((k) => table[k]);
 	}
 
 	async set(key, value, atFragment) {
@@ -26,17 +26,9 @@ export default class TableFragmented {
 			table[key] = value;
 		} else {
 			if (Array.isArray(table)) {
-				if (Array.isArray(key)) {
-					table = [...table, ...key];
-				} else {
-					table = [...table, key];
-				}
+				table = [...table, ...toArray(key)];
 			} else {
-				if (typeof key === "object") {
-					table = { ...table, ...key };
-				} else {
-					table = { ...table, [key]: key };
-				}
+				table = { ...table, ...toObject(key) };
 			}
 		}
 		return this.database.set(this.name + fragment, table);
@@ -46,12 +38,16 @@ export default class TableFragmented {
 		if (fragment) {
 			return await this.database.get(this.name + fragment) || {};
 		} else {
-			let table = {};
-			for (const fragment of alphanumeric() + symbolsFragment()) {
-				const tableFragment = await this.getAll(fragment);
-				table = { ...table, ...tableFragment };
-			}
-			return table;
+			return asyncReduce(
+				(alphanumeric() + symbolsFragment()).slice(""),
+				{},
+				async (obj, fragment) => {
+					return {
+						...obj,
+						...await this.getAll(fragment),
+					};
+				},
+			);
 		}
 	}
 

@@ -1,3 +1,5 @@
+import { toArray, toObject } from "../utils.js";
+
 export default class Table {
 	constructor(name="table", database) {
 		this.name = name;
@@ -6,15 +8,7 @@ export default class Table {
 
 	async get(key) {
 		const table = await this.getAll();
-		if (!Array.isArray(key)) {
-			return table[key];
-		} else {
-			const values = [];
-			for (const k of key) {
-				values.push(table[k]);
-			}
-			return values;
-		}
+		return !Array.isArray(key) ? table[key] : key.map((k) => table[k]);
 	}
 
 	async set(key, value) {
@@ -23,17 +17,9 @@ export default class Table {
 			table[key] = value;
 		} else {
 			if (Array.isArray(table)) {
-				if (Array.isArray(key)) {
-					table = [...table, ...key];
-				} else {
-					table = [...table, key];
-				}
+				table = [...table, ...toArray(key)];
 			} else {
-				if (typeof key === "object") {
-					table = { ...table, ...key };
-				} else {
-					table = { ...table, [key]: key };
-				}
+				table = { ...table, ...toObject(key) };
 			}
 		}
 		return this.database.set(this.name, table);

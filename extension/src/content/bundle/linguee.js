@@ -61,6 +61,14 @@
 		return isLetter(character) || isNumber(character);
 	}
 
+	function toArray(value) {
+		return Array.isArray(value) ? value : [value];
+	}
+
+	function toObject(value) {
+		return typeof value === "object" ? value : { [value]: value };
+	}
+
 	function isString(value) {
 	  return Object.prototype.toString.call(value) === "[object String]"
 	}
@@ -115,15 +123,7 @@
 
 		async get(key) {
 			const table = await this.getAll();
-			if (!Array.isArray(key)) {
-				return table[key];
-			} else {
-				const values = [];
-				for (const k of key) {
-					values.push(table[k]);
-				}
-				return values;
-			}
+			return !Array.isArray(key) ? table[key] : key.map((k) => table[k]);
 		}
 
 		async set(key, value) {
@@ -132,17 +132,9 @@
 				table[key] = value;
 			} else {
 				if (Array.isArray(table)) {
-					if (Array.isArray(key)) {
-						table = [...table, ...key];
-					} else {
-						table = [...table, key];
-					}
+					table = [...table, ...toArray(key)];
 				} else {
-					if (typeof key === "object") {
-						table = { ...table, ...key };
-					} else {
-						table = { ...table, [key]: key };
-					}
+					table = { ...table, ...toObject(key) };
 				}
 			}
 			return this.database.set(this.name, table);
@@ -175,15 +167,7 @@
 
 		async get(key) {
 			const table = await this.getAll(key2fragment(key));
-			if (!Array.isArray(key)) {
-				return table[key];
-			} else {
-				const values = [];
-				for (const k of key) {
-					values.push(table[k]);
-				}
-				return values;
-			}
+			return !Array.isArray(key) ? table[key] : key.map((k) => table[k]);
 		}
 
 		async set(key, value, atFragment) {
@@ -193,17 +177,9 @@
 				table[key] = value;
 			} else {
 				if (Array.isArray(table)) {
-					if (Array.isArray(key)) {
-						table = [...table, ...key];
-					} else {
-						table = [...table, key];
-					}
+					table = [...table, ...toArray(key)];
 				} else {
-					if (typeof key === "object") {
-						table = { ...table, ...key };
-					} else {
-						table = { ...table, [key]: key };
-					}
+					table = { ...table, ...toObject(key) };
 				}
 			}
 			return this.database.set(this.name + fragment, table);
@@ -213,12 +189,16 @@
 			if (fragment) {
 				return await this.database.get(this.name + fragment) || {};
 			} else {
-				let table = {};
-				for (const fragment of alphanumeric() + symbolsFragment()) {
-					const tableFragment = await this.getAll(fragment);
-					table = { ...table, ...tableFragment };
-				}
-				return table;
+				return asyncReduce(
+					(alphanumeric() + symbolsFragment()).slice(""),
+					{},
+					async (obj, fragment) => {
+						return {
+							...obj,
+							...await this.getAll(fragment),
+						};
+					},
+				);
 			}
 		}
 
