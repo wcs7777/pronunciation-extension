@@ -24,7 +24,7 @@
 	function getBackgroundColorInitialValue() {
 		const div = tag("div");
 		document.head.appendChild(div);
-		const backgroundColor = getStyle(element, "background-color");
+		const backgroundColor = getStyle(div, "background-color");
 		div.remove();
 		return backgroundColor;
 	}
