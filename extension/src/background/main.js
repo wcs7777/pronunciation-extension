@@ -66,7 +66,7 @@ async function storageOnChanged(changes) {
 async function menuItemOnClick(info, tab) {
 	try {
 		const word = normalizeWord(info.selectionText);
-		if (await optionsTable.get("audioEnabled")) {
+		if (!await isTabMuted() && await optionsTable.get("audioEnabled")) {
 			playAudio(
 				word,
 				{
@@ -115,6 +115,10 @@ async function menuItemOnClick(info, tab) {
 		}
 	} catch (error) {
 		console.error(error);
+	}
+
+	async function isTabMuted() {
+		return (await browser.tabs.get(tab.id)).mutedInfo.muted;
 	}
 
 	function executeScript(details) {
