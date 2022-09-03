@@ -250,7 +250,7 @@
 	const ipaTable = new TableFragmented("ipa", database);
 	const ipaDefaultTable = new Table("ipaDefault", database);
 	const optionsTable = new Table("options", database);
-	const audioTable = new Table("audio", database);
+	const audioTable = new TableFragmented("audio", database);
 	new Table("utils", database);
 
 	function showPopup({
