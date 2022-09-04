@@ -18,7 +18,7 @@ export async function playAudio(
 		audioVolume=1.0,
 		fetchFileAudioTimeout=2000,
 		fetchScrapAudioTimeout=2000,
-		googleSpeechSpeed="0.5",
+		googleSpeechSpeed=0.5,
 	}={},
 ) {
 	console.time(`playAudio - ${word}`);
@@ -110,7 +110,7 @@ async function canPlayFromTable(word, audioTable) {
 	}
 }
 
-async function canPlayFromGoogleSpeech(word, googleSpeechSpeed="0.5") {
+async function canPlayFromGoogleSpeech(word, googleSpeechSpeed=0.5) {
 	const base = "https://www.google.com/speech-api/v1/synthesize?";
 	const params = new URLSearchParams({
 		text: word,
