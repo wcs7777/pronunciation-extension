@@ -30,6 +30,7 @@ element("options").addEventListener("submit", async (e) => {
 				...options,
 				accessKey: options.accessKey.toUpperCase(),
 				ipaEnabled: options.ipaEnabled === "true",
+				ipaTimeout: parseFloat(options.ipaTimeout),
 				useWordColors: options.useWordColors === "true",
 				audioEnabled: options.audioEnabled === "true",
 				audioVolume: min(parseFloat(options.audioVolume), 1.0),
@@ -143,6 +144,7 @@ element("printAllTables").addEventListener("click", async (e) => {
 	}));
 
 [
+	element("ipaTimeout"),
 	element("audioVolume"),
 	element("fetchFileAudioTimeout"),
 	element("fetchScrapAudioTimeout"),
