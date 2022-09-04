@@ -53,9 +53,7 @@ element("options").addEventListener("submit", async (e) => {
 
 element("restoreDefaultOptions").addEventListener("click", async () => {
 	try {
-		for (const [key, value] of Object.entries(defaultOptions)) {
-			await optionsTable.set(key, value);
-		}
+		await optionsTable.set(defaultOptions);
 		await setFieldValues();
 	} catch (error) {
 		console.error(error);
