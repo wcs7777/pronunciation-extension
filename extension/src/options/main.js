@@ -16,7 +16,7 @@ import {
 } from "../utils.js";
 import { removeAudio } from "../background/audio.js";
 
-document.addEventListener("DOMContentLoaded", setFieldValues);
+document.addEventListener("DOMContentLoaded", setFieldsInitialValues);
 
 element("options").addEventListener("submit", async (e) => {
 	try {
@@ -44,7 +44,7 @@ element("options").addEventListener("submit", async (e) => {
 				popupFontSizepx: parseFloat(options.popupFontSizepx),
 			});
 		}
-		await setFieldValues();
+		await setFieldsInitialValues();
 		console.log(await optionsTable.getAll());
 	} catch (error) {
 		console.error(error);
@@ -54,7 +54,7 @@ element("options").addEventListener("submit", async (e) => {
 element("restoreDefaultOptions").addEventListener("click", async () => {
 	try {
 		await optionsTable.set(defaultOptions);
-		await setFieldValues();
+		await setFieldsInitialValues();
 	} catch (error) {
 		console.error(error);
 	}
@@ -181,7 +181,7 @@ function isNavigationKey(keydownEvent) {
 		.includes(keydownEvent.key);
 }
 
-async function setFieldValues() {
+async function setFieldsInitialValues() {
 	try {
 		for (const [key, value] of Object.entries(await optionsTable.getAll())) {
 			setField(key, value);
