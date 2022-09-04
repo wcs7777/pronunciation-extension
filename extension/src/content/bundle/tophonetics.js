@@ -370,8 +370,6 @@
 	};
 
 	async function setIpa(word, ipa) {
-		console.log("setIpa() word:", word);
-		console.log("setIpa() ipa:", ipa);
 		const oldIpa = await ipaTable.get(word);
 		await ipaTable.set(word, ipa);
 		feedback(`${word}: ${oldIpa} -> ${ipa}`);
