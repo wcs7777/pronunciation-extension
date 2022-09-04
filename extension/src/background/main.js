@@ -118,7 +118,7 @@ async function menuItemOnClick(info, tab) {
 					sizepx,
 					useWordColors,
 				});
-				await executeScript({ file: "../content/bundle/main.js" });
+				await executeScript({ file: "../content/bundle/ipa.js" });
 			}
 		}
 	} catch (error) {
