@@ -12,6 +12,7 @@ import {
 	isAlphanumeric,
 	isNumber,
 	min,
+	toArray,
 } from "../utils.js";
 import { removeAudio } from "../background/audio.js";
 
@@ -21,7 +22,7 @@ element("options").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const keys = await optionsTable.getKeys();
-		const values = getFieldsAndClean(keys);
+		const values = getFieldsValuesAndClean(keys);
 		if (values.every((value) => value.length > 0)) {
 			const options = keys.reduce((obj, key, i) => {
 				return { ...obj, [key]: values[i] };
@@ -73,8 +74,8 @@ element("setIPa").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		await ipaTable.set(
-			normalizeWord(getFieldsAndClean ("ipaWord")),
-			getFieldsAndClean ("ipa"),
+			normalizeWord(getFieldsValuesAndClean("ipaWord")),
+			getFieldsValuesAndClean("ipa"),
 		);
 	} catch (error) {
 		console.error(error);
@@ -200,18 +201,11 @@ function element(id) {
 	return $(`#${id}`);
 }
 
-function getFieldsAndClean(idFields) {
-	if (Array.isArray(idFields)) {
-		return idFields.map((id) => {
-			const field = element(id);
-			const value = field.value.trim();
-			field.value = "";
-			return value;
-		});
-	} else {
-		const field = element(idFields);
+function getFieldsValuesAndClean(idFields) {
+	return toArray(idFields).map((id) => {
+		const field = element(id);
 		const value = field.value.trim();
 		field.value = "";
 		return value;
-	}
+	});
 }
