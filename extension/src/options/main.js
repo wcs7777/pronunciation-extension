@@ -11,6 +11,7 @@ import {
 	normalizeWord,
 	isAlphanumeric,
 	isNumber,
+	min,
 } from "../utils.js";
 import { removeAudio } from "../background/audio.js";
 
@@ -30,9 +31,14 @@ element("options").addEventListener("submit", async (e) => {
 				accessKey: options.accessKey.toUpperCase(),
 				useWordColors: options.useWordColors === "true",
 				audioEnabled: options.audioEnabled === "true",
+				audioVolume: min(parseFloat(options.audioVolume), 1.0),
+				fetchFileAudioTimeout: parseFloat(options.fetchFileAudioTimeout),
+				fetchScrapAudioTimeout: parseFloat(options.fetchScrapAudioTimeout),
+				googleSpeechSpeed: parseFloat(options.googleSpeechSpeed),
 				setAudioShortcut: options.setAudioShortcut.toUpperCase(),
 				setIpaShortcut: options.setIpaShortcut.toUpperCase(),
 				defaultIpaShortcut: options.defaultIpaShortcut.toUpperCase(),
+				popupFontSizepx: parseFloat(options.popupFontSizepx),
 			});
 		}
 		await setFieldValues();
@@ -135,14 +141,25 @@ element("printAllTables").addEventListener("click", async (e) => {
 		}
 	}));
 
+[
+	element("audioVolume"),
+	element("fetchFileAudioTimeout"),
+	element("fetchScrapAudioTimeout"),
+	element("googleSpeechSpeed"),
+	element("popupFontSizepx"),
+]
+	.forEach((field) => field.addEventListener("keydown", (e) => {
+		if (
+			!isNumber(e.key) &&
+			!isNavigationKey(e) &&
+			(e.key !== "." || field.value.includes("."))
+		) {
+			e.preventDefault();
+		}
+	}));
+
 element("popupFontFamily").addEventListener("keydown", (e) => {
 	if (!isAlphanumeric(e.key) && e.key !== " " && !isNavigationKey(e)) {
-		e.preventDefault();
-	}
-});
-
-element("popupFontSizepx").addEventListener("keydown", (e) => {
-	if (!isNumber(e.key) && !isNavigationKey(e)) {
 		e.preventDefault();
 	}
 });

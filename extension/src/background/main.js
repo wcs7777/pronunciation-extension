@@ -67,19 +67,25 @@ async function menuItemOnClick(info, tab) {
 	try {
 		const word = normalizeWord(info.selectionText);
 		if (!await isTabMuted() && await optionsTable.get("audioEnabled")) {
+			const [
+				audioVolume,
+				fetchFileAudioTimeout,
+				fetchScrapAudioTimeout,
+				googleSpeechSpeed,
+			] = await optionsTable.get([
+				"audioVolume",
+				"fetchFileAudioTimeout",
+				"fetchScrapAudioTimeout",
+				"googleSpeechSpeed",
+			]);
 			playAudio(
 				word,
 				{
-					audioTable: audioTable,
-					fetchFileAudioTimeout: (
-						await optionsTable.get("fetchFileAudioTimeout")
-					),
-					fetchScrapAudioTimeout: (
-						await optionsTable.get("fetchScrapAudioTimeout")
-					),
-					googleSpeechSpeed: (
-						await optionsTable.get("googleSpeechSpeed")
-					),
+					audioTable,
+					audioVolume,
+					fetchFileAudioTimeout,
+					fetchScrapAudioTimeout,
+					googleSpeechSpeed,
 				},
 			)
 				.catch(console.error);

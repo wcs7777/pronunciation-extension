@@ -15,6 +15,7 @@ export async function playAudio(
 	word,
 	{
 		audioTable,
+		audioVolume=1.0,
 		fetchFileAudioTimeout=2000,
 		fetchScrapAudioTimeout=2000,
 		googleSpeechSpeed="0.5",
@@ -71,7 +72,7 @@ export async function playAudio(
 		}
 	}
 	console.timeEnd(`playAudio - ${word}`);
-	return playable ? play(playable) : false;
+	return playable ? play(playable, audioVolume) : false;
 }
 
 export function canPlay(url) {
@@ -171,7 +172,8 @@ async function canPlayFromGoogleDefine(word) {
 	}
 }
 
-async function play(audio) {
+async function play(audio, volume=1.0) {
+	audio.volume = volume;
 	await audio.play();
 	return audio.src;
 }
