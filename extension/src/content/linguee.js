@@ -1,4 +1,4 @@
-import { $, $$, isNodeType, onAppend } from "../utils.js";
+import { $, $$, isNodeType, normalizeWord, onAppend } from "../utils.js";
 import updateDatabaseWithWebsite from "./update-database-with-website.js";
 
 let audio = "";
@@ -34,7 +34,7 @@ for (const lemma of $$("h2.line.lemma_desc")) {
 	$("a.audio", lemma).addEventListener("click", async () => {
 		const dict = $("a.dictLink", lemma);
 		if (dict) {
-			word = dict.textContent;
+			word = normalizeWord(dict.textContent);
 			console.log(`word: ${word}`);
 		}
 	});

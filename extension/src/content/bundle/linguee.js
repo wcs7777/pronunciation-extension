@@ -33,6 +33,15 @@
 		return node.nodeName.toUpperCase() === type.toUpperCase();
 	}
 
+	function normalizeWord(word) {
+		return word
+			.trim()
+			.toLowerCase()
+			.replaceAll(/(\.|,|\?|!|")/g, '')
+			.replaceAll("’", "'")
+			.split(/\s+/)[0];
+	}
+
 	function letters() {
 		return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	}
@@ -424,7 +433,7 @@
 		$("a.audio", lemma).addEventListener("click", async () => {
 			const dict = $("a.dictLink", lemma);
 			if (dict) {
-				word = dict.textContent;
+				word = normalizeWord(dict.textContent);
 				console.log(`word: ${word}`);
 			}
 		});
