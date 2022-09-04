@@ -1,6 +1,7 @@
 export default {
 	accessKey: "P",
-	ipaTimeout: "3000",
+	ipaEnabled: true,
+	ipaTimeout: 3000,
 	useWordColors: false,
 	audioVolume: 1.0,
 	fetchFileAudioTimeout: 1100,

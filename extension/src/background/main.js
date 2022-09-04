@@ -90,34 +90,36 @@ async function menuItemOnClick(info, tab) {
 			)
 				.catch(console.error);
 		}
-		let ipa = await ipaTable.get(word);
-		if (!ipa) {
-			ipa = await fallbackIpa(word);
-			if (ipa) {
-				await ipaTable.set(word, ipa);
-				console.log(`(ipa saved) ${word}: ${ipa}`);
+		if (await optionsTable.get("ipaEnabled")) {
+			let ipa = await ipaTable.get(word);
+			if (!ipa) {
+				ipa = await fallbackIpa(word);
+				if (ipa) {
+					await ipaTable.set(word, ipa);
+					console.log(`(ipa saved) ${word}: ${ipa}`);
+				}
 			}
-		}
-		if (ipa) {
-			const [
-				timeout,
-				family,
-				sizepx,
-				useWordColors,
-			] = await optionsTable.get([
-				"ipaTimeout",
-				"popupFontFamily",
-				"popupFontSizepx",
-				"useWordColors",
-			]);
-			await scriptVariables({
-				message: ipa,
-				timeout,
-				family,
-				sizepx,
-				useWordColors,
-			});
-			await executeScript({ file: "../content/bundle/main.js" });
+			if (ipa) {
+				const [
+					timeout,
+					family,
+					sizepx,
+					useWordColors,
+				] = await optionsTable.get([
+					"ipaTimeout",
+					"popupFontFamily",
+					"popupFontSizepx",
+					"useWordColors",
+				]);
+				await scriptVariables({
+					message: ipa,
+					timeout,
+					family,
+					sizepx,
+					useWordColors,
+				});
+				await executeScript({ file: "../content/bundle/main.js" });
+			}
 		}
 	} catch (error) {
 		console.error(error);

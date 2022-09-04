@@ -29,6 +29,7 @@ element("options").addEventListener("submit", async (e) => {
 			await optionsTable.set({
 				...options,
 				accessKey: options.accessKey.toUpperCase(),
+				ipaEnabled: options.ipaEnabled === "true",
 				useWordColors: options.useWordColors === "true",
 				audioEnabled: options.audioEnabled === "true",
 				audioVolume: min(parseFloat(options.audioVolume), 1.0),
