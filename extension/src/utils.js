@@ -190,6 +190,13 @@ export function blob2base64(blob) {
 	});
 }
 
+export function object2blob(obj) {
+	return new Blob(
+		[JSON.stringify(obj, null, 2)],
+		{ type: "application/json" },
+	);
+}
+
 export function sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }

@@ -47,6 +47,7 @@
     "activeTab",
     "menus",
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "downloads"
   ]
 }

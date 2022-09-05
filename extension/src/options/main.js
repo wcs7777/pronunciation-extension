@@ -15,6 +15,8 @@ import {
 	toArray,
 } from "../utils.js";
 import { removeAudio } from "../background/audio.js";
+import downloadObject from "../background/download-object.js";
+import download from "../background/download.js";
 
 document.addEventListener("DOMContentLoaded", setFieldsInitialValues);
 
@@ -60,14 +62,6 @@ element("restoreDefaultOptions").addEventListener("click", async () => {
 	}
 });
 
-element("clearAudioTable").addEventListener("click", async () => {
-	try {
-		await audioTable.removeAll();
-	} catch (error) {
-		console.error(error);
-	}
-});
-
 element("setIPa").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
@@ -91,24 +85,6 @@ element("removeAudio").addEventListener("submit", async (e) => {
 	}
 });
 
-element("printIpaTable").addEventListener("click", async (e) => {
-	try {
-		e.preventDefault();
-		print(await ipaTable.getAll());
-	} catch (error) {
-		console.error(error);
-	}
-});
-
-element("printAudioTable").addEventListener("click", async (e) => {
-	try {
-		e.preventDefault();
-		print(await audioTable.getAll());
-	} catch (error) {
-		console.error(error);
-	}
-});
-
 element("printOptionsTable").addEventListener("click", async (e) => {
 	try {
 		e.preventDefault();
@@ -118,10 +94,42 @@ element("printOptionsTable").addEventListener("click", async (e) => {
 	}
 });
 
-element("printAllTables").addEventListener("click", async (e) => {
+element("downloadIpaTable").addEventListener("click", async (e) => {
 	try {
 		e.preventDefault();
-		print(await database.getAll());
+		downloadObject(
+			await ipaTable.getAll(),
+			"pronunciation-ipa-table.json",
+		)
+			.then(console.log)
+			.catch(console.error);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+element("downloadAudioTable").addEventListener("click", async (e) => {
+	try {
+		e.preventDefault();
+		downloadObject(
+			await audioTable.getAll(),
+			"pronunciation-audio-table.json",
+		)
+			.then(console.log)
+			.catch(console.error);
+	} catch (error) {
+		console.error(error);
+	}
+});
+element("downloadAllTables").addEventListener("click", async (e) => {
+	try {
+		e.preventDefault();
+		downloadObject(
+			await database.getAll(),
+			"pronunciation-all-tables.json",
+		)
+			.then(console.log)
+			.catch(console.error);
 	} catch (error) {
 		console.error(error);
 	}
