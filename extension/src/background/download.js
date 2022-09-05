@@ -11,7 +11,7 @@ export default function download(url, filename) {
 						resolve(`${filename} download completed`);
 					} else if (delta?.error?.current) {
 						browser.downloads.onChanged.removeListener(listener);
-						reject(delta.error.current);
+						reject(new Error(delta.error.current));
 					}
 				}
 			}

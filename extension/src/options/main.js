@@ -16,7 +16,6 @@ import {
 } from "../utils.js";
 import { removeAudio } from "../background/audio.js";
 import downloadObject from "../background/download-object.js";
-import download from "../background/download.js";
 
 document.addEventListener("DOMContentLoaded", setFieldsInitialValues);
 
