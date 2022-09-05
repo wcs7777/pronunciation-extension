@@ -169,9 +169,24 @@ export async function url2base64(url, credentials="omit") {
 export function blob2base64(blob) {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
-		reader.onerror = reject;
-		reader.onload = (e) => resolve(e.target.result);
+		reader.addEventListener("load", onLoad);
+		reader.addEventListener("error", onError);
 		reader.readAsDataURL(blob);
+
+		function onLoad(e) {
+			removeListeners();
+			return resolve(e.target.result);
+		}
+
+		function onError(error) {
+			removeListeners();
+			return reject(error);
+		}
+
+		function removeListeners() {
+			reader.removeEventListener("load", onLoad);
+			reader.removeEventListener("error", onError);
+		}
 	});
 }
 
