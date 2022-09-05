@@ -120,6 +120,7 @@ element("downloadAudioTable").addEventListener("click", async (e) => {
 		console.error(error);
 	}
 });
+
 element("downloadAllTables").addEventListener("click", async (e) => {
 	try {
 		e.preventDefault();
