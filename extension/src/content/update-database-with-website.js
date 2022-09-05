@@ -60,7 +60,7 @@ export default async function updateDatabaseWithWebsite(
 	});
 }
 
-const nothing = () => {
+function nothing() {
 	throw new Error("Function argument cannot be empty!");
 };
 

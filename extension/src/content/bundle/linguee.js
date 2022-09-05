@@ -400,10 +400,9 @@
 		});
 	}
 
-	const nothing = () => {
+	function nothing() {
 		throw new Error("Function argument cannot be empty!");
-	};
-
+	}
 	async function setIpa(word, ipa) {
 		const oldIpa = await ipaTable.get(word);
 		await ipaTable.set(word, ipa);
