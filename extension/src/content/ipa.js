@@ -1,7 +1,7 @@
 import showPopup from "../show-popup.js"
 import { getStyle, getInheritedBackgroundColor, rgba2rgb } from "../utils.js";
 
-const elementOfSelection = getElementOfSelection();
+const element = getFocusElement();
 showPopup({
 	message,
 	timeout,
@@ -10,31 +10,31 @@ showPopup({
 		sizepx,
 	},
 	position: getPopupPosition(getTopCorrection()),
-	backgroundColor: backgroundColor(),
-	color: color(),
+	backgroundColor: backgroundColor(element),
+	color: color(element),
 });
 
 function getTopCorrection() {
 	return parseFloat(sizepx) * 1.8;
 }
 
-function backgroundColor() {
+function backgroundColor(element) {
 	return (
 		!useWordColors ?
 		undefined :
-		rgba2rgb(getInheritedBackgroundColor(elementOfSelection))
+		rgba2rgb(getInheritedBackgroundColor(element))
 	);
 }
 
-function color() {
+function color(element) {
 	return (
 		!useWordColors ?
 		undefined :
-		rgba2rgb(getStyle(elementOfSelection, "color"))
+		rgba2rgb(getStyle(element, "color"))
 	);
 }
 
-function getElementOfSelection() {
+function getFocusElement() {
 	const selection = window.getSelection();
 	if (selection.rangeCount > 0) {
 		return (
