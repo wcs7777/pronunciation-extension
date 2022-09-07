@@ -15,7 +15,7 @@ showPopup({
 });
 
 function getTopCorrection() {
-	return parseFloat(sizepx) * 1.8;
+	return parseFloat(sizepx) * 2;
 }
 
 function backgroundColor(element) {
