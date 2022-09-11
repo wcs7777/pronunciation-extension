@@ -7,7 +7,7 @@ import {
 	url2document,
 	isString,
 	normalizeWord,
-} from "../utils.js";
+} from "./utils.js";
 
 const speech = "s";
 

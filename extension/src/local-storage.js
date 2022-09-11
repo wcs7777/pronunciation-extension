@@ -1,4 +1,4 @@
-import { isString } from "../utils.js";
+import { isString } from "./utils.js";
 
 export default {
 	async set(key, value) {

@@ -1,4 +1,4 @@
-import { toArray, toObject } from "../utils.js";
+import { toArray, toObject } from "./utils.js";
 
 export default class Table {
 	constructor(name="table", database) {

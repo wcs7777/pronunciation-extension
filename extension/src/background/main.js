@@ -4,12 +4,12 @@ import {
 	ipaDefaultTable,
 	optionsTable,
 	audioTable,
-} from "./tables.js";
-import populateIpa from "./ipa/populate-ipa.js";
-import populateOptions from "../options/populate-options.js";
+} from "../tables.js";
+import populateIpa from "../ipa/populate-ipa.js";
+import populateOptions from "../populate-options.js";
 import { isString, normalizeWord } from "../utils.js";
-import { playAudio } from "./audio.js";
-import fallbackIpa from "./fallback-ipa.js";
+import { playAudio } from "../audio.js";
+import fallbackIpa from "../fallback-ipa.js";
 
 (async () => {
 	try {
@@ -118,7 +118,7 @@ async function menuItemOnClick(info, tab) {
 					sizepx,
 					useWordColors,
 				});
-				await executeScript({ file: "../content/bundle/ipa.js" });
+				await executeScript({ file: "../content/bundle/show-ipa.js" });
 			}
 		}
 	} catch (error) {

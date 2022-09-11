@@ -6,7 +6,7 @@ import {
 	symbolsFragment,
 	toArray,
 	toObject,
-} from "../utils.js";
+} from "./utils.js";
 
 export default class TableFragmented {
 	constructor(name="table", database) {

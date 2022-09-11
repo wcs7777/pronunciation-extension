@@ -3,8 +3,8 @@ import {
 	ipaTable,
 	audioTable,
 	database,
-} from "../background/tables.js";
-import defaultOptions from "./default-options.js";
+} from "../tables.js";
+import defaultOptions from "../default-options.js";
 import {
 	$,
 	print,
@@ -14,8 +14,8 @@ import {
 	min,
 	toArray,
 } from "../utils.js";
-import { removeAudio } from "../background/audio.js";
-import downloadObject from "../background/download-object.js";
+import { removeAudio } from "../audio.js";
+import downloadObject from "../download-object.js";
 
 document.addEventListener("DOMContentLoaded", setFieldsInitialValues);
 

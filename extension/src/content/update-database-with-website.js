@@ -1,10 +1,10 @@
-import { canPlay, setAudio } from "../background/audio.js";
+import { canPlay, setAudio } from "../audio.js";
 import {
 	optionsTable,
 	ipaTable,
 	ipaDefaultTable,
 	audioTable,
-} from "../background/tables.js";
+} from "../tables.js";
 import showPopup from "../show-popup.js";
 import { asyncReduce } from "../utils.js";
 

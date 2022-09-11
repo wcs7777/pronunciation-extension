@@ -1,8 +1,8 @@
 export default [
 	{
-		input: "src/content/ipa.js",
+		input: "src/content/show-ipa.js",
 		output: {
-			file: "src/content/bundle/ipa.js",
+			file: "src/content/bundle/show-ipa.js",
 			format: "iife",
 		},
 	},
