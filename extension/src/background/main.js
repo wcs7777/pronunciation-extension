@@ -51,11 +51,10 @@ async function populate(table, populateFn, afterPopulateFn) {
 async function storageOnChanged(changes) {
 	try {
 		const accessKey = await optionsTable.get("accessKey");
-		const updateMenuItem = (
+		if (
 			changes[optionsTable.name] &&
 			await utilsTable.get("currentAccessKey") !== accessKey
-		);
-		if (updateMenuItem) {
+		) {
 			await setMenuItem(accessKey);
 		}
 	} catch (error) {
