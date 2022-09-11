@@ -66,25 +66,16 @@ async function menuItemOnClick(info, tab) {
 	try {
 		const word = normalizeWord(info.selectionText);
 		if (!await isTabMuted() && await optionsTable.get("audioEnabled")) {
-			const [
-				audioVolume,
-				fetchFileAudioTimeout,
-				fetchScrapAudioTimeout,
-				googleSpeechSpeed,
-			] = await optionsTable.get([
-				"audioVolume",
-				"fetchFileAudioTimeout",
-				"fetchScrapAudioTimeout",
-				"googleSpeechSpeed",
-			]);
 			playAudio(
 				word,
 				{
+					...await optionsTable.get([
+						"audioVolume",
+						"fetchFileAudioTimeout",
+						"fetchScrapAudioTimeout",
+						"googleSpeechSpeed",
+					]),
 					audioTable,
-					audioVolume,
-					fetchFileAudioTimeout,
-					fetchScrapAudioTimeout,
-					googleSpeechSpeed,
 				},
 			)
 				.catch(console.error);
@@ -99,23 +90,14 @@ async function menuItemOnClick(info, tab) {
 				}
 			}
 			if (ipa) {
-				const [
-					timeout,
-					family,
-					sizepx,
-					useWordColors,
-				] = await optionsTable.get([
-					"ipaTimeout",
-					"popupFontFamily",
-					"popupFontSizepx",
-					"useWordColors",
-				]);
 				await scriptVariables({
-					message: ipa,
-					timeout,
-					family,
-					sizepx,
-					useWordColors,
+					...await optionsTable.get([
+						"ipaTimeout",
+						"popupFontFamily",
+						"popupFontSizepx",
+						"useWordColors",
+					]),
+					ipa,
 				});
 				await executeScript({ file: "../content/bundle/show-ipa.js" });
 			}

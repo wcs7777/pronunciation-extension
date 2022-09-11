@@ -3,11 +3,11 @@ import { getStyle, getInheritedBackgroundColor, rgba2rgb } from "../utils.js";
 
 const element = getFocusElement();
 showPopup({
-	message,
-	timeout,
+	message: ipa,
+	timeout: ipaTimeout,
 	font: {
-		family,
-		sizepx,
+		family: popupFontFamily,
+		sizepx: popupFontSizepx,
 	},
 	position: getPopupPosition(getTopCorrection()),
 	backgroundColor: backgroundColor(element),
@@ -15,7 +15,7 @@ showPopup({
 });
 
 function getTopCorrection() {
-	return parseFloat(sizepx) * 2;
+	return parseFloat(popupFontSizepx) * 2;
 }
 
 function backgroundColor(element) {

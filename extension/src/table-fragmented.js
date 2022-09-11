@@ -16,7 +16,13 @@ export default class TableFragmented {
 
 	async get(key) {
 		const table = await this.getAll(key2fragment(key));
-		return !Array.isArray(key) ? table[key] : key.map((k) => table[k]);
+		return (
+			!Array.isArray(key) ?
+			table[key] :
+			key.reduce((obj, k) => {
+				return { ...obj, [k]: table[k] };
+			}, {})
+		);
 	}
 
 	async set(key, value, atFragment) {
