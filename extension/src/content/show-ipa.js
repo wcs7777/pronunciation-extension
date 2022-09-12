@@ -1,20 +1,27 @@
 import showPopup from "../show-popup.js"
 import { getStyle, getInheritedBackgroundColor, rgba2rgb } from "../utils.js";
 
-const element = getFocusElement();
-showPopup({
-	message: ipa,
-	timeout: ipaTimeout,
-	font: {
-		family: popupFontFamily,
-		sizepx: popupFontSizepx,
-	},
-	position: getPopupPosition(getTopCorrection()),
-	backgroundColor: backgroundColor(element),
-	color: color(element),
-});
+export default function showIpa({
+	ipa="ipa",
+	ipaTimeout=3000,
+	popupFontFamily="Arial",
+	popupFontSizepx=20,
+}) {
+	const element = getFocusElement();
+	showPopup({
+		message: ipa,
+		timeout: ipaTimeout,
+		font: {
+			family: popupFontFamily,
+			sizepx: popupFontSizepx,
+		},
+		position: getPopupPosition(getTopCorrection(popupFontSizepx)),
+		backgroundColor: backgroundColor(element),
+		color: color(element),
+	});
+}
 
-function getTopCorrection() {
+function getTopCorrection(popupFontSizepx) {
 	return parseFloat(popupFontSizepx) * 2;
 }
 

@@ -120,20 +120,27 @@
 		}
 	}
 
-	const element = getFocusElement();
-	showPopup({
-		message: ipa,
-		timeout: ipaTimeout,
-		font: {
-			family: popupFontFamily,
-			sizepx: popupFontSizepx,
-		},
-		position: getPopupPosition(getTopCorrection()),
-		backgroundColor: backgroundColor(element),
-		color: color(element),
-	});
+	function showIpa({
+		ipa="ipa",
+		ipaTimeout=3000,
+		popupFontFamily="Arial",
+		popupFontSizepx=20,
+	}) {
+		const element = getFocusElement();
+		showPopup({
+			message: ipa,
+			timeout: ipaTimeout,
+			font: {
+				family: popupFontFamily,
+				sizepx: popupFontSizepx,
+			},
+			position: getPopupPosition(getTopCorrection(popupFontSizepx)),
+			backgroundColor: backgroundColor(element),
+			color: color(element),
+		});
+	}
 
-	function getTopCorrection() {
+	function getTopCorrection(popupFontSizepx) {
 		return parseFloat(popupFontSizepx) * 2;
 	}
 
@@ -181,5 +188,7 @@
 			return fallbackPosition;
 		}
 	}
+
+	showIpa({ ipa, ipaTimeout, popupFontFamily, popupFontSizepx });
 
 })();
