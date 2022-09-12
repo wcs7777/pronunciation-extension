@@ -65,8 +65,8 @@ element("setIPa").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		await ipaTable.set(
-			normalizeWord(getFieldsValuesAndClean("ipaWord")),
-			getFieldsValuesAndClean("ipa"),
+			normalizeWord(getFieldValueAndClean("ipaWord")),
+			getFieldValueAndClean("ipa"),
 		);
 	} catch (error) {
 		console.error(error);
@@ -208,10 +208,12 @@ function element(id) {
 }
 
 function getFieldsValuesAndClean(idFields) {
-	return toArray(idFields).map((id) => {
-		const field = element(id);
-		const value = field.value.trim();
-		field.value = "";
-		return value;
-	});
+	return toArray(idFields).map(getFieldValueAndClean);
+}
+
+function getFieldValueAndClean(idField) {
+	const field = element(idField);
+	const value = field.value.trim();
+	field.value = "";
+	return value;
 }
