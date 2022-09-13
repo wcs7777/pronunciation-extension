@@ -1,8 +1,8 @@
 export default [
 	{
-		input: "src/content/show-ipa-injection.js",
+		input: "src/content/show-ipa.injection.js",
 		output: {
-			file: "src/content/bundle/show-ipa-injection.js",
+			file: "src/content/bundle/show-ipa.injection.js",
 			format: "iife",
 		},
 	},

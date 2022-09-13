@@ -23,11 +23,11 @@ import fallbackIpa from "../fallback-ipa.js";
 		await populate(optionsTable, populateOptions)
 			.then(console.log)
 			.catch(console.error);
-		if (!browser.browserAction.onClicked.hasListener(actionOnClicked)) {
-			browser.browserAction.onClicked.addListener(actionOnClicked);
-		}
 		if (!browser.storage.onChanged.hasListener(storageOnChanged)) {
 			browser.storage.onChanged.addListener(storageOnChanged);
+		}
+		if (!browser.browserAction.onClicked.hasListener(actiononClicked)) {
+			browser.browserAction.onClicked.addListener(actiononClicked);
 		}
 		setMenuItem(await optionsTable.get("accessKey"));
 	} catch (error) {
@@ -37,6 +37,59 @@ import fallbackIpa from "../fallback-ipa.js";
 })()
 	.then(console.log)
 	.catch(console.error);
+
+async function populate(table, populateFn, afterPopulateFn) {
+	if (!await utilsTable.get(table.name)) {
+		await populateFn(table);
+		if (afterPopulateFn) {
+			await afterPopulateFn();
+		}
+		await utilsTable.set(table.name, true);
+		return `${table.name} populated`;
+	} else {
+		return `${table.name} is already populated`;
+	}
+}
+
+async function storageOnChanged(changes) {
+	try {
+		const accessKey = await optionsTable.get("accessKey");
+		if (
+			changes[optionsTable.name] &&
+			await utilsTable.get("currentAccessKey") !== accessKey
+		) {
+			await setMenuItem(accessKey);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+function menuItemOnClick(info, tab) {
+	return pronounce(normalizeWord(info.selectionText), tab.id);
+}
+
+async function actiononClicked(tab) {
+	const result = await executeScript(
+		tab.id,
+		{ file: "../content/get-selection-text.injection.js" },
+	);
+	const selectionText = normalizeWord(result[0]);
+	if (selectionText.length > 0) {
+		return pronounce(selectionText, tab.id);
+	}
+}
+
+async function setMenuItem(accessKey) {
+	await browser.menus.removeAll();
+	await utilsTable.set("currentAccessKey", accessKey);
+	return browser.menus.create({
+		id: "Pronunciation",
+		title: `&${accessKey} - Pronunciation`,
+		contexts: ["selection"],
+		onclick: menuItemOnClick,
+	});
+}
 
 async function pronounce(word, tabId) {
 	try {
@@ -88,21 +141,6 @@ async function pronounce(word, tabId) {
 	}
 }
 
-function menuItemOnClick(info, tab) {
-	return pronounce(normalizeWord(info.selectionText), tab.id);
-}
-
-async function actionOnClicked(tab) {
-	const result = await executeScript(
-		tab.id,
-		{ file: "../content/get-selection-text.injection.js" },
-	);
-	const selectionText = normalizeWord(result[0]);
-	if (selectionText.length > 0) {
-		return pronounce(selectionText, tab.id);
-	}
-}
-
 async function isTabMuted(tabId) {
 	return (await browser.tabs.get(tabId)).mutedInfo.muted;
 }
@@ -126,43 +164,5 @@ function scriptVariables(tabId, obj) {
 			tabId,
 			{ code: `var ${variables.join(", ")};` },
 		);
-	}
-}
-
-async function storageOnChanged(changes) {
-	try {
-		const accessKey = await optionsTable.get("accessKey");
-		if (
-			changes[optionsTable.name] &&
-			await utilsTable.get("currentAccessKey") !== accessKey
-		) {
-			await setMenuItem(accessKey);
-		}
-	} catch (error) {
-		console.error(error);
-	}
-}
-
-async function setMenuItem(accessKey) {
-	await browser.menus.removeAll();
-	await utilsTable.set("currentAccessKey", accessKey);
-	return browser.menus.create({
-		id: "Pronunciation",
-		title: `&${accessKey} - Pronunciation`,
-		contexts: ["selection"],
-		onclick: menuItemOnClick,
-	});
-}
-
-async function populate(table, populateFn, afterPopulateFn) {
-	if (!await utilsTable.get(table.name)) {
-		await populateFn(table);
-		if (afterPopulateFn) {
-			await afterPopulateFn();
-		}
-		await utilsTable.set(table.name, true);
-		return `${table.name} populated`;
-	} else {
-		return `${table.name} is already populated`;
 	}
 }
