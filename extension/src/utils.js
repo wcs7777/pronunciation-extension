@@ -190,6 +190,34 @@ export function blob2base64(blob) {
 	});
 }
 
+export function file2object(file) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.addEventListener("load", onLoad);
+		reader.addEventListener("error", onError);
+		reader.readAsText(file);
+
+		function onLoad(e) {
+			removeListeners();
+			try {
+				return resolve(JSON.parse(e.target.result));
+			} catch (error) {
+				return reject(error);
+			}
+		}
+
+		function onError(error) {
+			removeListeners();
+			return reject(error);
+		}
+
+		function removeListeners() {
+			reader.removeEventListener("load", onLoad);
+			reader.removeEventListener("error", onError);
+		}
+	});
+}
+
 export function object2blob(obj) {
 	return new Blob(
 		[JSON.stringify(obj, null, 2)],

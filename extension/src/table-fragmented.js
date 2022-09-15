@@ -40,6 +40,13 @@ export default class TableFragmented {
 		return this.database.set(this.name + fragment, table);
 	}
 
+	async bulkSet(obj) {
+		const fragmented = fragmentObject(obj);
+		for (const [key, value] of Object.entries(fragmented)) {
+			await this.set(value, undefined, key);
+		}
+	}
+
 	async getAll(fragment) {
 		if (fragment) {
 			return await this.database.get(this.name + fragment) || {};
@@ -76,4 +83,16 @@ function key2fragment(key) {
 		Object.keys(key)[0]
 	);
 	return isAlphanumeric(value[0]) ? value[0] : symbolsFragment();
+}
+
+function fragmentObject(obj) {
+	const fragmented = {};
+	for (const [key, value] of Object.entries(obj)) {
+		const fragment = key2fragment(key);
+		if (fragmented[fragment] === undefined) {
+			fragmented[fragment] = {};
+		}
+		fragmented[fragment][key] = value;
+	}
+	return fragmented;
 }

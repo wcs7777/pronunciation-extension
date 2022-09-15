@@ -13,6 +13,7 @@ import {
 	isNumber,
 	min,
 	toArray,
+	file2object,
 } from "../utils.js";
 import { removeAudio } from "../audio.js";
 import downloadObject from "../download-object.js";
@@ -130,6 +131,38 @@ element("downloadAllTables").addEventListener("click", async (e) => {
 		)
 			.then(console.log)
 			.catch(console.error);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+element("updateIPaTable").addEventListener("submit", async (e) => {
+	try {
+		e.preventDefault();
+		const field = element("ipaTable");
+		const file = field.files?.[0];
+		field.value = "";
+		if (file) {
+			console.time("ipaTable");
+			await ipaTable.bulkSet(await file2object(file));
+			console.timeEnd("ipaTable");
+		}
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+element("updateAudioTable").addEventListener("submit", async (e) => {
+	try {
+		e.preventDefault();
+		const field = element("audioTable");
+		const file = field.files?.[0];
+		field.value = "";
+		if (file) {
+			console.time("audioTable");
+			await audioTable.bulkSet(await file2object(file));
+			console.timeEnd("audioTable");
+		}
 	} catch (error) {
 		console.error(error);
 	}
