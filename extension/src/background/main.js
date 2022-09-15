@@ -5,7 +5,7 @@ import {
 	optionsTable,
 	audioTable,
 } from "../tables.js";
-import populateIpa from "../ipa/populate-ipa.js";
+import populateIpa from "../populate-ipa.js";
 import populateOptions from "../populate-options.js";
 import { isString, normalizeWord } from "../utils.js";
 import { playAudio } from "../audio.js";
