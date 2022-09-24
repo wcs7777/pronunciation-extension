@@ -142,12 +142,6 @@ export function separator() {
 	console.log("-".repeat(80));
 }
 
-export function isTooManyRequests(statusCode) {
-	// 408 == Request Timeout
-	// 429 == Too Many Requests
-	return statusCode == 429;
-}
-
 export function isString(value) {
   return Object.prototype.toString.call(value) === "[object String]"
 }

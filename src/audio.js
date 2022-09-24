@@ -1,7 +1,6 @@
 import {
 	$,
 	untilResolve,
-	isTooManyRequests,
 	replaceQuotesByUnderline,
 	url2base64,
 	url2document,
@@ -33,7 +32,6 @@ export async function playAudio(
 		});
 	if (!playable) {
 		let audio = undefined;
-		let statusCode = undefined;
 		try {
 			playable = await untilResolve([
 				() => {
@@ -58,12 +56,13 @@ export async function playAudio(
 			]);
 			audio = playable.src;
 		} catch (errors) {
-			statusCode = errors.find(isTooManyRequests);
-		}
-		if (!playable) {
 			playable = await canPlayFromGoogleSpeech(word);
-			if (!isTooManyRequests(statusCode)) {
+			if (!errors.includes(isTooManyRequests)) {
 				audio = speech;
+			}
+
+			function isTooManyRequests(error) {
+				return !isNaN(error) && parseInt(error, 10) === 429;
 			}
 		}
 		await setAudio(word, audio, audioTable);
