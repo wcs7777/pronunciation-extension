@@ -87,12 +87,12 @@ export function letters() {
 	return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 }
 
-export function numbers() {
+export function digits() {
 	return "0123456789";
 }
 
 export function alphanumeric() {
-	return letters() + numbers();
+	return letters() + digits();
 }
 
 export function symbolsFragment() {
@@ -104,7 +104,7 @@ export function isLetter(character) {
 }
 
 export function isNumber(character) {
-	return numbers().indexOf(character) > -1;
+	return digits().indexOf(character) > -1;
 }
 
 export function isAlphanumeric(character) {

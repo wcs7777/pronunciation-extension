@@ -30,12 +30,12 @@
 		return "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	}
 
-	function numbers() {
+	function digits() {
 		return "0123456789";
 	}
 
 	function alphanumeric() {
-		return letters() + numbers();
+		return letters() + digits();
 	}
 
 	function symbolsFragment() {
@@ -47,7 +47,7 @@
 	}
 
 	function isNumber(character) {
-		return numbers().indexOf(character) > -1;
+		return digits().indexOf(character) > -1;
 	}
 
 	function isAlphanumeric(character) {
@@ -200,32 +200,22 @@
 		constructor(name="table", database) {
 			this.name = name;
 			this.database = database;
+			this.tables = allFragmentsInArray()
+				.reduce((tables, fragment) => {
+					return {
+						...tables,
+						[fragment]: new Table(`${fragment}${this.name}`, database),
+					};
+				}, {});
 		}
 
 		async get(key) {
-			const table = await this.getAll(key2fragment(key));
-			return (
-				!Array.isArray(key) ?
-				table[key] :
-				key.reduce((obj, k) => {
-					return { ...obj, [k]: table[k] };
-				}, {})
-			);
+			return this.tables[key2fragment(key)].get(key);
 		}
 
 		async set(key, value, atFragment) {
 			const fragment = key2fragment(!atFragment ? key : atFragment);
-			let table = await this.getAll(fragment);
-			if (value !== undefined) {
-				table[key] = value;
-			} else {
-				if (Array.isArray(table)) {
-					table = [...table, ...toArray(key)];
-				} else {
-					table = { ...table, ...toObject(key) };
-				}
-			}
-			return this.database.set(this.name + fragment, table);
+			return this.tables[fragment].set(key, value);
 		}
 
 		async bulkSet(obj) {
@@ -237,10 +227,10 @@
 
 		async getAll(fragment) {
 			if (fragment) {
-				return await this.database.get(this.name + fragment) || {};
+				return this.tables[fragment].getAll();
 			} else {
 				return asyncReduce(
-					`${alphanumeric()}${symbolsFragment()}`.slice(""),
+					allFragmentsInArray(),
 					{},
 					async (obj, fragment) => {
 						return {
@@ -257,11 +247,12 @@
 		}
 
 		async remove(key) {
-			const fragment = key2fragment(key);
-			const table = await this.getAll(fragment);
-			delete table[key];
-			return this.database.set(this.name + fragment, table);
+			return this.tables[key2fragment(key)].remove(key);
 		}
+	}
+
+	function allFragmentsInArray() {
+		return `${alphanumeric()}${symbolsFragment()}`.split("");
 	}
 
 	function key2fragment(key) {
