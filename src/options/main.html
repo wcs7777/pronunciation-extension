@@ -52,7 +52,7 @@
 		<label for="popupFontSizepx">Popup Font Size(px)</label>
 		<input type="text" id="popupFontSizepx">
 		<hr>
-		<button type="submit">Save</button>
+		<button type="submit">Save Options</button>
 	</form>
 	<hr>
 	<form id="setIPa">
@@ -60,13 +60,21 @@
 		<input type="text" id="ipaWord" >
 		<label for="ipa">IPA</label>
 		<input type="text" id="ipa">
-		<button type="submit">Set</button>
+		<button type="submit">Set IPA</button>
+	</form>
+	<hr>
+	<form id="setAudio">
+		<label for="audioWord">Word</label>
+		<input type="text" id="audioWord" >
+		<label for="audio">Audio</label>
+		<input type="file" accept="audio/*" id="audio">
+		<button type="submit">Set Audio</button>
 	</form>
 	<hr>
 	<form id="removeAudio">
-		<label for="word">Remove Audio</label>
+		<label for="word">Word</label>
 		<input type="text" id="word">
-		<button type="submit">Remove</button>
+		<button type="submit">Remove Audio</button>
 	</form>
 	<hr>
 	<button id="restoreDefaultOptions">Restore Default Options</button>

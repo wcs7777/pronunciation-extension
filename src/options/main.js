@@ -14,8 +14,9 @@ import {
 	min,
 	toArray,
 	file2object,
+	blob2base64,
 } from "../utils.js";
-import { removeAudio } from "../audio.js";
+import { canPlay, removeAudio, setAudio } from "../audio.js";
 import downloadObject from "../download-object.js";
 
 document.addEventListener("DOMContentLoaded", setFieldsInitialValues);
@@ -69,6 +70,22 @@ element("setIPa").addEventListener("submit", async (e) => {
 			normalizeWord(getFieldValueAndClean("ipaWord")),
 			getFieldValueAndClean("ipa"),
 		);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+element("setAudio").addEventListener("submit", async (e) => {
+	try {
+		e.preventDefault();
+		const word = normalizeWord(getFieldValueAndClean("audioWord"));
+		const file = getFileAndClean("audio");
+		if (word && file) {
+			const playable = await canPlay(await blob2base64(file));
+			if (playable) {
+				await setAudio(word, playable.src, audioTable);
+			}
+		}
 	} catch (error) {
 		console.error(error);
 	}
@@ -139,9 +156,7 @@ element("downloadAllTables").addEventListener("click", async (e) => {
 element("updateIPaTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
-		const field = element("ipaTable");
-		const file = field.files?.[0];
-		field.value = "";
+		const file = getFileAndClean("ipaTable");
 		if (file) {
 			console.time("ipaTable");
 			await ipaTable.bulkSet(await file2object(file));
@@ -155,9 +170,7 @@ element("updateIPaTable").addEventListener("submit", async (e) => {
 element("updateAudioTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
-		const field = element("audioTable");
-		const file = field.files?.[0];
-		field.value = "";
+		const file = getFileAndClean("audioTable");
 		if (file) {
 			console.time("audioTable");
 			await audioTable.bulkSet(await file2object(file));
@@ -249,4 +262,11 @@ function getFieldValueAndClean(idField) {
 	const value = field.value.trim();
 	field.value = "";
 	return value;
+}
+
+function getFileAndClean(id) {
+	const field = element(id);
+	const file = field.files?.[0];
+	field.value = "";
+	return file;
 }
