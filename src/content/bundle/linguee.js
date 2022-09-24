@@ -410,7 +410,7 @@
 					e.preventDefault();
 					const fns = {
 						"setAudioShortcut": async () => {
-							const playable = await canPlay(getAudio());
+							const playable = await canPlay(getAudio()).catch(() => false);
 							if (playable) {
 								feedback(await setAudio(getWord(), playable.src, audioTable));
 							}
