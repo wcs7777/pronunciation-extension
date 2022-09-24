@@ -1,15 +1,17 @@
 import {
 	$,
+	untilResolve,
 	isTooManyRequests,
-	promiseTimeout,
 	replaceQuotesByUnderline,
 	url2base64,
 	url2document,
 	isString,
 	normalizeWord,
+	promiseTimeoutReject,
 } from "./utils.js";
 
 const speech = "s";
+const fail = false;
 
 export async function playAudio(
 	word,
@@ -22,42 +24,41 @@ export async function playAudio(
 	}={},
 ) {
 	console.time(`playAudio - ${word}`);
-	let playable = await canPlayFromTable(word, audioTable);
-	if (!playable || isTooManyRequests(playable)) {
-		let audio = "";
-		const canPlayFns = [
-			() => {
-				return canPlayTimeout(
-					canPlayFromOxford,
-					fetchFileAudioTimeout,
-				);
-			},
-			() => {
-				return canPlayTimeout(
-					canPlayFromGstatic,
-					fetchFileAudioTimeout,
-				);
-			},
-			() => {
-				return canPlayTimeout(
-					canPlayFromGoogleDefine,
-					fetchScrapAudioTimeout,
-					googleSpeechSpeed,
-				);
-			},
-		];
-		let statusCode = 0;
-		for (const canPlayFn of canPlayFns) {
-			playable = await canPlayFn();
-			if (isTooManyRequests(playable)) {
-				statusCode = playable;
-				playable = false;
-				console.log(`statusCode: ${statusCode}`);
+	let playable = await canPlayFromTable(word, audioTable)
+		.catch((error) => {
+			if (error !== fail) {
+				throw error;
 			}
-			if (playable) {
-				audio = playable.src;
-				break;
-			}
+			return error;
+		});
+	if (!playable) {
+		let audio = undefined;
+		let statusCode = undefined;
+		try {
+			playable = await untilResolve([
+				() => {
+					return canPlayTimeout(
+						canPlayFromOxford,
+						fetchFileAudioTimeout,
+					);
+				},
+				() => {
+					return canPlayTimeout(
+						canPlayFromGstatic,
+						fetchFileAudioTimeout,
+					);
+				},
+				() => {
+					return canPlayTimeout(
+						canPlayFromGoogleDefine,
+						fetchScrapAudioTimeout,
+						googleSpeechSpeed,
+					);
+				},
+			]);
+			audio = playable.src;
+		} catch (errors) {
+			statusCode = errors.find(isTooManyRequests);
 		}
 		if (!playable) {
 			playable = await canPlayFromGoogleSpeech(word);
@@ -66,13 +67,13 @@ export async function playAudio(
 			}
 		}
 		await setAudio(word, audio, audioTable);
-
-		function canPlayTimeout(canPlayFn, timeout, ...args) {
-			return promiseTimeout(canPlayFn(word, ...args), timeout, false);
-		}
 	}
 	console.timeEnd(`playAudio - ${word}`);
 	return playable ? play(playable, audioVolume) : false;
+
+	function canPlayTimeout(canPlayFn, timeout, ...args) {
+		return promiseTimeoutReject(canPlayFn(word, ...args), timeout, false);
+	}
 }
 
 export function canPlay(url) {
@@ -103,11 +104,10 @@ export async function removeAudio(word, audioTable) {
 
 async function canPlayFromTable(word, audioTable) {
 	const url = await audioTable.get(word);
-	if (url) {
-		return url !== speech ? canPlay(url) : canPlayFromGoogleSpeech(word);
-	} else {
-		return false;
+	if (!url) {
+		throw fail;
 	}
+	return url !== speech ? canPlay(url) : canPlayFromGoogleSpeech(word);
 }
 
 async function canPlayFromGoogleSpeech(word, googleSpeechSpeed=0.5) {
@@ -139,8 +139,7 @@ async function canPlayFromGstatic(word) {
 		canPlay(`${base}x${fileBegin}--_us_2.mp3`),
 		canPlay(`${base}${fileBegin}_--1_us_1.mp3`),
 		canPlay(`${base}_${fileBegin}--1_us_1.mp3`),
-	])
-		.catch((error) => errorHandler("Gstatic", error));
+	]);
 }
 
 async function canPlayFromOxford(word) {
@@ -148,28 +147,22 @@ async function canPlayFromOxford(word) {
 		buildOxfordAudioUrlPath(
 			replaceQuotesByUnderline(word),
 		),
-	)
-		.catch((error) => errorHandler("Oxford", error));
+	);
 }
 
 async function canPlayFromGoogleDefine(word) {
-	try {
-		const fail = false;
-		const base = "https://www.google.com/search?hl=en&gl=US&q=define%3A";
-		const document = await url2document(base + word);
-		const hdw = $("span[data-dobid='hdw']", document);
-		if (!hdw || normalizeWord(hdw.textContent).replaceAll("·", "") !== word) {
-			return fail;
-		}
-		const source = $("audio[jsname='QInZvb'] source", document);
-		if (!source) {
-			return fail;
-		}
-		const src = source.getAttribute("src");
-		return await canPlay(!src.startsWith("http") ? "https:" + src : src);
-	} catch (error) {
-		return errorHandler("Google define", error);
+	const base = "https://www.google.com/search?hl=en&gl=US&q=define%3A";
+	const document = await url2document(base + word);
+	const hdw = $("span[data-dobid='hdw']", document);
+	if (!hdw || normalizeWord(hdw.textContent).replaceAll("·", "") !== word) {
+		throw fail;
 	}
+	const source = $("audio[jsname='QInZvb'] source", document);
+	if (!source) {
+		throw fail;
+	}
+	const src = source.getAttribute("src");
+	return canPlay(!src.startsWith("http") ? "https:" + src : src);
 }
 
 async function play(audio, volume=1.0) {
@@ -194,9 +187,4 @@ function buildOxfordAudioUrlPath(fileBegin) {
 		path,
 		file,
 	].join("/");
-}
-
-function errorHandler(location, error) {
-	console.error(location, error);
-	return isTooManyRequests(error) ? error : false;
 }

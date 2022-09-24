@@ -229,17 +229,28 @@ export function sleep(ms) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function delayResolve(timeout, value) {
-	return new Promise((resolve) => {
-		return setTimeout(() => resolve(value), timeout);
+export function delayReject(timeout, reason) {
+	return new Promise((_, reject) => {
+		return setTimeout(() => reject(reason), timeout);
 	});
 }
 
-export function promiseTimeout(promise, timeout, defaultValue) {
-	return Promise.race([
-		promise,
-		delayResolve(timeout, defaultValue),
-	]);
+export function promiseTimeoutReject(promise, timeout, reason) {
+	return Promise.race([promise, delayReject(timeout, reason)]);
+}
+
+export function untilResolve(promises) {
+	return new Promise(async (resolve, reject) => {
+		const reasons = [];
+		for (const promise of promises) {
+			try {
+				return resolve(await promise());
+			} catch (reason) {
+				reasons.push(reason);
+			}
+		}
+		return reject(reasons);
+	});
 }
 
 export async function asyncReduce(arr, initialValue, callback) {
