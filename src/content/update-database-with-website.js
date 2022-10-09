@@ -1,4 +1,4 @@
-import { canPlay, setAudio } from "../audio.js";
+import { setAudio } from "../audio.js";
 import {
 	optionsTable,
 	ipaTable,
@@ -6,7 +6,7 @@ import {
 	audioTable,
 } from "../tables.js";
 import showPopup from "../show-popup.js";
-import { asyncReduce } from "../utils.js";
+import { asyncReduce, url2audio } from "../utils.js";
 
 export default async function updateDatabaseWithWebsite(
 	options={
@@ -39,10 +39,8 @@ export default async function updateDatabaseWithWebsite(
 				e.preventDefault();
 				const fns = {
 					"setAudioShortcut": async () => {
-						const playable = await canPlay(getAudio()).catch(() => false);
-						if (playable) {
-							feedback(await setAudio(getWord(), playable.src, audioTable));
-						}
+						const audio = await url2audio(getAudio());
+						feedback(await setAudio(getWord(), audio.src, audioTable));
 					},
 					"setIpaShortcut": async () => {
 						return setIpa(getWord(), getIpa());

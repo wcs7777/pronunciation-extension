@@ -184,6 +184,26 @@ export function blob2base64(blob) {
 	});
 }
 
+export function url2audio(url) {
+	return new Promise((resolve, reject) => {
+		const audio = new Audio(url);
+		audio.addEventListener("canplay", onCanPlay);
+		audio.addEventListener("error", onError);
+
+		function onCanPlay() {
+			audio.removeEventListener("canplay", onCanPlay);
+			audio.removeEventListener("error", onError);
+			return resolve(audio);
+		}
+
+		function onError(error) {
+			audio.removeEventListener("canplay", onCanPlay);
+			audio.removeEventListener("error", onError);
+			return reject(error);
+		}
+	});
+}
+
 export function file2object(file) {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();

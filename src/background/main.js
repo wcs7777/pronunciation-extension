@@ -8,7 +8,7 @@ import {
 import populateIpa from "../populate-ipa.js";
 import populateOptions from "../populate-options.js";
 import { isString, normalizeWord } from "../utils.js";
-import { playAudio } from "../audio.js";
+import { playAudioPronunciation } from "../audio.js";
 import fallbackIpa from "../fallback-ipa.js";
 
 (async () => {
@@ -40,27 +40,31 @@ import fallbackIpa from "../fallback-ipa.js";
 
 async function pronounce(word, tabId) {
 	try {
-		if (!await isTabMuted(tabId) && await options.get("audioEnabled")) {
-			playAudio(
-				word,
-				{
-					...await optionsTable.get([
-						"audioVolume",
-						"fetchFileAudioTimeout",
-						"fetchScrapAudioTimeout",
-						"googleSpeechSpeed",
-					]),
-					audioTable,
-				},
-			)
-				.catch(console.error);
+		if (await optionsTable.get("audioEnabled")) {
+			playAudio(tabId, word).catch(console.error);
 		}
-		if (await options.get("ipaEnabled")) {
-			showIpa(tabId, word)
-				.catch(console.error);
+		if (await optionsTable.get("ipaEnabled")) {
+			showIpa(tabId, word).catch(console.error);
 		}
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+async function playAudio(tabId, word) {
+	if (!await isTabMuted(tabId)) {
+		return playAudioPronunciation(
+			word,
+			{
+				...await optionsTable.get([
+					"audioVolume",
+					"fetchFileAudioTimeout",
+					"fetchScrapAudioTimeout",
+					"googleSpeechSpeed",
+				]),
+				audioTable,
+			},
+		);
 	}
 }
 

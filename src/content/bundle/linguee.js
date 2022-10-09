@@ -111,20 +111,32 @@
 		});
 	}
 
+	function url2audio(url) {
+		return new Promise((resolve, reject) => {
+			const audio = new Audio(url);
+			audio.addEventListener("canplay", onCanPlay);
+			audio.addEventListener("error", onError);
+
+			function onCanPlay() {
+				audio.removeEventListener("canplay", onCanPlay);
+				audio.removeEventListener("error", onError);
+				return resolve(audio);
+			}
+
+			function onError(error) {
+				audio.removeEventListener("canplay", onCanPlay);
+				audio.removeEventListener("error", onError);
+				return reject(error);
+			}
+		});
+	}
+
 	async function asyncReduce(arr, initialValue, callback) {
 		let currentValue = initialValue;
 		for (const element of arr) {
 			currentValue = await callback(currentValue, element);
 		}
 		return currentValue;
-	}
-
-	function canPlay(url) {
-		return new Promise((resolve, reject) => {
-			const audio = new Audio(url);
-			audio.addEventListener("canplay", () => resolve(audio));
-			audio.addEventListener("error", reject);
-		});
 	}
 
 	async function setAudio(word, audio, audioTable) {
@@ -401,10 +413,8 @@
 					e.preventDefault();
 					const fns = {
 						"setAudioShortcut": async () => {
-							const playable = await canPlay(getAudio()).catch(() => false);
-							if (playable) {
-								feedback(await setAudio(getWord(), playable.src, audioTable));
-							}
+							const audio = await url2audio(getAudio());
+							feedback(await setAudio(getWord(), audio.src, audioTable));
 						},
 						"setIpaShortcut": async () => {
 							return setIpa(getWord(), getIpa());

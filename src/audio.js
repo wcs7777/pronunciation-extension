@@ -4,6 +4,7 @@ import {
 	replaceQuotesByUnderline,
 	url2base64,
 	url2document,
+	url2audio,
 	isString,
 	normalizeWord,
 	promiseTimeoutReject,
@@ -12,7 +13,7 @@ import {
 const speech = "s";
 const fail = false;
 
-export async function playAudio(
+export async function playAudioPronunciation(
 	word,
 	{
 		audioTable,
@@ -23,64 +24,56 @@ export async function playAudio(
 	}={},
 ) {
 	console.time(`playAudio - ${word}`);
-	let playable = await canPlayFromTable(word, audioTable)
+	let audio = await audioFromTable(word, audioTable)
 		.catch((error) => {
 			if (error !== fail) {
 				throw error;
 			}
 			return error;
 		});
-	if (!playable) {
-		let audio = undefined;
+	if (!audio) {
+		let src = undefined;
 		try {
-			playable = await untilResolve([
+			audio = await untilResolve([
 				() => {
-					return canPlayTimeout(
-						canPlayFromOxford,
+					return audioFromTimeout(
+						audioFromOxford,
 						fetchFileAudioTimeout,
 					);
 				},
 				() => {
-					return canPlayTimeout(
-						canPlayFromGstatic,
+					return audioFromTimeout(
+						audioFromGstatic,
 						fetchFileAudioTimeout,
 					);
 				},
 				() => {
-					return canPlayTimeout(
-						canPlayFromGoogleDefine,
+					return audioFromTimeout(
+						audioFromGoogleDefine,
 						fetchScrapAudioTimeout,
 						googleSpeechSpeed,
 					);
 				},
 			]);
-			audio = playable.src;
+			src = audio.src;
 		} catch (errors) {
-			playable = await canPlayFromGoogleSpeech(word);
+			audio = await audioFromGoogleSpeech(word);
 			if (!errors.includes(isTooManyRequests)) {
-				audio = speech;
+				src = speech;
 			}
 
 			function isTooManyRequests(error) {
 				return !isNaN(error) && parseInt(error, 10) === 429;
 			}
 		}
-		await setAudio(word, audio, audioTable);
+		await setAudio(word, src, audioTable);
 	}
 	console.timeEnd(`playAudio - ${word}`);
-	return playable ? play(playable, audioVolume) : false;
+	return audio ? play(audio, audioVolume) : false;
 
-	function canPlayTimeout(canPlayFn, timeout, ...args) {
-		return promiseTimeoutReject(canPlayFn(word, ...args), timeout, false);
+	function audioFromTimeout(audioFromFn, timeout, ...args) {
+		return promiseTimeoutReject(audioFromFn(word, ...args), timeout, false);
 	}
-}
-
-export function canPlay(url) {
-	return new Promise((resolve, reject) => {
-		const audio = new Audio(url);
-		audio.addEventListener("canplay", () => resolve(audio));
-		audio.addEventListener("error", reject);
-	});
 }
 
 export async function setAudio(word, audio, audioTable) {
@@ -101,15 +94,15 @@ export async function removeAudio(word, audioTable) {
 	return message;
 }
 
-async function canPlayFromTable(word, audioTable) {
+async function audioFromTable(word, audioTable) {
 	const url = await audioTable.get(word);
 	if (!url) {
 		throw fail;
 	}
-	return url !== speech ? canPlay(url) : canPlayFromGoogleSpeech(word);
+	return url !== speech ? url2audio(url) : audioFromGoogleSpeech(word);
 }
 
-async function canPlayFromGoogleSpeech(word, googleSpeechSpeed=0.5) {
+async function audioFromGoogleSpeech(word, googleSpeechSpeed=0.5) {
 	const base = "https://www.google.com/speech-api/v1/synthesize?";
 	const params = new URLSearchParams({
 		text: word,
@@ -119,37 +112,37 @@ async function canPlayFromGoogleSpeech(word, googleSpeechSpeed=0.5) {
 		client: "lr-language-tts",
 		use_google_only_voices: 1,
 	}).toString();
-	return canPlay(base + params);
+	return url2audio(base + params);
 }
 
-async function canPlayFromGstatic(word) {
+async function audioFromGstatic(word) {
 	const base = (
 		"https://ssl.gstatic.com/dictionary/static/sounds/20200429/"
 	);
 	const fileBegin = replaceQuotesByUnderline(word);
 	return Promise.any([
-		canPlay(`${base}${fileBegin}--_us_1.mp3`),
-		canPlay(`${base}${fileBegin}--_us_2.mp3`),
-		canPlay(`${base}${fileBegin}--_us_3.mp3`),
-		canPlay(`${base}${fileBegin}--_us_1_rr.mp3`),
-		canPlay(`${base}${fileBegin}--_us_2_rr.mp3`),
-		canPlay(`${base}${fileBegin}--_us_3_rr.mp3`),
-		canPlay(`${base}x${fileBegin}--_us_1.mp3`),
-		canPlay(`${base}x${fileBegin}--_us_2.mp3`),
-		canPlay(`${base}${fileBegin}_--1_us_1.mp3`),
-		canPlay(`${base}_${fileBegin}--1_us_1.mp3`),
+		url2audio(`${base}${fileBegin}--_us_1.mp3`),
+		url2audio(`${base}${fileBegin}--_us_2.mp3`),
+		url2audio(`${base}${fileBegin}--_us_3.mp3`),
+		url2audio(`${base}${fileBegin}--_us_1_rr.mp3`),
+		url2audio(`${base}${fileBegin}--_us_2_rr.mp3`),
+		url2audio(`${base}${fileBegin}--_us_3_rr.mp3`),
+		url2audio(`${base}x${fileBegin}--_us_1.mp3`),
+		url2audio(`${base}x${fileBegin}--_us_2.mp3`),
+		url2audio(`${base}${fileBegin}_--1_us_1.mp3`),
+		url2audio(`${base}_${fileBegin}--1_us_1.mp3`),
 	]);
 }
 
-async function canPlayFromOxford(word) {
-	return canPlay(
+async function audioFromOxford(word) {
+	return url2audio(
 		buildOxfordAudioUrlPath(
 			replaceQuotesByUnderline(word),
 		),
 	);
 }
 
-async function canPlayFromGoogleDefine(word) {
+async function audioFromGoogleDefine(word) {
 	const base = "https://www.google.com/search?hl=en&gl=US&q=define%3A";
 	const document = await url2document(base + word);
 	const hdw = $("span[data-dobid='hdw']", document);
@@ -161,7 +154,7 @@ async function canPlayFromGoogleDefine(word) {
 		throw fail;
 	}
 	const src = source.getAttribute("src");
-	return canPlay(!src.startsWith("http") ? "https:" + src : src);
+	return url2audio(!src.startsWith("http") ? "https:" + src : src);
 }
 
 async function play(audio, volume=1.0) {
