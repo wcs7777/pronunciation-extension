@@ -78,7 +78,7 @@ async function showIpa(tabId, word) {
 		}
 	}
 	if (ipa) {
-		await scriptVariables(
+		await setInjectedScriptVariables(
 			tabId,
 			{
 				...await optionsTable.get([
@@ -120,7 +120,7 @@ function executeScript(tabId, details) {
 	return browser.tabs.executeScript(tabId, details);
 }
 
-function scriptVariables(tabId, obj) {
+function setInjectedScriptVariables(tabId, obj) {
 	const variables = Object
 		.entries(obj)
 		.map(([variable, value]) => {
