@@ -40,10 +40,7 @@ import fallbackIpa from "../fallback-ipa.js";
 
 async function pronounce(word, tabId) {
 	try {
-		const { audioEnabled, ipaEnabled } = await options.get([
-			"audioEnabled", "ipaEnabled",
-		]);
-		if (!await isTabMuted(tabId) && audioEnabled) {
+		if (!await isTabMuted(tabId) && await options.get("audioEnabled")) {
 			playAudio(
 				word,
 				{
@@ -58,7 +55,7 @@ async function pronounce(word, tabId) {
 			)
 				.catch(console.error);
 		}
-		if (ipaEnabled) {
+		if (await options.get("ipaEnabled")) {
 			showIpa(tabId, word)
 				.catch(console.error);
 		}
