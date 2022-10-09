@@ -13,7 +13,7 @@ import {
 const speech = "s";
 const fail = false;
 
-export async function playAudioPronunciation(
+export async function playPronunciationAudio(
 	word,
 	{
 		audioTable,

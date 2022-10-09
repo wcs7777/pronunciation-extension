@@ -8,7 +8,7 @@ import {
 import populateIpa from "../populate-ipa.js";
 import populateOptions from "../populate-options.js";
 import { isString, normalizeWord } from "../utils.js";
-import { playAudioPronunciation } from "../audio.js";
+import { playPronunciationAudio } from "../audio.js";
 import fallbackIpa from "../fallback-ipa.js";
 
 (async () => {
@@ -53,7 +53,7 @@ async function pronounce(word, tabId) {
 
 async function playAudio(word, tabId) {
 	if (!await isTabMuted(tabId)) {
-		return playAudioPronunciation(
+		return playPronunciationAudio(
 			word,
 			{
 				...await optionsTable.get([
