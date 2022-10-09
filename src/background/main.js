@@ -41,17 +41,17 @@ import fallbackIpa from "../fallback-ipa.js";
 async function pronounce(word, tabId) {
 	try {
 		if (await optionsTable.get("audioEnabled")) {
-			playAudio(tabId, word).catch(console.error);
+			playAudio(word, tabId).catch(console.error);
 		}
 		if (await optionsTable.get("ipaEnabled")) {
-			showIpa(tabId, word).catch(console.error);
+			showIpa(word, tabId).catch(console.error);
 		}
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-async function playAudio(tabId, word) {
+async function playAudio(word, tabId) {
 	if (!await isTabMuted(tabId)) {
 		return playAudioPronunciation(
 			word,
@@ -68,7 +68,7 @@ async function playAudio(tabId, word) {
 	}
 }
 
-async function showIpa(tabId, word) {
+async function showIpa(word, tabId) {
 	let ipa = await ipaTable.get(word);
 	if (!ipa) {
 		ipa = await fallbackIpa(word);
