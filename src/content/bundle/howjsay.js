@@ -102,15 +102,18 @@
 			audio.addEventListener("error", onError);
 
 			function onCanPlay() {
-				audio.removeEventListener("canplay", onCanPlay);
-				audio.removeEventListener("error", onError);
+				removeListeners();
 				return resolve(audio);
 			}
 
 			function onError(error) {
+				removeListeners();
+				return reject(error);
+			}
+
+			function removeListeners() {
 				audio.removeEventListener("canplay", onCanPlay);
 				audio.removeEventListener("error", onError);
-				return reject(error);
 			}
 		});
 	}
