@@ -309,7 +309,7 @@
 		color="rgb(40, 40, 40)",
 		backgroundColor="rgb(255, 255, 255)",
 	}={}) {
-		const popup = tag("span");
+		const popup = tag("div");
 		const closeButton = tag("span");
 		const closeButtonColor = "#737373";
 		const timeoutID  = setTimeout(closePopup, timeout);
