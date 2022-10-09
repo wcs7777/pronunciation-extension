@@ -90,7 +90,7 @@ async function showIpa(tabId, word) {
 				ipa,
 			},
 		);
-		return executeScript(
+		return injectScript(
 			tabId,
 			{ file: "../content/bundle/show-ipa.injection.js" },
 		);
@@ -102,7 +102,7 @@ function menuItemOnClick(info, tab) {
 }
 
 async function actionOnClicked(tab) {
-	const result = await executeScript(
+	const result = await injectScript(
 		tab.id,
 		{ file: "../content/get-selection-text.injection.js" },
 	);
@@ -116,7 +116,7 @@ async function isTabMuted(tabId) {
 	return (await browser.tabs.get(tabId)).mutedInfo.muted;
 }
 
-function executeScript(tabId, details) {
+function injectScript(tabId, details) {
 	return browser.tabs.executeScript(tabId, details);
 }
 
@@ -131,7 +131,7 @@ function setInjectedScriptVariables(tabId, obj) {
 			);
 		});
 	if (variables.length > 0) {
-		return executeScript(
+		return injectScript(
 			tabId,
 			{ code: `var ${variables.join(", ")};` },
 		);
