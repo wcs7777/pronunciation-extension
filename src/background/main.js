@@ -40,7 +40,10 @@ import fallbackIpa from "../fallback-ipa.js";
 
 async function pronounce(word, tabId) {
 	try {
-		if (!await isTabMuted(tabId) && await optionsTable.get("audioEnabled")) {
+		const { audioEnabled, ipaEnabled } = await options.get([
+			"audioEnabled", "ipaEnabled",
+		]);
+		if (!await isTabMuted(tabId) && audioEnabled) {
 			playAudio(
 				word,
 				{
@@ -55,36 +58,41 @@ async function pronounce(word, tabId) {
 			)
 				.catch(console.error);
 		}
-		if (await optionsTable.get("ipaEnabled")) {
-			let ipa = await ipaTable.get(word);
-			if (!ipa) {
-				ipa = await fallbackIpa(word);
-				if (ipa) {
-					await ipaTable.set(word, ipa);
-					console.log(`(ipa saved) ${word}: ${ipa}`);
-				}
-			}
-			if (ipa) {
-				await scriptVariables(
-					tabId,
-					{
-						...await optionsTable.get([
-							"ipaTimeout",
-							"popupFontFamily",
-							"popupFontSizepx",
-							"useWordColors",
-						]),
-						ipa,
-					},
-				);
-				await executeScript(
-					tabId,
-					{ file: "../content/bundle/show-ipa.injection.js" },
-				);
-			}
+		if (ipaEnabled) {
+			showIpa(tabId, word)
+				.catch(console.error);
 		}
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+async function showIpa(tabId, word) {
+	let ipa = await ipaTable.get(word);
+	if (!ipa) {
+		ipa = await fallbackIpa(word);
+		if (ipa) {
+			await ipaTable.set(word, ipa);
+			console.log(`(ipa saved) ${word}: ${ipa}`);
+		}
+	}
+	if (ipa) {
+		await scriptVariables(
+			tabId,
+			{
+				...await optionsTable.get([
+					"ipaTimeout",
+					"popupFontFamily",
+					"popupFontSizepx",
+					"useWordColors",
+				]),
+				ipa,
+			},
+		);
+		return executeScript(
+			tabId,
+			{ file: "../content/bundle/show-ipa.injection.js" },
+		);
 	}
 }
 
