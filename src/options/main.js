@@ -14,8 +14,9 @@ import {
 	toArray,
 	file2object,
 	blob2base64,
+	url2audio,
 } from "../utils.js";
-import { canPlay, removeAudio, setAudio } from "../audio.js";
+import { removeAudio, setAudio } from "../audio.js";
 import downloadObject from "../download-object.js";
 
 document.addEventListener("DOMContentLoaded", setFieldsInitialValues);
@@ -80,10 +81,8 @@ element("setAudio").addEventListener("submit", async (e) => {
 		const word = normalizeWord(getFieldValueAndClean("audioWord"));
 		const file = getFileAndClean("audio");
 		if (word && file) {
-			const playable = await canPlay(await blob2base64(file));
-			if (playable) {
-				await setAudio(word, playable.src, audioTable);
-			}
+			const audio = await url2audio(await blob2base64(file));
+			await setAudio(word, audio.src, audioTable);
 		}
 	} catch (error) {
 		console.error(error);
