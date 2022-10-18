@@ -13,7 +13,7 @@ import {
 const speech = "s";
 const fail = false;
 
-export async function playPronunciationAudio(
+export async function pronunciationAudio(
 	word,
 	{
 		audioTable,
@@ -94,6 +94,14 @@ export async function removeAudio(word, audioTable) {
 	return message;
 }
 
+export async function play(audio, volume) {
+	if (0 <= volume && volume <= 1) {
+		audio.volume = volume;
+	}
+	await audio.play();
+	return audio.src;
+}
+
 async function audioFromTable(word, audioTable) {
 	const url = await audioTable.get(word);
 	if (!url) {
@@ -155,12 +163,6 @@ async function audioFromGoogleDefine(word) {
 	}
 	const src = source.getAttribute("src");
 	return url2audio(!src.startsWith("http") ? "https:" + src : src);
-}
-
-async function play(audio, volume=1.0) {
-	audio.volume = volume;
-	await audio.play();
-	return audio.src;
 }
 
 function isUrl(value) {

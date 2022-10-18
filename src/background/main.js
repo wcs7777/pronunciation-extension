@@ -8,8 +8,16 @@ import {
 import populateIpa from "../populate-ipa.js";
 import populateOptions from "../populate-options.js";
 import { isString, normalizeWord } from "../utils.js";
-import { playPronunciationAudio } from "../audio.js";
+import { pronunciationAudio, play } from "../audio.js";
 import fallbackIpa from "../fallback-ipa.js";
+import { url2audio } from "../utils.js";
+
+const lastEmpty = {
+	word: "",
+	ipa: "",
+	audioUrl: "",
+};
+let last = lastEmpty;
 
 (async () => {
 	try {
@@ -40,42 +48,58 @@ import fallbackIpa from "../fallback-ipa.js";
 
 async function pronounce(word, tabId) {
 	try {
+		const useCache = word === last.word;
 		if (await optionsTable.get("audioEnabled")) {
-			playAudio(word, tabId).catch(console.error);
+			playAudio(word, tabId, useCache)
+				.catch(console.error);
 		}
 		if (await optionsTable.get("ipaEnabled")) {
-			showIpa(word, tabId).catch(console.error);
+			showIpa(word, tabId, useCache)
+				.catch(console.error);
+		}
+		if (!useCache) {
+			last.word = word;
 		}
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-async function playAudio(word, tabId) {
+async function playAudio(word, tabId, useCache) {
 	if (!await isTabMuted(tabId)) {
-		return playPronunciationAudio(
-			word,
-			{
-				...await optionsTable.get([
-					"audioVolume",
-					"fetchFileAudioTimeout",
-					"fetchScrapAudioTimeout",
-					"googleSpeechSpeed",
-				]),
-				audioTable,
-			},
-		);
+		if (!useCache) {
+			return last.audioUrl = await pronunciationAudio(
+				word,
+				{
+					...await optionsTable.get([
+						"audioVolume",
+						"fetchFileAudioTimeout",
+						"fetchScrapAudioTimeout",
+						"googleSpeechSpeed",
+					]),
+					audioTable,
+				},
+			);
+		} else {
+			return play(await url2audio(last.audioUrl));
+		}
 	}
 }
 
-async function showIpa(word, tabId) {
-	let ipa = await ipaTable.get(word);
-	if (!ipa) {
-		ipa = await fallbackIpa(word);
-		if (ipa) {
-			await ipaTable.set(word, ipa);
-			console.log(`(ipa saved) ${word}: ${ipa}`);
+async function showIpa(word, tabId, useCache) {
+	let ipa = "";
+	if (!useCache) {
+		ipa = await ipaTable.get(word);
+		if (!ipa) {
+			ipa = await fallbackIpa(word);
+			if (ipa) {
+				await ipaTable.set(word, ipa);
+				console.log(`(ipa saved) ${word}: ${ipa}`);
+			}
 		}
+		last.ipa = ipa;
+	} else {
+		ipa = last.ipa;
 	}
 	if (ipa) {
 		await setInjectedScriptVariables(
@@ -140,6 +164,7 @@ function setInjectedScriptVariables(tabId, obj) {
 
 async function storageOnChanged(changes) {
 	try {
+		last = lastEmpty;
 		const accessKey = await optionsTable.get("accessKey");
 		if (
 			changes[optionsTable.name] &&
