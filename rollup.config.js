@@ -44,4 +44,4 @@ export default [
 ];
 
 // https://rollupjs.org/guide/en/#configuration-files
-// npx rollup --config rollup.config.js
+// npx rollup --config --bundleConfigAsCjs rollup.config.js
