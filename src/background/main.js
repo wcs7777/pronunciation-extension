@@ -17,7 +17,7 @@ const lastEmpty = {
 	ipa: "",
 	audioUrl: "",
 };
-let last = lastEmpty;
+let last = { ...lastEmpty };
 
 (async () => {
 	try {
@@ -164,7 +164,7 @@ function setInjectedScriptVariables(tabId, obj) {
 
 async function storageOnChanged(changes) {
 	try {
-		last = lastEmpty;
+		last = { ...lastEmpty };
 		const accessKey = await optionsTable.get("accessKey");
 		if (
 			changes[optionsTable.name] &&
