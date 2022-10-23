@@ -351,12 +351,8 @@
 		popup.appendChild(closeButton);
 		popup.addEventListener("mousedown", disableTimeout);
 		closeButton.addEventListener("click", closePopup);
-		closeButton.addEventListener("mouseover", () => {
-			return closeButton.style.color = "#111111";
-		});
-		closeButton.addEventListener("mouseleave", () => {
-			return closeButton.style.color = closeButtonColor;
-		});
+		closeButton.addEventListener("mouseover", onMouseOver);
+		closeButton.addEventListener("mouseleave", onMouseLeave);
 		target.appendChild(popup);
 
 		function disableTimeout() {
@@ -364,7 +360,19 @@
 			popup.removeEventListener("mousedown", disableTimeout);
 		}
 
+		function onMouseOver() {
+			closeButton.style.color = "#111111";
+		}
+
+		function onMouseLeave() {
+			closeButton.style.color = closeButtonColor;
+		}
+
 		function closePopup() {
+			popup.removeEventListener("mousedown", disableTimeout);
+			closeButton.removeEventListener("click", closePopup);
+			closeButton.removeEventListener("mouseover", onMouseOver);
+			closeButton.removeEventListener("mouseleave", onMouseLeave);
 			popup.remove();
 		}
 	}
