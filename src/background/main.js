@@ -180,11 +180,13 @@ async function storageOnChanged(changes) {
 async function setMenuItem(accessKey) {
 	await browser.menus.removeAll();
 	await utilsTable.set("currentAccessKey", accessKey);
+	if (!browser.menus.onClicked.hasListener(menuItemOnClick)) {
+		browser.menus.onClicked.addListener(menuItemOnClick);
+	}
 	return browser.menus.create({
 		id: "Pronunciation",
 		title: `&${accessKey} - Pronunciation`,
 		contexts: ["selection"],
-		onclick: menuItemOnClick,
 	});
 }
 
