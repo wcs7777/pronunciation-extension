@@ -30,7 +30,7 @@
   ],
   "background": {
     "page": "src/background/main.html",
-    "persistent": false
+    "persistent": true
   },
   "options_ui": {
     "page": "src/options/main.html"
