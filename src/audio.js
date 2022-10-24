@@ -37,7 +37,13 @@ export async function pronunciationAudio(
 			audio = await untilResolve([
 				() => {
 					return audioFromTimeout(
-						audioFromOxford,
+						audioFromOxford2,
+						fetchFileAudioTimeout,
+					);
+				},
+				() => {
+					return audioFromTimeout(
+						audioFromOxford1,
 						fetchFileAudioTimeout,
 					);
 				},
@@ -142,10 +148,20 @@ async function audioFromGstatic(word) {
 	]);
 }
 
-async function audioFromOxford(word) {
+async function audioFromOxford1(word) {
 	return url2audio(
 		buildOxfordAudioUrlPath(
 			replaceQuotesByUnderline(word),
+			"__us_1.ogg",
+		),
+	);
+}
+
+async function audioFromOxford2(word) {
+	return url2audio(
+		buildOxfordAudioUrlPath(
+			replaceQuotesByUnderline(word),
+			"__us_2.ogg",
 		),
 	);
 }
@@ -169,8 +185,8 @@ function isUrl(value) {
 	return isString(value) && value.startsWith("http");
 }
 
-function buildOxfordAudioUrlPath(fileBegin) {
-	const file = fileBegin + "__us_1.ogg";
+function buildOxfordAudioUrlPath(fileBegin, fileEnd="__us_1.ogg") {
+	const file = fileBegin + fileEnd;
 	const path = [
 		file.slice(0, 1),
 		file.slice(0, 3),
