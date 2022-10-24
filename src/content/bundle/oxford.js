@@ -327,6 +327,7 @@
 		background-color: ${backgroundColor};
 		box-shadow: rgba(0, 0, 0, 0.6) -1px 1px 3px 1px;
 		font: ${font.sizepx}px/1.2 "${font.family}", serif;
+		letter-spacing: .8px;
 		z-index: 99999;
 	`;
 		closeButton.style.cssText = `
