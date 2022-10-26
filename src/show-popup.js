@@ -56,11 +56,13 @@ export default function showPopup({
 	closeButton.addEventListener("click", closePopup);
 	closeButton.addEventListener("mouseover", onMouseOver);
 	closeButton.addEventListener("mouseleave", onMouseLeave);
+	document.addEventListener("scroll", closePopup);
 	target.appendChild(popup);
 
 	function disableTimeout() {
 		clearTimeout(timeoutID);
 		popup.removeEventListener("mousedown", disableTimeout);
+		document.removeEventListener("scroll", closePopup);
 	}
 
 	function onMouseOver() {
@@ -76,6 +78,7 @@ export default function showPopup({
 		closeButton.removeEventListener("click", closePopup);
 		closeButton.removeEventListener("mouseover", onMouseOver);
 		closeButton.removeEventListener("mouseleave", onMouseLeave);
+		document.removeEventListener("scroll", closePopup);
 		popup.remove();
 	}
 }
