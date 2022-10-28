@@ -24,7 +24,7 @@ export async function pronunciationAudio(
 	}={},
 ) {
 	console.time(`playAudio - ${word}`);
-	let audio = await audioFromTable(word, audioTable)
+	let audio = await audioFromTable(word, audioTable, googleSpeechSpeed)
 		.catch((error) => {
 			if (error !== fail) {
 				throw error;
@@ -51,13 +51,12 @@ export async function pronunciationAudio(
 					return audioFromTimeout(
 						audioFromGoogleDefine,
 						fetchScrapAudioTimeout,
-						googleSpeechSpeed,
 					);
 				},
 			]);
 			src = audio.src;
 		} catch (errors) {
-			audio = await audioFromGoogleSpeech(word);
+			audio = await audioFromGoogleSpeech(word, googleSpeechSpeed);
 			if (!errors.includes(isTooManyRequests)) {
 				src = speech;
 			}
