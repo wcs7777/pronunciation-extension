@@ -63,6 +63,7 @@
 		target=document.body,
 		color="rgb(40, 40, 40)",
 		backgroundColor="rgb(255, 255, 255)",
+		closeOnScroll=false,
 	}={}) {
 		const popup = tag("div");
 		const closeButton = tag("span");
@@ -105,13 +106,13 @@
 		closeButton.addEventListener("click", closePopup);
 		closeButton.addEventListener("mouseover", onMouseOver);
 		closeButton.addEventListener("mouseleave", onMouseLeave);
-		document.addEventListener("scroll", closePopup);
+		document.addEventListener("scroll", onScroll);
 		target.appendChild(popup);
 
 		function disableTimeout() {
 			clearTimeout(timeoutID);
 			popup.removeEventListener("mousedown", disableTimeout);
-			document.removeEventListener("scroll", closePopup);
+			document.removeEventListener("scroll", onScroll);
 		}
 
 		function onMouseOver() {
@@ -122,12 +123,18 @@
 			closeButton.style.color = closeButtonColor;
 		}
 
+		function onScroll() {
+			if (closeOnScroll) {
+				closePopup();
+			}
+		}
+
 		function closePopup() {
 			popup.removeEventListener("mousedown", disableTimeout);
 			closeButton.removeEventListener("click", closePopup);
 			closeButton.removeEventListener("mouseover", onMouseOver);
 			closeButton.removeEventListener("mouseleave", onMouseLeave);
-			document.removeEventListener("scroll", closePopup);
+			document.removeEventListener("scroll", onScroll);
 			popup.remove();
 		}
 	}
@@ -137,6 +144,7 @@
 		ipaTimeout=3000,
 		popupFontFamily="Arial",
 		popupFontSizepx=20,
+		popupCloseOnScroll=true,
 	}) {
 		const element = getFocusElement();
 		showPopup({
@@ -149,6 +157,7 @@
 			position: getPopupPosition(getTopCorrection(popupFontSizepx)),
 			backgroundColor: backgroundColor(element),
 			color: color(element),
+			closeOnScroll: popupCloseOnScroll,
 		});
 	}
 
@@ -201,6 +210,12 @@
 		}
 	}
 
-	showIpa({ ipa, ipaTimeout, popupFontFamily, popupFontSizepx });
+	showIpa({
+		ipa,
+		ipaTimeout,
+		popupFontFamily,
+		popupFontSizepx,
+		popupCloseOnScroll,
+	});
 
 })();

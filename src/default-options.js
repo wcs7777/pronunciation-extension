@@ -13,4 +13,5 @@ export default {
 	defaultIpaShortcut: "X",
 	popupFontFamily: "Segoe UI",
 	popupFontSizepx: 22,
+	popupCloseOnScroll: true,
 };

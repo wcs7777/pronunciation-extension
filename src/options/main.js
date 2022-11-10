@@ -45,6 +45,7 @@ element("options").addEventListener("submit", async (e) => {
 				setIpaShortcut: options.setIpaShortcut.toUpperCase(),
 				defaultIpaShortcut: options.defaultIpaShortcut.toUpperCase(),
 				popupFontSizepx: parseFloat(options.popupFontSizepx),
+				popupCloseOnScroll: options.popupCloseOnScroll === "true",
 			});
 		}
 		await setFieldsInitialValues();

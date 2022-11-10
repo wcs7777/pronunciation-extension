@@ -109,6 +109,7 @@ async function showIpa(word, tabId, useCache) {
 					"ipaTimeout",
 					"popupFontFamily",
 					"popupFontSizepx",
+					"popupCloseOnScroll",
 					"useWordColors",
 				]),
 				ipa,

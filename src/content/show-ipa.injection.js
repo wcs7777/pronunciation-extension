@@ -1,3 +1,9 @@
 import showIpa from "./show-ipa";
 
-showIpa({ ipa, ipaTimeout, popupFontFamily, popupFontSizepx });
+showIpa({
+	ipa,
+	ipaTimeout,
+	popupFontFamily,
+	popupFontSizepx,
+	popupCloseOnScroll,
+});
