@@ -11,13 +11,7 @@ import { isString, normalizeWord } from "../utils.js";
 import { pronunciationAudio, play } from "../audio.js";
 import fallbackIpa from "../fallback-ipa.js";
 import { url2audio } from "../utils.js";
-
-const lastEmpty = {
-	word: "",
-	ipa: "",
-	audioUrl: "",
-};
-let last = { ...lastEmpty };
+import cache from "../cache.js";
 
 (async () => {
 	try {
@@ -41,6 +35,10 @@ let last = { ...lastEmpty };
 	} catch (error) {
 		console.error(error);
 	}
+	browser.alarms.create("cache", { periodInMinutes: 5 });
+	if (!browser.alarms.onAlarm.hasListener(onAlarm)) {
+		browser.alarms.onAlarm.addListener(onAlarm);
+	}
 	return "Initialization finished";
 })()
 	.then(console.log)
@@ -48,7 +46,7 @@ let last = { ...lastEmpty };
 
 async function pronounce(word, tabId) {
 	try {
-		const useCache = word === last.word;
+		const useCache = cache.contains(word);
 		if (await optionsTable.get("audioEnabled")) {
 			playAudio(word, tabId, useCache)
 				.catch(console.error);
@@ -56,9 +54,6 @@ async function pronounce(word, tabId) {
 		if (await optionsTable.get("ipaEnabled")) {
 			showIpa(word, tabId, useCache)
 				.catch(console.error);
-		}
-		if (!useCache) {
-			last.word = word;
 		}
 	} catch (error) {
 		console.error(error);
@@ -68,7 +63,7 @@ async function pronounce(word, tabId) {
 async function playAudio(word, tabId, useCache) {
 	if (!await isTabMuted(tabId)) {
 		if (!useCache) {
-			return last.audioUrl = await pronunciationAudio(
+			const audio = await pronunciationAudio(
 				word,
 				{
 					...await optionsTable.get([
@@ -80,8 +75,9 @@ async function playAudio(word, tabId, useCache) {
 					audioTable,
 				},
 			);
+			return cache.setAudio(word, audio);
 		} else {
-			return play(await url2audio(last.audioUrl));
+			return play(await url2audio(cache.getAudio(word)));
 		}
 	}
 }
@@ -97,11 +93,11 @@ async function showIpa(word, tabId, useCache) {
 				console.log(`(ipa saved) ${word}: ${ipa}`);
 			}
 		}
-		last.ipa = ipa;
 	} else {
-		ipa = last.ipa;
+		ipa = cache.getIpa(word);
 	}
 	if (ipa) {
+		cache.setIpa(word, ipa);
 		await setInjectedScriptVariables(
 			tabId,
 			{
@@ -165,7 +161,7 @@ function setInjectedScriptVariables(tabId, obj) {
 
 async function storageOnChanged(changes) {
 	try {
-		last = { ...lastEmpty };
+		cache.empty();
 		const accessKey = await optionsTable.get("accessKey");
 		if (
 			changes[optionsTable.name] &&
@@ -175,6 +171,16 @@ async function storageOnChanged(changes) {
 		}
 	} catch (error) {
 		console.error(error);
+	}
+}
+
+function onAlarm(alarm) {
+	if (alarm.name === "cache") {
+		const length = cache.length();
+		console.log(`cache length: ${length}`);
+		if (length > 1000) {
+			cache.empty();
+		}
 	}
 }
 

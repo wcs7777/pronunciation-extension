@@ -55,6 +55,7 @@
     "menus",
     "storage",
     "unlimitedStorage",
-    "downloads"
+    "downloads",
+    "alarms"
   ]
 }
