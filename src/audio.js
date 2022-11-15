@@ -18,6 +18,7 @@ export async function pronunciationAudio(
 	{
 		audioTable,
 		audioVolume=1.0,
+		audioPlaybackRate=1.0,
 		fetchFileAudioTimeout=2000,
 		fetchScrapAudioTimeout=2000,
 		googleSpeechSpeed=0.5,
@@ -68,7 +69,7 @@ export async function pronunciationAudio(
 		await setAudio(word, src, audioTable);
 	}
 	console.timeEnd(`playAudio - ${word}`);
-	return audio ? play(audio, audioVolume) : false;
+	return audio ? play(audio, audioVolume, audioPlaybackRate) : false;
 
 	function audioFromTimeout(audioFromFn, timeout, ...args) {
 		return promiseTimeoutReject(audioFromFn(word, ...args), timeout, false);
@@ -93,12 +94,15 @@ export async function removeAudio(word, audioTable) {
 	return message;
 }
 
-export async function play(audio, volume) {
+export async function play(audio, volume, playbackRate) {
 	if (0 <= volume && volume <= 1) {
 		audio.volume = volume;
 	}
+	if (0.2 <= playbackRate && playbackRate <= 2.0) {
+		audio.playbackRate = playbackRate;
+	}
 	await audio.play();
-	return audio.src;
+	return audio;
 }
 
 async function audioFromTable(word, audioTable) {

@@ -38,6 +38,13 @@ element("options").addEventListener("submit", async (e) => {
 				useWordColors: options.useWordColors === "true",
 				audioEnabled: options.audioEnabled === "true",
 				audioVolume: Math.min(parseFloat(options.audioVolume), 1.0),
+				audioPlaybackRate: Math.max(
+					0.5,
+					Math.min(
+						2.0,
+						parseFloat(options.audioPlaybackRate),
+					),
+				),
 				fetchFileAudioTimeout: parseFloat(options.fetchFileAudioTimeout),
 				fetchScrapAudioTimeout: parseFloat(options.fetchScrapAudioTimeout),
 				googleSpeechSpeed: parseFloat(options.googleSpeechSpeed),
@@ -198,6 +205,7 @@ element("updateAudioTable").addEventListener("submit", async (e) => {
 [
 	element("ipaTimeout"),
 	element("audioVolume"),
+	element("audioPlaybackRate"),
 	element("fetchFileAudioTimeout"),
 	element("fetchScrapAudioTimeout"),
 	element("googleSpeechSpeed"),

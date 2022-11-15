@@ -1,9 +1,10 @@
 export default {
-	accessKey: "P",
+	accessKey: "A",
 	ipaEnabled: true,
 	ipaTimeout: 3000,
 	useWordColors: false,
 	audioVolume: 1.0,
+	audioPlaybackRate: 1.0,
 	fetchFileAudioTimeout: 1100,
 	fetchScrapAudioTimeout: 1300,
 	audioEnabled: true,
@@ -11,7 +12,7 @@ export default {
 	setAudioShortcut: "A",
 	setIpaShortcut: "Z",
 	defaultIpaShortcut: "X",
-	popupFontFamily: "Segoe UI",
-	popupFontSizepx: 22,
+	popupFontFamily: "Lucida Sans Unicode",
+	popupFontSizepx: 18,
 	popupCloseOnScroll: true,
 };

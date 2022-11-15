@@ -10,7 +10,6 @@ import populateOptions from "../populate-options.js";
 import { isString, normalizeWord } from "../utils.js";
 import { pronunciationAudio, play } from "../audio.js";
 import fallbackIpa from "../fallback-ipa.js";
-import { url2audio } from "../utils.js";
 import cache from "../cache.js";
 
 (async () => {
@@ -68,6 +67,7 @@ async function playAudio(word, tabId, useCache) {
 				{
 					...await optionsTable.get([
 						"audioVolume",
+						"audioPlaybackRate",
 						"fetchFileAudioTimeout",
 						"fetchScrapAudioTimeout",
 						"googleSpeechSpeed",
@@ -77,7 +77,9 @@ async function playAudio(word, tabId, useCache) {
 			);
 			return cache.setAudio(word, audio);
 		} else {
-			return play(await url2audio(cache.getAudio(word)));
+			const audio = cache.getAudio(word);
+			await audio.play();
+			return audio;
 		}
 	}
 }
