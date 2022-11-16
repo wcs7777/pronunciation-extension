@@ -6,6 +6,7 @@ export default function showIpa({
 	ipaTimeout=3000,
 	popupFontFamily="Arial",
 	popupFontSizepx=20,
+	popupCloseShortcut="\\",
 	popupCloseOnScroll=true,
 }) {
 	const element = getFocusElement();
@@ -19,6 +20,7 @@ export default function showIpa({
 		position: getPopupPosition(getTopCorrection(popupFontSizepx)),
 		backgroundColor: backgroundColor(element),
 		color: color(element),
+		closeShortcut: popupCloseShortcut,
 		closeOnScroll: popupCloseOnScroll,
 	});
 }

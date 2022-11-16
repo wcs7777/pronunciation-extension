@@ -103,14 +103,15 @@ async function showIpa(word, tabId, useCache) {
 		await setInjectedScriptVariables(
 			tabId,
 			{
+				ipa,
 				...await optionsTable.get([
 					"ipaTimeout",
 					"popupFontFamily",
 					"popupFontSizepx",
+					"popupCloseShortcut",
 					"popupCloseOnScroll",
 					"useWordColors",
 				]),
-				ipa,
 			},
 		);
 		return injectScript(

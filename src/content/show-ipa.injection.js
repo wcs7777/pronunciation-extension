@@ -5,5 +5,6 @@ showIpa({
 	ipaTimeout,
 	popupFontFamily,
 	popupFontSizepx,
+	popupCloseShortcut,
 	popupCloseOnScroll,
 });

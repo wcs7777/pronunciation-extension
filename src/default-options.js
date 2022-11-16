@@ -14,5 +14,6 @@ export default {
 	defaultIpaShortcut: "X",
 	popupFontFamily: "Lucida Sans Unicode",
 	popupFontSizepx: 18,
+	popupCloseShortcut: "\\\\",
 	popupCloseOnScroll: true,
 };

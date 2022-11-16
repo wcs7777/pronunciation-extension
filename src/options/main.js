@@ -32,7 +32,6 @@ element("options").addEventListener("submit", async (e) => {
 			}, {});
 			await optionsTable.set({
 				...options,
-				accessKey: options.accessKey.toUpperCase(),
 				ipaEnabled: options.ipaEnabled === "true",
 				ipaTimeout: parseFloat(options.ipaTimeout),
 				useWordColors: options.useWordColors === "true",
@@ -48,10 +47,12 @@ element("options").addEventListener("submit", async (e) => {
 				fetchFileAudioTimeout: parseFloat(options.fetchFileAudioTimeout),
 				fetchScrapAudioTimeout: parseFloat(options.fetchScrapAudioTimeout),
 				googleSpeechSpeed: parseFloat(options.googleSpeechSpeed),
-				setAudioShortcut: options.setAudioShortcut.toUpperCase(),
-				setIpaShortcut: options.setIpaShortcut.toUpperCase(),
-				defaultIpaShortcut: options.defaultIpaShortcut.toUpperCase(),
 				popupFontSizepx: parseFloat(options.popupFontSizepx),
+				popupCloseShortcut: (
+					options.popupCloseShortcut !== "\\" ?
+					options.popupCloseShortcut :
+					"\\\\"
+				),
 				popupCloseOnScroll: options.popupCloseOnScroll === "true",
 			});
 		}
@@ -224,6 +225,13 @@ element("updateAudioTable").addEventListener("submit", async (e) => {
 element("popupFontFamily").addEventListener("keydown", (e) => {
 	if (!isAlphanumeric(e.key) && e.key !== " " && !isNavigationKey(e)) {
 		e.preventDefault();
+	}
+});
+
+element("popupCloseShortcut").addEventListener("keydown", (e) => {
+	if (e.key.length === 1) {
+		e.preventDefault();
+		e.target.value = e.key.toUpperCase();
 	}
 });
 

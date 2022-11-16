@@ -328,6 +328,7 @@
 		target=document.body,
 		color="rgb(40, 40, 40)",
 		backgroundColor="rgb(255, 255, 255)",
+		closeShortcut="\\",
 		closeOnScroll=false,
 	}={}) {
 		const popup = tag("div");
@@ -371,6 +372,7 @@
 		closeButton.addEventListener("click", closePopup);
 		closeButton.addEventListener("mouseover", onMouseOver);
 		closeButton.addEventListener("mouseleave", onMouseLeave);
+		document.addEventListener("keydown", onKeyDown);
 		document.addEventListener("scroll", onScroll);
 		target.appendChild(popup);
 
@@ -388,6 +390,12 @@
 			closeButton.style.color = closeButtonColor;
 		}
 
+		function onKeyDown(e) {
+			if (e.key.toUpperCase() === closeShortcut) {
+				closePopup();
+			}
+		}
+
 		function onScroll() {
 			if (closeOnScroll) {
 				closePopup();
@@ -399,6 +407,7 @@
 			closeButton.removeEventListener("click", closePopup);
 			closeButton.removeEventListener("mouseover", onMouseOver);
 			closeButton.removeEventListener("mouseleave", onMouseLeave);
+			document.removeEventListener("keydown", onKeyDown);
 			document.removeEventListener("scroll", onScroll);
 			popup.remove();
 		}
