@@ -19,13 +19,13 @@ export async function pronunciationAudio(
 		audioTable,
 		audioVolume=1.0,
 		audioPlaybackRate=1.0,
-		fetchFileAudioTimeout=2000,
-		fetchScrapAudioTimeout=2000,
-		googleSpeechSpeed=0.5,
+		audioFetchFileTimeout=2000,
+		audioFetchScrapTimeout=2000,
+		audioGoogleSpeechSpeed=0.5,
 	}={},
 ) {
 	console.time(`playAudio - ${word}`);
-	let audio = await audioFromTable(word, audioTable, googleSpeechSpeed)
+	let audio = await audioFromTable(word, audioTable, audioGoogleSpeechSpeed)
 		.catch((error) => {
 			if (error !== fail) {
 				throw error;
@@ -39,25 +39,25 @@ export async function pronunciationAudio(
 				() => {
 					return audioFromTimeout(
 						audioFromOxford,
-						fetchFileAudioTimeout,
+						audioFetchFileTimeout,
 					);
 				},
 				() => {
 					return audioFromTimeout(
 						audioFromGstatic,
-						fetchFileAudioTimeout,
+						audioFetchFileTimeout,
 					);
 				},
 				() => {
 					return audioFromTimeout(
 						audioFromGoogleDefine,
-						fetchScrapAudioTimeout,
+						audioFetchScrapTimeout,
 					);
 				},
 			]);
 			src = audio.src;
 		} catch (errors) {
-			audio = await audioFromGoogleSpeech(word, googleSpeechSpeed);
+			audio = await audioFromGoogleSpeech(word, audioGoogleSpeechSpeed);
 			if (!errors.includes(isTooManyRequests)) {
 				src = speech;
 			}
@@ -113,13 +113,13 @@ async function audioFromTable(word, audioTable) {
 	return url !== speech ? url2audio(url) : audioFromGoogleSpeech(word);
 }
 
-async function audioFromGoogleSpeech(word, googleSpeechSpeed=0.5) {
+async function audioFromGoogleSpeech(word, audioGoogleSpeechSpeed=0.5) {
 	const base = "https://www.google.com/speech-api/v1/synthesize?";
 	const params = new URLSearchParams({
 		text: word,
 		enc: "mpeg",
 		lang: "en",
-		speed: googleSpeechSpeed,
+		speed: audioGoogleSpeechSpeed,
 		client: "lr-language-tts",
 		use_google_only_voices: 1,
 	}).toString();

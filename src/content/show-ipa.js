@@ -4,34 +4,34 @@ import { getStyle, getInheritedBackgroundColor, rgba2rgb } from "../utils.js";
 export default function showIpa({
 	ipa="ipa",
 	ipaTimeout=3000,
-	popupFontFamily="Arial",
-	popupFontSizepx=20,
-	popupCloseShortcut="\\",
-	popupCloseOnScroll=true,
+	ipaFontFamily="Arial",
+	ipaFontSizepx=20,
+	ipaCloseShortcut="\\",
+	ipaCloseOnScroll=true,
 }) {
 	const element = getFocusElement();
 	showPopup({
 		message: ipa,
 		timeout: ipaTimeout,
 		font: {
-			family: popupFontFamily,
-			sizepx: popupFontSizepx,
+			family: ipaFontFamily,
+			sizepx: ipaFontSizepx,
 		},
-		position: getPopupPosition(getTopCorrection(popupFontSizepx)),
+		position: getPopupPosition(getTopCorrection(ipaFontSizepx)),
 		backgroundColor: backgroundColor(element),
 		color: color(element),
-		closeShortcut: popupCloseShortcut,
-		closeOnScroll: popupCloseOnScroll,
+		closeShortcut: ipaCloseShortcut,
+		closeOnScroll: ipaCloseOnScroll,
 	});
 }
 
-function getTopCorrection(popupFontSizepx) {
-	return parseFloat(popupFontSizepx) * 2;
+function getTopCorrection(ipaFontSizepx) {
+	return parseFloat(ipaFontSizepx) * 2;
 }
 
 function backgroundColor(element) {
 	return (
-		!useWordColors ?
+		!ipaUsePageColors ?
 		undefined :
 		rgba2rgb(getInheritedBackgroundColor(element))
 	);
@@ -39,7 +39,7 @@ function backgroundColor(element) {
 
 function color(element) {
 	return (
-		!useWordColors ?
+		!ipaUsePageColors ?
 		undefined :
 		rgba2rgb(getStyle(element, "color"))
 	);

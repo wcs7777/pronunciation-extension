@@ -34,7 +34,7 @@ element("options").addEventListener("submit", async (e) => {
 				...options,
 				ipaEnabled: options.ipaEnabled === "true",
 				ipaTimeout: parseFloat(options.ipaTimeout),
-				useWordColors: options.useWordColors === "true",
+				ipaUsePageColors: options.ipaUsePageColors === "true",
 				audioEnabled: options.audioEnabled === "true",
 				audioVolume: Math.min(parseFloat(options.audioVolume), 1.0),
 				audioPlaybackRate: Math.max(
@@ -44,16 +44,16 @@ element("options").addEventListener("submit", async (e) => {
 						parseFloat(options.audioPlaybackRate),
 					),
 				),
-				fetchFileAudioTimeout: parseFloat(options.fetchFileAudioTimeout),
-				fetchScrapAudioTimeout: parseFloat(options.fetchScrapAudioTimeout),
-				googleSpeechSpeed: parseFloat(options.googleSpeechSpeed),
-				popupFontSizepx: parseFloat(options.popupFontSizepx),
-				popupCloseShortcut: (
-					options.popupCloseShortcut !== "\\" ?
-					options.popupCloseShortcut :
+				audioFetchFileTimeout: parseFloat(options.audioFetchFileTimeout),
+				audioFetchScrapTimeout: parseFloat(options.audioFetchScrapTimeout),
+				audioGoogleSpeechSpeed: parseFloat(options.audioGoogleSpeechSpeed),
+				ipaFontSizepx: parseFloat(options.ipaFontSizepx),
+				ipaCloseShortcut: (
+					options.ipaCloseShortcut !== "\\" ?
+					options.ipaCloseShortcut :
 					"\\\\"
 				),
-				popupCloseOnScroll: options.popupCloseOnScroll === "true",
+				ipaCloseOnScroll: options.ipaCloseOnScroll === "true",
 			});
 		}
 		await setFieldsInitialValues();
@@ -207,10 +207,10 @@ element("updateAudioTable").addEventListener("submit", async (e) => {
 	element("ipaTimeout"),
 	element("audioVolume"),
 	element("audioPlaybackRate"),
-	element("fetchFileAudioTimeout"),
-	element("fetchScrapAudioTimeout"),
-	element("googleSpeechSpeed"),
-	element("popupFontSizepx"),
+	element("audioFetchFileTimeout"),
+	element("audioFetchScrapTimeout"),
+	element("audioGoogleSpeechSpeed"),
+	element("ipaFontSizepx"),
 ]
 	.forEach((field) => field.addEventListener("keydown", (e) => {
 		if (
@@ -222,13 +222,13 @@ element("updateAudioTable").addEventListener("submit", async (e) => {
 		}
 	}));
 
-element("popupFontFamily").addEventListener("keydown", (e) => {
+element("ipaFontFamily").addEventListener("keydown", (e) => {
 	if (!isAlphanumeric(e.key) && e.key !== " " && !isNavigationKey(e)) {
 		e.preventDefault();
 	}
 });
 
-element("popupCloseShortcut").addEventListener("keydown", (e) => {
+element("ipaCloseShortcut").addEventListener("keydown", (e) => {
 	if (e.key.length === 1) {
 		e.preventDefault();
 		e.target.value = e.key.toUpperCase();
