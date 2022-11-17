@@ -110,7 +110,7 @@ async function showIpa(word, tabId, useCache) {
 					"ipaFontSizepx",
 					"ipaCloseShortcut",
 					"ipaCloseOnScroll",
-					"ipaUsePageColors",
+					"ipaUseContextColors",
 				]),
 			},
 		);

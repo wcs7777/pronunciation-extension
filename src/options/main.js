@@ -34,7 +34,7 @@ element("options").addEventListener("submit", async (e) => {
 				...options,
 				ipaEnabled: options.ipaEnabled === "true",
 				ipaTimeout: parseFloat(options.ipaTimeout),
-				ipaUsePageColors: options.ipaUsePageColors === "true",
+				ipaUseContextColors: options.ipaUseContextColors === "true",
 				audioEnabled: options.audioEnabled === "true",
 				audioVolume: Math.min(parseFloat(options.audioVolume), 1.0),
 				audioPlaybackRate: Math.max(

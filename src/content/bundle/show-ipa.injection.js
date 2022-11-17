@@ -178,7 +178,7 @@
 
 	function backgroundColor(element) {
 		return (
-			!ipaUsePageColors ?
+			!ipaUseContextColors ?
 			undefined :
 			rgba2rgb(getInheritedBackgroundColor(element))
 		);
@@ -186,7 +186,7 @@
 
 	function color(element) {
 		return (
-			!ipaUsePageColors ?
+			!ipaUseContextColors ?
 			undefined :
 			rgba2rgb(getStyle(element, "color"))
 		);

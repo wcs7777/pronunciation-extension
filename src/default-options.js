@@ -6,7 +6,7 @@ export default {
 	ipaFontSizepx: 18,
 	ipaCloseShortcut: "\\\\",
 	ipaCloseOnScroll: true,
-	ipaUsePageColors: false,
+	ipaUseContextColors: false,
 	audioEnabled: true,
 	audioVolume: 1.0,
 	audioPlaybackRate: 1.0,
