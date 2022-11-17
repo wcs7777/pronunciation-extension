@@ -48,11 +48,7 @@ element("options").addEventListener("submit", async (e) => {
 				audioFetchScrapTimeout: parseFloat(options.audioFetchScrapTimeout),
 				audioGoogleSpeechSpeed: parseFloat(options.audioGoogleSpeechSpeed),
 				ipaFontSizepx: parseFloat(options.ipaFontSizepx),
-				ipaCloseShortcut: (
-					options.ipaCloseShortcut !== "\\" ?
-					options.ipaCloseShortcut :
-					"\\\\"
-				),
+				ipaCloseShortcut: escapeShortcut(options.ipaCloseShortcut),
 				ipaCloseOnScroll: options.ipaCloseOnScroll === "true",
 			});
 		}
@@ -284,4 +280,8 @@ function getFileAndClean(id) {
 	const file = field.files?.[0];
 	field.value = "";
 	return file;
+}
+
+function escapeShortcut(shortcut) {
+	return shortcut !== "\\" && shortcut !== "\"" ? shortcut : `\\${shortcut}`;
 }
