@@ -7,7 +7,6 @@ import {
 import defaultOptions from "../default-options.js";
 import {
 	$,
-	print,
 	normalizeWord,
 	isAlphanumeric,
 	isNumber,
@@ -100,15 +99,6 @@ element("removeAudio").addEventListener("submit", async (e) => {
 		const field = element("word");
 		await removeAudio(field.value, audioTable);
 		field.value = "";
-	} catch (error) {
-		console.error(error);
-	}
-});
-
-element("printOptionsTable").addEventListener("click", async (e) => {
-	try {
-		e.preventDefault();
-		print(await optionsTable.getAll());
 	} catch (error) {
 		console.error(error);
 	}
