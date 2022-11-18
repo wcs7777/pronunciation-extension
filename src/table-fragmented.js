@@ -5,6 +5,7 @@ import {
 	isAlphanumeric,
 	isString,
 	symbolsFragment,
+	toArray,
 } from "./utils.js";
 
 export default class TableFragmented {
@@ -57,8 +58,18 @@ export default class TableFragmented {
 		return Object.keys(await this.getAll());
 	}
 
-	async remove(key) {
-		return this.tables[key2fragment(key)].remove(key);
+	async remove(keys) {
+		const fragmented = toArray(keys).reduce((sorted, key) => {
+			const fragment = key2fragment(key);
+			if (sorted[fragment] === undefined) {
+				sorted[fragment] = [];
+			}
+			sorted[fragment].push(key);
+			return sorted;
+		}, {});
+		for (const [fragment, sortedKeys] of Object.entries(fragmented)) {
+			await this.tables[fragment].remove(sortedKeys);
+		}
 	}
 }
 

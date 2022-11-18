@@ -10,8 +10,8 @@ import {
 	promiseTimeoutReject,
 } from "./utils.js";
 
-const speech = "s";
 const fail = false;
+export const speech = "s";
 
 export async function pronunciationAudio(
 	word,
@@ -84,13 +84,6 @@ export async function setAudio(word, audio, audioTable) {
 	const message = `${word} audio saved`;
 	console.log(message);
 	console.log(audio);
-	return message;
-}
-
-export async function removeAudio(word, audioTable) {
-	await audioTable.remove(word);
-	const message = `${word} audio removed`;
-	console.log(message);
 	return message;
 }
 

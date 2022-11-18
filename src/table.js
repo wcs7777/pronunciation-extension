@@ -39,9 +39,11 @@ export default class Table {
 		return Object.keys(await this.getAll());
 	}
 
-	async remove(key) {
+	async remove(keys) {
 		const table = await this.getAll();
-		delete table[key];
+		for (const key of toArray(keys)) {
+			delete table[key];
+		}
 		return this.database.set(this.name, table);
 	}
 

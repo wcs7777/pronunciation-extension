@@ -196,9 +196,11 @@
 			return Object.keys(await this.getAll());
 		}
 
-		async remove(key) {
+		async remove(keys) {
 			const table = await this.getAll();
-			delete table[key];
+			for (const key of toArray(keys)) {
+				delete table[key];
+			}
 			return this.database.set(this.name, table);
 		}
 
@@ -257,8 +259,18 @@
 			return Object.keys(await this.getAll());
 		}
 
-		async remove(key) {
-			return this.tables[key2fragment(key)].remove(key);
+		async remove(keys) {
+			const fragmented = toArray(keys).reduce((sorted, key) => {
+				const fragment = key2fragment(key);
+				if (sorted[fragment] === undefined) {
+					sorted[fragment] = [];
+				}
+				sorted[fragment].push(key);
+				return sorted;
+			}, {});
+			for (const [fragment, sortedKeys] of Object.entries(fragmented)) {
+				await this.tables[fragment].remove(sortedKeys);
+			}
 		}
 	}
 

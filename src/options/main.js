@@ -15,7 +15,7 @@ import {
 	blob2base64,
 	url2audio,
 } from "../utils.js";
-import { removeAudio, setAudio } from "../audio.js";
+import { speech, setAudio } from "../audio.js";
 import downloadObject from "../download-object.js";
 
 document.addEventListener("DOMContentLoaded", setFieldsInitialValues);
@@ -58,8 +58,23 @@ element("options").addEventListener("submit", async (e) => {
 	}
 });
 
-element("restoreDefaultOptions").addEventListener("click", async () => {
+element("removeGoogleSpeechAudios").addEventListener("click", async (e) => {
 	try {
+		e.preventDefault();
+		const words = Object
+			.entries(await audioTable.getAll())
+			.filter(([, value]) => value === speech)
+			.map(([key]) => key);
+		await audioTable.remove(words);
+		console.log(`Google Speech removed ${words.length} audios`, words);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+element("restoreDefaultOptions").addEventListener("click", async (e) => {
+	try {
+		e.preventDefault();
 		await optionsTable.set(defaultOptions);
 		await setFieldsInitialValues();
 	} catch (error) {
@@ -97,7 +112,9 @@ element("removeAudio").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const field = element("word");
-		await removeAudio(field.value, audioTable);
+		const word = field.value;
+		await audioTable.remove(word);
+		console.log(`${word} audio removed`);
 		field.value = "";
 	} catch (error) {
 		console.error(error);
