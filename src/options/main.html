@@ -7,7 +7,7 @@
 <body>
 	<form id="options">
 		<label for="accessKey">Context Menu Access Key</label>
-		<input type="text" id="accessKey">
+		<input type="text" id="accessKey" pattern="[A-Z]" required>
 		<hr>
 		<label for="ipaEnabled">IPA Enabled</label>
 		<select id="ipaEnabled">
@@ -15,13 +15,13 @@
 			<option value="false">False</option>
 		</select>
 		<label for="ipaTimeout">IPA Timeout</label>
-		<input type="text" id="ipaTimeout">
+		<input type="text" id="ipaTimeout" pattern="\d*\.?\d+" required>
 		<label for="ipaFontFamily">IPA Font Family</label>
-		<input type="text" id="ipaFontFamily">
+		<input type="text" id="ipaFontFamily" pattern="\w[\w\s]*" required>
 		<label for="ipaFontSizepx">IPA Font Size(px)</label>
-		<input type="text" id="ipaFontSizepx">
+		<input type="text" id="ipaFontSizepx" pattern="\d{1,2}" required>
 		<label for="ipaCloseShortcut">IPA Close Shortcut</label>
-		<input type="text" id="ipaCloseShortcut">
+		<input type="text" id="ipaCloseShortcut" pattern="^[A-Z]|(\\?[\\|\x22])|([,|;|~|[|´|\/|\]|\.])$" required>
 		<label for="ipaCloseOnScroll">IPA Close On Scroll?</label>
 		<select id="ipaCloseOnScroll">
 			<option value="true" selected>True</option>
@@ -39,22 +39,22 @@
 			<option value="false">False</option>
 		</select>
 		<label for="audioVolume">Audio Volume</label>
-		<input type="text" id="audioVolume">
+		<input type="text" id="audioVolume" pattern="\d*\.?\d+" required>
 		<label for="audioPlaybackRate">Audio Playback Rate</label>
-		<input type="text" id="audioPlaybackRate">
+		<input type="text" id="audioPlaybackRate" pattern="\d*\.?\d+" required>
 		<label for="audioFetchFileTimeout">Fetch File Audio Timeout</label>
-		<input type="text" id="audioFetchFileTimeout">
+		<input type="text" id="audioFetchFileTimeout" pattern="\d*\.?\d+" required>
 		<label for="audioFetchScrapTimeout">Fetch Scrap Audio Timeout</label>
-		<input type="text" id="audioFetchScrapTimeout">
+		<input type="text" id="audioFetchScrapTimeout" pattern="\d*\.?\d+" required>
 		<label for="audioGoogleSpeechSpeed">Google Speech Speed</label>
-		<input type="text" id="audioGoogleSpeechSpeed">
+		<input type="text" id="audioGoogleSpeechSpeed" pattern="\d*\.?\d+" required>
 		<hr>
 		<label for="setAudioShortcut">Set Audio Shortcut</label>
-		<input type="text" id="setAudioShortcut">
+		<input type="text" id="setAudioShortcut" pattern="[A-Z]" required>
 		<label for="setIpaShortcut">Set IPA Shortcut</label>
-		<input type="text" id="setIpaShortcut">
+		<input type="text" id="setIpaShortcut" pattern="[A-Z]" required>
 		<label for="defaultIpaShortcut">Default IPA Shortcut</label>
-		<input type="text" id="defaultIpaShortcut">
+		<input type="text" id="defaultIpaShortcut" pattern="[A-Z]" required>
 		<button type="submit">Save Options</button>
 	</form>
 	<hr>
@@ -86,6 +86,7 @@
 	<hr>
 	<button id="downloadIpaTable">Download IPA Table</button>
 	<button id="downloadAudioTable">Download Audio Table</button>
+	<button id="downloadOptionsTable">Download Options Table</button>
 	<button id="downloadAllTables">Download All Tables</button>
 	<hr>
 	<form id="updateIPaTable">
@@ -98,6 +99,12 @@
 		<label for="audioTable">Audio Table</label>
 		<input type="file" accept="application/JSON" id="audioTable">
 		<button type="submit">Update Audio Table</button>
+	</form>
+	<hr>
+	<form id="updateOptionsTable">
+		<label for="optionsTable">Options Table</label>
+		<input type="file" accept="application/JSON" id="optionsTable">
+		<button type="submit">Update Options Table</button>
 	</form>
 	<script type="module" src="main.js"></script>
 </body>

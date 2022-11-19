@@ -18,41 +18,25 @@ import {
 import { speech, setAudio } from "../audio.js";
 import downloadObject from "../download-object.js";
 
-document.addEventListener("DOMContentLoaded", setFieldsInitialValues);
+document.addEventListener("DOMContentLoaded", async () => {
+	try {
+		setOptionsFieldsValues(await optionsTable.getAll());
+	} catch (error) {
+		console.error(error);
+	}
+});
 
 element("options").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
-		const keys = await optionsTable.getKeys();
-		const values = getFieldsValuesAndClean(keys);
-		if (values.every((value) => value.length > 0)) {
-			const options = keys.reduce((obj, key, i) => {
-				return { ...obj, [key]: values[i] };
-			}, {});
-			await optionsTable.set({
-				...options,
-				ipaEnabled: options.ipaEnabled === "true",
-				ipaTimeout: parseFloat(options.ipaTimeout),
-				ipaUseContextColors: options.ipaUseContextColors === "true",
-				audioEnabled: options.audioEnabled === "true",
-				audioVolume: Math.min(parseFloat(options.audioVolume), 1.0),
-				audioPlaybackRate: Math.max(
-					0.5,
-					Math.min(
-						2.0,
-						parseFloat(options.audioPlaybackRate),
-					),
-				),
-				audioFetchFileTimeout: parseFloat(options.audioFetchFileTimeout),
-				audioFetchScrapTimeout: parseFloat(options.audioFetchScrapTimeout),
-				audioGoogleSpeechSpeed: parseFloat(options.audioGoogleSpeechSpeed),
-				ipaFontSizepx: parseFloat(options.ipaFontSizepx),
-				ipaCloseShortcut: escapeShortcut(options.ipaCloseShortcut),
-				ipaCloseOnScroll: options.ipaCloseOnScroll === "true",
-			});
-		}
-		await setFieldsInitialValues();
-		console.log(await optionsTable.getAll());
+		await optionsTable.set(
+			normalizeOptions(
+				getOptionsFieldsValues(await optionsTable.getKeys())
+			),
+		);
+		const options = await optionsTable.getAll();
+		setOptionsFieldsValues(options);
+		console.log(options);
 	} catch (error) {
 		console.error(error);
 	}
@@ -72,11 +56,10 @@ element("removeGoogleSpeechAudios").addEventListener("click", async (e) => {
 	}
 });
 
-element("restoreDefaultOptions").addEventListener("click", async (e) => {
+element("restoreDefaultOptions").addEventListener("click", (e) => {
 	try {
 		e.preventDefault();
-		await optionsTable.set(defaultOptions);
-		await setFieldsInitialValues();
+		setOptions(defaultOptions);
 	} catch (error) {
 		console.error(error);
 	}
@@ -149,6 +132,20 @@ element("downloadAudioTable").addEventListener("click", async (e) => {
 	}
 });
 
+element("downloadOptionsTable").addEventListener("click", async (e) => {
+	try {
+		e.preventDefault();
+		downloadObject(
+			await optionsTable.getAll(),
+			"pronunciation-options-table.json",
+		)
+			.then(console.log)
+			.catch(console.error);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 element("downloadAllTables").addEventListener("click", async (e) => {
 	try {
 		e.preventDefault();
@@ -166,11 +163,12 @@ element("downloadAllTables").addEventListener("click", async (e) => {
 element("updateIPaTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
-		const file = getFileAndClean("ipaTable");
+		const id = "ipaTable";
+		const file = getFileAndClean(id);
 		if (file) {
-			console.time("ipaTable");
+			console.time(id);
 			await ipaTable.bulkSet(await file2object(file));
-			console.timeEnd("ipaTable");
+			console.timeEnd(id);
 		}
 	} catch (error) {
 		console.error(error);
@@ -180,11 +178,27 @@ element("updateIPaTable").addEventListener("submit", async (e) => {
 element("updateAudioTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
-		const file = getFileAndClean("audioTable");
+		const id = "audioTable";
+		const file = getFileAndClean(id);
 		if (file) {
-			console.time("audioTable");
+			console.time(id);
 			await audioTable.bulkSet(await file2object(file));
-			console.timeEnd("audioTable");
+			console.timeEnd(id);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+element("updateOptionsTable").addEventListener("submit", async (e) => {
+	try {
+		e.preventDefault();
+		const id = "optionsTable";
+		const file = getFileAndClean(id);
+		if (file) {
+			console.time(id);
+			setOptions(await file2object(file));
+			console.timeEnd(id);
 		}
 	} catch (error) {
 		console.error(error);
@@ -238,6 +252,43 @@ element("ipaCloseShortcut").addEventListener("keydown", (e) => {
 	}
 });
 
+function setOptions(options) {
+	setOptionsFieldsValues(options);
+	const form = element("options");
+	if (form.reportValidity()) {
+		form.requestSubmit();
+	} else {
+		optionsTable.getAll()
+			.then(setOptionsFieldsValues)
+			.catch(console.error);
+		console.log("Invalid options!");
+	}
+}
+
+function normalizeOptions(options) {
+	return {
+		...options,
+		ipaEnabled: options.ipaEnabled === "true",
+		ipaTimeout: parseFloat(options.ipaTimeout),
+		ipaUseContextColors: options.ipaUseContextColors === "true",
+		audioEnabled: options.audioEnabled === "true",
+		audioVolume: Math.min(parseFloat(options.audioVolume), 1.0),
+		audioPlaybackRate: Math.max(
+			0.5,
+			Math.min(
+				2.0,
+				parseFloat(options.audioPlaybackRate),
+			),
+		),
+		audioFetchFileTimeout: parseFloat(options.audioFetchFileTimeout),
+		audioFetchScrapTimeout: parseFloat(options.audioFetchScrapTimeout),
+		audioGoogleSpeechSpeed: parseFloat(options.audioGoogleSpeechSpeed),
+		ipaFontSizepx: parseFloat(options.ipaFontSizepx),
+		ipaCloseShortcut: escapeShortcut(options.ipaCloseShortcut),
+		ipaCloseOnScroll: options.ipaCloseOnScroll === "true",
+	};
+}
+
 function isNavigationKey(keydownEvent) {
 	return keydownEvent.ctrlKey || [
 		"Backspace",
@@ -253,13 +304,9 @@ function isNavigationKey(keydownEvent) {
 		.includes(keydownEvent.key);
 }
 
-async function setFieldsInitialValues() {
-	try {
-		for (const [key, value] of Object.entries(await optionsTable.getAll())) {
-			setField(key, value);
-		}
-	} catch (error) {
-		console.error(error);
+function setOptionsFieldsValues(options) {
+	for (const [key, value] of Object.entries(options)) {
+		setField(key, value);
 	}
 }
 
@@ -271,8 +318,11 @@ function element(id) {
 	return $(`#${id}`);
 }
 
-function getFieldsValuesAndClean(idFields) {
-	return toArray(idFields).map(getFieldValueAndClean);
+function getOptionsFieldsValues(idFields) {
+	return idFields.reduce((options, id) => {
+		options[id] = getFieldValueAndClean(id);
+		return options;
+	}, {});
 }
 
 function getFieldValueAndClean(idField) {
