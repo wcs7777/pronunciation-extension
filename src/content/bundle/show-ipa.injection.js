@@ -152,7 +152,7 @@
 		ipa="ipa",
 		ipaTimeout=3000,
 		ipaFontFamily="Arial",
-		ipaFontSizepx=20,
+		ipaFontSizePx=20,
 		ipaCloseShortcut="\\",
 		ipaCloseOnScroll=true,
 	}) {
@@ -162,9 +162,9 @@
 			timeout: ipaTimeout,
 			font: {
 				family: ipaFontFamily,
-				sizepx: ipaFontSizepx,
+				sizepx: ipaFontSizePx,
 			},
-			position: getPopupPosition(getTopCorrection(ipaFontSizepx)),
+			position: getPopupPosition(getTopCorrection(ipaFontSizePx)),
 			backgroundColor: backgroundColor(element),
 			color: color(element),
 			closeShortcut: ipaCloseShortcut,
@@ -172,8 +172,8 @@
 		});
 	}
 
-	function getTopCorrection(ipaFontSizepx) {
-		return parseFloat(ipaFontSizepx) * 2;
+	function getTopCorrection(ipaFontSizePx) {
+		return parseFloat(ipaFontSizePx) * 2;
 	}
 
 	function backgroundColor(element) {
@@ -225,7 +225,7 @@
 		ipa,
 		ipaTimeout,
 		ipaFontFamily,
-		ipaFontSizepx,
+		ipaFontSizePx,
 		ipaCloseShortcut,
 		ipaCloseOnScroll,
 	});

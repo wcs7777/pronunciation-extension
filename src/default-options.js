@@ -3,7 +3,7 @@ export default {
 	ipaEnabled: true,
 	ipaTimeout: 3000,
 	ipaFontFamily: "Lucida Sans Unicode",
-	ipaFontSizepx: 18,
+	ipaFontSizePx: 18,
 	ipaCloseShortcut: "\\\\",
 	ipaCloseOnScroll: true,
 	ipaUseContextColors: false,

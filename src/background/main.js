@@ -107,7 +107,7 @@ async function showIpa(word, tabId, useCache) {
 				...await optionsTable.get([
 					"ipaTimeout",
 					"ipaFontFamily",
-					"ipaFontSizepx",
+					"ipaFontSizePx",
 					"ipaCloseShortcut",
 					"ipaCloseOnScroll",
 					"ipaUseContextColors",

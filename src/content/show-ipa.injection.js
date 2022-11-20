@@ -4,7 +4,7 @@ showIpa({
 	ipa,
 	ipaTimeout,
 	ipaFontFamily,
-	ipaFontSizepx,
+	ipaFontSizePx,
 	ipaCloseShortcut,
 	ipaCloseOnScroll,
 });

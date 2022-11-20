@@ -20,7 +20,7 @@ import downloadObject from "../download-object.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
-		setOptionsFieldsValues(await optionsTable.getAll());
+		setFieldsValues(await optionsTable.getAll());
 	} catch (error) {
 		console.error(error);
 	}
@@ -31,11 +31,11 @@ element("options").addEventListener("submit", async (e) => {
 		e.preventDefault();
 		await optionsTable.set(
 			normalizeOptions(
-				getOptionsFieldsValues(await optionsTable.getKeys())
+				extractFieldsValues(await optionsTable.getKeys())
 			),
 		);
 		const options = await optionsTable.getAll();
-		setOptionsFieldsValues(options);
+		setFieldsValues(options);
 		console.log(options);
 	} catch (error) {
 		console.error(error);
@@ -69,8 +69,8 @@ element("setIPa").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		await ipaTable.set(
-			normalizeWord(getFieldValueAndClean("ipaWord")),
-			getFieldValueAndClean("ipa"),
+			normalizeWord(extractFieldValue("ipaWord")),
+			extractFieldValue("ipa"),
 		);
 	} catch (error) {
 		console.error(error);
@@ -80,8 +80,8 @@ element("setIPa").addEventListener("submit", async (e) => {
 element("setAudio").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
-		const word = normalizeWord(getFieldValueAndClean("audioWord"));
-		const file = getFileAndClean("audio");
+		const word = normalizeWord(extractFieldValue("audioWord"));
+		const file = extractFile("audio");
 		if (word && file) {
 			const audio = await url2audio(await blob2base64(file));
 			await setAudio(word, audio.src, audioTable);
@@ -164,7 +164,7 @@ element("updateIPaTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const id = "ipaTable";
-		const file = getFileAndClean(id);
+		const file = extractFile(id);
 		if (file) {
 			console.time(id);
 			await ipaTable.bulkSet(await file2object(file));
@@ -179,7 +179,7 @@ element("updateAudioTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const id = "audioTable";
-		const file = getFileAndClean(id);
+		const file = extractFile(id);
 		if (file) {
 			console.time(id);
 			await audioTable.bulkSet(await file2object(file));
@@ -194,7 +194,7 @@ element("updateOptionsTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const id = "optionsTable";
-		const file = getFileAndClean(id);
+		const file = extractFile(id);
 		if (file) {
 			console.time(id);
 			setOptions(await file2object(file));
@@ -227,7 +227,7 @@ element("updateOptionsTable").addEventListener("submit", async (e) => {
 	element("audioFetchFileTimeout"),
 	element("audioFetchScrapTimeout"),
 	element("audioGoogleSpeechSpeed"),
-	element("ipaFontSizepx"),
+	element("ipaFontSizePx"),
 ]
 	.forEach((field) => field.addEventListener("keydown", (e) => {
 		if (
@@ -253,13 +253,13 @@ element("ipaCloseShortcut").addEventListener("keydown", (e) => {
 });
 
 function setOptions(options) {
-	setOptionsFieldsValues(options);
+	setFieldsValues(options);
 	const form = element("options");
 	if (form.reportValidity()) {
 		form.requestSubmit();
 	} else {
 		optionsTable.getAll()
-			.then(setOptionsFieldsValues)
+			.then(setFieldsValues)
 			.catch(console.error);
 		console.log("Invalid options!");
 	}
@@ -283,7 +283,7 @@ function normalizeOptions(options) {
 		audioFetchFileTimeout: parseFloat(options.audioFetchFileTimeout),
 		audioFetchScrapTimeout: parseFloat(options.audioFetchScrapTimeout),
 		audioGoogleSpeechSpeed: parseFloat(options.audioGoogleSpeechSpeed),
-		ipaFontSizepx: parseFloat(options.ipaFontSizepx),
+		ipaFontSizePx: parseFloat(options.ipaFontSizePx),
 		ipaCloseShortcut: escapeShortcut(options.ipaCloseShortcut),
 		ipaCloseOnScroll: options.ipaCloseOnScroll === "true",
 	};
@@ -304,9 +304,9 @@ function isNavigationKey(keydownEvent) {
 		.includes(keydownEvent.key);
 }
 
-function setOptionsFieldsValues(options) {
-	for (const [key, value] of Object.entries(options)) {
-		setField(key, value);
+function setFieldsValues(ids2values) {
+	for (const [id, value] of Object.entries(ids2values)) {
+		setField(id, value);
 	}
 }
 
@@ -318,21 +318,21 @@ function element(id) {
 	return $(`#${id}`);
 }
 
-function getOptionsFieldsValues(idFields) {
-	return idFields.reduce((options, id) => {
-		options[id] = getFieldValueAndClean(id);
-		return options;
+function extractFieldsValues(idFields) {
+	return idFields.reduce((values, id) => {
+		values[id] = extractFieldValue(id);
+		return values;
 	}, {});
 }
 
-function getFieldValueAndClean(idField) {
+function extractFieldValue(idField) {
 	const field = element(idField);
 	const value = field.value.trim();
 	field.value = "";
 	return value;
 }
 
-function getFileAndClean(id) {
+function extractFile(id) {
 	const field = element(id);
 	const file = field.files?.[0];
 	field.value = "";
