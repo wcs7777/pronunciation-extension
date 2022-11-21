@@ -6,6 +6,10 @@ export function $$(selectors, target=document) {
 	return Array.from(target.querySelectorAll(selectors));
 }
 
+export function byId(elementId) {
+	return document.getElementById(elementId);
+}
+
 export function tag(tagName) {
 	return document.createElement(tagName);
 }

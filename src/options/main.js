@@ -6,11 +6,10 @@ import {
 } from "../tables.js";
 import defaultOptions from "../default-options.js";
 import {
-	$,
+	byId,
 	normalizeWord,
 	isAlphanumeric,
 	isNumber,
-	toArray,
 	file2object,
 	blob2base64,
 	url2audio,
@@ -26,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-element("options").addEventListener("submit", async (e) => {
+byId("options").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		await optionsTable.set(
@@ -42,7 +41,7 @@ element("options").addEventListener("submit", async (e) => {
 	}
 });
 
-element("removeGoogleSpeechAudios").addEventListener("click", async (e) => {
+byId("removeGoogleSpeechAudios").addEventListener("click", async (e) => {
 	try {
 		e.preventDefault();
 		const words = Object
@@ -56,7 +55,7 @@ element("removeGoogleSpeechAudios").addEventListener("click", async (e) => {
 	}
 });
 
-element("restoreDefaultOptions").addEventListener("click", (e) => {
+byId("restoreDefaultOptions").addEventListener("click", (e) => {
 	try {
 		e.preventDefault();
 		setOptions(defaultOptions);
@@ -65,7 +64,7 @@ element("restoreDefaultOptions").addEventListener("click", (e) => {
 	}
 });
 
-element("setIPa").addEventListener("submit", async (e) => {
+byId("setIPa").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		await ipaTable.set(
@@ -77,7 +76,7 @@ element("setIPa").addEventListener("submit", async (e) => {
 	}
 });
 
-element("setAudio").addEventListener("submit", async (e) => {
+byId("setAudio").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const word = normalizeWord(extractFieldValue("audioWord"));
@@ -91,10 +90,10 @@ element("setAudio").addEventListener("submit", async (e) => {
 	}
 });
 
-element("removeAudio").addEventListener("submit", async (e) => {
+byId("removeAudio").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
-		const field = element("word");
+		const field = byId("word");
 		const word = field.value;
 		await audioTable.remove(word);
 		console.log(`${word} audio removed`);
@@ -104,7 +103,7 @@ element("removeAudio").addEventListener("submit", async (e) => {
 	}
 });
 
-element("downloadIpaTable").addEventListener("click", async (e) => {
+byId("downloadIpaTable").addEventListener("click", async (e) => {
 	try {
 		e.preventDefault();
 		downloadObject(
@@ -118,7 +117,7 @@ element("downloadIpaTable").addEventListener("click", async (e) => {
 	}
 });
 
-element("downloadAudioTable").addEventListener("click", async (e) => {
+byId("downloadAudioTable").addEventListener("click", async (e) => {
 	try {
 		e.preventDefault();
 		downloadObject(
@@ -132,7 +131,7 @@ element("downloadAudioTable").addEventListener("click", async (e) => {
 	}
 });
 
-element("downloadOptionsTable").addEventListener("click", async (e) => {
+byId("downloadOptionsTable").addEventListener("click", async (e) => {
 	try {
 		e.preventDefault();
 		downloadObject(
@@ -146,7 +145,7 @@ element("downloadOptionsTable").addEventListener("click", async (e) => {
 	}
 });
 
-element("downloadAllTables").addEventListener("click", async (e) => {
+byId("downloadAllTables").addEventListener("click", async (e) => {
 	try {
 		e.preventDefault();
 		downloadObject(
@@ -160,7 +159,7 @@ element("downloadAllTables").addEventListener("click", async (e) => {
 	}
 });
 
-element("updateIPaTable").addEventListener("submit", async (e) => {
+byId("updateIPaTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const id = "ipaTable";
@@ -175,7 +174,7 @@ element("updateIPaTable").addEventListener("submit", async (e) => {
 	}
 });
 
-element("updateAudioTable").addEventListener("submit", async (e) => {
+byId("updateAudioTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const id = "audioTable";
@@ -190,7 +189,7 @@ element("updateAudioTable").addEventListener("submit", async (e) => {
 	}
 });
 
-element("updateOptionsTable").addEventListener("submit", async (e) => {
+byId("updateOptionsTable").addEventListener("submit", async (e) => {
 	try {
 		e.preventDefault();
 		const id = "optionsTable";
@@ -206,55 +205,30 @@ element("updateOptionsTable").addEventListener("submit", async (e) => {
 });
 
 [
-	element("accessKey"),
-	element("setAudioShortcut"),
-	element("setIpaShortcut"),
-	element("defaultIpaShortcut"),
+	byId("accessKey"),
+	byId("setAudioShortcut"),
+	byId("setIpaShortcut"),
+	byId("defaultIpaShortcut"),
+	byId("ipaCloseShortcut"),
 ]
-	.forEach((field) => field.addEventListener("keydown", (e) => {
-		if (!isNavigationKey(e)) {
-			e.preventDefault();
-			if (isAlphanumeric(e.key)) {
-				e.target.value = e.key.toUpperCase();
-			}
-		}
-	}));
+	.forEach(onlyShortcut);
 
 [
-	element("ipaTimeout"),
-	element("audioVolume"),
-	element("audioPlaybackRate"),
-	element("audioFetchFileTimeout"),
-	element("audioFetchScrapTimeout"),
-	element("audioGoogleSpeechSpeed"),
-	element("ipaFontSizePx"),
+	byId("ipaTimeout"),
+	byId("ipaFontSizePx"),
+	byId("audioVolume"),
+	byId("audioPlaybackRate"),
+	byId("audioFetchFileTimeout"),
+	byId("audioFetchScrapTimeout"),
+	byId("audioGoogleSpeechSpeed"),
 ]
-	.forEach((field) => field.addEventListener("keydown", (e) => {
-		if (
-			!isNumber(e.key) &&
-			!isNavigationKey(e) &&
-			(e.key !== "." || field.value.includes("."))
-		) {
-			e.preventDefault();
-		}
-	}));
+	.forEach(onlyFloat);
 
-element("ipaFontFamily").addEventListener("keydown", (e) => {
-	if (!isAlphanumeric(e.key) && e.key !== " " && !isNavigationKey(e)) {
-		e.preventDefault();
-	}
-});
-
-element("ipaCloseShortcut").addEventListener("keydown", (e) => {
-	if (e.key.length === 1) {
-		e.preventDefault();
-		e.target.value = e.key.toUpperCase();
-	}
-});
+onlyAlphanumeric(byId("ipaFontFamily"));
 
 function setOptions(options) {
 	setFieldsValues(options);
-	const form = element("options");
+	const form = byId("options");
 	if (form.reportValidity()) {
 		form.requestSubmit();
 	} else {
@@ -311,11 +285,7 @@ function setFieldsValues(ids2values) {
 }
 
 function setField(id, value) {
-	return element(id).value = value;
-}
-
-function element(id) {
-	return $(`#${id}`);
+	return byId(id).value = value;
 }
 
 function extractFieldsValues(idFields) {
@@ -326,14 +296,14 @@ function extractFieldsValues(idFields) {
 }
 
 function extractFieldValue(idField) {
-	const field = element(idField);
+	const field = byId(idField);
 	const value = field.value.trim();
 	field.value = "";
 	return value;
 }
 
 function extractFile(id) {
-	const field = element(id);
+	const field = byId(id);
 	const file = field.files?.[0];
 	field.value = "";
 	return file;
@@ -341,4 +311,34 @@ function extractFile(id) {
 
 function escapeShortcut(shortcut) {
 	return shortcut !== "\\" && shortcut !== "\"" ? shortcut : `\\${shortcut}`;
+}
+
+function onlyAlphanumeric(target) {
+	target.addEventListener("keydown", (e) => {
+		if (!isAlphanumeric(e.key) && e.key !== " " && !isNavigationKey(e)) {
+			e.preventDefault();
+		}
+	});
+}
+
+function onlyFloat(target) {
+	target.addEventListener("keydown", (e) => {
+		if (
+			!isNumber(e.key) &&
+			(e.key !== "." || e.target.value.includes(".")) &&
+			!isNavigationKey(e) &&
+			true
+		) {
+			e.preventDefault();
+		}
+	});
+}
+
+function onlyShortcut(target) {
+	target.addEventListener("keydown", (e) => {
+		if (e.key.length === 1) {
+			e.preventDefault();
+			e.target.value = e.key.toUpperCase();
+		}
+	});
 }
