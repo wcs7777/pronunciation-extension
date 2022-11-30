@@ -66,7 +66,9 @@ export async function pronunciationAudio(
 				return !isNaN(error) && parseInt(error, 10) === 429;
 			}
 		}
-		await setAudio(word, src, audioTable);
+		if (src) {
+			await setAudio(word, src, audioTable);
+		}
 	}
 	console.timeEnd(`playAudio - ${word}`);
 	return audio ? play(audio, audioVolume, audioPlaybackRate) : false;
