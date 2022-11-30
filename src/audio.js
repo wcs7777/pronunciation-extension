@@ -160,7 +160,7 @@ async function audioFromGoogleDefine(word) {
 		throw fail;
 	}
 	const src = source.getAttribute("src");
-	return url2audio(!src.startsWith("http") ? "https:" + src : src);
+	return url2audio(!isUrl(value) ? "https:" + src : src);
 }
 
 function isUrl(value) {
