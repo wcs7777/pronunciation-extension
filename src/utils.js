@@ -58,11 +58,31 @@ export function rgba2rgb(rgba) {
 	}
 }
 
-export function onAppend(target, options, listener) {
+export function onAppend({
+	selectors,
+	target=document.body,
+	options={ childList: true },
+	listener,
+	errorLogger=console.error,
+}={}) {
 	const mutation = new MutationObserver((mutations) => {
 		for (const mutation of mutations) {
-			if (mutation.addedNodes.length > 0) {
-				listener(Array.from(mutation.addedNodes), mutation.target);
+			const addedNodes = Array.from(mutation.addedNodes);
+			let nodes = [];
+			if (addedNodes.length > 0) {
+				if (selectors) {
+					nodes = $$(selectors, target).filter((element) => {
+						return addedNodes.some((added) => {
+							return added.contains(element);
+						});
+					});
+				} else {
+					nodes = addedNodes;
+				}
+			}
+			if (nodes.length > 0) {
+				listener(nodes, mutation.target)?.catch(errorLogger);
+				break;
 			}
 		}
 	});
@@ -140,6 +160,15 @@ export function separator() {
 
 export function isString(value) {
   return Object.prototype.toString.call(value) === "[object String]"
+}
+
+export function sorted(...values) {
+	for (let i = 1; i < values.length; ++i) {
+		if (values[i - 1] > values[i]) {
+			return false;
+		}
+	}
+	return true;
 }
 
 export async function url2document(url, credentials="omit") {

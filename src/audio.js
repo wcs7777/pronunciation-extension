@@ -8,6 +8,7 @@ import {
 	isString,
 	normalizeWord,
 	promiseTimeoutReject,
+	sorted,
 } from "./utils.js";
 
 const fail = false;
@@ -90,10 +91,10 @@ export async function setAudio(word, audio, audioTable) {
 }
 
 export async function play(audio, volume, playbackRate) {
-	if (0 <= volume && volume <= 1) {
+	if (sorted(0, volume, 1)) {
 		audio.volume = volume;
 	}
-	if (0.2 <= playbackRate && playbackRate <= 2.0) {
+	if (sorted(0.2, playbackRate, 2.0)) {
 		audio.playbackRate = playbackRate;
 	}
 	await audio.play();

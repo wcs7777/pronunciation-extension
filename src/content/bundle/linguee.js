@@ -17,20 +17,36 @@
 		return document.createTextNode(data);
 	}
 
-	function onAppend(target, options, listener) {
+	function onAppend({
+		selectors,
+		target=document.body,
+		options={ childList: true },
+		listener,
+		errorLogger=console.error,
+	}={}) {
 		const mutation = new MutationObserver((mutations) => {
 			for (const mutation of mutations) {
-				if (mutation.addedNodes.length > 0) {
-					listener(Array.from(mutation.addedNodes), mutation.target);
+				const addedNodes = Array.from(mutation.addedNodes);
+				let nodes = [];
+				if (addedNodes.length > 0) {
+					if (selectors) {
+						nodes = $$(selectors, target).filter((element) => {
+							return addedNodes.some((added) => {
+								return added.contains(element);
+							});
+						});
+					} else {
+						nodes = addedNodes;
+					}
+				}
+				if (nodes.length > 0) {
+					listener(nodes, mutation.target)?.catch(errorLogger);
+					break;
 				}
 			}
 		});
 		mutation.observe(target, options);
 		return mutation;
-	}
-
-	function isNodeType(node, type) {
-		return node.nodeName.toUpperCase() === type.toUpperCase();
 	}
 
 	function normalizeWord(word) {
@@ -504,18 +520,18 @@
 		.then(() => console.log("update database with linguee"))
 		.catch(console.error);
 
-	onAppend(document.body, { childList: true }, async (nodes) => {
-		for (const node of nodes) {
-			if (isNodeType(node, "audio")) {
+	onAppend({
+		selectors: "audio#audio-player",
+		listener: (nodes) => {
+			for (const node of nodes) {
 				const source = $("source", node);
-				console.log("source", source);
 				if (source) {
 					audio = source.getAttribute("src");
 					console.log(`audio: ${audio}`);
 					break;
 				}
 			}
-		}
+		},
 	});
 
 	for (const lemma of $$("h2.line.lemma_desc")) {

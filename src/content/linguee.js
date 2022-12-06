@@ -1,4 +1,4 @@
-import { $, $$, isNodeType, normalizeWord, onAppend } from "../utils.js";
+import { $, $$, normalizeWord, onAppend } from "../utils.js";
 import updateDatabaseWithWebsite from "./update-database-with-website.js";
 
 let audio = "";
@@ -16,18 +16,18 @@ updateDatabaseWithWebsite(
 	.then(() => console.log("update database with linguee"))
 	.catch(console.error);
 
-onAppend(document.body, { childList: true }, async (nodes) => {
-	for (const node of nodes) {
-		if (isNodeType(node, "audio")) {
+onAppend({
+	selectors: "audio#audio-player",
+	listener: (nodes) => {
+		for (const node of nodes) {
 			const source = $("source", node);
-			console.log("source", source);
 			if (source) {
 				audio = source.getAttribute("src");
 				console.log(`audio: ${audio}`);
 				break;
 			}
 		}
-	}
+	},
 });
 
 for (const lemma of $$("h2.line.lemma_desc")) {
