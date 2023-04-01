@@ -42,13 +42,13 @@ let cache = undefined;
 	.then(console.log)
 	.catch(console.error);
 
-async function pronounce(word, tabId) {
+async function pronounce({ word, cache, tabId, frameId=0 }={}) {
 	try {
 		if (cache.getOptions("audioEnabled")) {
 			pronounceWithAudio(word, tabId).catch(console.error);
 		}
 		if (cache.getOptions("ipaEnabled")) {
-			pronounceWithIpa(word, tabId).catch(console.error);
+			pronounceWithIpa(word, tabId, frameId).catch(console.error);
 		}
 	} catch (error) {
 		console.error(error);
@@ -84,7 +84,7 @@ async function pronounceWithAudio(word, tabId) {
 	}
 }
 
-async function pronounceWithIpa(word, tabId) {
+async function pronounceWithIpa(word, tabId, frameId=0) {
 	if (!cache.getIpa(word)) {
 		let ipa = await ipaTable.get(word);
 		if (!ipa) {
@@ -99,7 +99,6 @@ async function pronounceWithIpa(word, tabId) {
 	const ipa = cache.getIpa(word);
 	if (ipa) {
 		await setInjectedScriptVariables(
-			tabId,
 			{
 				ipa,
 				...cache.getOptions([
@@ -111,16 +110,26 @@ async function pronounceWithIpa(word, tabId) {
 					"ipaUseContextColors",
 				]),
 			},
+			tabId,
+			frameId,
 		);
 		injectScript(
 			tabId,
-			{ file: "../content/bundle/show-ipa.injection.js" },
+			{
+				frameId,
+				file: "../content/bundle/show-ipa.injection.js",
+			},
 		);
 	}
 }
 
 function menuItemOnClick(info, tab) {
-	return pronounce(normalizeWord(info.selectionText), tab.id);
+	return pronounce({
+		cache,
+		word: normalizeWord(info.selectionText),
+		tabId: tab.id,
+		frameId: info.frameId,
+	});
 }
 
 async function actionOnClicked(tab) {
@@ -130,7 +139,11 @@ async function actionOnClicked(tab) {
 	);
 	const selectionText = normalizeWord(result[0]);
 	if (selectionText.length > 0) {
-		return pronounce(selectionText, tab.id);
+		return pronounce({
+			cache,
+			word: selectionText,
+			tabId: tab.id,
+		});
 	}
 }
 
@@ -142,7 +155,7 @@ function injectScript(tabId, details) {
 	return browser.tabs.executeScript(tabId, details);
 }
 
-function setInjectedScriptVariables(tabId, obj) {
+function setInjectedScriptVariables(obj, tabId, frameId=0) {
 	const variables = Object
 		.entries(obj)
 		.map(([variable, value]) => {
@@ -155,7 +168,10 @@ function setInjectedScriptVariables(tabId, obj) {
 	if (variables.length > 0) {
 		return injectScript(
 			tabId,
-			{ code: `var ${variables.join(", ")};` },
+			{
+				frameId,
+				code: `var ${variables.join(", ")};`,
+			},
 		);
 	}
 }

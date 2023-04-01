@@ -20,7 +20,7 @@
       "js": ["src/content/bundle/tophonetics.js"]
     },
     {
-      "matches": ["https://www.linguee.com/*","https://www.linguee.com.br/*"],
+      "matches": ["https://www.linguee.com/*", "https://www.linguee.com.br/*"],
       "js": ["src/content/bundle/linguee.js"]
     },
     {
