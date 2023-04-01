@@ -1,31 +1,34 @@
 import {
 	$,
-	untilResolve,
-	replaceQuotesByUnderline,
-	url2base64,
-	url2document,
-	url2audio,
 	isString,
 	normalizeWord,
 	promiseTimeoutReject,
+	replaceQuotesByUnderline,
 	sorted,
+	untilResolve,
+	url2audio,
+	url2base64,
+	url2document
 } from "./utils.js";
 
 const fail = false;
 export const speech = "s";
 
-export async function pronunciationAudio(
+export async function getAudio(
 	word,
 	{
 		audioTable,
-		audioVolume=1.0,
-		audioPlaybackRate=1.0,
 		audioFetchFileTimeout=2000,
 		audioFetchScrapTimeout=2000,
 		audioGoogleSpeechSpeed=0.5,
 	}={},
 ) {
-	console.time(`playAudio - ${word}`);
+
+	function audioFromTimeout(audioFromFn, timeout, ...args) {
+		return promiseTimeoutReject(audioFromFn(word, ...args), timeout, false);
+	}
+
+	console.time(`getAudio - ${word}`);
 	let audio = await audioFromTable(word, audioTable, audioGoogleSpeechSpeed)
 		.catch((error) => {
 			if (error !== fail) {
@@ -71,12 +74,9 @@ export async function pronunciationAudio(
 			await setAudio(word, src, audioTable);
 		}
 	}
-	console.timeEnd(`playAudio - ${word}`);
-	return audio ? play(audio, audioVolume, audioPlaybackRate) : false;
-
-	function audioFromTimeout(audioFromFn, timeout, ...args) {
-		return promiseTimeoutReject(audioFromFn(word, ...args), timeout, false);
-	}
+	console.timeEnd(`getAudio - ${word}`);
+	// return audio ? play(audio, audioVolume, audioPlaybackRate) : false;
+	return audio;
 }
 
 export async function setAudio(word, audio, audioTable) {
@@ -90,7 +90,7 @@ export async function setAudio(word, audio, audioTable) {
 	return message;
 }
 
-export async function play(audio, volume, playbackRate) {
+export async function playAudio(audio, volume, playbackRate) {
 	if (sorted(0, volume, 1)) {
 		audio.volume = volume;
 	}

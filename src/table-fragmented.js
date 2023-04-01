@@ -5,7 +5,7 @@ import {
 	isAlphanumeric,
 	isString,
 	symbolsFragment,
-	toArray,
+	toArray
 } from "./utils.js";
 
 export default class TableFragmented {

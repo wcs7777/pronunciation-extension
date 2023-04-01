@@ -1,21 +1,21 @@
+import { setAudio, speech } from "../audio.js";
+import defaultOptions from "../default-options.js";
+import downloadObject from "../download-object.js";
 import {
-	optionsTable,
-	ipaTable,
 	audioTable,
 	database,
+	ipaTable,
+	optionsTable
 } from "../tables.js";
-import defaultOptions from "../default-options.js";
 import {
+	blob2base64,
 	byId,
-	normalizeWord,
+	file2object,
 	isAlphanumeric,
 	isNumber,
-	file2object,
-	blob2base64,
-	url2audio,
+	normalizeWord,
+	url2audio
 } from "../utils.js";
-import { speech, setAudio } from "../audio.js";
-import downloadObject from "../download-object.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {

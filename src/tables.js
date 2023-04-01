@@ -1,6 +1,6 @@
 import localStorage from "./local-storage.js";
-import Table from "./table.js";
 import TableFragmented from "./table-fragmented.js";
+import Table from "./table.js";
 
 export const database = localStorage;
 export const ipaTable = new TableFragmented("ipa", database);

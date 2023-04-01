@@ -1,16 +1,18 @@
-import {
-	utilsTable,
-	ipaTable,
-	ipaDefaultTable,
-	optionsTable,
-	audioTable,
-} from "../tables.js";
+import { getAudio, playAudio } from "../audio.js";
+import Cache from "../cache.js";
+import fallbackIpa from "../fallback-ipa.js";
 import populateIpa from "../populate-ipa.js";
 import populateOptions from "../populate-options.js";
+import {
+	audioTable,
+	ipaDefaultTable,
+	ipaTable,
+	optionsTable,
+	utilsTable
+} from "../tables.js";
 import { isString, normalizeWord } from "../utils.js";
-import { pronunciationAudio, play } from "../audio.js";
-import fallbackIpa from "../fallback-ipa.js";
-import cache from "../cache.js";
+
+let cache = undefined;
 
 (async () => {
 	try {
@@ -30,13 +32,10 @@ import cache from "../cache.js";
 		if (!browser.storage.onChanged.hasListener(storageOnChanged)) {
 			browser.storage.onChanged.addListener(storageOnChanged);
 		}
-		setMenuItem(await optionsTable.get("accessKey"));
+		await resetCache();
+		setMenuItem(cache.getOptions("accessKey"));
 	} catch (error) {
 		console.error(error);
-	}
-	browser.alarms.create("cache", { periodInMinutes: 5 });
-	if (!browser.alarms.onAlarm.hasListener(onAlarm)) {
-		browser.alarms.onAlarm.addListener(onAlarm);
 	}
 	return "Initialization finished";
 })()
@@ -45,49 +44,49 @@ import cache from "../cache.js";
 
 async function pronounce(word, tabId) {
 	try {
-		const useCache = cache.contains(word);
-		if (await optionsTable.get("audioEnabled")) {
-			playAudio(word, tabId, useCache)
-				.catch(console.error);
+		if (cache.getOptions("audioEnabled")) {
+			pronounceWithAudio(word, tabId).catch(console.error);
 		}
-		if (await optionsTable.get("ipaEnabled")) {
-			showIpa(word, tabId, useCache)
-				.catch(console.error);
+		if (cache.getOptions("ipaEnabled")) {
+			pronounceWithIpa(word, tabId).catch(console.error);
 		}
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-async function playAudio(word, tabId, useCache) {
+async function pronounceWithAudio(word, tabId) {
 	if (!await isTabMuted(tabId)) {
-		if (!useCache) {
-			const audio = await pronunciationAudio(
+		if (!cache.getAudio(word)) {
+			cache.addAudio(
 				word,
-				{
-					...await optionsTable.get([
-						"audioVolume",
-						"audioPlaybackRate",
-						"audioFetchFileTimeout",
-						"audioFetchScrapTimeout",
-						"audioGoogleSpeechSpeed",
-					]),
-					audioTable,
-				},
+				await getAudio(
+					word,
+					{
+						audioTable,
+						...cache.getOptions([
+							"audioFetchFileTimeout",
+							"audioFetchScrapTimeout",
+							"audioGoogleSpeechSpeed",
+						]),
+					},
+				),
 			);
-			return cache.setAudio(word, audio);
-		} else {
-			const audio = cache.getAudio(word);
-			await audio.play();
-			return audio;
+		}
+		const audio = cache.getAudio(word);
+		if (audio) {
+			await playAudio(
+				audio,
+				cache.getOptions("audioVolume"),
+				cache.getOptions("audioPlaybackRate"),
+			);
 		}
 	}
 }
 
-async function showIpa(word, tabId, useCache) {
-	let ipa = "";
-	if (!useCache) {
-		ipa = await ipaTable.get(word);
+async function pronounceWithIpa(word, tabId) {
+	if (!cache.getIpa(word)) {
+		let ipa = await ipaTable.get(word);
 		if (!ipa) {
 			ipa = await fallbackIpa(word);
 			if (ipa) {
@@ -95,16 +94,15 @@ async function showIpa(word, tabId, useCache) {
 				console.log(`(ipa saved) ${word}: ${ipa}`);
 			}
 		}
-	} else {
-		ipa = cache.getIpa(word);
+		cache.addIpa(word, ipa);
 	}
+	const ipa = cache.getIpa(word);
 	if (ipa) {
-		cache.setIpa(word, ipa);
 		await setInjectedScriptVariables(
 			tabId,
 			{
 				ipa,
-				...await optionsTable.get([
+				...cache.getOptions([
 					"ipaTimeout",
 					"ipaFontFamily",
 					"ipaFontSizePx",
@@ -114,7 +112,7 @@ async function showIpa(word, tabId, useCache) {
 				]),
 			},
 		);
-		return injectScript(
+		injectScript(
 			tabId,
 			{ file: "../content/bundle/show-ipa.injection.js" },
 		);
@@ -162,10 +160,15 @@ function setInjectedScriptVariables(tabId, obj) {
 	}
 }
 
+async function resetCache() {
+	cache = new Cache();
+	cache.setOptions(await optionsTable.getAll());
+}
+
 async function storageOnChanged(changes) {
 	try {
-		cache.empty();
-		const accessKey = await optionsTable.get("accessKey");
+		await resetCache();
+		const accessKey = cache.getOptions("accessKey");
 		if (
 			changes[optionsTable.name] &&
 			await utilsTable.get("currentAccessKey") !== accessKey
@@ -174,16 +177,6 @@ async function storageOnChanged(changes) {
 		}
 	} catch (error) {
 		console.error(error);
-	}
-}
-
-function onAlarm(alarm) {
-	if (alarm.name === "cache") {
-		const length = cache.length();
-		console.log(`cache length: ${length}`);
-		if (length > 1000) {
-			cache.empty();
-		}
 	}
 }
 

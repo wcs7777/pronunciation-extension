@@ -1,45 +1,43 @@
-const cache = {
-	list: {},
+export default class Cache {
+	constructor() {
+		this.audios = {};
+		this.ipas = {};
+		this.options = {};
+	}
 
-	contains(word) {
-		return (
-			this.getIpa(word) !== undefined &&
-			this.getAudio(word) !== undefined &&
-			true
-		);
-	},
-
-	setIpa(word, ipa) {
-		this.list[word] = {
-			...this.list[word],
-			ipa,
-		};
-		return ipa;
-	},
-
-	setAudio(word, audio) {
-		this.list[word] = {
-			...this.list[word],
-			audio,
-		};
-		return audio;
-	},
+	addIpa(word, ipa) {
+		this.ipas[word] = ipa;
+	}
 
 	getIpa(word) {
-		return this.list[word]?.ipa;
-	},
+		return this.ipas[word];
+	}
+
+	addAudio(word, audio) {
+		this.audios[word] = audio;
+	}
 
 	getAudio(word) {
-		return this.list[word]?.audio;
-	},
+		return this.audios[word];
+	}
 
-	empty() {
-		return this.list = {};
-	},
+	setOptions(options) {
+		this.options = options;
+	}
 
-	length() {
-		return Object.keys(this.list).length;
-	},
-};
+	getOptions(keys) {
+		if (Array.isArray(keys)) {
+			const options = {};
+			for (const key of keys) {
+				options[key] = this.options[key];
+			}
+			return options;
+		} else if (keys) {
+			return this.options[keys];
+		} else {
+			return this.options;
+		}
+	}
 
-export default cache;
+}
+

@@ -1,4 +1,4 @@
-import { $, url2document, normalizeWord } from "./utils.js";
+import { $, normalizeWord, url2document } from "./utils.js";
 
 export default async function fallbackIpa(word) {
 	try {
