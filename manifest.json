@@ -33,7 +33,7 @@
     "persistent": true
   },
   "options_ui": {
-    "page": "src/options/background.html"
+    "page": "src/options/options.html"
   },
   "browser_action": {
     "default_icon": {
