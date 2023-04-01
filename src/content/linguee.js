@@ -1,4 +1,4 @@
-import { $, $$, normalizeWord, onAppend } from "../utils.js";
+import { $, $$, normalizeWord, onAppend } from "../utils/utils.js";
 import updateDatabaseWithWebsite from "./update-database-with-website.js";
 
 let audio = "";

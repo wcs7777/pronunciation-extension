@@ -1,5 +1,5 @@
-import showPopup from "../show-popup.js";
-import { getInheritedBackgroundColor, getStyle, rgba2rgb } from "../utils.js";
+import showPopup from "../utils/show-popup.js";
+import { getInheritedBackgroundColor, getStyle, rgba2rgb } from "../utils/utils.js";
 
 export default function showIpa({
 	ipa="ipa",

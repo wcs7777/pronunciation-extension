@@ -1,12 +1,12 @@
-import { setAudio } from "../audio.js";
-import showPopup from "../show-popup.js";
+import { setAudio } from "../utils/audio.js";
+import showPopup from "../utils/show-popup.js";
 import {
 	audioTable,
 	ipaDefaultTable,
 	ipaTable,
 	optionsTable
-} from "../tables.js";
-import { asyncReduce, url2audio } from "../utils.js";
+} from "../utils/tables.js";
+import { asyncReduce, url2audio } from "../utils/utils.js";
 
 export default async function updateDatabaseWithWebsite(
 	options={

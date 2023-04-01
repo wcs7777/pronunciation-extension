@@ -1,4 +1,4 @@
-import { $, $$, normalizeWord } from "../utils.js";
+import { $, $$, normalizeWord } from "../utils/utils.js";
 import updateDatabaseWithWebsite from "./update-database-with-website.js";
 
 let lastAudioPlayed = $("div.sound.audio_play_button.pron-us");

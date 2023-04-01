@@ -1,4 +1,4 @@
-import { $, normalizeWord } from "../utils.js";
+import { $, normalizeWord } from "../utils/utils.js";
 import updateDatabaseWithWebsite from "./update-database-with-website.js";
 
 updateDatabaseWithWebsite(

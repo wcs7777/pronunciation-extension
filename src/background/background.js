@@ -1,16 +1,16 @@
-import { getAudio, playAudio } from "../audio.js";
-import Cache from "../cache.js";
-import fallbackIpa from "../fallback-ipa.js";
-import populateIpa from "../populate-ipa.js";
-import populateOptions from "../populate-options.js";
+import { getAudio, playAudio } from "../utils/audio.js";
+import Cache from "../utils/cache.js";
+import fallbackIpa from "../utils/fallback-ipa.js";
+import populateIpa from "../utils/populate-ipa.js";
+import populateOptions from "../utils/populate-options.js";
 import {
 	audioTable,
 	ipaDefaultTable,
 	ipaTable,
 	optionsTable,
 	utilsTable
-} from "../tables.js";
-import { isString, normalizeWord } from "../utils.js";
+} from "../utils/tables.js";
+import { isString, normalizeWord } from "../utils/utils.js";
 
 let cache = undefined;
 
