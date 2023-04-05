@@ -1,5 +1,5 @@
 const configs = createConfigs([
-	"show-ipa.injection",
+	"messages",
 	"cambridge",
 	"howjsay",
 	"tophonetics",

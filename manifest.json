@@ -7,6 +7,10 @@
     "48": "icons/icon.png"
   },
   "content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["src/content/bundle/messages.js"]
+		},
     {
       "matches": ["https://dictionary.cambridge.org/us/dictionary/english/*"],
       "js": ["src/content/bundle/cambridge.js"]

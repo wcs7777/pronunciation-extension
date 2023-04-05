@@ -258,7 +258,6 @@ function normalizeOptions(options) {
 		audioFetchScrapTimeout: parseFloat(options.audioFetchScrapTimeout),
 		audioGoogleSpeechSpeed: parseFloat(options.audioGoogleSpeechSpeed),
 		ipaFontSizePx: parseFloat(options.ipaFontSizePx),
-		ipaCloseShortcut: escapeShortcut(options.ipaCloseShortcut),
 		ipaCloseOnScroll: options.ipaCloseOnScroll === "true",
 	};
 }
@@ -307,10 +306,6 @@ function extractFile(id) {
 	const file = field.files?.[0];
 	field.value = "";
 	return file;
-}
-
-function escapeShortcut(shortcut) {
-	return shortcut !== "\\" && shortcut !== "\"" ? shortcut : `\\${shortcut}`;
 }
 
 function onlyAlphanumeric(target) {

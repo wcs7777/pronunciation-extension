@@ -1,13 +1,26 @@
 import showPopup from "../utils/show-popup.js";
 import { getInheritedBackgroundColor, getStyle, rgba2rgb } from "../utils/utils.js";
 
-export default function showIpa({
+if (!browser.runtime.onMessage.hasListener(onMessage)) {
+	browser.runtime.onMessage.addListener(onMessage);
+}
+
+function onMessage(message) {
+	if (message.showIpaOptions) {
+		showIpa(message.showIpaOptions);
+	} else if (message.getSelectionText) {
+		return Promise.resolve(getSelectionText());
+	}
+}
+
+function showIpa({
 	ipa="ipa",
 	ipaTimeout=3000,
 	ipaFontFamily="Arial",
 	ipaFontSizePx=20,
 	ipaCloseShortcut="\\",
 	ipaCloseOnScroll=true,
+	ipaUseContextColors=false,
 }) {
 	const element = getFocusElement();
 	showPopup({
@@ -18,8 +31,8 @@ export default function showIpa({
 			sizepx: ipaFontSizePx,
 		},
 		position: getPopupPosition(getTopCorrection(ipaFontSizePx)),
-		backgroundColor: backgroundColor(element),
-		color: color(element),
+		backgroundColor: backgroundColor(element, ipaUseContextColors),
+		color: color(element, ipaUseContextColors),
 		closeShortcut: ipaCloseShortcut,
 		closeOnScroll: ipaCloseOnScroll,
 	});
@@ -29,7 +42,7 @@ function getTopCorrection(ipaFontSizePx) {
 	return parseFloat(ipaFontSizePx) * 2;
 }
 
-function backgroundColor(element) {
+function backgroundColor(element, ipaUseContextColors) {
 	return (
 		!ipaUseContextColors ?
 		undefined :
@@ -37,7 +50,7 @@ function backgroundColor(element) {
 	);
 }
 
-function color(element) {
+function color(element, ipaUseContextColors) {
 	return (
 		!ipaUseContextColors ?
 		undefined :
@@ -73,3 +86,8 @@ function getPopupPosition(
 		return fallbackPosition;
 	}
 }
+
+function getSelectionText() {
+	return window.getSelection().toString();
+}
+

@@ -148,6 +148,18 @@
 		}
 	}
 
+	if (!browser.runtime.onMessage.hasListener(onMessage)) {
+		browser.runtime.onMessage.addListener(onMessage);
+	}
+
+	function onMessage(message) {
+		if (message.showIpaOptions) {
+			showIpa(message.showIpaOptions);
+		} else if (message.getSelectionText) {
+			return Promise.resolve(getSelectionText());
+		}
+	}
+
 	function showIpa({
 		ipa="ipa",
 		ipaTimeout=3000,
@@ -155,6 +167,7 @@
 		ipaFontSizePx=20,
 		ipaCloseShortcut="\\",
 		ipaCloseOnScroll=true,
+		ipaUseContextColors=false,
 	}) {
 		const element = getFocusElement();
 		showPopup({
@@ -165,8 +178,8 @@
 				sizepx: ipaFontSizePx,
 			},
 			position: getPopupPosition(getTopCorrection(ipaFontSizePx)),
-			backgroundColor: backgroundColor(element),
-			color: color(element),
+			backgroundColor: backgroundColor(element, ipaUseContextColors),
+			color: color(element, ipaUseContextColors),
 			closeShortcut: ipaCloseShortcut,
 			closeOnScroll: ipaCloseOnScroll,
 		});
@@ -176,7 +189,7 @@
 		return parseFloat(ipaFontSizePx) * 2;
 	}
 
-	function backgroundColor(element) {
+	function backgroundColor(element, ipaUseContextColors) {
 		return (
 			!ipaUseContextColors ?
 			undefined :
@@ -184,7 +197,7 @@
 		);
 	}
 
-	function color(element) {
+	function color(element, ipaUseContextColors) {
 		return (
 			!ipaUseContextColors ?
 			undefined :
@@ -221,13 +234,8 @@
 		}
 	}
 
-	showIpa({
-		ipa,
-		ipaTimeout,
-		ipaFontFamily,
-		ipaFontSizePx,
-		ipaCloseShortcut,
-		ipaCloseOnScroll,
-	});
+	function getSelectionText() {
+		return window.getSelection().toString();
+	}
 
 })();

@@ -98,27 +98,22 @@ async function pronounceWithIpa(word, tabId, frameId=0) {
 	}
 	const ipa = cache.getIpa(word);
 	if (ipa) {
-		await setInjectedScriptVariables(
-			{
-				ipa,
-				...cache.getOptions([
-					"ipaTimeout",
-					"ipaFontFamily",
-					"ipaFontSizePx",
-					"ipaCloseShortcut",
-					"ipaCloseOnScroll",
-					"ipaUseContextColors",
-				]),
-			},
-			tabId,
-			frameId,
-		);
-		injectScript(
+		await browser.tabs.sendMessage(
 			tabId,
 			{
-				frameId,
-				file: "../content/bundle/show-ipa.injection.js",
+				showIpaOptions: {
+					ipa,
+					...cache.getOptions([
+						"ipaTimeout",
+						"ipaFontFamily",
+						"ipaFontSizePx",
+						"ipaCloseShortcut",
+						"ipaCloseOnScroll",
+						"ipaUseContextColors",
+					]),
+				},
 			},
+			{ frameId },
 		);
 	}
 }
@@ -133,47 +128,24 @@ function menuItemOnClick(info, tab) {
 }
 
 async function actionOnClicked(tab) {
-	const result = await injectScript(
-		tab.id,
-		{ file: "../content/get-selection-text.injection.js" },
-	);
-	const selectionText = normalizeWord(result[0]);
-	if (selectionText.length > 0) {
-		return pronounce({
-			cache,
-			word: selectionText,
-			tabId: tab.id,
-		});
+	try {
+		const selectionText = normalizeWord(
+			await browser.tabs.sendMessage(tab.id, { getSelectionText: true }),
+		);
+		if (selectionText.length > 0) {
+			return pronounce({
+				cache,
+				word: selectionText,
+				tabId: tab.id,
+			});
+		}
+	} catch (error) {
+		console.error(error);
 	}
 }
 
 async function isTabMuted(tabId) {
 	return (await browser.tabs.get(tabId)).mutedInfo.muted;
-}
-
-function injectScript(tabId, details) {
-	return browser.tabs.executeScript(tabId, details);
-}
-
-function setInjectedScriptVariables(obj, tabId, frameId=0) {
-	const variables = Object
-		.entries(obj)
-		.map(([variable, value]) => {
-			return (
-				isString(value) ?
-				`${variable} = "${value}"` :
-				`${variable} = ${value}`
-			);
-		});
-	if (variables.length > 0) {
-		return injectScript(
-			tabId,
-			{
-				frameId,
-				code: `var ${variables.join(", ")};`,
-			},
-		);
-	}
 }
 
 async function resetCache() {
@@ -221,3 +193,4 @@ async function populate(table, populateFn, afterPopulateFn) {
 		return `${table.name} is already populated`;
 	}
 }
+
