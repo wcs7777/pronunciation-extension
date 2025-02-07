@@ -32,8 +32,11 @@ export async function url2audio(url) {
  */
 export async function url2document(url, credentials="omit") {
 	const response = await fetch(url, { credentials });
-	if (response.status !== 200) {
-		throw response.status;
+	const status = response.status;
+	if (status !== 200) {
+		const message = await response.text();
+		console.error(message);
+		throw new Error(JSON.stringify({ status, message}));
 	}
 	const text = await response.text();
 	return new DOMParser().parseFromString(text, "text/html");

@@ -3,6 +3,24 @@ import { url2audio, url2document } from "./utils/html.js";
 
 /**
  * @param {string} word
+ * @param {Table} table
+ * @returns {Promise<HTMLAudioElement>}
+ */
+export async function audioFromTable(word, table) {
+	return url2audio(await table.getValue(word));
+}
+
+/**
+ * @param {string} word
+ * @param {MemoryCache} cache
+ * @returns {Promise<HTMLAudioElement>}
+ */
+export async function audioFromCache(word, cache) {
+	return url2audio(cache.get(word));
+}
+
+/**
+ * @param {string} word
  * @returns {Promise<HTMLAudioElement>}
  */
 export async function audioFromGstatic(word) {
@@ -51,28 +69,25 @@ export async function audioFromGoogleDefine(word) {
 		q: `define:${word}`,
 	}).toString();
 	const document = await url2document(`${base}${params}`);
-	console.log('\n'.repeat(5));
-	console.log(document.documentElement.innerHTML);
-	console.log('\n'.repeat(5));
 	const hdw = document.querySelector("span[data-dobid='hdw']");
 	if (!hdw) {
-		throw Error(`hdw not found for ${word}`);
+		throw new Error(`hdw not found for ${word}`);
 	}
 	const defineWord = splitWords(word).shift().replaceAll("·", "");
 	if (defineWord !== word.replaceAll("-", " ")) {
-		throw Error(
+		throw new Error(
 			`define word is different of word (${defineWord} != ${word})`
 		);
 	}
 	const source = document.querySelector("audio[jsname='QInZvb'] source");
 	if (!source) {
-		throw Error(`Audio source not found for ${word}`);
+		throw new Error(`Audio source not found for ${word}`);
 	}
 	const src = source.getAttribute("src");
 	if (!src) {
-		throw Error(`src not found for ${word}`);
+		throw new Error(`src not found for ${word}`);
 	}
-	const url = src.startsWith('https://') ? src : `https://${src}`;
+	const url = src.startsWith("https://") ? src : `https://${src}`;
 	return url2audio(url);
 }
 
@@ -95,19 +110,20 @@ export async function audioFromGoogleSpeech(word) {
 
 /**
  * @param {string} word
+ * @param {ResponsiveVoiceOptions} options
  * @returns {Promise<HTMLAudioElement>}
  */
-export async function audioFromResponsiveVoice(word) {
+export async function audioFromResponsiveVoice(word, options={}) {
 	const base = "https://texttospeech.responsivevoice.org/v1/text:synthesize?";
 	const params = new URLSearchParams({
 		lang: "en-US",
 		engine: "g1",
-		name: "rjs", // option
+		name: options.name ?? "rjs",
 		pitch: "0.5",
 		rate: "0.5",
 		volume: "1",
-		key: "O8Ic880z", // option
-		gender: "male", // option
+		key: options.key ?? "O8Ic880z",
+		gender: options.gender ?? "male",
 		text: word,
 	}).toString();
 	return url2audio(`${base}${params}`);

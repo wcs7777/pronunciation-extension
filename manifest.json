@@ -21,7 +21,7 @@
 		}
 	],
 	"background": {
-		"page": "src/background/background.html",
+		"page": "src/background/page.html",
 		"persistent": true
 	},
 	"options_ui": {
@@ -34,10 +34,14 @@
 		},
 		"default_title": "Pronunciation"
 	},
+	"web_accessible_resources": [
+		"resources/initial-ipa.json.gz"
+	],
 	"permissions": [
+		"https://api2.unalengua.com/ipav3",
 		"https://dictionary.cambridge.org/",
-		"https://dictionary.cambridge.org/us/",
 		"https://ssl.gstatic.com/",
+		"https://texttospeech.responsivevoice.org/v1/text:synthesize",
 		"https://www.google.com/",
 		"https://www.oxfordlearnersdictionaries.com/",
 		"activeTab",
