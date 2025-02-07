@@ -7,7 +7,8 @@ import { url2audio, url2document } from "./utils/html.js";
  * @returns {Promise<HTMLAudioElement>}
  */
 export async function audioFromTable(word, table) {
-	return url2audio(await table.getValue(word));
+	const throwNotFound = true;
+	return url2audio(await table.getValue(word, throwNotFound));
 }
 
 /**
@@ -16,7 +17,8 @@ export async function audioFromTable(word, table) {
  * @returns {Promise<HTMLAudioElement>}
  */
 export async function audioFromCache(word, cache) {
-	return url2audio(cache.get(word));
+	const throwNotFound = true;
+	return url2audio(cache.get(word, throwNotFound));
 }
 
 /**

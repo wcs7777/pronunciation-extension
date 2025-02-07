@@ -1,6 +1,6 @@
 {
 	"manifest_version": 2,
-	"name": "Pronunciation",
+	"name": "Test Pronunciation",
 	"version": "3.0.0",
 	"description": "Pronunciation for American English words with phonetic IPA and audio",
 	"icons": {
@@ -32,10 +32,11 @@
 			"19": "icons/icon-19.png",
 			"38": "icons/icon-38.png"
 		},
-		"default_title": "Pronunciation"
+		"default_title": "Test Pronunciation"
 	},
 	"web_accessible_resources": [
-		"resources/initial-ipa.json.gz"
+		"resources/initial-ipa.json.gz",
+		"resources/short-initial-ipa.json.gz"
 	],
 	"permissions": [
 		"https://api2.unalengua.com/ipav3",

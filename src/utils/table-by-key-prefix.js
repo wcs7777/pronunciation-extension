@@ -19,7 +19,7 @@ export default class TableByKeyPrefix {
 	}
 
 	/**
-	  * @param {{[key: string]: any}} values
+	  * @param {{ [key: string]: any }} values
 	  * @returns {Promise<void>}
 	  */
 	async setMany(values) {
@@ -34,45 +34,55 @@ export default class TableByKeyPrefix {
 
 	/**
 	  * @param {string | string[] | null} keys
-	  * @returns {Promise<{[key: string]: any}>}
+	  * @param {boolean} throwNotFound
+	  * @returns {Promise<{ [key: string]: any }>}
 	  */
-	async get(keys) {
+	async get(keys, throwNotFound=true) {
+		const removePrefix = false;
 		let values = {};
 		if (keys !== null && keys != undefined) {
 			values = await this.storage.get(this.fullKeys(keys));
-			if (keys.length > 0 && Object.keys(values).length === 0) {
+			if (
+				throwNotFound &&
+				keys.length > 0 &&
+				Object.keys(values).length === 0
+			) {
 				throw Error(`${keys} not found`);
 			}
 		} else {
-			values = await this.storage.get(await this.getKeys(false));
+			const allKeys = await this.getKeys(removePrefix);
+			values = await this.storage.get(allKeys);
 		}
 		return Object.entries(values)
 			.reduce((withoutKeyPrefix, [key, value]) => {
-				withoutKeyPrefix[key.replace(this.keyPrefix, "")] = value;
+				const k = this.removeKeyPrefix(key);
+				withoutKeyPrefix[k] = value;
 				return withoutKeyPrefix;
 			}, {});
 	}
 
 	/**
 	  * @param {string} key
+	  * @param {boolean} throwNotFound
 	  * @returns {Promise<any>}
 	  */
-	async getValue(key) {
-		const results = await this.get(key);
+	async getValue(key, throwNotFound=true) {
+		const results = await this.get(key, throwNotFound);
 		return results[key];
 	}
 
 	/**
 	  * @param {string | string[] | null} keys
+	  * @param {boolean} throwNotFound
 	  * @returns {Promise<any[]>}
 	  */
-	async getValues(keys) {
-		return Object.values(await this.get(keys));
+	async getValues(keys, throwNotFound) {
+		return Object.values(await this.get(keys, throwNotFound));
 	}
 
 	/**
 	  * @param {boolean} removePrefix
-	  * @returns {Promise<{ [key: string]: any}>}
+	  * @returns {Promise<{ [key: string]: any }>}
 	  */
 	async getAll(removePrefix=true) {
 		/**
@@ -83,12 +93,8 @@ export default class TableByKeyPrefix {
 			.entries(stored)
 			.filter(([k, _]) => k.startsWith(this.keyPrefix))
 			.reduce((previous, [key, value]) => {
-				const newKey = (
-					removePrefix ?
-					key.replace(this.keyPrefix, "") :
-					key
-				);
-	 			previous[newKey] = value;
+				const k = removePrefix ? this.removeKeyPrefix(key) : key;
+	 			previous[k] = value;
 				return previous;
 			}, {});
 	}
@@ -113,7 +119,9 @@ export default class TableByKeyPrefix {
 	  * @returns {Promise<void>}
 	  */
 	async clear() {
-		return this.storage.remove(await this.getKeys(false));
+		const removePrefix = false;
+		const keys = await this.getKeys(removePrefix);
+		return this.storage.remove(keys);
 	}
 
 	/**
@@ -134,6 +142,14 @@ export default class TableByKeyPrefix {
 	fullKeys(keys) {
 		const keysArray = Array.isArray(keys) ? keys : [keys];
 		return keysArray.map((key) => this.fullKey(key));
+	}
+
+	/**
+	  * @param {string} key
+	  * @returns {string}
+	  */
+	removeKeyPrefix(key) {
+		return key.replace(this.keyPrefix, "");
 	}
 
 }

@@ -6,7 +6,8 @@ import { url2document } from "./utils/html.js";
  * @returns {Promise<string>}
  */
 export async function ipaFromTable(word, table) {
-	return table.getValue(word);
+	const throwNotFound = true;
+	return table.getValue(word, throwNotFound);
 }
 
 /**
@@ -15,7 +16,8 @@ export async function ipaFromTable(word, table) {
  * @returns {Promise<string>}
  */
 export async function ipaFromCache(word, cache) {
-	return cache.get(word);
+	const throwNotFound = true;
+	return cache.get(word, throwNotFound);
 }
 
 /**

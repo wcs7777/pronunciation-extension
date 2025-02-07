@@ -21,7 +21,7 @@ export default class TableByKeyPrefix {
 	}
 
 	/**
-	  * @param {{[key: string]: any}} values
+	  * @param {{ [key: string]: any }} values
 	  * @returns {Promise<void>}
 	  */
 	async setMany(values) {
@@ -33,9 +33,10 @@ export default class TableByKeyPrefix {
 
 	/**
 	  * @param {string | string[] | null} keys
-	  * @returns {Promise<{[key: string]: any}>}
+	  * @param {boolean} throwNotFound
+	  * @returns {Promise<{ [key: string]: any }>}
 	  */
-	async get(keys) {
+	async get(keys, throwNotFound=true) {
 		const results = await this.getAll();
 		if (keys !== null && keys != undefined) {
 			const keysArray = Array.isArray(keys) ? keys : [keys];
@@ -45,7 +46,11 @@ export default class TableByKeyPrefix {
 				}
 				return filtered;
 			}, {});
-			if (keysArray.length > 0 && Object.keys(values).length === 0) {
+			if (
+				throwNotFound &&
+				keysArray.length > 0 &&
+				Object.keys(values).length === 0
+			) {
 				throw Error(`${keys} not found`);
 			}
 			return values;
@@ -56,23 +61,25 @@ export default class TableByKeyPrefix {
 
 	/**
 	  * @param {string} key
+	  * @param {boolean} throwNotFound
 	  * @returns {Promise<any>}
 	  */
-	async getValue(key) {
-		const result = await this.get(key);
+	async getValue(key, throwNotFound=true) {
+		const result = await this.get(key, throwNotFound);
 		return result[key];
 	}
 
 	/**
 	  * @param {string | string[] | null} keys
+	  * @param {boolean} throwNotFound
 	  * @returns {Promise<any[]>}
 	  */
-	async getValues(keys) {
-		return Object.values(await this.get(keys));
+	async getValues(keys, throwNotFound=true) {
+		return Object.values(await this.get(keys, throwNotFound));
 	}
 
 	/**
-	  * @returns {Promise<{ [key: string]: any}>}
+	  * @returns {Promise<{ [key: string]: any }>}
 	  */
 	async getAll() {
 		const results = await this.storage.get(this.parentKey);

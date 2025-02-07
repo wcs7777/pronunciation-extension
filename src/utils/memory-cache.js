@@ -14,14 +14,30 @@ export default class MemoryCache {
 	}
 
 	/**
+	 * @param {{ [key: string]: any }} values
+	 * @returns {void}
+	 */
+	setMany(values) {
+		this.entries = { ...this.entries, ...values };
+	}
+
+	/**
 	 * @param {string} key
+	 * @param {boolean} throwNotFound
 	 * @returns {any}
 	 */
-	get(key) {
-		if (!this.hasKey(key)) {
+	get(key, throwNotFound=true) {
+		if (throwNotFound && !this.hasKey(key)) {
 			throw new Error(`${key} not in cache`);
 		}
 		return this.entries[key];
+	}
+
+	/**
+	 * @returns {{ [key: string]: any }}
+	 */
+	getAll() {
+		return {...this.entries};
 	}
 
 	/**
