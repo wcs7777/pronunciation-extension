@@ -37,7 +37,7 @@ export default class MemoryCache {
 	 * @returns {{ [key: string]: any }}
 	 */
 	getAll() {
-		return {...this.entries};
+		return structuredClone(this.entries);
 	}
 
 	/**

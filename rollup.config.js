@@ -1,23 +1,14 @@
-const configs = createConfigs([
-	"messages",
-	"cambridge",
-	"howjsay",
-	"tophonetics",
-	"linguee",
-	"oxford",
-]);
+const createConfig = (file) => ({
+	input: `./src/content/${file}.js`,
+	output: {
+		file: `./src/content/bundle/${file}.js`,
+		format: "iife",
+	},
+});
 
-function createConfigs(files) {
-	return files.map((file) => {
-		return {
-			input: `src/content/${file}.js`,
-			output: {
-				file: `src/content/bundle/${file}.js`,
-				format: "iife",
-			},
-		};
-	});
-}
+const configs = [
+	"message",
+].map(createConfig);
 
 export default configs;
 

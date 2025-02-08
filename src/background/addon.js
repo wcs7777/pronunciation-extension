@@ -35,9 +35,11 @@ export default class Addon {
 
 	/**
 	 * @param {string} text
+	 * @param {number} tabId
+	 * @param {"menuItem" | "action" | "other"} origin
 	 * @returns {Promise<void>}
 	 */
-	async pronounce(text) {
+	async pronounce(text, tabId, origin) {
 		/**
 		  * @type {Options}
 		  */
@@ -71,6 +73,12 @@ export default class Addon {
 			}
 		} else if (options.allowMultipleWords) {
 			const maxCharacters = 1500; // api limitation
+			options.ipa.close.timeout = threshold(
+				options.ipa.close.timeout,
+				Math.max(300000, options.ipa.close.timeout),
+				options.ipa.close.timeout / 2 * words.length,
+			);
+			options.ipa.close.onScroll = false;
 			if (text.length <= maxCharacters) {
 				const key = await generateSha1(text);
 				ipaPromise = this.findTextIpa(key, text, options.ipa);
@@ -84,7 +92,7 @@ export default class Addon {
 			}
 		}
 		await Promise.all([
-			this.showIpa(ipaPromise, options.ipa),
+			this.showIpa(ipaPromise, options.ipa, tabId, origin),
 			this.playAudio(audioPromise, options.audio),
 		]);
 		console.log("pronunciation end");
@@ -93,9 +101,11 @@ export default class Addon {
 	/**
 	 * @param {Promise<string | null> | null} ipaPromise
 	 * @param {OptionsIpa} options
+	 * @param {number} tabId
+	 * @param {"menuItem" | "action" | "other"} origin
 	 * @returns {Promise<void>}
 	 */
-	async showIpa(ipaPromise, options) {
+	async showIpa(ipaPromise, options, tabId, origin) {
 		try {
 			const ipa = ipaPromise !== null ? await ipaPromise : null;
 			if (!ipa) {
@@ -104,7 +114,16 @@ export default class Addon {
 				}
 				return;
 			}
-			console.log({ ipa });
+			console.log({ ipa, tabId });
+			/**
+			 * @type {BackgroundMessage}
+			 */
+			const message = {
+				type: "showIpa",
+				origin,
+				showIpa: { ipa, options },
+			};
+			await browser.tabs.sendMessage(tabId, message);
 		} catch (error) {
 			await this.saveError("showIpa", error);
 		}
@@ -378,26 +397,36 @@ export default class Addon {
 			console.log("options table is already populated");
 			this.optionsCache.setMany(await this.optionsTable.getAll());
 		} else {
+			/**
+			 * @type {Options}
+			 */
 			const defaultOptions = {
 				// accessKey: "P",
 				accessKey: "Y",
 				oldAccessKey: null, // used in setMenuItem()
-				// allowMultipleWords: true,
-				allowMultipleWords: false,
+				allowMultipleWords: true,
+				// allowMultipleWords: false,
 				ipa: {
 					enabled: true,
-					closeTimeout: 3000,
-					fontFamily: "'Lucida Sans Unicode', 'Segoe UI'",
-					fontSizePx: 18,
-					closeShortcut: "\\",
-					closeOnScroll: true,
+					font: {
+						family: "'Lucida Sans Unicode', 'Segoe UI'",
+						size: 18, // px
+						color: "#282828",
+						backgroundColor: "#FFFFFF",
+					},
+					close: {
+						timeout: 3000,
+						shortcut: "\\",
+						onScroll: true,
+					},
+					position: {
+						menuTriggered: "above",
+						actionTriggered: "below",
+					},
 					useContextColors: false,
-					positionMenuTriggered: "above",
-					positionActionTriggered: "below",
 				},
 				audio: {
-					// enabled: true,
-					enabled: false,
+					enabled: true,
 					volume: 1.0,
 					playbackRate: 1.0,
 					fetchFileTimeout: 3000,
@@ -509,7 +538,7 @@ export default class Addon {
 				console.log("nothing was selected");
 				return;
 			}
-			return this.pronounce(selectedText);
+			return this.pronounce(selectedText, tab.id, "menuItem");
 		} catch (error) {
 			await this.saveError("menuOnClicked", error);
 		}
@@ -521,12 +550,22 @@ export default class Addon {
 	 */
 	async actionOnClicked(tab) {
 		try {
-			const selectedText = "Speaking of data: They want that, too.";
+			/**
+			 * @type {BackgroundMessage}
+			 */
+			const message = { type: "getSelectedText", origin: "action" };
+			/**
+			 * @type {string | null}
+			 */
+			const selectedText = await browser.tabs.sendMessage(
+				tab.id,
+				message,
+			);
 			if (selectedText?.length == 0) {
 				console.log("nothing was selected");
 				return;
 			}
-			return this.pronounce(selectedText);
+			return this.pronounce(selectedText, tab.id, "action");
 		} catch (error) {
 			await this.saveError("actionOnClicked", error);
 		}

@@ -30,19 +30,26 @@ declare global {
 		ipa: OptionsIpa,
 		audio: OptionsAudio,
 		setPronuncationByShortcut: OptionsSetPronuncationByShortcut,
-		responseVoice: OptionsResponsiveVoice,
 	};
 
 	type OptionsIpa = {
 		enabled: boolean,
-		closeTimeout: number,
-		fontFamily: string,
-		fontSizePx: number,
-		closeShortcut: string,
-		closeOnScroll: boolean,
+		font: {
+			family: string,
+			size: number, // px
+			color: string,
+			backgroundColor: string,
+		},
+		close: {
+			timeout: number,
+			shortcut: string,
+			onScroll: boolean,
+		},
+		position: {
+			menuTriggered: "above" | "below",
+			actionTriggered: "above" | "below",
+		},
 		useContextColors: boolean,
-		positionMenuTriggered: string,
-		positionActionTriggered: string,
 	};
 
 	type OptionsAudio = {
@@ -63,6 +70,35 @@ declare global {
 		name: string,
 		key: string,
 		gender: string,
+	};
+
+	type BackgroundMessage = {
+		type: "showIpa" | "getSelectedText",
+		origin: "menuItem" | "action" | "other",
+		showIpa?: {
+			ipa: string,
+			options: OptionsIpa,
+		},
+	};
+
+	type OptionsPopup = {
+		target: HTMLElement | Node,
+		text: string,
+		font: {
+			family: string,
+			size: number, // px
+			color: string,
+			backgroundColor: string,
+		},
+		close: {
+			timeout: number,
+			shortcut: string,
+			onScroll: boolean,
+		},
+		position: {
+			top: number,
+			left: number,
+		},
 	};
 
 }
