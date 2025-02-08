@@ -77,7 +77,7 @@ export default class IpaPopup {
 			const { top, left } = s
 				.getRangeAt(0)
 				.getBoundingClientRect();
-			let shift = this.options.font.size * 2;
+			let shift = this.options.font.size * 1.2;
 			if (
 				(
 					(this.origin === "menuItem") &&
@@ -88,7 +88,7 @@ export default class IpaPopup {
 					(this.options.position.actionTriggered == "above")
 				)
 			) {
-				shift *= -1;
+				shift *= -1.8;
 			}
 			return { top: top + shift, left };
 		} else {
