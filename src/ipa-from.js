@@ -1,4 +1,4 @@
-import { url2document } from "./utils/html.js";
+import { url2document } from "./utils/element.js";
 
 /**
  * @param {string} word
@@ -83,5 +83,6 @@ export async function ipaFromUnalengua(word) {
 		throw new Error(JSON.stringify({ status, message}));
 	}
 	const jsonResponse = await response.json();
-	return jsonResponse["ipa"];
+	const ipa = jsonResponse["ipa"];
+	return `/${ipa}/`;
 }

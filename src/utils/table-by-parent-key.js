@@ -94,6 +94,14 @@ export default class TableByKeyPrefix {
 	}
 
 	/**
+	  * @returns {Promise<number>}
+	  */
+	async size() {
+		const keys = await this.getKeys();
+		return keys.length;
+	}
+
+	/**
 	  * @param {string | string[]} keys
 	  * @returns {Promise<void>}
 	  */

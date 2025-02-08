@@ -20,3 +20,15 @@ export function splitWords(text) {
 export function textHierarchy(text, ends) {
 	return ends.map(end => text.slice(0, end));
 }
+
+/**
+ * @param {string} message
+ * @returns {Promise<string>}
+ */
+export async function generateSha1(message) {
+	const encoder = new TextEncoder();
+	const hashBuffer = encoder.encode(encoder.encode(message));
+	return Array.from(new Uint8Array(hashBuffer))
+		.map(byte => byte.toString(16).padStart(2, "0"))
+		.join("");
+}

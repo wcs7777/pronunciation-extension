@@ -1,22 +1,26 @@
 import Addon from "./addon.js";
 
-async function main() {
+/**
+ * @param {browser.runtime._OnInstalledDetails} details
+ * @returns {Promise<void>}
+ */
+async function onInstalled(details) {
 	console.clear();
-	await browser.storage.local.clear();
-	console.log(await browser.storage.local.get());
+	if (details.reason === "update") {
+		if (parseInt(details.previousVersion) < 3) { // break change
+			console.log("cleaning storage due to update break change");
+			await browser.storage.local.clear();
+		}
+	}
+	if (details.temporary) {
+		console.log("cleaning storage due to temporary installation");
+		await browser.storage.local.clear();
+	}
 	const addon = new Addon(browser.storage.local);
-	// await addon.setup("resources/initial-ipa.json.gz");
+	// await addon.initialSetup("resources/initial-ipa.json.gz");
 	await addon.initialSetup("resources/short-initial-ipa.json.gz");
-	// console.log("audioTable", await addon.audioTable.getAll());
-	// console.log("audioCache", addon.audioCache.getAll());
-	// console.log("ipaTable", await addon.ipaTable.getValue("vulture"));
-	// console.log("ipaCache", addon.ipaCache.getAll());
-	// console.log("defaultIpaTable", await addon.defaultIpaTable.getAll());
-	// console.log("optionsTable", await addon.optionsTable.getAll());
-	// console.log("optionsCache", addon.optionsCache.getAll());
-	// console.log("defaultOptionsTable", await addon.defaultOptionsTable.getAll());
-	// console.log("controlTable", await addon.controlTable.getAll());
-	// console.log("errorsTable", await addon.errorsTable.getAll());
 }
 
-(async() => main())().catch(console.error);
+if (!browser.runtime.onInstalled.hasListener(onInstalled)) {
+	browser.runtime.onInstalled.addListener(onInstalled);
+}

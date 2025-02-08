@@ -34,10 +34,6 @@
 		},
 		"default_title": "Test Pronunciation"
 	},
-	"web_accessible_resources": [
-		"resources/initial-ipa.json.gz",
-		"resources/short-initial-ipa.json.gz"
-	],
 	"permissions": [
 		"https://api2.unalengua.com/ipav3",
 		"https://dictionary.cambridge.org/",

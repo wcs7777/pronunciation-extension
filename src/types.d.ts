@@ -10,6 +10,7 @@ declare global {
 		async getValues(keys: string | string[] | null, throwNotFound: boolean): Promise<any[]>,
 		async getAll(): Promise<{ [key: string]: any }>,
 		async getKeys(): Promise<string[]>,
+		async size(): Promise<number>,
 		async remove(keys: string | string[]): Promise<void>,
 		async clear(): Promise<void>,
 	};
@@ -19,21 +20,17 @@ declare global {
 		get(key: string, throwNotFound: boolean); any,
 		getAll(): { [key: string]: any },
 		hasKey(key: string): boolean,
+		size(): number,
 		clear(): void,
-	};
-
-	type ResponsiveVoiceOptions = {
-		name?: string,
-		key?: string,
-		gender?: string,
 	};
 
 	type Options = {
 		accessKey: string,
-		ignoreMultipleWords: boolean,
+		allowMultipleWords: boolean,
 		ipa: OptionsIpa,
 		audio: OptionsAudio,
 		setPronuncationByShortcut: OptionsSetPronuncationByShortcut,
+		responseVoice: OptionsResponsiveVoice,
 	};
 
 	type OptionsIpa = {
@@ -53,13 +50,19 @@ declare global {
 		volume: number,
 		playbackRate: number,
 		fetchFileTimeout: number,
-		fetchScrapTimeout: number,
+		responseVoice: OptionsResponsiveVoice,
 	};
 
 	type OptionsSetPronuncationByShortcut = {
 		audioShortcut: string,
 		ipaShortcut: string,
 		restoreDefaultIpaShortcut: string,
+	};
+
+	type OptionsResponsiveVoice = {
+		name: string,
+		key: string,
+		gender: string,
 	};
 
 }

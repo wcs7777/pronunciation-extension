@@ -49,6 +49,13 @@ export default class MemoryCache {
 	}
 
 	/**
+	 * @returns {number}
+	 */
+	size() {
+		return Object.keys(this.entries).length;
+	}
+
+	/**
 	 * @returns {void}
 	 */
 	clear() {

@@ -62,6 +62,15 @@ export default class TableByKeyPrefix {
 	}
 
 	/**
+	  * @returns {Promise<number>}
+	  */
+	async size() {
+		const removePrefix = false;
+		const keys = await this.getKeys(removePrefix);
+		return keys.length;
+	}
+
+	/**
 	  * @param {string} key
 	  * @param {boolean} throwNotFound
 	  * @returns {Promise<any>}

@@ -1,29 +1,9 @@
 import { splitWords, textHierarchy } from "./utils/string.js";
-import { url2audio, url2document } from "./utils/html.js";
+import { url2blob, url2document } from "./utils/element.js";
 
 /**
  * @param {string} word
- * @param {Table} table
- * @returns {Promise<HTMLAudioElement>}
- */
-export async function audioFromTable(word, table) {
-	const throwNotFound = true;
-	return url2audio(await table.getValue(word, throwNotFound));
-}
-
-/**
- * @param {string} word
- * @param {MemoryCache} cache
- * @returns {Promise<HTMLAudioElement>}
- */
-export async function audioFromCache(word, cache) {
-	const throwNotFound = true;
-	return url2audio(cache.get(word, throwNotFound));
-}
-
-/**
- * @param {string} word
- * @returns {Promise<HTMLAudioElement>}
+ * @returns {Promise<Blob>}
  */
 export async function audioFromGstatic(word) {
 	const base = "https://ssl.gstatic.com/dictionary/static/sounds/20200429";
@@ -38,12 +18,12 @@ export async function audioFromGstatic(word) {
 		"--_us_3_rr.mp3",
 		"_--1_us_1.mp3",
 	].map(fileEnd => `${base}/${fileBegin}${fileEnd}`);
-	return Promise.any(candidates.map(url => url2audio(url)));
+	return Promise.any(candidates.map(url => url2blob(url)));
 }
 
 /**
  * @param {string} word
- * @returns {Promise<HTMLAudioElement>}
+ * @returns {Promise<Blob>}
  */
 export async function audioFromOxford(word) {
 	const base = "https://www.oxfordlearnersdictionaries.com/us/media/english/us_pron_ogg";
@@ -56,12 +36,12 @@ export async function audioFromOxford(word) {
 		const path = textHierarchy(file, [1, 3, 5]).join("/");
 		return `${base}/${path}/${file}`;
 	});
-	return Promise.any(candidates.map(url => url2audio(url)));
+	return Promise.any(candidates.map(url => url2blob(url)));
 }
 
 /**
  * @param {string} word
- * @returns {Promise<HTMLAudioElement>}
+ * @returns {Promise<Blob>}
  */
 export async function audioFromGoogleDefine(word) {
 	const base = "https://www.google.com/search?";
@@ -90,12 +70,12 @@ export async function audioFromGoogleDefine(word) {
 		throw new Error(`src not found for ${word}`);
 	}
 	const url = src.startsWith("https://") ? src : `https://${src}`;
-	return url2audio(url);
+	return url2blob(url);
 }
 
 /**
  * @param {string} word
- * @returns {Promise<HTMLAudioElement>}
+ * @returns {Promise<Blob>}
  */
 export async function audioFromGoogleSpeech(word) {
 	const base = "https://www.google.com/speech-api/v1/synthesize?";
@@ -107,26 +87,26 @@ export async function audioFromGoogleSpeech(word) {
 		client: "lr-language-tts",
 		use_google_only_voices: 1,
 	}).toString();
-	return url2audio(`${base}${params}`);
+	return url2blob(`${base}${params}`);
 }
 
 /**
  * @param {string} word
- * @param {ResponsiveVoiceOptions} options
- * @returns {Promise<HTMLAudioElement>}
+ * @param {OptionsResponsiveVoice} options
+ * @returns {Promise<Blob>}
  */
-export async function audioFromResponsiveVoice(word, options={}) {
+export async function audioFromResponsiveVoice(word, options) {
 	const base = "https://texttospeech.responsivevoice.org/v1/text:synthesize?";
 	const params = new URLSearchParams({
 		lang: "en-US",
 		engine: "g1",
-		name: options.name ?? "rjs",
+		name: options.name,
 		pitch: "0.5",
 		rate: "0.5",
 		volume: "1",
-		key: options.key ?? "O8Ic880z",
-		gender: options.gender ?? "male",
+		key: options.key,
+		gender: options.gender,
 		text: word,
 	}).toString();
-	return url2audio(`${base}${params}`);
+	return url2blob(`${base}${params}`);
 }
