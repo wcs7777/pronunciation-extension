@@ -1,14 +1,16 @@
 export default class TableByKeyPrefix {
 
 	/**
-	 * @param {string} name
 	 * @param {browser.storage.StorageArea} storage
 	 * @param {string} keyPrefix
 	 */
-	constructor(name, storage, keyPrefix) {
-		this.name = name;
+	constructor(storage, keyPrefix) {
 		this.storage = storage;
 		this.keyPrefix = keyPrefix;
+	}
+
+	get name() {
+		return this.keyPrefix;
 	}
 
 	/**

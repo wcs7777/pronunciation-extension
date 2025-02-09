@@ -341,9 +341,6 @@ export default class Addon {
 		 * @type {string}
 		 */
 		let ipa = null;
-		if (this.ipaTextCache.size() > 100) {
-			this.ipaTextCache.clear();
-		}
 		if (!this.ipaTextCache.hasKey(cacheKey)) {
 			try {
 				ipa = await pf.ipaFromUnalengua(text);
@@ -372,9 +369,6 @@ export default class Addon {
 		 * @type {HTMLAudioElement}
 		 */
 		let audio = null;
-		if (this.audioTextCache.size() > 100) {
-			this.audioTextCache.clear();
-		}
 		if (!this.audioTextCache.hasKey(cacheKey)) {
 			try {
 				const blob = await af.audioFromResponsiveVoice(
@@ -417,7 +411,7 @@ export default class Addon {
 			]);
 			console.timeEnd("populate");
 			const alreadySet = await this.controlTable.get(
-				["setMenuItem", "setAction"],
+				["setMenuItem", "setAction", "setStorageChangeListener"],
 				throwNotFound,
 			);
 			console.log("setting menuItem and action");
@@ -427,6 +421,9 @@ export default class Addon {
 					this.optionsCache.get("accessKey", throwNotFound),
 				),
 				this.setAction(alreadySet?.setAction ?? false),
+				this.setStorageChangeListener(
+					alreadySet?.setStorageChangeListener ?? false,
+				),
 			]);
 			console.log("setup end");
 			await browser.menus.remove(menuId);
@@ -539,6 +536,19 @@ export default class Addon {
 	}
 
 	/**
+	 * @param {boolean} alreadySet
+	 * @returns {Promise<void>}
+	 */
+	async setStorageChangeListener(alreadySet) {
+		if (!alreadySet) {
+			browser.storage.onChanged.addListener(async (changes, area) => {
+				this.storageOnChanged(changes, area);
+			});
+			await this.controlTable.set("setStorageChangeListener", true);
+		}
+	}
+
+	/**
 	 * @param {browser.menus.OnClickData} info
 	 * @param {browser.tabs.Tab} tab
 	 * @returns {Promise<void>}
@@ -590,10 +600,28 @@ export default class Addon {
 	 */
 	async storageOnChanged(changes, areaName) {
 		try {
-			if (areaName != 'local') {
+			if (areaName !== "local") {
 				return;
 			}
-			console.log("todo storageOnChanged");
+			const keys = Object.keys(changes);
+			/**
+			 * @type {[Table, MemoryCache, boolean][]}
+			 */
+			const table_cache_reset = [
+				[this.ipaTable, this.ipaCache, false],
+				[this.audioTable, this.audioCache, false],
+				[this.optionsTable, this.optionsCache, true],
+			];
+			for (const [table, cache, reset] of table_cache_reset) {
+				if (keys.some(k => k.startsWith(table.name))) {
+					console.log(`cleaning ${cache.name} cache`);
+					cache.clear();
+					if (reset) {
+						console.log(`resetting ${cache.name} cache`);
+						cache.setMany(await table.getAll());
+					}
+				}
+			}
 		} catch (error) {
 			await this.saveError("storageOnChanged", error);
 		}

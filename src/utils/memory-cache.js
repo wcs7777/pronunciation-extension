@@ -2,9 +2,11 @@ export default class MemoryCache {
 
 	/**
 	 * @param {string} name
+	 * @param {number} maxSize
 	 */
-	constructor(name) {
+	constructor(name, maxSize) {
 		this.name = name;
+		this.maxSize = maxSize;
 		this.entries = {};
 	}
 
@@ -14,6 +16,9 @@ export default class MemoryCache {
 	 * @returns {void}
 	 */
 	set(key, value) {
+		if (this.size() > this.maxSize) {
+			this.clear();
+		}
 		this.entries[key] = value;
 	}
 
@@ -22,7 +27,15 @@ export default class MemoryCache {
 	 * @returns {void}
 	 */
 	setMany(values) {
-		this.entries = { ...this.entries, ...values };
+		const newValues = { ...this.entries, ...values };
+		const keys = Object.keys(newValues).slice(-this.maxSize);
+		const entries = keys.reduce((obj, k)  => {
+			obj[k] = newValues[k];
+			return obj;
+		}, {});
+		console.log({ keys });
+		console.log({ entries });
+		this.entries = entries;
 	}
 
 	/**

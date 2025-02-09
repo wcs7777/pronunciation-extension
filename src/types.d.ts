@@ -19,6 +19,7 @@ declare global {
 	type MemoryCache = {
 		name: string,
 		set(key: string, value: any): void,
+		setMany(value: { [key: string]: any }): void,
 		get(key: string, throwNotFound: boolean); any,
 		getAll(): { [key: string]: any },
 		hasKey(key: string): boolean,
