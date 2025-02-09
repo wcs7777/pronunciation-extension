@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "How2Say",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Pronunciation for American English words with phonetic IPA and audio",
 	"icons": {
 		"48": "icons/icon.png"
