@@ -21,11 +21,11 @@
 		}
 	],
 	"background": {
-		"page": "src/background/page.html",
+		"page": "src/background/index.html",
 		"persistent": true
 	},
 	"options_ui": {
-		"page": "src/options/options.html"
+		"page": "src/options/index.html"
 	},
 	"browser_action": {
 		"default_icon": {
