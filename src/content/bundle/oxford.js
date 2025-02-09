@@ -503,6 +503,20 @@
 			return;
 		}
 		console.log("pronunciation shortcut enabled", { options });
+		const audioElements = Array.from(
+			document.querySelectorAll("div.sound.audio_play_button"),
+		);
+		/**
+		 * @type {HTMLElement}
+		 */
+		let lastAudioPlayed = document.querySelector(
+			"div.sound.audio_play_button.pron-us",
+		);
+		for (const element of audioElements) {
+			element.addEventListener("click", () => {
+				lastAudioPlayed = element;
+			});
+		}
 		document.addEventListener("keydown", async (e) => {
 			try {
 				if (!e.ctrlKey) {
@@ -518,28 +532,22 @@
 					return;
 				}
 				e.preventDefault();
-				const rawWord = document
-					.querySelector("span.hw.dhw")
-					.textContent
-					.trim()
-					.toLowerCase();
-				const word = splitWords(rawWord)[0];
-				console.log("pronunciation shortcut", { word });
 				const cb = {
 					[options.ipaShortcut]: async () => {
-						const rawIpa = document.querySelector("span.ipa")
-							.textContent
-							.trim();
-						const ipa = `/${rawIpa}/`;
+						const word = getWord(lastAudioPlayed);
+						console.log("pronunciation shortcut", { word });
+						const ipa = lastAudioPlayed
+							.nextElementSibling
+							.textContent;
 						console.log("pronunciation shortcut", { ipa });
 						const oldIpa = await ipaTable.getValue(word, false);
 						await ipaTable.set(word, ipa);
 						showPopup({ text: `${oldIpa} -> ${ipa}` });
 					},
 					[options.audioShortcut]: async () => {
-						const src = document
-							.querySelector("span.us audio source")
-							?.getAttribute("src");
+						const word = getWord(lastAudioPlayed);
+						console.log("pronunciation shortcut", { word });
+						const src = lastAudioPlayed.dataset?.srcOgg;
 						if (!src) {
 							showPopup({ text: `Audio not found for ${word}` });
 							return;
@@ -556,6 +564,8 @@
 						showPopup({ text: `Audio saved for ${word}`});
 					},
 					[options.restoreDefaultIpaShortcut]: async () => {
+						const word = getWord(lastAudioPlayed);
+						console.log("pronunciation shortcut", { word });
 						const currentIpa = await ipaTable.getValue(
 							word, false,
 						);
@@ -579,6 +589,15 @@
 				console.error(error);
 			}
 		});
+	}
+
+	/**
+	 * @param {HTMLElement} lastAudioPlayed
+	 * @returns {string}
+	 */
+	function getWord(lastAudioPlayed) {
+		const words = splitWords(lastAudioPlayed.title.trim().toLowerCase());
+		return words[0];
 	}
 
 	(async () => main())().catch(console.error);
