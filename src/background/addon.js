@@ -1,9 +1,6 @@
 import "../utils/fflate.js";
 import * as af from "../audio-from.js";
 import * as pf from "../ipa-from.js";
-import MemoryCache from "../utils/memory-cache.js";
-import TableByKeyPrefix from "../utils/table-by-key-prefix.js";
-import TableByParentKey from "../utils/table-by-parent-key.js";
 import { blob2base64 } from "../utils/element.js";
 import { generateSha1, splitWords } from "../utils/string.js";
 import { goBlob, goString, resolveTimeout } from "../utils/promise.js";
@@ -12,25 +9,83 @@ import { threshold } from "../utils/number.js";
 export default class Addon {
 
 	/**
-	 * @param {browser.storage.StorageArea} storage
+	 * @param {{
+	 *     audioTable: Table,
+	 *     audioCache: MemoryCache,
+	 *     ipaTable: Table,
+	 *     ipaCache: MemoryCache,
+	 *     defaultIpaTable: Table,
+	 *     optionsTable: Table,
+	 *     optionsCache: MemoryCache,
+	 *     defaultOptionsTable: Table,
+	 *     controlTable: Table,
+	 *     errorsTable: Table,
+	 *     audioTextCache: MemoryCache,
+	 *     ipaTextCache: MemoryCache,
+	 * }}
 	 */
-	constructor(storage) {
-		this.storage = storage;
-		this.audioTable = new TableByKeyPrefix(storage, "a");
-		this.audioCache = new MemoryCache();
-		this.ipaTable = new TableByKeyPrefix(storage, "i");
-		this.ipaCache = new MemoryCache();
-		this.defaultIpaTable = new TableByParentKey(storage, "defaultIpa");
-		this.optionsTable = new TableByParentKey(storage, "options");
-		this.optionsCache = new MemoryCache();
-		this.defaultOptionsTable = new TableByParentKey(
-			storage,
-			"defaultOptions",
-		);
-		this.controlTable = new TableByParentKey(storage, "control");
-		this.errorsTable = new TableByParentKey(storage, "errors");
-		this.audioTextCache = new MemoryCache(); // no storage
-		this.ipaTextCache = new MemoryCache(); // no storage
+	constructor({
+		audioTable,
+		audioCache,
+		ipaTable,
+		ipaCache,
+		defaultIpaTable,
+		optionsTable,
+		optionsCache,
+		defaultOptionsTable,
+		controlTable,
+		errorsTable,
+		audioTextCache,
+		ipaTextCache,
+	}) {
+		/**
+		 * @type {Table}
+		 */
+		this.audioTable = audioTable;
+		/**
+		 * @type {MemoryCache}
+		 */
+		this.audioCache = audioCache;
+		/**
+		 * @type {Table}
+		 */
+		this.ipaTable = ipaTable;
+		/**
+		 * @type {MemoryCache}
+		 */
+		this.ipaCache = ipaCache;
+		/**
+		 * @type {Table}
+		 */
+		this.defaultIpaTable = defaultIpaTable;
+		/**
+		 * @type {Table}
+		 */
+		this.optionsTable = optionsTable;
+		/**
+		 * @type {MemoryCache}
+		 */
+		this.optionsCache = optionsCache;
+		/**
+		 * @type {Table}
+		 */
+		this.defaultOptionsTable = defaultOptionsTable;
+		/**
+		 * @type {Table}
+		 */
+		this.controlTable = controlTable;
+		/**
+		 * @type {Table}
+		 */
+		this.errorsTable = errorsTable;
+		/**
+		 * @type {MemoryCache}
+		 */
+		this.audioTextCache = audioTextCache;
+		/**
+		 * @type {MemoryCache}
+		 */
+		this.ipaTextCache = ipaTextCache;
 	}
 
 	/**
@@ -340,9 +395,10 @@ export default class Addon {
 
 	/**
 	 * @param {string} initialIpaFile
+	 * @param {Options} defaultOptions
 	 * @returns {Promise<void>}
 	 */
-	async initialSetup(initialIpaFile) {
+	async initialSetup(initialIpaFile, defaultOptions) {
 		try {
 			const menuId = "I";
 			const message = "Wait init setup (~40s)";
@@ -356,7 +412,7 @@ export default class Addon {
 			console.log("populating options and ipa");
 			console.time("populate");
 			await Promise.all([
-				this.populateOptions(),
+				this.populateOptions(defaultOptions),
 				this.populateInitialIpa(initialIpaFile),
 			]);
 			console.timeEnd("populate");
@@ -382,72 +438,28 @@ export default class Addon {
 	}
 
 	/**
+	 * @param {Options} defaultOptions
 	 * @returns {Promise<void>}
 	 */
-	async populateOptions() {
+	async populateOptions(defaultOptions) {
 		const throwNotFound = false;
 		/**
 		 * @type {boolean | null | undefined}
 		 */
 		const populated = await this.controlTable.getValue(
-			this.optionsTable.parentKey,
+			this.optionsTable.name,
 			throwNotFound,
 		);
 		if (populated) {
 			console.log("options table is already populated");
 			this.optionsCache.setMany(await this.optionsTable.getAll());
 		} else {
-			/**
-			 * @type {Options}
-			 */
-			const defaultOptions = {
-				// accessKey: "P",
-				accessKey: "Y",
-				oldAccessKey: null, // used in setMenuItem()
-				allowMultipleWords: true,
-				// allowMultipleWords: false,
-				ipa: {
-					enabled: true,
-					font: {
-						family: "'Lucida Sans Unicode', 'Segoe UI'",
-						size: 18, // px
-						color: "#282828",
-						backgroundColor: "#FFFFFF",
-					},
-					close: {
-						timeout: 3000,
-						shortcut: "\\",
-						onScroll: true,
-					},
-					position: {
-						menuTriggered: "above",
-						actionTriggered: "below",
-					},
-					useContextColors: false,
-				},
-				audio: {
-					enabled: true,
-					volume: 1.0,
-					playbackRate: 1.0,
-					fetchFileTimeout: 3000,
-					responseVoice: {
-						name: "rjs",
-						key: "O8Ic880z",
-						gender: "male",
-					},
-				},
-				setPronuncationByShortcut: {
-					audioShortcut: "A",
-					ipaShortcut: "Z",
-					restoreDefaultIpaShortcut: "X",
-				},
-			};
 			await Promise.all([
 				this.optionsTable.setMany(defaultOptions),
 				this.defaultOptionsTable.setMany(defaultOptions),
 			]);
 			this.optionsCache.setMany(defaultOptions);
-			await this.controlTable.set(this.optionsTable.parentKey, true);
+			await this.controlTable.set(this.optionsTable.name, true);
 		}
 	}
 
@@ -461,7 +473,7 @@ export default class Addon {
 		 * @type {boolean | null | undefined}
 		 */
 		const populated = await this.controlTable.getValue(
-			this.ipaTable.keyPrefix,
+			this.ipaTable.name,
 			throwNotFound,
 		);
 		if (populated) {
@@ -476,7 +488,7 @@ export default class Addon {
 				this.ipaTable.setMany(values),
 				this.defaultIpaTable.setMany(values),
 			]);
-			await this.controlTable.set(this.ipaTable.keyPrefix, true);
+			await this.controlTable.set(this.ipaTable.name, true);
 		}
 	}
 

@@ -1,3 +1,5 @@
+import { isDigit } from "./string.js";
+
 /**
  * @param {string} url
  * @returns {Promise<Document>}
@@ -66,4 +68,59 @@ export async function blob2base64(blob) {
 		}
 
 	});
+}
+
+/**
+ * @param {string} id
+ * @returns {HTMLElement | null}
+ */
+export const byId = (id) => document.getElementById(id);
+
+/**
+ * @param {HTMLInputElement} target
+ * @returns {void}
+ */
+export function onlyNumber(target) {
+	target.addEventListener("keydown", (e) => {
+		const preventDefault = (
+			!isDigit(e.key) &&
+			(e.key !== "." || target.value.includes(".")) &&
+			!isNavigationKey(e)
+		);
+		if (preventDefault) {
+			e.preventDefault();
+		}
+	});
+}
+
+/**
+ * @param {HTMLInputElement} target
+ * @returns {void}
+ */
+export function onlyShorcut(target) {
+	target.addEventListener("keydown", (e) => {
+		if (e.key.length === 1) {
+			e.preventDefault();
+			target.value = e.key.toUpperCase();
+		}
+	});
+}
+
+/**
+ * @param {KeyboardEvent} event
+ * @returns {boolean}
+ */
+export function isNavigationKey(event) {
+	return event.ctrlKey || [
+		"Backspace",
+		"Delete",
+		"ArrowLeft",
+		"ArrowRight",
+		"Tab",
+		"CapsLock",
+		"Home",
+		"End",
+		"Enter",
+	]
+		.includes(event.key);
 }

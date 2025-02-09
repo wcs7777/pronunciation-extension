@@ -3,6 +3,7 @@ export {};
 declare global {
 	
 	type Table = {
+		name: string,
 		async set(key: string, value: any): Promise<void>,
 		async setMany(values: { [key: string]: any }): Promise<void>,
 		async get(keys: string | string[] | null, throwNotFound: boolean): Promise<{[key: string]: any}>,
@@ -16,6 +17,7 @@ declare global {
 	};
 
 	type MemoryCache = {
+		name: string,
 		set(key: string, value: any): void,
 		get(key: string, throwNotFound: boolean); any,
 		getAll(): { [key: string]: any },
@@ -61,6 +63,7 @@ declare global {
 	};
 
 	type OptionsSetPronuncationByShortcut = {
+		enabled: boolean,
 		audioShortcut: string,
 		ipaShortcut: string,
 		restoreDefaultIpaShortcut: string,

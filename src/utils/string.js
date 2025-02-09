@@ -56,3 +56,11 @@ export async function generateSha1(message) {
 		.map(byte => byte.toString(16).padStart(2, "0"))
 		.join("");
 }
+
+/**
+ * @param {string} ch
+ * @returns {boolean}
+ */
+export function isDigit(ch) {
+	return ch.length === 1 && "0123456789".includes(ch);
+}

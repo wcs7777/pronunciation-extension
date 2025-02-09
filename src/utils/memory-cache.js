@@ -1,6 +1,10 @@
 export default class MemoryCache {
 
-	constructor() {
+	/**
+	 * @param {string} name
+	 */
+	constructor(name) {
+		this.name = name;
 		this.entries = {};
 	}
 

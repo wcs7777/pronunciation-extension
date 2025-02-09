@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pronunciation Settings</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+
+        <h1>Pronunciation Settings</h1>
+        
+        <div class="settings-section">
+
+            <h2>General</h2>
+            
+            <div class="form-group">
+                <label for="accessKey">Context menu item access key</label>
+                <input type="text" id="accessKey" placeholder="e.g. P">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="allowMultipleWords" checked>
+                <label for="allowMultipleWords">Allow multiple words at once</label>
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveGeneral">Save General</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h2>IPA</h2>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaEnabled" checked>
+                <label for="ipaEnabled">Enabled</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="ipaFontFamily">Font family</label>
+                <input type="text" id="ipaFontFamily" placeholder="e.g. 'Lucida Sans Unicode'">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaFontSize">Font size (px)</label>
+                <input type="text" id="ipaFontSize" placeholder="e.g. 18">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaFontColor">Font color</label>
+                <input type="text" id="ipaFontColor" placeholder="e.g. #282828">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaBackgroundColor">Background color</label>
+                <input type="text" id="ipaBackgroundColor" placeholder="e.g. #FFFFFF">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaUseContextColors" checked>
+                <label for="ipaUseContextColors">Use context color</label>
+            </div>
+
+            <div class="form-group">
+                <label for="ipaPositionMenuTriggered">Position menu triggered</label>
+                <select id="ipaPositionMenuTriggered">
+                    <option value="above">Above</option>
+                    <option value="below">Below</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ipaPositionActionTriggered">Position action triggered</label>
+                <select id="ipaPositionActionTriggered">
+                    <option value="above">Above</option>
+                    <option value="below">Below</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ipaCloseTimeout">Close popup timeout (ms)</label>
+				<input type="text" id="ipaCloseTimeout" placeholder="e.g. 3000">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaCloseShortcut">Close popup shortcut</label>
+                <input type="text" id="ipaCloseShortcut" placeholder="e.g. \">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaCloseOnScroll" checked>
+                <label for="ipaCloseOnScroll">Close popup when page is scrolled</label>
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveIpa">Save IPA</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h2>Audio</h2>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioEnabled" checked>
+                <label for="audioEnabled">Enabled</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="audioVolume">Volume</label>
+                <input type="text" id="audioVolume" placeholder="[0.0, 1.0] e.g. 1.0">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlaybackRate">Playback rate</label>
+                <input type="text" id="audioPlaybackRate" placeholder="[0.2, 2.0] e.g. 1.0">
+            </div>
+
+            <div class="form-group">
+                <label for="audioFetchFileTimeout">Fetch real voice timeout (ms)</label>
+                <input type="text" id="audioFetchFileTimeout" placeholder="↑ if slow internet, e.g. 3000">
+            </div>
+
+            <div class="form-group">
+                <label for="audioResponseVoiceName">ResponseVoice API name</label>
+                <input type="text" id="audioResponseVoiceName" placeholder="See responsevoice site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioResponseVoiceKey">ResponseVoice API key</label>
+                <input type="text" id="audioResponseVoiceKey" placeholder="See responsevoice site">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaPositionActionTriggered">ResponseVoice API gender</label>
+                <select id="audioResponseVoiceGender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveAudio">Save Audio</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h2>Set pronounciation on sites</h2>
+            <h3>Cambridge</h3>
+            <h3>Oxford</h3>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="setPronuncationByShortcutEnabled" checked>
+                <label for="setPronuncationByShortcutEnabled">Enabled</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="setPronuncationByShortcutAudioShortcut">Set audio shortcut (CTRL+?)</label>
+                <input type="text" id="setPronuncationByShortcutAudioShortcut" placeholder="e.g. A">
+            </div>
+
+            <div class="form-group">
+                <label for="setPronuncationByShortcutIpaShortcut">Set IPA shortcut (CTRL+?)</label>
+                <input type="text" id="setPronuncationByShortcutIpaShortcut" placeholder="e.g. Z">
+            </div>
+
+            <div class="form-group">
+                <label for="setPronuncationByShortcutRestoreDefaultIpaShortcut">Restore default IPA shortcut (CTRL+?)</label>
+                <input type="text" id="setPronuncationByShortcutRestoreDefaultIpaShortcut" placeholder="e.g. X">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveSetPronunciationOnSites">Save</button>
+			</div>
+
+        </div>
+
+
+        <div class="settings-section">
+
+			<h2>Set Custom IPA</h2>
+
+            <div class="form-group">
+                <label for="setCustomIpaWord">Word</label>
+                <input type="text" id="setCustomIpaWord" placeholder="e.g. throughout">
+            </div>
+
+            <div class="form-group">
+				<label for="setCustomIpa">IPA</label>
+                <input type="text" id="setCustomIpa" placeholder="e.g. /θɹuˈaʊt/">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveCustomIpa">Save Custom IPA</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h2>Set Custom Audio</h2>
+
+            <div class="form-group">
+                <label for="setCustomAudioWord">Word</label>
+                <input type="text" id="setCustomAudioWord" placeholder="e.g. throughout">
+            </div>
+
+            <div class="form-group">
+                <label for="setCustomAudioFile">File</label>
+				<input type="file" accept="audio/*" id="setCustomAudioFile" placeholder="File until 50KB size">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveCustomAudio">Save Custom Audio</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Remove IPA</h2>
+
+            <div class="form-group">
+                <label for="removeIpaWord">Word</label>
+                <input type="text" id="removeIpaWord" placeholder="e.g. throughout">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveRemoveIpa">Remove IPA</button>
+			</div>
+
+        </div>
+
+         <div class="settings-section">
+
+            <h2>Remove Audio</h2>
+
+            <div class="form-group">
+                <label for="removeAudioWord">Word</label>
+                <input type="text" id="removeAudioWord" placeholder="e.g. throughout">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveRemoveAudio">Remove Audio</button>
+			</div>
+
+        </div>
+
+         <div class="settings-section">
+
+            <h2>Download Storage</h2>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadIpaStorage">Download ipa storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadAudioStorage">Download audio storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadOptionsStorage">Download options storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadErrorsStorage">Download errors storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadAllStorage">Download all storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Update IPA Storage</h2>
+
+            <div class="form-group">
+                <label for="updateIpaStorageFile">File (json)</label>
+				<input type="file" accept="application/JSON" id="updateIpaStorageFile">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="updateIpaStorage">Update IPA Storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Update Audio Storage</h2>
+
+            <div class="form-group">
+                <label for="updateAudioStorageFile">File (json)</label>
+				<input type="file" accept="application/JSON" id="updateAudioStorageFile">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="updateAudioStorage">Update Audio Storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Update Options Storage</h2>
+
+            <div class="form-group">
+                <label for="updateOptionsStorageFile">File (json)</label>
+				<input type="file" accept="application/JSON" id="updateOptionsStorageFile">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="updateOptionsStorage">Update Options Storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Restore Default</h2>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="restoreDefaultOptions">Restore Default Options</button>
+			</div>
+
+        </div>
+
+   </div>
+
+    <script type="module" src="./options.js"></script>
+</body>
+</html>
