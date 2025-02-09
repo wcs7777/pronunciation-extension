@@ -1,5 +1,4 @@
 import defaultOptions from "../utils/default-options.js";
-import { byId, onlyNumber, onlyShorcut } from "../utils/element.js";
 import { splitWords } from "../utils/string.js";
 import { threshold } from "../utils/number.js";
 import {
@@ -9,6 +8,14 @@ import {
 	ipaTable,
 	optionsTable,
 } from "../utils/storage-tables.js";
+import {
+	blob2base64,
+	blob2object,
+	byId,
+	downloadObject,
+	onlyNumber,
+	onlyShorcut,
+} from "../utils/element.js";
 
 /**
  * @type {{
@@ -328,11 +335,28 @@ el.setCustomAudio.save.addEventListener("click", async () => {
 			window.alert(`Word max length is 45, but this has ${word.length}`);
 			return;
 		}
-		window.alert("todo");
-		throw new Error("todo");
-		await audioTable.set(word, ipa);
-		await setFieldsValues();
-		window.alert(`${word} = ${ipa}`);
+		const file = el.setCustomAudio.file.files?.[0];
+		if (!file) {
+			window.alert("No file was found in input");
+			return;
+		}
+		const kb = file.size / 1000;
+		if (kb > 60) {
+			window.alert(`File max size is 60KB, but this has ${kb}KB`);
+			return;
+		}
+		try {
+			const base64 = await blob2base64(file);
+			const audio = new Audio(base64);
+			audio.volume = 0;
+			await audio.play();
+			await audioTable.set(word, base64);
+			await setFieldsValues();
+			window.alert(`${word} audio saved`);
+		} catch (error) {
+			window.alert(`Error with the file: ${error}`);
+			console.error(error);
+		}
 	} catch (error) {
 		console.error(error);
 	}
@@ -380,81 +404,100 @@ el.removeAudio.save.addEventListener("click", async () => {
 	}
 });
 
-el.downloadStorage.ipa("click", async () => {
+el.downloadStorage.ipa.addEventListener("click", async () => {
 	try {
-		window.alert("todo");
-		throw new Error("todo");
+		const ipaStorage = await ipaTable.getAll();
+		await downloadObject(ipaStorage, "pronunciation-ipa-storage.json");
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.downloadStorage.audio("click", async () => {
+el.downloadStorage.audio.addEventListener("click", async () => {
 	try {
-		window.alert("todo");
-		throw new Error("todo");
+		const audioStorage = await audioTable.getAll();
+		await downloadObject(audioStorage, "pronunciation-audio-storage.json");
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.downloadStorage.options("click", async () => {
+el.downloadStorage.options.addEventListener("click", async () => {
 	try {
-		window.alert("todo");
-		throw new Error("todo");
+		const optionsStorage = await optionsTable.getAll();
+		console.log({ optionsStorage });
+		await downloadObject(optionsStorage, "pronunciation-options-storage.json");
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.downloadStorage.errors("click", async () => {
+el.downloadStorage.errors.addEventListener("click", async () => {
 	try {
-		window.alert("todo");
-		throw new Error("todo");
+		const errorsStorage = await errorsTable.getAll();
+		await downloadObject(errorsStorage, "pronunciation-errors-storage.json");
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.downloadStorage.all("click", async () => {
+el.downloadStorage.all.addEventListener("click", async () => {
 	try {
-		window.alert("todo");
-		throw new Error("todo");
+		const storage = await addonStorage.get();
+		await downloadObject(storage, "pronunciation-all-storage.json");
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.updateIpaStorage.update("click", async () => {
+el.updateIpaStorage.update.addEventListener("click", async () => {
 	try {
-		window.alert("todo");
-		throw new Error("todo");
+		const file = el.updateIpaStorage.file.files?.[0];
+		if (!file) {
+			window.alert("No file was found in input");
+			return;
+		}
+		const values = await blob2object(file);
+		await ipaTable.setMany(values);
 		await setFieldsValues();
+		window.alert("IPA storage updated");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.updateAudioStorage.update("click", async () => {
+el.updateAudioStorage.update.addEventListener("click", async () => {
 	try {
-		window.alert("todo");
-		throw new Error("todo");
+		const file = el.updateAudioStorage.file.files?.[0];
+		if (!file) {
+			window.alert("No file was found in input");
+			return;
+		}
+		const values = await blob2object(file);
+		await audioTable.setMany(values);
 		await setFieldsValues();
+		window.alert("Audio storage updated");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.updateOptionsStorage.update("click", async () => {
+el.updateOptionsStorage.update.addEventListener("click", async () => {
 	try {
-		window.alert("todo");
-		throw new Error("todo");
+		const file = el.updateOptionsStorage.file.files?.[0];
+		if (!file) {
+			window.alert("No file was found in input");
+			return;
+		}
+		const values = await blob2object(file);
+		await optionsTable.setMany(values);
 		await setFieldsValues();
+		window.alert("Options storage updated");
 	} catch (error) {
 		console.error(error);
 	}

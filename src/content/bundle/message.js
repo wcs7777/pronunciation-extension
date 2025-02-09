@@ -68,7 +68,7 @@
 		top: ${opt.position.top}px;
 		left: ${opt.position.left}px;
 		box-sizing: border-box;
-		padding: 6px 12px 6px 8px;
+		padding: 6px 8px 6px 9px;
 		background-color: ${opt.font.backgroundColor};
 		box-shadow: rgba(0, 0, 0, 0.6) -1px 1px 3px 1px;
 		font-family: ${opt.font.family}, serif;
