@@ -10,6 +10,8 @@ export default class Addon {
 
 	/**
 	 * @param {{
+	 *     initialIpaFile: string,
+	 *     defaultOptions: Options,
 	 *     audioTable: Table,
 	 *     audioCache: MemoryCache,
 	 *     ipaTable: Table,
@@ -25,6 +27,8 @@ export default class Addon {
 	 * }}
 	 */
 	constructor({
+		initialIpaFile,
+		defaultOptions,
 		audioTable,
 		audioCache,
 		ipaTable,
@@ -38,6 +42,14 @@ export default class Addon {
 		audioTextCache,
 		ipaTextCache,
 	}) {
+		/**
+		 * @type {string}
+		 */
+		this.initialIpaFile = initialIpaFile;
+		/**
+		 * @type {Options}
+		 */
+		this.defaultOptions = defaultOptions;
 		/**
 		 * @type {Table}
 		 */
@@ -388,11 +400,21 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} initialIpaFile
-	 * @param {Options} defaultOptions
 	 * @returns {Promise<void>}
 	 */
-	async initialSetup(initialIpaFile, defaultOptions) {
+	async startup() {
+		try {
+			this.optionsCache.setMany(await this.optionsTable.getAll());
+			await this.setMenuItem(this.optionsCache.get("accessKey"));
+		} catch (error) {
+			await this.saveError("startup", error);
+		}
+	}
+
+	/**
+	 * @returns {Promise<void>}
+	 */
+	async initialSetup() {
 		try {
 			const menuId = "I";
 			const message = "Wait init setup (~40s)";
@@ -405,39 +427,25 @@ export default class Addon {
 			console.log("populating options and ipa");
 			console.time("populate");
 			await Promise.all([
-				this.populateOptions(defaultOptions),
-				this.populateInitialIpa(initialIpaFile),
+				this.populateOptions(),
+				this.populateInitialIpa(),
 			]);
 			console.timeEnd("populate");
-			const alreadySet = await this.controlTable.get(
-				["setMenuItem", "setAction", "setStorageChangeListener"],
-				false,
-			);
 			console.log("setting menuItem and action");
-			await Promise.all([
-				this.setMenuItem(
-					alreadySet?.setMenuItem ?? false,
-					this.optionsCache.get("accessKey", false),
-				),
-				this.setAction(alreadySet?.setAction ?? false),
-				this.setStorageChangeListener(
-					alreadySet?.setStorageChangeListener ?? false,
-				),
-			]);
 			console.log("setup end");
 			await browser.menus.remove(menuId);
 			await browser.browserAction.setTitle({ title: actionTitle });
 			await browser.browserAction.setBadgeText({ text: actionBadge });
+			await this.startup();
 		} catch (error) {
-			await this.saveError("setup", error);
+			await this.saveError("initialSetup", error);
 		}
 	}
 
 	/**
-	 * @param {Options} defaultOptions
 	 * @returns {Promise<void>}
 	 */
-	async populateOptions(defaultOptions) {
+	async populateOptions() {
 		/**
 		 * @type {boolean | null | undefined}
 		 */
@@ -445,24 +453,16 @@ export default class Addon {
 			this.optionsTable.name,
 			false,
 		);
-		if (populated) {
-			console.log("options table is already populated");
-			this.optionsCache.setMany(await this.optionsTable.getAll());
-		} else {
-			await Promise.all([
-				this.optionsTable.setMany(defaultOptions),
-				this.defaultOptionsTable.setMany(defaultOptions),
-			]);
-			this.optionsCache.setMany(defaultOptions);
+		if (!populated) {
+			this.optionsTable.setMany(this.defaultOptions);
 			await this.controlTable.set(this.optionsTable.name, true);
 		}
 	}
 
 	/**
-	 * @param {string} initialIpaFile
 	 * @returns {Promise<void>}
 	 */
-	async populateInitialIpa(initialIpaFile) {
+	async populateInitialIpa() {
 		/**
 		 * @type {boolean | null | undefined}
 		 */
@@ -473,7 +473,7 @@ export default class Addon {
 		if (populated) {
 			console.log("ipa table is already populated");
 		} else {
-			const url = browser.runtime.getURL(initialIpaFile);
+			const url = browser.runtime.getURL(this.initialIpaFile);
 			const response = await fetch(url);
 			const gzipBuffer = new Uint8Array(await response.arrayBuffer());
 			const ipaBuffer = fflate.decompressSync(gzipBuffer);
@@ -487,51 +487,18 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {boolean} alreadySet
 	 * @param {string} accessKey
 	 * @returns {Promise<void>}
 	 */
-	async setMenuItem(alreadySet, accessKey) {
-		/**
-		 * @type {boolean | null | undefined}
-		 */
+	async setMenuItem(accessKey) {
 		const id = "P";
-		const title = `&${accessKey} - Test Pronunciation`;
-		if (alreadySet) {
-			await browser.menus.update(id, { title });
-		} else {
-			browser.menus.onClicked.addListener(async (info, tab) => {
-				return this.menuOnClicked(info, tab);
-			});
-			browser.menus.create({ id, title });
-			await this.controlTable.set("setMenuItem", true);
+		const title = `&${accessKey} - Pronunciation`;
+		try {
+			await browser.menus.remove(id);
+		} catch (error) {
+			console.error(error);
 		}
-	}
-
-	/**
-	 * @param {boolean} alreadySet
-	 * @returns {Promise<void>}
-	 */
-	async setAction(alreadySet) {
-		if (!alreadySet) {
-			browser.browserAction.onClicked.addListener(async (tab) => {
-				this.actionOnClicked(tab);
-			});
-			await this.controlTable.set("setAction", true);
-		}
-	}
-
-	/**
-	 * @param {boolean} alreadySet
-	 * @returns {Promise<void>}
-	 */
-	async setStorageChangeListener(alreadySet) {
-		if (!alreadySet) {
-			browser.storage.onChanged.addListener(async (changes, area) => {
-				this.storageOnChanged(changes, area);
-			});
-			await this.controlTable.set("setStorageChangeListener", true);
-		}
+		browser.menus.create({ id, title });
 	}
 
 	/**
@@ -616,7 +583,7 @@ export default class Addon {
 				const oldAccessKey = optionsChange?.oldValue?.accessKey;
 				const newAccessKey = optionsChange?.newValue?.accessKey;
 				if (oldAccessKey !== newAccessKey) {
-					await this.setMenuItem(true, newAccessKey);
+					await this.setMenuItem(newAccessKey);
 				}
 			}
 		} catch (error) {
@@ -635,6 +602,25 @@ export default class Addon {
 			context,
 			error,
 		});
+	}
+
+	/**
+	 * @param {browser.runtime._OnInstalledDetails} details
+	 * @returns {Promise<void>}
+	 */
+	async onInstalled(details) {
+		console.clear();
+		if (details.reason === "update") {
+			if (parseInt(details.previousVersion) < 1) { // break change
+				console.log("cleaning storage due to update break change");
+				await browser.storage.local.clear();
+			}
+		}
+		if (details.temporary) {
+			console.log("cleaning storage due to temporary installation");
+			await browser.storage.local.clear();
+		}
+		await this.initialSetup();
 	}
 
 }

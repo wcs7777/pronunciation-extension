@@ -2,41 +2,51 @@ import * as st from "../utils/storage-tables.js";
 import Addon from "./addon.js";
 import defaultOptions from "../utils/default-options.js";
 
-/**
- * @param {browser.runtime._OnInstalledDetails} details
- * @returns {Promise<void>}
- */
-async function onInstalled(details) {
-	console.clear();
-	if (details.reason === "update") {
-		if (parseInt(details.previousVersion) < 1) { // break change
-			console.log("cleaning storage due to update break change");
-			await browser.storage.local.clear();
-		}
+const addon = new Addon({
+	// initialIpaFile: "resources/short-initial-ipa.json.gz",
+	initialIpaFile: "resources/initial-ipa.json.gz",
+	defaultOptions: defaultOptions,
+	audioTable: st.audioTable,
+	audioCache: st.audioCache,
+	ipaTable: st.ipaTable,
+	ipaCache: st.ipaCache,
+	defaultIpaTable: st.defaultIpaTable,
+	optionsTable: st.optionsTable,
+	optionsCache: st.optionsCache,
+	defaultOptionsTable: st.defaultOptionsTable,
+	controlTable: st.controlTable,
+	errorsTable: st.errorsTable,
+	audioTextCache: st.audioTextCache,
+	ipaTextCache: st.ipaTextCache,
+});
+
+const installedCB = async (details) => addon.onInstalled(details);
+const menuOnClickedCB = async (info, tab) => addon.menuOnClicked(info, tab);
+const actionOnClickedCB = async (tab) => addon.actionOnClicked(tab);
+const storageOnChangedCB = async (changes, area) => {
+	return addon.storageOnChanged(changes, area);
+};
+
+async function main() {
+	if (!browser.runtime.onInstalled.hasListener(installedCB)) {
+		browser.runtime.onInstalled.addListener(installedCB);
 	}
-	if (details.temporary) {
-		console.log("cleaning storage due to temporary installation");
-		await browser.storage.local.clear();
+	if (!browser.menus.onClicked.hasListener(menuOnClickedCB)) {
+		browser.menus.onClicked.addListener(menuOnClickedCB);
 	}
-	const addon = new Addon({
-		audioTable: st.audioTable,
-		audioCache: st.audioCache,
-		ipaTable: st.ipaTable,
-		ipaCache: st.ipaCache,
-		defaultIpaTable: st.defaultIpaTable,
-		optionsTable: st.optionsTable,
-		optionsCache: st.optionsCache,
-		defaultOptionsTable: st.defaultOptionsTable,
-		controlTable: st.controlTable,
-		errorsTable: st.errorsTable,
-		audioTextCache: st.audioTextCache,
-		ipaTextCache: st.ipaTextCache,
-	});
-	const ipaFile = "resources/initial-ipa.json.gz";
-	// const ipaFile = "resources/short-initial-ipa.json.gz";
-	await addon.initialSetup(ipaFile, defaultOptions);
+	if (!browser.browserAction.onClicked.hasListener(actionOnClickedCB)) {
+		browser.browserAction.onClicked.addListener(actionOnClickedCB);
+	}
+	if (!browser.storage.onChanged.hasListener(storageOnChangedCB)) {
+		browser.storage.onChanged.addListener(storageOnChangedCB);
+	}
+	let accessKey = defaultOptions.accessKey;
+	try {
+		accessKey = await st.optionsTable.getValue("accessKey");
+	} catch (error) {
+		console.error(error);
+	}
+	await addon.setMenuItem(accessKey);
 }
 
-if (!browser.runtime.onInstalled.hasListener(onInstalled)) {
-	browser.runtime.onInstalled.addListener(onInstalled);
-}
+(async () => main())().catch(console.error);

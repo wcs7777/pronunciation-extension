@@ -45,6 +45,7 @@ export function showPopup(options) {
 		box-shadow: rgba(0, 0, 0, 0.6) -1px 1px 3px 1px;
 		font-family: ${opt.font.family}, serif;
 		font-size: ${opt.font.size}px;
+		font-style: normal !important;
 		font-weight: 400;
 		line-height: 1.2;
 		letter-spacing: .8px;
@@ -61,6 +62,7 @@ export function showPopup(options) {
 		background-color: inherit;
 		border: none;
 		font: 12px/1.0 'Arial', sans-serif;
+		font-style: normal !important;
 		vertical-align: middle;
 		text-align: center;
 		text-decoration: none;
