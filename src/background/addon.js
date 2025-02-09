@@ -402,7 +402,6 @@ export default class Addon {
 			await browser.browserAction.setTitle({ title: message });
 			await browser.browserAction.setBadgeText({ text: message });
 			console.log("setup begin");
-			const throwNotFound = false;
 			console.log("populating options and ipa");
 			console.time("populate");
 			await Promise.all([
@@ -412,13 +411,13 @@ export default class Addon {
 			console.timeEnd("populate");
 			const alreadySet = await this.controlTable.get(
 				["setMenuItem", "setAction", "setStorageChangeListener"],
-				throwNotFound,
+				false,
 			);
 			console.log("setting menuItem and action");
 			await Promise.all([
 				this.setMenuItem(
 					alreadySet?.setMenuItem ?? false,
-					this.optionsCache.get("accessKey", throwNotFound),
+					this.optionsCache.get("accessKey", false),
 				),
 				this.setAction(alreadySet?.setAction ?? false),
 				this.setStorageChangeListener(
@@ -439,13 +438,12 @@ export default class Addon {
 	 * @returns {Promise<void>}
 	 */
 	async populateOptions(defaultOptions) {
-		const throwNotFound = false;
 		/**
 		 * @type {boolean | null | undefined}
 		 */
 		const populated = await this.controlTable.getValue(
 			this.optionsTable.name,
-			throwNotFound,
+			false,
 		);
 		if (populated) {
 			console.log("options table is already populated");
@@ -465,13 +463,12 @@ export default class Addon {
 	 * @returns {Promise<void>}
 	 */
 	async populateInitialIpa(initialIpaFile) {
-		const throwNotFound = false;
 		/**
 		 * @type {boolean | null | undefined}
 		 */
 		const populated = await this.controlTable.getValue(
 			this.ipaTable.name,
-			throwNotFound,
+			false,
 		);
 		if (populated) {
 			console.log("ipa table is already populated");
@@ -501,18 +498,7 @@ export default class Addon {
 		const id = "P";
 		const title = `&${accessKey} - Test Pronunciation`;
 		if (alreadySet) {
-			const throwNotFound = false;
-			/**
-			 * @type {string | null}
-			 */
-			const oldAccessKey = this.optionsCache.get(
-				"oldAccessKey",
-				throwNotFound,
-			);
-			if (accessKey !== oldAccessKey) {
-				await browser.menus.update(id, { title });
-				this.optionsCache.set("oldAccessKey", accessKey);
-			}
+			await browser.menus.update(id, { title });
 		} else {
 			browser.menus.onClicked.addListener(async (info, tab) => {
 				return this.menuOnClicked(info, tab);
@@ -620,6 +606,17 @@ export default class Addon {
 						console.log(`resetting ${cache.name} cache`);
 						cache.setMany(await table.getAll());
 					}
+				}
+			}
+			const optionsChangeKey = keys.find(k => {
+				return k.startsWith(this.optionsTable.name);
+			});
+			if (optionsChangeKey) {
+				const optionsChange = changes[optionsChangeKey];
+				const oldAccessKey = optionsChange?.oldValue?.accessKey;
+				const newAccessKey = optionsChange?.newValue?.accessKey;
+				if (oldAccessKey !== newAccessKey) {
+					await this.setMenuItem(true, newAccessKey);
 				}
 			}
 		} catch (error) {

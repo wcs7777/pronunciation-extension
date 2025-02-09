@@ -2,26 +2,6 @@ import { url2document } from "./utils/element.js";
 
 /**
  * @param {string} word
- * @param {Table} table
- * @returns {Promise<string>}
- */
-export async function ipaFromTable(word, table) {
-	const throwNotFound = true;
-	return table.getValue(word, throwNotFound);
-}
-
-/**
- * @param {string} word
- * @param {MemoryCache} cache
- * @returns {Promise<string>}
- */
-export async function ipaFromCache(word, cache) {
-	const throwNotFound = true;
-	return cache.get(word, throwNotFound);
-}
-
-/**
- * @param {string} word
  * @returns {Promise<string>}
  */
 export async function ipaFromCambridge(word) {

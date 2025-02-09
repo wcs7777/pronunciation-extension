@@ -33,8 +33,6 @@ export default class MemoryCache {
 			obj[k] = newValues[k];
 			return obj;
 		}, {});
-		console.log({ keys });
-		console.log({ entries });
 		this.entries = entries;
 	}
 

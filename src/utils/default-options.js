@@ -4,7 +4,6 @@
 const defaultOptions = {
 	// accessKey: "P",
 	accessKey: "Y",
-	oldAccessKey: null, // used in setMenuItem()
 	allowMultipleWords: true,
 	// allowMultipleWords: false,
 	ipa: {
