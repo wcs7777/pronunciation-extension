@@ -40,13 +40,7 @@ async function main() {
 	if (!browser.storage.onChanged.hasListener(storageOnChangedCB)) {
 		browser.storage.onChanged.addListener(storageOnChangedCB);
 	}
-	let accessKey = defaultOptions.accessKey;
-	try {
-		accessKey = await st.optionsTable.getValue("accessKey");
-	} catch (error) {
-		console.error(error);
-	}
-	await addon.setMenuItem(accessKey);
+	await addon.startup();
 }
 
 (async () => main())().catch(console.error);
