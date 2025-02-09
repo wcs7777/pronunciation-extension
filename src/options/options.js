@@ -540,6 +540,7 @@ async function setFieldsValues() {
 	el.audio.responseVoiceName.value = opt.audio.responseVoice.name;
 	el.audio.responseVoiceKey.value = opt.audio.responseVoice.key;
 	el.audio.responseVoiceGender.value = opt.audio.responseVoice.gender;
+	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;
 	el.setPronuncationByShortcut.restoreDefaultIpaShortcut.value = opt.setPronuncationByShortcut.restoreDefaultIpaShortcut;

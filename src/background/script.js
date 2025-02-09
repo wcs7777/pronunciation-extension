@@ -32,8 +32,8 @@ async function onInstalled(details) {
 		audioTextCache: st.audioTextCache,
 		ipaTextCache: st.ipaTextCache,
 	});
-	// const ipaFile = "resources/initial-ipa.json.gz";
-	const ipaFile = "resources/short-initial-ipa.json.gz";
+	const ipaFile = "resources/initial-ipa.json.gz";
+	// const ipaFile = "resources/short-initial-ipa.json.gz";
 	await addon.initialSetup(ipaFile, defaultOptions);
 }
 

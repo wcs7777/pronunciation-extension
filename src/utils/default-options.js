@@ -2,10 +2,8 @@
  * @type {Options}
  */
 const defaultOptions = {
-	// accessKey: "P",
-	accessKey: "Y",
+	accessKey: "P",
 	allowMultipleWords: true,
-	// allowMultipleWords: false,
 	ipa: {
 		enabled: true,
 		font: {
@@ -37,7 +35,7 @@ const defaultOptions = {
 		},
 	},
 	setPronuncationByShortcut: {
-		enabled: true,
+		enabled: false,
 		audioShortcut: "A",
 		ipaShortcut: "Z",
 		restoreDefaultIpaShortcut: "X",
