@@ -15,7 +15,7 @@ Old [How2Pronounce](https://addons.mozilla.org/en-US/firefox/addon/how2pronounce
 - Allow to provide custom IPA and audio through the options page
 - Works for texts until 1500 characters
 
-Install here [How2Pronounce](https://addons.mozilla.org/en-US/firefox/addon/how2pronounce/)
+Install here [How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/)
 Obs: takes around 50 seconds to install the extension until the first usage due to the pre-defined IPA saving in local storage.
 
 For developers:
