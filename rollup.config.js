@@ -8,6 +8,7 @@ const createConfig = (file) => ({
 
 const configs = [
 	"message",
+	"cambridge",
 ].map(createConfig);
 
 export default configs;
