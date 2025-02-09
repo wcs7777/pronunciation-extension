@@ -9,7 +9,7 @@ import defaultOptions from "../utils/default-options.js";
 async function onInstalled(details) {
 	console.clear();
 	if (details.reason === "update") {
-		if (parseInt(details.previousVersion) < 3) { // break change
+		if (parseInt(details.previousVersion) < 1) { // break change
 			console.log("cleaning storage due to update break change");
 			await browser.storage.local.clear();
 		}

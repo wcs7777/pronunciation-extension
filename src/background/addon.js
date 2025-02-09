@@ -1,6 +1,6 @@
 import "../utils/fflate.js";
-import * as af from "../audio-from.js";
-import * as pf from "../ipa-from.js";
+import * as af from "../utils/audio-from.js";
+import * as pf from "../utils/ipa-from.js";
 import { blob2base64 } from "../utils/element.js";
 import { generateSha1, splitWords } from "../utils/string.js";
 import { goBlob, goString, resolveTimeout } from "../utils/promise.js";

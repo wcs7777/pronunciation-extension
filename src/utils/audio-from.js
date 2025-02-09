@@ -1,5 +1,5 @@
-import { splitWords, textHierarchy } from "./utils/string.js";
-import { url2blob, url2document } from "./utils/element.js";
+import { splitWords, textHierarchy } from "./string.js";
+import { url2blob, url2document } from "./element.js";
 
 /**
  * @param {string} word

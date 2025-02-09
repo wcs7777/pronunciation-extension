@@ -1,4 +1,4 @@
-import { url2document } from "./utils/element.js";
+import { url2document } from "./element.js";
 
 /**
  * @param {string} word
