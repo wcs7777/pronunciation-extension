@@ -60,7 +60,7 @@ export async function ipaFromUnalengua(word) {
 	if (status !== 200) {
 		const message = await response.text();
 		console.error(message);
-		throw new Error(JSON.stringify({ status, message}));
+		throw new Error(JSON.stringify({ status, message }));
 	}
 	const jsonResponse = await response.json();
 	const ipa = jsonResponse["ipa"];
