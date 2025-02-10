@@ -15,7 +15,7 @@ const defaultOptions = {
 		close: {
 			timeout: 3000,
 			shortcut: "\\",
-			onScroll: true,
+			onScroll: false,
 		},
 		position: {
 			menuTriggered: "above",
