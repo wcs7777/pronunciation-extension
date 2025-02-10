@@ -513,7 +513,7 @@ export default class Addon {
 				console.log("nothing was selected");
 				return;
 			}
-			return this.pronounce(selectedText, tab.id, "menuItem");
+			await this.pronounce(selectedText, tab.id, "menuItem");
 		} catch (error) {
 			await this.saveError("menuOnClicked", error);
 		}
@@ -540,7 +540,7 @@ export default class Addon {
 				console.log("nothing was selected");
 				return;
 			}
-			return this.pronounce(selectedText, tab.id, "action");
+			await this.pronounce(selectedText, tab.id, "action");
 		} catch (error) {
 			await this.saveError("actionOnClicked", error);
 		}
