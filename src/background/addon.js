@@ -592,19 +592,6 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} context
-	 * @param {any} error
-	 * @returns {Promise<void>}
-	 */
-	async saveError(context, error) {
-		console.error(error);
-		this.errorsTable.set(new Date().toISOString(), {
-			context,
-			error,
-		});
-	}
-
-	/**
 	 * @param {browser.runtime._OnInstalledDetails} details
 	 * @returns {Promise<void>}
 	 */
@@ -621,6 +608,19 @@ export default class Addon {
 			await browser.storage.local.clear();
 		}
 		await this.initialSetup();
+	}
+
+	/**
+	 * @param {string} context
+	 * @param {any} error
+	 * @returns {Promise<void>}
+	 */
+	async saveError(context, error) {
+		console.error(error);
+		this.errorsTable.set(new Date().toISOString(), {
+			context,
+			error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+		});
 	}
 
 }
