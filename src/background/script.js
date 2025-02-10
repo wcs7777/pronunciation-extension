@@ -28,17 +28,17 @@ const storageOnChangedCB = async (changes, area) => {
 };
 
 async function main() {
-	if (!browser.runtime.onInstalled.hasListener(installedCB)) {
-		browser.runtime.onInstalled.addListener(installedCB);
+	if (!browser?.runtime?.onInstalled?.hasListener(installedCB)) {
+		browser?.runtime?.onInstalled?.addListener(installedCB);
 	}
-	if (!browser.menus.onClicked.hasListener(menuOnClickedCB)) {
-		browser.menus.onClicked.addListener(menuOnClickedCB);
+	if (!browser?.menus?.onClicked?.hasListener(menuOnClickedCB)) {
+		browser?.menus?.onClicked?.addListener(menuOnClickedCB);
 	}
-	if (!browser.browserAction.onClicked.hasListener(actionOnClickedCB)) {
-		browser.browserAction.onClicked.addListener(actionOnClickedCB);
+	if (!browser?.browserAction?.onClicked?.hasListener(actionOnClickedCB)) {
+		browser?.browserAction?.onClicked?.addListener(actionOnClickedCB);
 	}
-	if (!browser.storage.onChanged.hasListener(storageOnChangedCB)) {
-		browser.storage.onChanged.addListener(storageOnChangedCB);
+	if (!browser?.storage?.onChanged?.hasListener(storageOnChangedCB)) {
+		browser?.storage?.onChanged?.addListener(storageOnChangedCB);
 	}
 	await addon.startup();
 }
