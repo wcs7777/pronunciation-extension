@@ -427,7 +427,7 @@ export default class Addon {
 		try {
 			const menuId = "I";
 			const message = "Wait init setup (~40s)";
-			browser.menus.create({ id: menuId, title: message });
+			browser?.menus?.create({ id: menuId, title: message });
 			const actionTitle = await browser.browserAction.getTitle({});
 			const actionBadge = await browser.browserAction.getBadgeText({});
 			await browser.browserAction.setTitle({ title: message });
@@ -442,7 +442,7 @@ export default class Addon {
 			console.timeEnd("populate");
 			console.log("setting menuItem and action");
 			console.log("setup end");
-			await browser.menus.remove(menuId);
+			await browser?.menus?.remove(menuId);
 			await browser.browserAction.setTitle({ title: actionTitle });
 			await browser.browserAction.setBadgeText({ text: actionBadge });
 			await this.startup();
@@ -503,11 +503,11 @@ export default class Addon {
 		const id = "P";
 		const title = `&${accessKey} - Pronunciation`;
 		try {
-			await browser.menus.remove(id);
+			await browser?.menus?.remove(id);
 		} catch (error) {
 			console.error(error);
 		}
-		browser.menus.create({ id, title });
+		browser?.menus?.create({ id, title });
 	}
 
 	/**
