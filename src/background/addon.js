@@ -565,30 +565,30 @@ export default class Addon {
 			if (areaName !== "local") {
 				return;
 			}
-			const keys = Object.keys(changes);
-			/**
-			 * @type {[Table, MemoryCache, boolean][]}
-			 */
-			const table_cache_reset = [
-				[this.ipaTable, this.ipaCache, false],
-				[this.audioTable, this.audioCache, false],
-				[this.optionsTable, this.optionsCache, true],
-			];
-			for (const [table, cache, reset] of table_cache_reset) {
-				if (keys.some(k => k.startsWith(table.name))) {
-					console.log(`cleaning ${cache.name} cache`);
-					cache.clear();
-					if (reset) {
-						console.log(`resetting ${cache.name} cache`);
-						cache.setMany(await table.getAll());
-					}
-				}
+			const changesKeys = Object.keys(changes);
+			const ipaKeys = changesKeys.filter(
+				k => k.startsWith(this.ipaTable.name),
+			);
+			const audioKeys = changesKeys.filter(
+				k => k.startsWith(this.audioTable.name),
+			);
+			const optionsKeys = changesKeys.filter(
+				k => k.startsWith(this.optionsTable.name),
+			);
+			if (ipaKeys.length > 0) {
+				console.log(`cleaning ${this.ipaCache.name} cache`);
+				this.ipaCache.clear();
 			}
-			const optionsChangeKey = keys.find(k => {
-				return k.startsWith(this.optionsTable.name);
-			});
-			if (optionsChangeKey) {
-				const optionsChange = changes[optionsChangeKey];
+			if (audioKeys.length > 0) {
+				console.log(`cleaning ${this.audioCache.name} cache`);
+				this.audioCache.clear();
+			}
+			if (optionsKeys.length > 0) {
+				console.log(`cleaning ${this.optionsCache.name} cache`);
+				this.optionsCache.clear();
+				console.log(`resetting ${this.optionsCache.name} cache`);
+				this.optionsCache(await this.optionsTable.getAll());
+				const optionsChange = changes[optionsKeys];
 				const oldAccessKey = optionsChange?.oldValue?.accessKey;
 				const newAccessKey = optionsChange?.newValue?.accessKey;
 				if (oldAccessKey !== newAccessKey) {
