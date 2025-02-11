@@ -43,6 +43,7 @@ import {
  *         volume: HTMLInputElement,
  *         playbackRate: HTMLInputElement,
  *         fetchFileTimeout: HTMLInputElement,
+ *         saveGoogleSpeechAudio: HTMLInputElement,
  *         responseVoiceName: HTMLInputElement,
  *         responseVoiceKey: HTMLInputElement,
  *         responseVoiceGender: HTMLSelectElement,
@@ -120,6 +121,7 @@ const el = {
 		volume: byId("audioVolume"),
 		playbackRate: byId("audioPlaybackRate"),
 		fetchFileTimeout: byId("audioFetchFileTimeout"),
+		saveGoogleSpeechAudio: byId("audioSaveGoogleSpeechAudio"),
 		responseVoiceName: byId("audioResponseVoiceName"),
 		responseVoiceKey: byId("audioResponseVoiceKey"),
 		responseVoiceGender: byId("audioResponseVoiceGender"),
@@ -258,6 +260,7 @@ el.audio.save.addEventListener("click", async () => {
 				volume: numOr(el.audio.volume.value, defaultOptions.audio.volume, 0, 1),
 				playbackRate: numOr(el.audio.playbackRate.value, defaultOptions.audio.playbackRate, 0.2, 2),
 				fetchFileTimeout: numOr(el.audio.fetchFileTimeout.value, defaultOptions.audio.fetchFileTimeout, 0, 120000),
+				saveGoogleSpeechAudio: el.audio.saveGoogleSpeechAudio.checked,
 				responseVoice: {
 					name: strOr(el.audio.responseVoiceName.value, defaultOptions.audio.responseVoice.name),
 					key: strOr(el.audio.responseVoiceKey.value, defaultOptions.audio.responseVoice.key),
@@ -537,6 +540,7 @@ async function setFieldsValues() {
 	el.audio.volume.value = opt.audio.volume.toString();
 	el.audio.playbackRate.value = opt.audio.playbackRate.toString();
 	el.audio.fetchFileTimeout.value = opt.audio.fetchFileTimeout.toString();
+	el.audio.saveGoogleSpeechAudio.checked = opt.audio.saveGoogleSpeechAudio;
 	el.audio.responseVoiceName.value = opt.audio.responseVoice.name;
 	el.audio.responseVoiceKey.value = opt.audio.responseVoice.key;
 	el.audio.responseVoiceGender.value = opt.audio.responseVoice.gender;

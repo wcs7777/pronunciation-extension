@@ -60,6 +60,7 @@ declare global {
 		volume: number,
 		playbackRate: number,
 		fetchFileTimeout: number,
+		saveGoogleSpeechAudio: boolean,
 		responseVoice: OptionsResponsiveVoice,
 	};
 

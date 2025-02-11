@@ -288,6 +288,7 @@ export default class Addon {
 			);
 			base64 = value;
 			if (error) {
+				let saveAudio = true;
 				/**
 				  * @type {{ error: Error | null, value: Blob | null }}
 				  */
@@ -312,6 +313,7 @@ export default class Addon {
 							r.error,
 						);
 						r = await goBlob(af.audioFromGoogleSpeech(word));
+						saveAudio = options.saveGoogleSpeechAudio;
 						if (r.error) {
 							await this.saveError(
 								`GoogleSpeech: ${word}`,
@@ -323,8 +325,10 @@ export default class Addon {
 				if (r.value) {
 					try {
 						base64 = await blob2base64(r.value);
-						console.log(`adding ${word} to audio storage`);
-						await this.audioTable.set(word, base64);
+						if (saveAudio) {
+							console.log(`adding ${word} to audio storage`);
+							await this.audioTable.set(word, base64);
+						}
 					} catch (error) {
 						await this.saveError(`blob2base64: ${word}`, error);
 					}
@@ -404,6 +408,11 @@ export default class Addon {
 	 */
 	async startup() {
 		try {
+			// allow new options settings without break change
+			await this.optionsTable.setMany({
+				...this.defaultOptions,
+				...(await this.optionsTable.getAll()),
+			});
 			this.optionsCache.setMany(await this.optionsTable.getAll());
 			await this.setMenuItem(this.optionsCache.get("accessKey"));
 		} catch (error) {

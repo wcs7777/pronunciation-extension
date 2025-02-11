@@ -27,6 +27,7 @@ const defaultOptions = {
 		enabled: true,
 		volume: 1.0,
 		playbackRate: 1.0,
+		saveGoogleSpeechAudio: false,
 		fetchFileTimeout: 3000,
 		responseVoice: {
 			name: "rjs",
