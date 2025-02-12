@@ -233,25 +233,14 @@ export default class Addon {
 		  */
 		let ipa = this.ipaTextCache.get(word, false) ?? null;
 		if (!ipa) {
-			/**
-			  * @type {{ error: Error | null, value: string | null }}
-			  */
-			let r = { value: null, error: null };
-			r = await goString(this.ipaTable.getValue(word));
+			let r = await goString(this.ipaTable.getValue(word));
 			if (r.error) {
-				r = await goString(pf.ipaFromUnalengua(word));
-				if (r.error) {
-					await this.saveError(`Unalengua: ${word}`, r.error);
-					r = await goString(pf.ipaFromCambridge(word));
-					if (r.error) {
-						await this.saveError(`Cambridge: ${word}`, r.error);
-						r = await goString(pf.ipaFromOxford(word));
-						if (r.error) {
-							await this.saveError(`Oxford: ${word}`, r.error);
-						}
-					}
-				}
-				if (r.value) {
+				const { r: rExternal, save } = await this.findIpaExternally(
+					word,
+					options,
+				);
+				r = rExternal;
+				if (r.value && save) {
 					console.log(`adding ${word} to ipa storage`);
 					await this.ipaTable.set(word, r.value);
 				}
@@ -262,6 +251,31 @@ export default class Addon {
 			ipa = r.value;
 		}
 		return ipa;
+	}
+
+	/**
+	 * @param {string} word
+	 * @param {OptionsIpa} options
+	 * @returns {Promise<{
+	 *     r: { error: Error | null, value: string | null },
+	 *     save: boolean,
+	 * }>
+	 */
+	async findIpaExternally(word, options) {
+		let save = true;
+		let r = await goString(pf.ipaFromUnalengua(word));
+		if (r.error) {
+			await this.saveError(`Unalengua: ${word}`, r.error);
+			r = await goString(pf.ipaFromCambridge(word));
+			if (r.error) {
+				await this.saveError(`Cambridge: ${word}`, r.error);
+				r = await goString(pf.ipaFromOxford(word));
+				if (r.error) {
+					await this.saveError(`Oxford: ${word}`, r.error);
+				}
+			}
+		}
+		return { r, save };
 	}
 
 	/**
@@ -288,44 +302,14 @@ export default class Addon {
 			);
 			base64 = value;
 			if (error) {
-				let saveAudio = true;
-				/**
-				  * @type {{ error: Error | null, value: Blob | null }}
-				  */
-				let r = { error: null, value: null };
-				r = await goBlob(
-					Promise.any([
-						af.audioFromOxford(word),
-						af.audioFromGstatic(word),
-						resolveTimeout(options.fetchFileTimeout, null),
-					]),
+				const { r, save } = await this.findAudioExternally(
+					word,
+					options,
 				);
-				if (!r.value) {
-					r = await goBlob(
-						af.audioFromResponsiveVoice(
-							word,
-							options.responseVoice,
-						),
-					);
-					if (r.error) {
-						await this.saveError(
-							`ResponsiveVoice: ${word}`,
-							r.error,
-						);
-						r = await goBlob(af.audioFromGoogleSpeech(word));
-						saveAudio = options.saveGoogleSpeechAudio;
-						if (r.error) {
-							await this.saveError(
-								`GoogleSpeech: ${word}`,
-								r.error,
-							);
-						}
-					}
-				}
 				if (r.value) {
 					try {
 						base64 = await blob2base64(r.value);
-						if (saveAudio) {
+						if (save) {
 							console.log(`adding ${word} to audio storage`);
 							await this.audioTable.set(word, base64);
 						}
@@ -340,6 +324,39 @@ export default class Addon {
 			}
 		}
 		return audio;
+	}
+
+	/**
+	 * @param {string} word
+	 * @param {OptionsAudio} options
+	 * @returns {Promise<{
+	 *     r: { error: Error | null, value: Blob | null },
+	 *     save: boolean,
+	 * }>
+	 */
+	async findAudioExternally(word, options) {
+		let save = true;
+		let r = await goBlob(
+			Promise.any([
+				af.audioFromOxford(word),
+				af.audioFromGstatic(word),
+				resolveTimeout(options.fetchFileTimeout, null),
+			]),
+		);
+		if (!r.value) {
+			r = await goBlob(
+				af.audioFromResponsiveVoice(word, options.responseVoice),
+			);
+			if (r.error) {
+				await this.saveError(`ResponsiveVoice: ${word}`, r.error);
+				r = await goBlob(af.audioFromGoogleSpeech(word));
+				save = options.saveGoogleSpeechAudio;
+				if (r.error) {
+					await this.saveError(`GoogleSpeech: ${word}`, r.error);
+				}
+			}
+		}
+		return { r, save };
 	}
 
 	/**
@@ -587,7 +604,8 @@ export default class Addon {
 				console.log(`cleaning ${this.optionsCache.name} cache`);
 				this.optionsCache.clear();
 				console.log(`resetting ${this.optionsCache.name} cache`);
-				this.optionsCache(await this.optionsTable.getAll());
+				this.optionsCache.setMany(await this.optionsTable.getAll());
+				// only works if TableByParentKey
 				const optionsChange = changes[optionsKeys];
 				const oldAccessKey = optionsChange?.oldValue?.accessKey;
 				const newAccessKey = optionsChange?.newValue?.accessKey;
