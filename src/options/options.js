@@ -1,4 +1,5 @@
 import defaultOptions from "../utils/default-options.js";
+import { showPopup } from "../utils/show-popup.js";
 import { splitWords } from "../utils/string.js";
 import { threshold } from "../utils/number.js";
 import {
@@ -200,7 +201,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.general.save.addEventListener("click", async () => {
+el.general.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		/**
 		 * @type {Options}
@@ -211,12 +212,13 @@ el.general.save.addEventListener("click", async () => {
 		};
 		await optionsTable.setMany(options);
 		await setFieldsValues();
+		showInfo(currentTarget, "General settings saved");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.ipa.save.addEventListener("click", async () => {
+el.ipa.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		/**
 		 * @type {Options}
@@ -244,12 +246,13 @@ el.ipa.save.addEventListener("click", async () => {
 		};
 		await optionsTable.setMany(options);
 		await setFieldsValues();
+		showInfo(currentTarget, "IPA settings saved");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.audio.save.addEventListener("click", async () => {
+el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		/**
 		 * @type {Options}
@@ -270,12 +273,13 @@ el.audio.save.addEventListener("click", async () => {
 		};
 		await optionsTable.setMany(options);
 		await setFieldsValues();
+		showInfo(currentTarget, "Audio settings saved");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.setPronuncationByShortcut.save.addEventListener("click", async () => {
+el.setPronuncationByShortcut.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		/**
 		 * @type {Options}
@@ -290,62 +294,63 @@ el.setPronuncationByShortcut.save.addEventListener("click", async () => {
 		};
 		await optionsTable.setMany(options);
 		await setFieldsValues();
+		showInfo(currentTarget, "Set pronunciation by shortcut settings saved");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.setCustomIpa.save.addEventListener("click", async () => {
+el.setCustomIpa.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		const rawWord = el.setCustomIpa.word.value.trim().toLowerCase();
 		const words = splitWords(rawWord);
 		if (words.length === 0) {
-			window.alert("No word was found in input");
+			showInfo(currentTarget, "No word was found in input");
 			return;
 		}
 		const word = words[0];
 		if (word.length > 45) {
-			window.alert(`Word max length is 45, but this has ${word.length}`);
+			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
 			return;
 		}
 		const ipa = el.setCustomIpa.ipa.value.trim();
 		if (ipa.length === 0) {
-			window.alert("No IPA was found in input");
+			showInfo(currentTarget, "No IPA was found in input");
 			return;
 		}
 		if (ipa.length > 60) {
-			window.alert(`IPA max length is 60, but this has ${ipa.length}`);
+			showInfo(currentTarget, `IPA max length is 60, but this has ${ipa.length}`);
 			return;
 		}
 		await ipaTable.set(word, ipa);
 		await setFieldsValues();
-		window.alert(`${word} = ${ipa}`);
+		showInfo(currentTarget, `${word} = ${ipa}`);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.setCustomAudio.save.addEventListener("click", async () => {
+el.setCustomAudio.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		const rawWord = el.setCustomAudio.word.value.trim().toLowerCase();
 		const words = splitWords(rawWord);
 		if (words.length === 0) {
-			window.alert("No word was found in input");
+			showInfo(currentTarget, "No word was found in input");
 			return;
 		}
 		const word = words[0];
 		if (word.length > 45) {
-			window.alert(`Word max length is 45, but this has ${word.length}`);
+			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
 			return;
 		}
 		const file = el.setCustomAudio.file.files?.[0];
 		if (!file) {
-			window.alert("No file was found in input");
+			showInfo(currentTarget, "No file was found in input");
 			return;
 		}
 		const kb = file.size / 1000;
 		if (kb > 60) {
-			window.alert(`File max size is 60KB, but this has ${kb}KB`);
+			showInfo(currentTarget, `File max size is 60KB, but this has ${kb}KB`);
 			return;
 		}
 		try {
@@ -355,9 +360,9 @@ el.setCustomAudio.save.addEventListener("click", async () => {
 			await audio.play();
 			await audioTable.set(word, base64);
 			await setFieldsValues();
-			window.alert(`${word} audio saved`);
+			showInfo(currentTarget, `${word} audio saved`);
 		} catch (error) {
-			window.alert(`Error with the file: ${error}`);
+			showInfo(currentTarget, `Error with the file: ${error}`);
 			console.error(error);
 		}
 	} catch (error) {
@@ -365,43 +370,43 @@ el.setCustomAudio.save.addEventListener("click", async () => {
 	}
 });
 
-el.removeIpa.save.addEventListener("click", async () => {
+el.removeIpa.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		const rawWord = el.removeIpa.word.value.trim().toLowerCase();
 		const words = splitWords(rawWord);
 		if (words.length === 0) {
-			window.alert("No word was found in input");
+			showInfo(currentTarget, "No word was found in input");
 			return;
 		}
 		const word = words[0];
 		if (word.length > 45) {
-			window.alert(`Word max length is 45, but this has ${word.length}`);
+			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
 			return;
 		}
 		await ipaTable.remove(word);
 		await setFieldsValues();
-		window.alert(`${word} IPA removed`);
+		showInfo(currentTarget, `${word} IPA removed`);
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.removeAudio.save.addEventListener("click", async () => {
+el.removeAudio.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		const rawWord = el.removeAudio.word.value.trim().toLowerCase();
 		const words = splitWords(rawWord);
 		if (words.length === 0) {
-			window.alert("No word was found in input");
+			showInfo(currentTarget, "No word was found in input");
 			return;
 		}
 		const word = words[0];
 		if (word.length > 45) {
-			window.alert(`Word max length is 45, but this has ${word.length}`);
+			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
 			return;
 		}
 		await audioTable.remove(word);
 		await setFieldsValues();
-		window.alert(`${word} audio removed`);
+		showInfo(currentTarget, `${word} audio removed`);
 	} catch (error) {
 		console.error(error);
 	}
@@ -458,58 +463,59 @@ el.downloadStorage.all.addEventListener("click", async () => {
 	}
 });
 
-el.updateIpaStorage.update.addEventListener("click", async () => {
+el.updateIpaStorage.update.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		const file = el.updateIpaStorage.file.files?.[0];
 		if (!file) {
-			window.alert("No file was found in input");
+			showInfo(currentTarget, "No file was found in input");
 			return;
 		}
 		const values = await blob2object(file);
 		await ipaTable.setMany(values);
 		await setFieldsValues();
-		window.alert("IPA storage updated");
+		showInfo(currentTarget, "IPA storage updated");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.updateAudioStorage.update.addEventListener("click", async () => {
+el.updateAudioStorage.update.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		const file = el.updateAudioStorage.file.files?.[0];
 		if (!file) {
-			window.alert("No file was found in input");
+			showInfo(currentTarget, "No file was found in input");
 			return;
 		}
 		const values = await blob2object(file);
 		await audioTable.setMany(values);
 		await setFieldsValues();
-		window.alert("Audio storage updated");
+		showInfo(currentTarget, "Audio storage updated");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.updateOptionsStorage.update.addEventListener("click", async () => {
+el.updateOptionsStorage.update.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		const file = el.updateOptionsStorage.file.files?.[0];
 		if (!file) {
-			window.alert("No file was found in input");
+			showInfo(currentTarget, "No file was found in input");
 			return;
 		}
 		const values = await blob2object(file);
 		await optionsTable.setMany(values);
 		await setFieldsValues();
-		window.alert("Options storage updated");
+		showInfo(currentTarget, "Options storage updated");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.restoreDefaultOptions.addEventListener("click", async () => {
+el.restoreDefaultOptions.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		await optionsTable.setMany(defaultOptions);
 		await setFieldsValues();
+		showInfo(currentTarget, "Default options restored");
 	} catch (error) {
 		console.error(error);
 	}
@@ -579,4 +585,24 @@ function numOr(value, defaultValue, min=0, max=Number.MAX_VALUE) {
 	const trimmed = value.trim();
 	const num = trimmed.length > 0 ? parseFloat(trimmed) : defaultValue;
 	return threshold(min, max, num);
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {string} info
+ * @param {closeTimeout} number
+ * @returns {void}
+ */
+function showInfo(element, info, closeTimeout=5000) {
+	const { top, left } = element.getBoundingClientRect();
+	showPopup({
+		text: info,
+		position: {
+			top: top + element.offsetHeight * -1,
+			left,
+		},
+		close: {
+			timeout: closeTimeout,
+		},
+	});
 }
