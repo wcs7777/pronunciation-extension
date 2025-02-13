@@ -376,7 +376,7 @@ export default class Addon {
 				le?.[af.AFGoogleSpeech.name],
 			),
 			new af.AFResponsiveVoice(
-				options.responseVoice,
+				options.responsiveVoice,
 				le?.[af.AFResponsiveVoice.name],
 			),
 		];

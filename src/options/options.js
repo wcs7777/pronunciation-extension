@@ -47,10 +47,10 @@ import {
  *         realVoiceFetchTimeout: HTMLInputElement,
  *         googleSpeechEnabled: HTMLInputElement,
  *         googleSpeechSave: HTMLInputElement,
- *         responseVoiceEnabled: HTMLInputElement,
- *         responseVoiceApiName: HTMLInputElement,
- *         responseVoiceApiKey: HTMLInputElement,
- *         responseVoiceApiGender: HTMLSelectElement,
+ *         responsiveVoiceEnabled: HTMLInputElement,
+ *         responsiveVoiceApiName: HTMLInputElement,
+ *         responsiveVoiceApiKey: HTMLInputElement,
+ *         responsiveVoiceApiGender: HTMLSelectElement,
  *         save: HTMLButtonElement,
  *     },
  *     setPronuncationByShortcut: {
@@ -135,10 +135,10 @@ const el = {
 		realVoiceFetchTimeout: byId("audioRealVoiceFetchTimeout"),
 		googleSpeechEnabled: byId("audioGoogleSpeechEnabled"),
 		googleSpeechSave: byId("audioGoogleSpeechSave"),
-		responseVoiceEnabled: byId("audioResponseVoiceEnabled"),
-		responseVoiceApiName: byId("audioResponseVoiceApiName"),
-		responseVoiceApiKey: byId("audioResponseVoiceApiKey"),
-		responseVoiceApiGender: byId("audioResponseVoiceApiGender"),
+		responsiveVoiceEnabled: byId("audioResponsiveVoiceEnabled"),
+		responsiveVoiceApiName: byId("audioResponsiveVoiceApiName"),
+		responsiveVoiceApiKey: byId("audioResponsiveVoiceApiKey"),
+		responsiveVoiceApiGender: byId("audioResponsiveVoiceApiGender"),
 		save: byId("saveAudio"),
 	},
 	setPronuncationByShortcut: {
@@ -288,12 +288,12 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 					enabled: el.audio.googleSpeechEnabled.checked,
 					save: el.audio.googleSpeechSave.checked,
 				},
-				responseVoice: {
-					enabled: el.audio.responseVoiceEnabled.checked,
+				responsiveVoice: {
+					enabled: el.audio.responsiveVoiceEnabled.checked,
 					api: {
-						name: strOr(el.audio.responseVoiceApiName.value, defaultOptions.audio.responseVoice.api.name),
-						key: strOr(el.audio.responseVoiceApiKey.value, defaultOptions.audio.responseVoice.api.key),
-						gender: strOr(el.audio.responseVoiceApiGender.value, defaultOptions.audio.responseVoice.api.gender),
+						name: strOr(el.audio.responsiveVoiceApiName.value, defaultOptions.audio.responsiveVoice.api.name),
+						key: strOr(el.audio.responsiveVoiceApiKey.value, defaultOptions.audio.responsiveVoice.api.key),
+						gender: strOr(el.audio.responsiveVoiceApiGender.value, defaultOptions.audio.responsiveVoice.api.gender),
 					},
 				},
 			},
@@ -618,10 +618,10 @@ async function setFieldsValues() {
 	el.audio.realVoiceFetchTimeout.value = opt.audio.realVoice.fetchTimeout.toString();
 	el.audio.googleSpeechEnabled.checked = opt.audio.googleSpeech.enabled;
 	el.audio.googleSpeechSave.checked = opt.audio.googleSpeech.save;
-	el.audio.responseVoiceEnabled.checked = opt.audio.responseVoice.enabled;
-	el.audio.responseVoiceApiName.value = opt.audio.responseVoice.api.name;
-	el.audio.responseVoiceApiKey.value = opt.audio.responseVoice.api.key;
-	el.audio.responseVoiceApiGender.value = opt.audio.responseVoice.api.gender;
+	el.audio.responsiveVoiceEnabled.checked = opt.audio.responsiveVoice.enabled;
+	el.audio.responsiveVoiceApiName.value = opt.audio.responsiveVoice.api.name;
+	el.audio.responsiveVoiceApiKey.value = opt.audio.responsiveVoice.api.key;
+	el.audio.responsiveVoiceApiGender.value = opt.audio.responsiveVoice.api.gender;
 	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;

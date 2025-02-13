@@ -103,7 +103,7 @@ declare global {
 		playbackRate: number,
 		realVoice: OptAudioRealVoice,
 		googleSpeech: OptAudioGoogleSpeech,
-		responseVoice: OptAudioResponsiveVoice,
+		responsiveVoice: OptAudioResponsiveVoice,
 	};
 
 	type OptAudioRealVoice = {

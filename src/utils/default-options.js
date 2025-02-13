@@ -49,7 +49,7 @@ const defaultOptions = {
 			order: 4,
 			save: false,
 		},
-		responseVoice: {
+		responsiveVoice: {
 			enabled: true,
 			order: 3,
 			api: {
