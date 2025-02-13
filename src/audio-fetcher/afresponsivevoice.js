@@ -1,4 +1,5 @@
 import { url2blob } from "../utils/element.js";
+import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
 
 export default class AFResponsiveVoice {
 
@@ -50,15 +51,10 @@ export default class AFResponsiveVoice {
 	 * @returns {boolean}
 	 */
 	get enabled() {
-		const okStatus = [200, 404];
-		const status = this.lastError?.status;
-		if (status && !okStatus.includes(status)) {
-			const now = new Date().getTime();
-			if (now - this.lastError.timestamp < 3600000) { // 1 hour
-				return false;
-			}
-		}
-		return this.options.enabled;
+		return (
+			this.options.enabled &&
+			!waitRateLimit(this.lastError, 60, [200, 404])
+		);
 	}
 
 	/**

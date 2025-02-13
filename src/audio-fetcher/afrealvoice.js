@@ -1,6 +1,7 @@
 import AFGstatic from "./afgstatic.js";
 import AFOxford from "./afoxford.js";
 import { resolveTimeout } from "../utils/promise.js";
+import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
 
 export default class AFRealVoice {
 
@@ -62,15 +63,10 @@ export default class AFRealVoice {
 	 * @returns {boolean}
 	 */
 	get enabled() {
-		const okStatus = [200, 404];
-		const status = this.lastError?.status;
-		if (status && !okStatus.includes(status)) {
-			const now = new Date().getTime();
-			if (now - this.lastError.timestamp < 3600000) { // 1 hour
-				return false;
-			}
-		}
-		return this.options.enabled;
+		return (
+			this.options.enabled &&
+			!waitRateLimit(this.lastError, 10, [200, 404])
+		);
 	}
 
 	/**
