@@ -3,8 +3,7 @@ import Addon from "./addon.js";
 import defaultOptions from "../utils/default-options.js";
 
 const addon = new Addon({
-	// initialIpaFile: "resources/short-initial-ipa.json.gz",
-	initialIpaFile: "resources/initial-ipa.json.gz",
+	initialIpaFile: "resources/ipa.json.gz",
 	defaultOptions: defaultOptions,
 	audioTable: st.audioTable,
 	audioCache: st.audioCache,

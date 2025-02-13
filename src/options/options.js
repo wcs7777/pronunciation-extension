@@ -1,3 +1,4 @@
+import "../utils/fflate.js";
 import defaultOptions from "../utils/default-options.js";
 import { deepMerge }  from "../utils/object.js";
 import { showPopup } from "../utils/show-popup.js";
@@ -6,6 +7,7 @@ import { threshold } from "../utils/number.js";
 import {
 	addonStorage,
 	audioTable,
+	defaultIpaTable,
 	errorsTable,
 	ipaTable,
 	optionsTable,
@@ -105,6 +107,7 @@ import {
  *         errors: HTMLButtonElement,
  *         all: HTMLButtonElement,
  *     },
+ *     setCompleteIpa: HTMLButtonElement,
  *     restoreDefaultOptions: HTMLButtonElement,
  * }}
  */
@@ -191,6 +194,7 @@ const el = {
 		audio: byId("removeAudioStorage"),
 		errors: byId("removeErrorsStorage"),
 	},
+	setCompleteIpa: byId("setCompleteIpa"),
 	restoreDefaultOptions: byId("restoreDefaultOptions"),
 };
 
@@ -583,9 +587,38 @@ el.removeStorage.errors.addEventListener("click", async ({ currentTarget }) => {
 	}
 });
 
+el.setCompleteIpa.addEventListener("click", async ({ currentTarget }) => {
+	try {
+		const msg = "Are you sure to set complete pre-defined IPA definitions (some definitions may be overrode and may take some time)?";
+		if (!window.confirm(msg)) {
+			return;
+		}
+		console.log("Getting gzip URL");
+		const url = browser.runtime.getURL("resources/complete-ipa.json.gz");
+		console.log("Fetching gzip file");
+		const response = await fetch(url);
+		console.log("Creating gzip buffer");
+		const gzipBuffer = new Uint8Array(await response.arrayBuffer());
+		console.log("Decompressing gzip buffer");
+		const ipaBuffer = fflate.decompressSync(gzipBuffer);
+		console.log("Decoding decompressed gzip");
+		const ipaDecoded = new TextDecoder().decode(ipaBuffer);
+		console.log("Parsing decoded gzip");
+		const values = JSON.parse(ipaDecoded);
+		console.log("Storing parsed gzip");
+		await Promise.all([
+			ipaTable.setMany(values),
+			defaultIpaTable.setMany(values),
+		]);
+		showInfo(currentTarget, "Complete pre-defined IPA definitions set");
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 el.restoreDefaultOptions.addEventListener("click", async ({ currentTarget }) => {
 	try {
-		const msg = "Are you sure to restore the options to default";
+		const msg = "Are you sure to restore the options to default?";
 		if (!window.confirm(msg)) {
 			return;
 		}
