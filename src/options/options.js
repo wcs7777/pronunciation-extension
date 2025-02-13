@@ -679,10 +679,19 @@ async function setFieldsValues() {
 
 /**
  * @param {Options} options
+ * @param {?Options} currentOptions
  * @returns {Promise<void>}
  */
-function saveOptions(options) {
-	return optionsTable.setMany(deepMerge(defaultOptions, options, true));
+async function saveOptions(options, currentOptions) {
+	let currOpt = currentOptions;
+	if (!currOpt) {
+		/**
+		 * @type {Options}
+		 */
+		const tblOpt = await optionsTable.getAll();
+		currOpt = tblOpt;
+	}
+	return optionsTable.setMany(deepMerge(currOpt, options, true));
 }
 
 /**
