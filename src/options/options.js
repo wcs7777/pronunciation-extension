@@ -1,4 +1,5 @@
 import defaultOptions from "../utils/default-options.js";
+import { deepMerge }  from "../utils/object.js";
 import { showPopup } from "../utils/show-popup.js";
 import { splitWords } from "../utils/string.js";
 import { threshold } from "../utils/number.js";
@@ -228,7 +229,7 @@ el.general.save.addEventListener("click", async ({ currentTarget }) => {
 			accessKey: strOr(el.general.accessKey.value, defaultOptions.accessKey),
 			allowMultipleWords: el.general.allowMultipleWords.checked,
 		};
-		await optionsTable.setMany(options);
+		await saveOptions(options);
 		await setFieldsValues();
 		showInfo(currentTarget, "General settings saved");
 	} catch (error) {
@@ -262,7 +263,7 @@ el.ipa.save.addEventListener("click", async ({ currentTarget }) => {
 				},
 			},
 		};
-		await optionsTable.setMany(options);
+		await saveOptions(options);
 		await setFieldsValues();
 		showInfo(currentTarget, "IPA settings saved");
 	} catch (error) {
@@ -298,7 +299,7 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 				},
 			},
 		};
-		await optionsTable.setMany(options);
+		await saveOptions(options);
 		await setFieldsValues();
 		showInfo(currentTarget, "Audio settings saved");
 	} catch (error) {
@@ -319,7 +320,7 @@ el.setPronuncationByShortcut.save.addEventListener("click", async ({ currentTarg
 				restoreDefaultIpaShortcut: strOr(el.setPronuncationByShortcut.restoreDefaultIpaShortcut.value, defaultOptions.setPronuncationByShortcut.restoreDefaultIpaShortcut),
 			},
 		};
-		await optionsTable.setMany(options);
+		await saveOptions(options);
 		await setFieldsValues();
 		showInfo(currentTarget, "Set pronunciation by shortcut settings saved");
 	} catch (error) {
@@ -528,8 +529,11 @@ el.updateOptionsStorage.update.addEventListener("click", async ({ currentTarget 
 			showInfo(currentTarget, "No file was found in input");
 			return;
 		}
-		const values = await blob2object(file);
-		await optionsTable.setMany(values);
+		/**
+		 * @type {Options}
+		 */
+		const options = await blob2object(file);
+		await saveOptions(options);
 		await setFieldsValues();
 		showInfo(currentTarget, "Options storage updated");
 	} catch (error) {
@@ -544,6 +548,7 @@ el.removeStorage.ipa.addEventListener("click", async ({ currentTarget }) => {
 			return;
 		}
 		await ipaTable.clear();
+		await setFieldsValues();
 		showInfo(currentTarget, "IPA storage removed");
 	} catch (error) {
 		console.error(error);
@@ -557,6 +562,7 @@ el.removeStorage.audio.addEventListener("click", async ({ currentTarget }) => {
 			return;
 		}
 		await audioTable.clear();
+		await setFieldsValues();
 		showInfo(currentTarget, "Audio storage removed");
 	} catch (error) {
 		console.error(error);
@@ -570,6 +576,7 @@ el.removeStorage.errors.addEventListener("click", async ({ currentTarget }) => {
 			return;
 		}
 		await errorsTable.clear();
+		await setFieldsValues();
 		showInfo(currentTarget, "Errors storage removed");
 	} catch (error) {
 		console.error(error);
@@ -635,6 +642,14 @@ async function setFieldsValues() {
 	el.updateIpaStorage.file.value = "";
 	el.updateAudioStorage.file.value = "";
 	el.updateOptionsStorage.file.value = "";
+}
+
+/**
+ * @param {Options} options
+ * @returns {Promise<void>}
+ */
+function saveOptions(options) {
+	return optionsTable.setMany(deepMerge(defaultOptions, options, true));
 }
 
 /**
