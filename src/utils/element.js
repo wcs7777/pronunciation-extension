@@ -196,12 +196,16 @@ export const byId = (id) => document.getElementById(id);
  */
 export function onlyNumber(target, includesDot=true) {
 	target.addEventListener("keydown", (e) => {
-		const preventDefault = (
-			!isDigit(e.key) &&
-			(includesDot && e.key !== "." || target.value.includes(".")) &&
-			!isNavigationKey(e)
-		);
-		if (preventDefault) {
+		let validKey = false;
+		/**
+		 * @param {boolean} c
+	 	 * @returns {boolean}
+		 */
+		const or = (c) => validKey = validKey ? validKey : validKey || c;
+		or(isDigit(e.key));
+		or(isNavigationKey(e));
+		or(e.key === "." && includesDot && !target.value.includes("."));
+		if (!validKey) {
 			e.preventDefault();
 		}
 	});

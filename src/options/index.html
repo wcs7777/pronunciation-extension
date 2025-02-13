@@ -96,6 +96,43 @@
                 <label for="ipaCloseOnScroll">Close popup when page is scrolled</label>
             </div>
 
+            <h3>Unalengua</h3>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaUnalenguaEnabled" checked>
+                <label for="ipaUnalenguaEnabled">Unalengua enabled</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="ipaUnalenguaOrder">Unalengua fetch order</label>
+                <input type="text" id="ipaUnalenguaOrder" placeholder="Order in relation with others">
+            </div>
+
+
+            <h3>Cambridge</h3>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaCambridgeEnabled" checked>
+                <label for="ipaCambridgeEnabled">Cambridge enabled</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="ipaCambridgeOrder">Cambridge fetch order</label>
+                <input type="text" id="ipaCambridgeOrder" placeholder="Order in relation with others">
+            </div>
+
+            <h3>Oxford</h3>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaOxfordEnabled" checked>
+                <label for="ipaOxfordEnabled">Oxford enabled</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="ipaOxfordOrder">Oxford fetch order</label>
+                <input type="text" id="ipaOxfordOrder" placeholder="Order in relation with others">
+            </div>
+
 			<div style="text-align: center; margin-top: 30px;">
 				<button class="btn btn-primary" id="saveIpa">Save IPA</button>
 			</div>
@@ -129,6 +166,11 @@
             </div>
             
             <div class="form-group">
+                <label for="audioRealVoiceOrder">Real voice fetch order</label>
+                <input type="text" id="audioRealVoiceOrder" placeholder="Order in relation with others">
+            </div>
+
+            <div class="form-group">
                 <label for="audioRealVoiceFetchTimeout">Real voice fetch timeout (ms)</label>
                 <input type="text" id="audioRealVoiceFetchTimeout" placeholder="↑ if slow internet, e.g. 3000">
             </div>
@@ -140,6 +182,11 @@
                 <label for="audioGoogleSpeechEnabled">Google speech enabled</label>
             </div>
             
+            <div class="form-group">
+                <label for="audioGoogleSpeechOrder">Google speech fetch order</label>
+                <input type="text" id="audioGoogleSpeechOrder" placeholder="Order in relation with others">
+            </div>
+
             <div class="checkbox-group">
                 <input type="checkbox" id="audioGoogleSpeechSave" checked>
                 <label for="audioGoogleSpeechSave">Google speech save audio</label>
@@ -152,6 +199,11 @@
                 <label for="audioResponsiveVoiceEnabled">ResponsiveVoice enabled</label>
             </div>
             
+            <div class="form-group">
+                <label for="audioResponsiveVoiceOrder">ResponsiveVoice fetch order</label>
+                <input type="text" id="audioResponsiveVoiceOrder" placeholder="Order in relation with others">
+            </div>
+
             <div class="form-group">
                 <label for="audioResponsiveVoiceApiName">ResponsiveVoice API name</label>
                 <input type="text" id="audioResponsiveVoiceApiName" placeholder="See ResponsiveVoice site">
