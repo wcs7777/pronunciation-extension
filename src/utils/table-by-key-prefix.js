@@ -116,7 +116,7 @@ export default class TableByKeyPrefix {
 	  * @param {boolean} removePrefix
 	  * @returns {Promise<string[]>}
 	  */
-	async getKeys(removePrefix) {
+	async getKeys(removePrefix=true) {
 		return Object.keys(await this.getAll(removePrefix));
 	}
 

@@ -43,11 +43,14 @@ import {
  *         enabled: HTMLInputElement,
  *         volume: HTMLInputElement,
  *         playbackRate: HTMLInputElement,
- *         fetchFileTimeout: HTMLInputElement,
- *         saveGoogleSpeechAudio: HTMLInputElement,
- *         responseVoiceName: HTMLInputElement,
- *         responseVoiceKey: HTMLInputElement,
- *         responseVoiceGender: HTMLSelectElement,
+ *         realVoiceEnabled: HTMLInputElement,
+ *         realVoiceFetchTimeout: HTMLInputElement,
+ *         googleSpeechEnabled: HTMLInputElement,
+ *         googleSpeechSave: HTMLInputElement,
+ *         responseVoiceEnabled: HTMLInputElement,
+ *         responseVoiceApiName: HTMLInputElement,
+ *         responseVoiceApiKey: HTMLInputElement,
+ *         responseVoiceApiGender: HTMLSelectElement,
  *         save: HTMLButtonElement,
  *     },
  *     setPronuncationByShortcut: {
@@ -94,6 +97,8 @@ import {
  *         file: HTMLInputElement,
  *         update: HTMLButtonElement,
  *     },
+ *     removeStoredIpaDefinitions: HTMLButtonElement,
+ *     removeStoredAudios: HTMLButtonElement,
  *     restoreDefaultOptions: HTMLButtonElement,
  * }}
  */
@@ -121,11 +126,14 @@ const el = {
 		enabled: byId("audioEnabled"),
 		volume: byId("audioVolume"),
 		playbackRate: byId("audioPlaybackRate"),
-		fetchFileTimeout: byId("audioFetchFileTimeout"),
-		saveGoogleSpeechAudio: byId("audioSaveGoogleSpeechAudio"),
-		responseVoiceName: byId("audioResponseVoiceName"),
-		responseVoiceKey: byId("audioResponseVoiceKey"),
-		responseVoiceGender: byId("audioResponseVoiceGender"),
+		realVoiceEnabled: byId("audioRealVoiceEnabled"),
+		realVoiceFetchTimeout: byId("audioRealVoiceFetchTimeout"),
+		googleSpeechEnabled: byId("audioGoogleSpeechEnabled"),
+		googleSpeechSave: byId("audioGoogleSpeechSave"),
+		responseVoiceEnabled: byId("audioResponseVoiceEnabled"),
+		responseVoiceApiName: byId("audioResponseVoiceApiName"),
+		responseVoiceApiKey: byId("audioResponseVoiceApiKey"),
+		responseVoiceApiGender: byId("audioResponseVoiceApiGender"),
 		save: byId("saveAudio"),
 	},
 	setPronuncationByShortcut: {
@@ -172,19 +180,21 @@ const el = {
 		file: byId("updateOptionsStorageFile"),
 		update: byId("updateOptionsStorage"),
 	},
+	removeStoredIpaDefinitions: byId("removeStoredIpaDefinitions"),
+	removeStoredAudios: byId("removeStoredAudios"),
 	restoreDefaultOptions: byId("restoreDefaultOptions"),
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
-		console.log("options page entered");
+		console.log("Options page entered");
 
 		[
 			el.ipa.fontSize,
 			el.ipa.closeTimeout,
 			el.audio.volume,
 			el.audio.playbackRate,
-			el.audio.fetchFileTimeout,
+			el.audio.realVoiceFetchTimeout,
 		].forEach(onlyNumber);
 
 		[
@@ -262,12 +272,21 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 				enabled: el.audio.enabled.checked,
 				volume: numOr(el.audio.volume.value, defaultOptions.audio.volume, 0, 1),
 				playbackRate: numOr(el.audio.playbackRate.value, defaultOptions.audio.playbackRate, 0.2, 2),
-				fetchFileTimeout: numOr(el.audio.fetchFileTimeout.value, defaultOptions.audio.fetchFileTimeout, 0, 120000),
-				saveGoogleSpeechAudio: el.audio.saveGoogleSpeechAudio.checked,
+				realVoice: {
+					enabled: el.audio.realVoiceEnabled.checked,
+					fetchTimeout: numOr(el.audio.realVoiceFetchTimeout.value, defaultOptions.audio.realVoice.fetchTimeout, 0, 120000),
+				},
+				googleSpeech: {
+					enabled: el.audio.googleSpeechEnabled.checked,
+					save: el.audio.googleSpeechSave.checked,
+				},
 				responseVoice: {
-					name: strOr(el.audio.responseVoiceName.value, defaultOptions.audio.responseVoice.name),
-					key: strOr(el.audio.responseVoiceKey.value, defaultOptions.audio.responseVoice.key),
-					gender: strOr(el.audio.responseVoiceGender.value, defaultOptions.audio.responseVoice.gender),
+					enabled: el.audio.responseVoiceEnabled.checked,
+					api: {
+						name: strOr(el.audio.responseVoiceApiName.value, defaultOptions.audio.responseVoice.api.name),
+						key: strOr(el.audio.responseVoiceApiKey.value, defaultOptions.audio.responseVoice.api.key),
+						gender: strOr(el.audio.responseVoiceApiGender.value, defaultOptions.audio.responseVoice.api.gender),
+					},
 				},
 			},
 		};
@@ -415,7 +434,7 @@ el.removeAudio.save.addEventListener("click", async ({ currentTarget }) => {
 el.downloadStorage.ipa.addEventListener("click", async () => {
 	try {
 		const ipaStorage = await ipaTable.getAll();
-		await downloadObject(ipaStorage, "pronunciation-ipa-storage.json");
+		await downloadObject(ipaStorage, fileName("pronunciation-ipa-storage.json"));
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
@@ -425,7 +444,7 @@ el.downloadStorage.ipa.addEventListener("click", async () => {
 el.downloadStorage.audio.addEventListener("click", async () => {
 	try {
 		const audioStorage = await audioTable.getAll();
-		await downloadObject(audioStorage, "pronunciation-audio-storage.json");
+		await downloadObject(audioStorage, fileName("pronunciation-audio-storage.json"));
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
@@ -435,8 +454,7 @@ el.downloadStorage.audio.addEventListener("click", async () => {
 el.downloadStorage.options.addEventListener("click", async () => {
 	try {
 		const optionsStorage = await optionsTable.getAll();
-		console.log({ optionsStorage });
-		await downloadObject(optionsStorage, "pronunciation-options-storage.json");
+		await downloadObject(optionsStorage, fileName("pronunciation-options-storage.json"));
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
@@ -446,7 +464,7 @@ el.downloadStorage.options.addEventListener("click", async () => {
 el.downloadStorage.errors.addEventListener("click", async () => {
 	try {
 		const errorsStorage = await errorsTable.getAll();
-		await downloadObject(errorsStorage, "pronunciation-errors-storage.json");
+		await downloadObject(errorsStorage, fileName("pronunciation-errors-storage.json"));
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
@@ -456,7 +474,7 @@ el.downloadStorage.errors.addEventListener("click", async () => {
 el.downloadStorage.all.addEventListener("click", async () => {
 	try {
 		const storage = await addonStorage.get();
-		await downloadObject(storage, "pronunciation-all-storage.json");
+		await downloadObject(storage, fileName("pronunciation-all-storage.json"));
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
@@ -511,8 +529,38 @@ el.updateOptionsStorage.update.addEventListener("click", async ({ currentTarget 
 	}
 });
 
+el.removeStoredIpaDefinitions.addEventListener("click", async ({ currentTarget }) => {
+	try {
+		const msg = "Are you sure to remove the stored IPA definitions?";
+		if (!window.confirm(msg)) {
+			return;
+		}
+		await ipaTable.clear();
+		showInfo(currentTarget, "Stored IPA definitions removed");
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+el.removeStoredAudios.addEventListener("click", async ({ currentTarget }) => {
+	try {
+		const msg = "Are you sure to remove the stored audios?";
+		if (!window.confirm(msg)) {
+			return;
+		}
+		await audioTable.clear();
+		showInfo(currentTarget, "Stored audios removed");
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 el.restoreDefaultOptions.addEventListener("click", async ({ currentTarget }) => {
 	try {
+		const msg = "Are you sure to restore the options to default";
+		if (!window.confirm(msg)) {
+			return;
+		}
 		await optionsTable.setMany(defaultOptions);
 		await setFieldsValues();
 		showInfo(currentTarget, "Default options restored");
@@ -545,11 +593,14 @@ async function setFieldsValues() {
 	el.audio.enabled.checked = opt.audio.enabled;
 	el.audio.volume.value = opt.audio.volume.toString();
 	el.audio.playbackRate.value = opt.audio.playbackRate.toString();
-	el.audio.fetchFileTimeout.value = opt.audio.fetchFileTimeout.toString();
-	el.audio.saveGoogleSpeechAudio.checked = opt.audio.saveGoogleSpeechAudio;
-	el.audio.responseVoiceName.value = opt.audio.responseVoice.name;
-	el.audio.responseVoiceKey.value = opt.audio.responseVoice.key;
-	el.audio.responseVoiceGender.value = opt.audio.responseVoice.gender;
+	el.audio.realVoiceEnabled.checked = opt.audio.realVoice.enabled;
+	el.audio.realVoiceFetchTimeout.value = opt.audio.realVoice.fetchTimeout.toString();
+	el.audio.googleSpeechEnabled.checked = opt.audio.googleSpeech.enabled;
+	el.audio.googleSpeechSave.checked = opt.audio.googleSpeech.save;
+	el.audio.responseVoiceEnabled.checked = opt.audio.responseVoice.enabled;
+	el.audio.responseVoiceApiName.value = opt.audio.responseVoice.api.name;
+	el.audio.responseVoiceApiKey.value = opt.audio.responseVoice.api.key;
+	el.audio.responseVoiceApiGender.value = opt.audio.responseVoice.api.gender;
 	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;
@@ -605,4 +656,16 @@ function showInfo(element, info, closeTimeout=5000) {
 			timeout: closeTimeout,
 		},
 	});
+}
+
+/**
+ * @param {string} suffix
+ * @returns {string}
+ */
+function fileName(suffix) {
+	const prefix = new Date()
+		.toISOString()
+		.replaceAll(":", "-")
+		.replaceAll(".", "-");
+	return `${prefix}-${suffix}`;
 }

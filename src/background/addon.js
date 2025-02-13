@@ -1,9 +1,9 @@
 import "../utils/fflate.js";
-import * as af from "../utils/audio-from.js";
-import * as pf from "../utils/ipa-from.js";
+import * as af from "../audio-fetcher/fetchers.js";
+import * as pf from "../ipa-fetcher/fetchers.js";
 import { blob2base64 } from "../utils/element.js";
-import { generateSha1, splitWords } from "../utils/string.js";
-import { goBlob, goString, resolveTimeout } from "../utils/promise.js";
+import { generateSha1, removeMethods, splitWords } from "../utils/string.js";
+import { goString, resolveTimeout } from "../utils/promise.js";
 import { threshold } from "../utils/number.js";
 
 export default class Addon {
@@ -42,61 +42,19 @@ export default class Addon {
 		audioTextCache,
 		ipaTextCache,
 	}) {
-		/**
-		 * @type {string}
-		 */
 		this.initialIpaFile = initialIpaFile;
-		/**
-		 * @type {Options}
-		 */
 		this.defaultOptions = defaultOptions;
-		/**
-		 * @type {Table}
-		 */
 		this.audioTable = audioTable;
-		/**
-		 * @type {MemoryCache}
-		 */
 		this.audioCache = audioCache;
-		/**
-		 * @type {Table}
-		 */
 		this.ipaTable = ipaTable;
-		/**
-		 * @type {MemoryCache}
-		 */
 		this.ipaCache = ipaCache;
-		/**
-		 * @type {Table}
-		 */
 		this.defaultIpaTable = defaultIpaTable;
-		/**
-		 * @type {Table}
-		 */
 		this.optionsTable = optionsTable;
-		/**
-		 * @type {MemoryCache}
-		 */
 		this.optionsCache = optionsCache;
-		/**
-		 * @type {Table}
-		 */
 		this.defaultOptionsTable = defaultOptionsTable;
-		/**
-		 * @type {Table}
-		 */
 		this.controlTable = controlTable;
-		/**
-		 * @type {Table}
-		 */
 		this.errorsTable = errorsTable;
-		/**
-		 * @type {MemoryCache}
-		 */
 		this.audioTextCache = audioTextCache;
-		/**
-		 * @type {MemoryCache}
-		 */
 		this.ipaTextCache = ipaTextCache;
 	}
 
@@ -114,7 +72,7 @@ export default class Addon {
 		const words = splitWords(text.toLowerCase());
 		console.log({ text, words });
 		if (words.length === 0) {
-			console.log("no word was found in text");
+			console.log("No word was found in text");
 			return;
 		}
 		/**
@@ -129,8 +87,8 @@ export default class Addon {
 			const word = words[0];
 			const maxCharacters = 45; // biggest english word
 			if (word.length <= maxCharacters) {
-				ipaPromise = this.findIpa(word, options.ipa);
-				audioPromise = this.findAudio(word, options.audio);
+				ipaPromise = this.fetchIpa(word, options.ipa);
+				audioPromise = this.fetchAudio(word, options.audio);
 			} else {
 				const message = (
 					`Exceeded ${maxCharacters} characters allowed for words`
@@ -148,8 +106,13 @@ export default class Addon {
 			options.ipa.close.onScroll = false;
 			if (text.length <= maxCharacters) {
 				const key = await generateSha1(text);
-				ipaPromise = this.findTextIpa(key, text, options.ipa);
-				audioPromise = this.findTextAudio(key, text, options.audio);
+				ipaPromise = this.fetchIpaText(
+					key,
+					text,
+					options.ipa,
+					words.length,
+				);
+				audioPromise = this.fetchAudioText(key, text, options.audio);
 			} else {
 				const message = (
 					`Exceeded ${maxCharacters} characters allowed for texts`
@@ -162,7 +125,7 @@ export default class Addon {
 			this.showIpa(ipaPromise, options.ipa, tabId, origin),
 			this.playAudio(audioPromise, options.audio),
 		]);
-		console.log("pronunciation end");
+		console.log("Pronunciation end");
 	}
 
 	/**
@@ -177,7 +140,7 @@ export default class Addon {
 			const ipa = ipaPromise !== null ? await ipaPromise : null;
 			if (!ipa) {
 				if (options.enabled) {
-					console.log("no ipa was found");
+					console.log("No ipa was found");
 				}
 				return;
 			}
@@ -206,7 +169,7 @@ export default class Addon {
 			const audio = audioPromise !== null ? await audioPromise : null;
 			if (!audio) {
 				if (options.enabled) {
-					console.log("no audio was found");
+					console.log("No audio was found");
 				}
 				return;
 			}
@@ -223,59 +186,120 @@ export default class Addon {
 	 * @param {OptionsIpa} options
 	 * @returns {Promise<string | null>}
 	 */
-	async findIpa(word, options) {
+	async fetchIpa(word, options) {
 		if (!options.enabled) {
-			console.log("show ipa is disabled");
+			console.log("Show ipa is disabled");
 			return null;
 		}
 		/**
 		  * @type {string | null}
 		  */
 		let ipa = this.ipaTextCache.get(word, false) ?? null;
-		if (!ipa) {
-			let r = await goString(this.ipaTable.getValue(word));
-			if (r.error) {
-				const { r: rExternal, save } = await this.findIpaExternally(
-					word,
-					options,
-				);
-				r = rExternal;
-				if (r.value && save) {
-					console.log(`adding ${word} to ipa storage`);
-					await this.ipaTable.set(word, r.value);
-				}
-			}
-			if (r.value) {
-				this.ipaCache.set(word, r.value);
-			}
-			ipa = r.value;
+		if (ipa) {
+			return ipa;
 		}
+		const { value } = await goString(this.ipaTable.getValue(word));
+		ipa = value;
+		if (!ipa) {
+			const { ipa: ipaValue, save } = await this.fetchIpaExternally(
+				word,
+				options,
+			);
+			ipa = ipaValue;
+			if (!ipa) {
+				return null;
+			}
+			if (save) {
+				console.log(`Adding ${word} to ipa storage`);
+				await this.ipaTable.set(word, ipa);
+			}
+		}
+		this.ipaCache.set(word, ipa);
 		return ipa;
 	}
 
 	/**
-	 * @param {string} word
+	 * @param {string} text
 	 * @param {OptionsIpa} options
-	 * @returns {Promise<{
-	 *     r: { error: Error | null, value: string | null },
-	 *     save: boolean,
-	 * }>
+	 * @returns {Promise<{ ipa: string | null, save: boolean }>
 	 */
-	async findIpaExternally(word, options) {
-		let save = true;
-		let r = await goString(pf.ipaFromUnalengua(word));
-		if (r.error) {
-			await this.saveError(`Unalengua: ${word}`, r.error);
-			r = await goString(pf.ipaFromCambridge(word));
-			if (r.error) {
-				await this.saveError(`Cambridge: ${word}`, r.error);
-				r = await goString(pf.ipaFromOxford(word));
-				if (r.error) {
-					await this.saveError(`Oxford: ${word}`, r.error);
+	async fetchIpaExternally(text, options) {
+		const timestamp = new Date().getTime();
+		const leKey = "ipaLastError";
+		/**
+		 * @type{{ [key: string]: PronunciationFetcherLastError}
+		 */
+		const le = await this.controlTable.getValue(leKey, false) ?? {};
+		/**
+		 * @type {IpaFetcher[]}
+		 */
+		const unordedFetchers = [
+			new pf.IFUnalengua(options.unalengua, le?.[pf.IFUnalengua.name]),
+			new pf.IFCambridge(options.cambridge, le?.[pf.IFCambridge.name]),
+			new pf.IFOxford(options.oxford, le?.[pf.IFOxford.name]),
+		];
+		const fetchers = unordedFetchers
+			.filter(f => f.enabled)
+			.sort((l, r) => l.order - r.order);
+		for (const f of fetchers) {
+			console.log(`Searching IPA in ${f.name}`);
+			try {
+				const ipa = await f.fetch(text);
+				if (ipa) {
+					return { ipa, save: f.save };
+				}
+			} catch (error) {
+				console.log({ error });
+				if (f.saveError) {
+					await this.saveError(`${f.name}: ${text}`, error);
+				}
+				if (error?.status) {
+					le[f.name] = {
+						...error,
+						error: removeMethods(error?.error ?? {}),
+						timestamp,
+					};
+					await this.controlTable.set(leKey, le);
 				}
 			}
 		}
-		return { r, save };
+		return {
+			ipa: null,
+			save: false,
+		};
+	}
+
+	/**
+	 * @param {string} cacheKey
+	 * @param {string} text
+	 * @param {OptionsIpa} options
+	 * @param {number} totalWords
+	 * @returns {Promise<string | null>}
+	 */
+	async fetchIpaText(cacheKey, text, options, totalWords) {
+		if (!options.enabled) {
+			console.log("Show ipa is disabled");
+			return null;
+		}
+		options.close.timeout = threshold(
+			options.close.timeout,
+			Math.max(300000, options.close.timeout),
+			options.close.timeout / 2 * totalWords,
+		);
+		options.close.onScroll = false;
+		options.cambridge.enabled = false;
+		options.oxford.enabled = false;
+		if (!this.ipaTextCache.hasKey(cacheKey)) {
+			const { ipa } = await this.fetchIpaExternally(
+				text,
+				options,
+			);
+			if (!ipa) {
+				return null;
+			}
+			this.ipaTextCache.set(cacheKey, ipa);
+		}
+		return this.ipaTextCache.get(cacheKey);
 	}
 
 	/**
@@ -283,108 +307,106 @@ export default class Addon {
 	 * @param {OptionsAudio} options
 	 * @returns {Promise<HTMLAudioElement | null>}
 	 */
-	async findAudio(word, options) {
+	async fetchAudio(word, options) {
 		if (!options.enabled) {
-			console.log("play audio is disabled");
+			console.log("Play audio is disabled");
 			return null;
 		}
 		/**
 		  * @type {HTMLAudioElement | null}
 		  */
 		let audio = this.audioCache.get(word, false) ?? null;
-		if (!audio) {
-			/**
-			  * @type {string}
-			  */
-			let base64 = null;
-			const { error, value } = await goString(
-				this.audioTable.getValue(word),
+		if (audio) {
+			return audio;
+		}
+		const { value } = await goString(
+			this.audioTable.getValue(word),
+		);
+		/**
+		 * @type {string | null}
+		 */
+		let base64 = value;
+		if (!value) {
+			const { blob, save } = await this.fetchAudioExternally(
+				word,
+				options,
 			);
+			if (!blob) {
+				return null;
+			}
+			const { error, value } = await goString(blob2base64(blob));
 			base64 = value;
 			if (error) {
-				const { r, save } = await this.findAudioExternally(
-					word,
-					options,
-				);
-				if (r.value) {
-					try {
-						base64 = await blob2base64(r.value);
-						if (save) {
-							console.log(`adding ${word} to audio storage`);
-							await this.audioTable.set(word, base64);
-						}
-					} catch (error) {
-						await this.saveError(`blob2base64: ${word}`, error);
-					}
-				}
+				await this.saveError(`blob2base64: ${word}`, error);
+				return null;
 			}
-			if (base64) {
-				audio = new Audio(base64);
-				this.audioCache.set(word, audio);
+			if (save) {
+				console.log(`Adding ${word} to audio storage`);
+				await this.audioTable.set(word, base64);
 			}
 		}
+		audio = new Audio(base64);
+		this.audioCache.set(word, audio);
 		return audio;
 	}
 
 	/**
-	 * @param {string} word
+	 * @param {string} text
 	 * @param {OptionsAudio} options
-	 * @returns {Promise<{
-	 *     r: { error: Error | null, value: Blob | null },
-	 *     save: boolean,
-	 * }>
+	 * @returns {Promise<{ blob: Blob | null, save: boolean }>
 	 */
-	async findAudioExternally(word, options) {
-		let save = true;
-		let r = await goBlob(
-			Promise.any([
-				af.audioFromOxford(word),
-				af.audioFromGstatic(word),
-				resolveTimeout(options.fetchFileTimeout, null),
-			]),
-		);
-		if (!r.value) {
-			r = await goBlob(
-				af.audioFromResponsiveVoice(word, options.responseVoice),
-			);
-			if (r.error) {
-				await this.saveError(`ResponsiveVoice: ${word}`, r.error);
-				r = await goBlob(af.audioFromGoogleSpeech(word));
-				save = options.saveGoogleSpeechAudio;
-				if (r.error) {
-					await this.saveError(`GoogleSpeech: ${word}`, r.error);
+	async fetchAudioExternally(text, options) {
+		const timestamp = new Date().getTime();
+		const leKey = "audioLastError";
+		/**
+		 * @type{{ [key: string]: PronunciationFetcherLastError}
+		 */
+		const le = await this.controlTable.getValue(leKey, false) ?? {};
+		/**
+		 * @type {AudioFetcher[]}
+		 */
+		const unordedFetchers = [
+			new af.AFRealVoice(
+				options.realVoice,
+				le?.[af.AFRealVoice.name],
+			),
+			new af.AFGoogleSpeech(
+				options.googleSpeech,
+				le?.[af.AFGoogleSpeech.name],
+			),
+			new af.AFResponsiveVoice(
+				options.responseVoice,
+				le?.[af.AFResponsiveVoice.name],
+			),
+		];
+		const fetchers = unordedFetchers
+			.filter(f => f.enabled)
+			.sort((l, r) => l.order - r.order);
+		for (const f of fetchers) {
+			console.log(`Searching audio in ${f.name}`);
+			try {
+				const blob = await f.fetch(text);
+				if (blob) {
+					return { blob, save: f.save };
+				}
+			} catch (error) {
+				if (f.saveError) {
+					await this.saveError(`${f.name}: ${text}`, error);
+				}
+				if (error?.status) {
+					le[f.name] = {
+						...error,
+						error: removeMethods(error?.error ?? {}),
+						timestamp,
+					};
+					await this.controlTable.set(leKey, le);
 				}
 			}
 		}
-		return { r, save };
-	}
-
-	/**
-	 * @param {string} cacheKey
-	 * @param {string} text
-	 * @param {OptionsIpa} options
-	 * @returns {Promise<string | null>}
-	 */
-	async findTextIpa(cacheKey, text, options) {
-		if (!options.enabled) {
-			console.log("show ipa is disabled");
-			return null;
-		}
-		/**
-		 * @type {string}
-		 */
-		let ipa = null;
-		if (!this.ipaTextCache.hasKey(cacheKey)) {
-			try {
-				ipa = await pf.ipaFromUnalengua(text);
-				this.ipaTextCache.set(cacheKey, ipa);
-			} catch (error) {
-				await this.saveError("Unalengua: text", error);
-			}
-		} else {
-			ipa = this.ipaTextCache.get(cacheKey);
-		}
-		return ipa;
+		return {
+			blob: null,
+			save: false,
+		};
 	}
 
 	/**
@@ -393,31 +415,29 @@ export default class Addon {
 	 * @param {OptionsAudio} options
 	 * @returns {Promise<HTMLAudioElement | null>}
 	 */
-	async findTextAudio(cacheKey, text, options) {
+	async fetchAudioText(cacheKey, text, options) {
 		if (!options.enabled) {
-			console.log("play audio is disabled");
+			console.log("Play audio is disabled");
 			return null;
 		}
+		options.realVoice.enabled = false;
 		/**
 		 * @type {HTMLAudioElement}
 		 */
 		let audio = null;
 		if (!this.audioTextCache.hasKey(cacheKey)) {
-			try {
-				const blob = await af.audioFromResponsiveVoice(
-					text,
-					options.responseVoice,
-				);
-				const base64 = await blob2base64(blob);
-				audio = new Audio(base64);
-				this.audioTextCache.set(cacheKey, audio);
-			} catch (error) {
-				await this.saveError("ResponsiveVoice: text", error);
+			const { blob } = await this.fetchAudioExternally(
+				text,
+				options,
+			);
+			if (!blob) {
+				return null;
 			}
-		} else {
-			audio = this.audioTextCache.get(cacheKey);
+			const base64 = await blob2base64(blob);
+			audio = new Audio(base64);
+			this.audioTextCache.set(cacheKey, audio);
 		}
-		return audio;
+		return this.audioTextCache.get(cacheKey);
 	}
 
 	/**
@@ -449,16 +469,16 @@ export default class Addon {
 			const actionBadge = await browser.browserAction.getBadgeText({});
 			await browser.browserAction.setTitle({ title: message });
 			await browser.browserAction.setBadgeText({ text: message });
-			console.log("setup begin");
-			console.log("populating options and ipa");
+			console.log("Setup begin");
+			console.log("Populating options and ipa");
 			console.time("populate");
 			await Promise.all([
 				this.populateOptions(),
 				this.populateInitialIpa(),
 			]);
 			console.timeEnd("populate");
-			console.log("setting menuItem and action");
-			console.log("setup end");
+			console.log("Setting menuItem and action");
+			console.log("Setup end");
 			await browser?.menus?.remove(menuId);
 			await browser.browserAction.setTitle({ title: actionTitle });
 			await browser.browserAction.setBadgeText({ text: actionBadge });
@@ -497,7 +517,7 @@ export default class Addon {
 			false,
 		);
 		if (populated) {
-			console.log("ipa table is already populated");
+			console.log("IPA table is already populated");
 		} else {
 			const url = browser.runtime.getURL(this.initialIpaFile);
 			const response = await fetch(url);
@@ -536,7 +556,7 @@ export default class Addon {
 		try {
 			const selectedText = (info.selectionText ?? "").trim();
 	 		if (selectedText.length == 0) {
-				console.log("nothing was selected");
+				console.log("Nothing was selected");
 				return;
 			}
 			await this.pronounce(selectedText, tab.id, "menuItem");
@@ -563,7 +583,7 @@ export default class Addon {
 				message,
 			);
 			if (selectedText?.length == 0) {
-				console.log("nothing was selected");
+				console.log("Nothing was selected");
 				return;
 			}
 			await this.pronounce(selectedText, tab.id, "action");
@@ -593,17 +613,17 @@ export default class Addon {
 				k => k.startsWith(this.optionsTable.name),
 			);
 			if (ipaKeys.length > 0) {
-				console.log(`cleaning ${this.ipaCache.name} cache`);
+				console.log(`Cleaning ${this.ipaCache.name} cache`);
 				this.ipaCache.clear();
 			}
 			if (audioKeys.length > 0) {
-				console.log(`cleaning ${this.audioCache.name} cache`);
+				console.log(`Cleaning ${this.audioCache.name} cache`);
 				this.audioCache.clear();
 			}
 			if (optionsKeys.length > 0) {
-				console.log(`cleaning ${this.optionsCache.name} cache`);
+				console.log(`Cleaning ${this.optionsCache.name} cache`);
 				this.optionsCache.clear();
-				console.log(`resetting ${this.optionsCache.name} cache`);
+				console.log(`Resetting ${this.optionsCache.name} cache`);
 				this.optionsCache.setMany(await this.optionsTable.getAll());
 				// only works if TableByParentKey
 				const optionsChange = changes[optionsKeys];
@@ -626,12 +646,12 @@ export default class Addon {
 		console.clear();
 		if (details.reason === "update") {
 			if (parseInt(details.previousVersion) < 1) { // break change
-				console.log("cleaning storage due to update break change");
+				console.log("Cleaning storage due to update break change");
 				await browser.storage.local.clear();
 			}
 		}
 		if (details.temporary) {
-			console.log("cleaning storage due to temporary installation");
+			console.log("Cleaning storage due to temporary installation");
 			await browser.storage.local.clear();
 		}
 		await this.initialSetup();
@@ -644,10 +664,14 @@ export default class Addon {
 	 */
 	async saveError(context, error) {
 		console.error(error);
+		const errorObj = removeMethods(error);
+		if (error?.error) {
+			errorObj['error'] = removeMethods(error.error);
+		}
 		this.errorsTable.set(new Date().toISOString(), {
 			context,
-			error: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+			error: errorObj,
 		});
 	}
-
+	
 }

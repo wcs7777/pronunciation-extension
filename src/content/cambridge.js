@@ -19,7 +19,7 @@ async function main() {
 	if (!options.enabled) {
 		return;
 	}
-	console.log("pronunciation shortcut enabled", { options });
+	console.log("Pronunciation shortcut enabled", { options });
 	document.addEventListener("keydown", async (e) => {
 		try {
 			if (!e.ctrlKey) {
@@ -41,14 +41,14 @@ async function main() {
 				.trim()
 				.toLowerCase();
 			const word = splitWords(rawWord)[0];
-			console.log("pronunciation shortcut", { word });
+			console.log("Pronunciation shortcut", { word });
 			const cb = {
 				[options.ipaShortcut]: async () => {
 					const rawIpa = document.querySelector("span.ipa")
 						.textContent
 						.trim();
 					const ipa = `/${rawIpa}/`;
-					console.log("pronunciation shortcut", { ipa });
+					console.log("Pronunciation shortcut", { ipa });
 					const oldIpa = await ipaTable.getValue(word, false);
 					await ipaTable.set(word, ipa);
 					showPopup({ text: `${oldIpa} -> ${ipa}` });
@@ -66,7 +66,7 @@ async function main() {
 						src :
 						`${window.location.origin}${src}`
 					);
-					console.log("pronunciation shortcut", { url });
+					console.log("Pronunciation shortcut", { url });
 					const blob = await url2blob(url);
 					const base64 = await blob2base64(blob);
 					await audioTable.set(word, base64);

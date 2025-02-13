@@ -9,7 +9,11 @@ export async function url2document(url, credentials="omit") {
 	const status = response.status;
 	if (status !== 200) {
 		const message = await response.text();
-		throw new Error(JSON.stringify({ status, message}));
+		throw {
+			status,
+			message,
+			error: new Error("Fetch error"),
+		};
 	}
 	const text = await response.text();
 	return new DOMParser().parseFromString(text, "text/html");
@@ -24,7 +28,11 @@ export async function url2blob(url, credentials="omit") {
 	const status = response.status;
 	if (status !== 200) {
 		const message = await response.text();
-		throw new Error(JSON.stringify({ status, message}));
+		throw {
+			status,
+			message,
+			error: new Error("Fetch error"),
+		};
 	}
 	const blob = await response.blob();
 	return blob;
@@ -183,13 +191,14 @@ export const byId = (id) => document.getElementById(id);
 
 /**
  * @param {HTMLInputElement} target
+ * @param {boolean} includesDot
  * @returns {void}
  */
-export function onlyNumber(target) {
+export function onlyNumber(target, includesDot=true) {
 	target.addEventListener("keydown", (e) => {
 		const preventDefault = (
 			!isDigit(e.key) &&
-			(e.key !== "." || target.value.includes(".")) &&
+			(includesDot && e.key !== "." || target.value.includes(".")) &&
 			!isNavigationKey(e)
 		);
 		if (preventDefault) {

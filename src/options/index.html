@@ -121,29 +121,50 @@
                 <input type="text" id="audioPlaybackRate" placeholder="[0.2, 2.0] e.g. 1.0">
             </div>
 
-            <div class="form-group">
-                <label for="audioFetchFileTimeout">Fetch real voice timeout (ms)</label>
-                <input type="text" id="audioFetchFileTimeout" placeholder="↑ if slow internet, e.g. 3000">
-            </div>
+            <h3>Real Voice</h3>
 
             <div class="checkbox-group">
-                <input type="checkbox" id="audioSaveGoogleSpeechAudio" checked>
-                <label for="audioSaveGoogleSpeechAudio">Save audio when is google speech</label>
+                <input type="checkbox" id="audioRealVoiceEnabled" checked>
+                <label for="audioEnabled">Real voice enabled</label>
             </div>
             
             <div class="form-group">
-                <label for="audioResponseVoiceName">ResponseVoice API name</label>
-                <input type="text" id="audioResponseVoiceName" placeholder="See responsevoice site">
+                <label for="audioRealVoiceFetchTimeout">Real voice fetch timeout (ms)</label>
+                <input type="text" id="audioRealVoiceFetchTimeout" placeholder="↑ if slow internet, e.g. 3000">
+            </div>
+
+            <h3>Google Speech</h3>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioGoogleSpeechEnabled" checked>
+                <label for="audioGoogleSpeechEnabled">Google speech enabled</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioGoogleSpeechSave" checked>
+                <label for="audioGoogleSpeechSave">Google speech save audio</label>
+            </div>
+            
+            <h3>ResponseVoice</h3>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioResponseVoiceEnabled" checked>
+                <label for="audioResponseVoiceEnabled">ResponseVoice enabled</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="audioResponseVoiceApiName">ResponseVoice API name</label>
+                <input type="text" id="audioResponseVoiceApiName" placeholder="See responsevoice site">
             </div>
 
             <div class="form-group">
-                <label for="audioResponseVoiceKey">ResponseVoice API key</label>
-                <input type="text" id="audioResponseVoiceKey" placeholder="See responsevoice site">
+                <label for="audioResponseVoiceApiKey">ResponseVoice API key</label>
+                <input type="text" id="audioResponseVoiceApiKey" placeholder="See responsevoice site">
             </div>
 
             <div class="form-group">
-                <label for="ipaPositionActionTriggered">ResponseVoice API gender</label>
-                <select id="audioResponseVoiceGender">
+                <label for="audioResponseVoiceApiGender">ResponseVoice API gender</label>
+                <select id="audioResponseVoiceApiGender">
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                 </select>
@@ -325,6 +346,26 @@
 
 			<div style="text-align: center; margin-top: 30px;">
 				<button class="btn btn-primary" id="updateOptionsStorage">Update Options Storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Remove Stored IPA Definitions</h2>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="removeStoredIpaDefinitions">Remove Stored IPA Definitions</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Remove Stored Audios</h2>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="removeStoredAudios">Remove Stored Audios</button>
 			</div>
 
         </div>

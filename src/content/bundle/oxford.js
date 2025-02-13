@@ -24,7 +24,11 @@
 		const status = response.status;
 		if (status !== 200) {
 			const message = await response.text();
-			throw new Error(JSON.stringify({ status, message}));
+			throw {
+				status,
+				message,
+				error: new Error("Fetch error"),
+			};
 		}
 		const blob = await response.blob();
 		return blob;
@@ -303,7 +307,7 @@
 		  * @param {boolean} removePrefix
 		  * @returns {Promise<string[]>}
 		  */
-		async getKeys(removePrefix) {
+		async getKeys(removePrefix=true) {
 			return Object.keys(await this.getAll(removePrefix));
 		}
 
@@ -504,7 +508,7 @@
 		if (!options.enabled) {
 			return;
 		}
-		console.log("pronunciation shortcut enabled", { options });
+		console.log("Pronunciation shortcut enabled", { options });
 		const audioElements = Array.from(
 			document.querySelectorAll("div.sound.audio_play_button"),
 		);
@@ -537,18 +541,18 @@
 				const cb = {
 					[options.ipaShortcut]: async () => {
 						const word = getWord(lastAudioPlayed);
-						console.log("pronunciation shortcut", { word });
+						console.log("Pronunciation shortcut", { word });
 						const ipa = lastAudioPlayed
 							.nextElementSibling
 							.textContent;
-						console.log("pronunciation shortcut", { ipa });
+						console.log("Pronunciation shortcut", { ipa });
 						const oldIpa = await ipaTable.getValue(word, false);
 						await ipaTable.set(word, ipa);
 						showPopup({ text: `${oldIpa} -> ${ipa}` });
 					},
 					[options.audioShortcut]: async () => {
 						const word = getWord(lastAudioPlayed);
-						console.log("pronunciation shortcut", { word });
+						console.log("Pronunciation shortcut", { word });
 						const src = lastAudioPlayed.dataset?.srcOgg;
 						if (!src) {
 							showPopup({ text: `Audio not found for ${word}` });
@@ -559,7 +563,7 @@
 							src :
 							`${window.location.origin}${src}`
 						);
-						console.log("pronunciation shortcut", { url });
+						console.log("Pronunciation shortcut", { url });
 						const blob = await url2blob(url);
 						const base64 = await blob2base64(blob);
 						await audioTable.set(word, base64);
@@ -567,7 +571,7 @@
 					},
 					[options.restoreDefaultIpaShortcut]: async () => {
 						const word = getWord(lastAudioPlayed);
-						console.log("pronunciation shortcut", { word });
+						console.log("Pronunciation shortcut", { word });
 						const currentIpa = await ipaTable.getValue(
 							word, false,
 						);

@@ -2,6 +2,30 @@ export {};
 
 declare global {
 	
+	type PronunciationFetcher = {
+		static name: string,
+		name: string,
+		order: number,
+		save: boolean,
+		saveError: boolean,
+		enabled: boolean,
+	};
+
+	type IpaFetcher = PronunciationFetcher & {
+		fetch: (text: string) => Promise<string>,
+	};
+
+	type AudioFetcher = PronunciationFetcher & {
+		fetch: (text: string) => Promise<Blob>,
+	};
+
+	type PronunciationFetcherLastError = {
+		timestamp: number,
+		status?: number,
+		message?: string,
+		error: Error,
+	};
+
 	type Table = {
 		name: string,
 		async set(key: string, value: any): Promise<void>,
@@ -53,15 +77,55 @@ declare global {
 			actionTriggered: "above" | "below",
 		},
 		useContextColors: boolean,
+		unalengua: OptIpaUnalengua,
+		cambridge: OptIpaCambridge,
+		oxford: OptIpaOxford,
+	};
+
+	type OptIpaUnalengua = {
+		enabled: boolean,
+		order: number,
+	};
+
+	type OptIpaCambridge = {
+		enabled: boolean,
+		order: number,
+	};
+
+	type OptIpaOxford = {
+		enabled: boolean,
+		order: number,
 	};
 
 	type OptionsAudio = {
 		enabled: boolean,
 		volume: number,
 		playbackRate: number,
-		fetchFileTimeout: number,
-		saveGoogleSpeechAudio: boolean,
-		responseVoice: OptionsResponsiveVoice,
+		realVoice: OptAudioRealVoice,
+		googleSpeech: OptAudioGoogleSpeech,
+		responseVoice: OptAudioResponsiveVoice,
+	};
+
+	type OptAudioRealVoice = {
+		enabled: boolean,
+		order: number,
+		fetchTimeout: number,
+	};
+
+	type OptAudioGoogleSpeech = {
+		enabled: boolean,
+		order: number,
+		save: boolean,
+	};
+
+	type OptAudioResponsiveVoice = {
+		enabled: boolean,
+		order: number,
+		api: {
+			name: string,
+			key: string,
+			gender: string,
+		},
 	};
 
 	type OptionsSetPronuncationByShortcut = {
@@ -69,12 +133,6 @@ declare global {
 		audioShortcut: string,
 		ipaShortcut: string,
 		restoreDefaultIpaShortcut: string,
-	};
-
-	type OptionsResponsiveVoice = {
-		name: string,
-		key: string,
-		gender: string,
 	};
 
 	type BackgroundMessage = {

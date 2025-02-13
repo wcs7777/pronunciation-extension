@@ -19,7 +19,7 @@ async function main() {
 	if (!options.enabled) {
 		return;
 	}
-	console.log("pronunciation shortcut enabled", { options });
+	console.log("Pronunciation shortcut enabled", { options });
 	const audioElements = Array.from(
 		document.querySelectorAll("div.sound.audio_play_button"),
 	);
@@ -52,18 +52,18 @@ async function main() {
 			const cb = {
 				[options.ipaShortcut]: async () => {
 					const word = getWord(lastAudioPlayed);
-					console.log("pronunciation shortcut", { word });
+					console.log("Pronunciation shortcut", { word });
 					const ipa = lastAudioPlayed
 						.nextElementSibling
 						.textContent;
-					console.log("pronunciation shortcut", { ipa });
+					console.log("Pronunciation shortcut", { ipa });
 					const oldIpa = await ipaTable.getValue(word, false);
 					await ipaTable.set(word, ipa);
 					showPopup({ text: `${oldIpa} -> ${ipa}` });
 				},
 				[options.audioShortcut]: async () => {
 					const word = getWord(lastAudioPlayed);
-					console.log("pronunciation shortcut", { word });
+					console.log("Pronunciation shortcut", { word });
 					const src = lastAudioPlayed.dataset?.srcOgg;
 					if (!src) {
 						showPopup({ text: `Audio not found for ${word}` });
@@ -74,7 +74,7 @@ async function main() {
 						src :
 						`${window.location.origin}${src}`
 					);
-					console.log("pronunciation shortcut", { url });
+					console.log("Pronunciation shortcut", { url });
 					const blob = await url2blob(url);
 					const base64 = await blob2base64(blob);
 					await audioTable.set(word, base64);
@@ -82,7 +82,7 @@ async function main() {
 				},
 				[options.restoreDefaultIpaShortcut]: async () => {
 					const word = getWord(lastAudioPlayed);
-					console.log("pronunciation shortcut", { word });
+					console.log("Pronunciation shortcut", { word });
 					const currentIpa = await ipaTable.getValue(
 						word, false,
 					);
