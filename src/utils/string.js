@@ -64,19 +64,3 @@ export async function generateSha1(message) {
 export function isDigit(ch) {
 	return ch.length === 1 && "0123456789".includes(ch);
 }
-
-/**
- * @param {any} obj
- * @return {any}
- */
-export function removeMethods(obj) {
-	const stringified = JSON.stringify(
-		obj,
-		Object.getOwnPropertyNames(obj),
-	);
-	const parsed = JSON.parse(stringified);
-	if (obj instanceof Error && obj?.stack) {
-		parsed["stack"] = obj.stack;
-	}
-	return parsed;
-}

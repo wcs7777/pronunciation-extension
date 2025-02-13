@@ -2,7 +2,8 @@ import "../utils/fflate.js";
 import * as af from "../audio-fetcher/fetchers.js";
 import * as pf from "../ipa-fetcher/fetchers.js";
 import { blob2base64 } from "../utils/element.js";
-import { generateSha1, removeMethods, splitWords } from "../utils/string.js";
+import { deepMerge, removeMethods } from "../utils/object.js";
+import { generateSha1, splitWords } from "../utils/string.js";
 import { goString, resolveTimeout } from "../utils/promise.js";
 import { threshold } from "../utils/number.js";
 
@@ -445,13 +446,17 @@ export default class Addon {
 	 */
 	async startup() {
 		try {
+			console.log("Startup begin");
 			// allow new options settings without break change
-			await this.optionsTable.setMany({
-				...this.defaultOptions,
-				...(await this.optionsTable.getAll()),
-			});
-			this.optionsCache.setMany(await this.optionsTable.getAll());
+			const mergedOptions = deepMerge(
+				this.defaultOptions,
+				await this.optionsTable.getAll(),
+				true,
+			);
+			await this.optionsTable.setMany(mergedOptions);
+			this.optionsCache.setMany(mergedOptions);
 			await this.setMenuItem(this.optionsCache.get("accessKey"));
+			console.log("Startup end");
 		} catch (error) {
 			await this.saveError("startup", error);
 		}

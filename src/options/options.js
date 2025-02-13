@@ -97,8 +97,13 @@ import {
  *         file: HTMLInputElement,
  *         update: HTMLButtonElement,
  *     },
- *     removeStoredIpaDefinitions: HTMLButtonElement,
- *     removeStoredAudios: HTMLButtonElement,
+ *     removeStorage: {
+ *         ipa: HTMLButtonElement,
+ *         audio: HTMLButtonElement,
+ *         options: HTMLButtonElement,
+ *         errors: HTMLButtonElement,
+ *         all: HTMLButtonElement,
+ *     },
  *     restoreDefaultOptions: HTMLButtonElement,
  * }}
  */
@@ -180,8 +185,11 @@ const el = {
 		file: byId("updateOptionsStorageFile"),
 		update: byId("updateOptionsStorage"),
 	},
-	removeStoredIpaDefinitions: byId("removeStoredIpaDefinitions"),
-	removeStoredAudios: byId("removeStoredAudios"),
+	removeStorage: {
+		ipa: byId("removeIpaStorage"),
+		audio: byId("removeAudioStorage"),
+		errors: byId("removeErrorsStorage"),
+	},
 	restoreDefaultOptions: byId("restoreDefaultOptions"),
 };
 
@@ -529,27 +537,40 @@ el.updateOptionsStorage.update.addEventListener("click", async ({ currentTarget 
 	}
 });
 
-el.removeStoredIpaDefinitions.addEventListener("click", async ({ currentTarget }) => {
+el.removeStorage.ipa.addEventListener("click", async ({ currentTarget }) => {
 	try {
-		const msg = "Are you sure to remove the stored IPA definitions?";
+		const msg = "Are you sure to remove IPA storage?";
 		if (!window.confirm(msg)) {
 			return;
 		}
 		await ipaTable.clear();
-		showInfo(currentTarget, "Stored IPA definitions removed");
+		showInfo(currentTarget, "IPA storage removed");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.removeStoredAudios.addEventListener("click", async ({ currentTarget }) => {
+el.removeStorage.audio.addEventListener("click", async ({ currentTarget }) => {
 	try {
-		const msg = "Are you sure to remove the stored audios?";
+		const msg = "Are you sure to remove audio storage?";
 		if (!window.confirm(msg)) {
 			return;
 		}
 		await audioTable.clear();
-		showInfo(currentTarget, "Stored audios removed");
+		showInfo(currentTarget, "Audio storage removed");
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+el.removeStorage.errors.addEventListener("click", async ({ currentTarget }) => {
+	try {
+		const msg = "Are you sure to remove errors storage?";
+		if (!window.confirm(msg)) {
+			return;
+		}
+		await errorsTable.clear();
+		showInfo(currentTarget, "Errors storage removed");
 	} catch (error) {
 		console.error(error);
 	}
