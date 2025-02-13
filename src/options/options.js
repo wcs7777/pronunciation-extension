@@ -1,4 +1,5 @@
 import "../utils/fflate.js";
+import * as af from "../audio-fetcher/fetchers.js";
 import defaultOptions from "../utils/default-options.js";
 import { deepMerge }  from "../utils/object.js";
 import { showPopup } from "../utils/show-popup.js";
@@ -7,6 +8,7 @@ import { threshold } from "../utils/number.js";
 import {
 	addonStorage,
 	audioTable,
+	controlTable,
 	defaultIpaTable,
 	errorsTable,
 	ipaTable,
@@ -303,6 +305,31 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 				},
 			},
 		};
+		try {
+			const leKey = "audioLastError";
+			/**
+			 * @type{{ [key: string]: PronunciationFetcherLastError}
+			 */
+			const le = await controlTable.getValue(leKey);
+			/**
+			 * @type {Options}
+			 */
+			const currOpt = await optionsTable.getAll();
+			let updateLastError = false;
+			if (
+				options.audio.responsiveVoice.api.key !==
+				currOpt.audio.responsiveVoice.api.key &&
+				af.AFResponsiveVoice.name in le
+			) {
+				updateLastError = true;
+				delete le[af.AFResponsiveVoice.name];
+			}
+			if (updateLastError) {
+				await controlTable.set(leKey, le);
+			}
+		} catch (error) {
+			console.error(error);
+		}
 		await saveOptions(options);
 		await setFieldsValues();
 		showInfo(currentTarget, "Audio settings saved");
