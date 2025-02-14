@@ -2,7 +2,7 @@
 ## Firefox extension
 
 [How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/) is a Firefox extension to help in know how to pronouce a word showing its IPA and playing its audio.  
-Old [How2Pronounce](https://addons.mozilla.org/en-US/firefox/addon/how2pronounce/), but I lost the access to the account.  
+Formerly [How2Pronounce](https://addons.mozilla.org/en-US/firefox/addon/how2pronounce/), but I lost the access to the account.  
 
 - Select a word or text
 - Right click to open the context menu and click the extension item
