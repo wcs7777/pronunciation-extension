@@ -12,7 +12,7 @@ export async function url2document(url, credentials="omit") {
 		throw {
 			status,
 			message,
-			error: new Error("Fetch error"),
+			error: new Error(response.statusText),
 		};
 	}
 	const text = await response.text();
@@ -31,7 +31,7 @@ export async function url2blob(url, credentials="omit") {
 		throw {
 			status,
 			message,
-			error: new Error("Fetch error"),
+			error: new Error(response.statusText),
 		};
 	}
 	const blob = await response.blob();

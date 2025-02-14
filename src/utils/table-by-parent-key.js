@@ -1,3 +1,6 @@
+/**
+ * @implements {Table}
+ */
 export default class TableByKeyPrefix {
 
 	/**

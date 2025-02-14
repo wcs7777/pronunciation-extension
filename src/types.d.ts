@@ -5,10 +5,17 @@ declare global {
 	type PronunciationFetcher = {
 		static name: string,
 		name: string,
-		order: number,
 		save: boolean,
 		saveError: boolean,
+		enabled: (toText: boolean) => boolean,
+		order: (toText: boolean) => number,
+	};
+
+	type PronunciationFetcherOptions = {
 		enabled: boolean,
+		order: number,
+		enabledToText: boolean,
+		orderToText: number,
 	};
 
 	type IpaFetcher = PronunciationFetcher & {
@@ -77,25 +84,16 @@ declare global {
 			actionTriggered: "above" | "below",
 		},
 		useContextColors: boolean,
+		antvaset: OptIpaAntvaset,
 		unalengua: OptIpaUnalengua,
-		cambridge: OptIpaCambridge,
 		oxford: OptIpaOxford,
+		cambridge: OptIpaCambridge,
 	};
 
-	type OptIpaUnalengua = {
-		enabled: boolean,
-		order: number,
-	};
-
-	type OptIpaCambridge = {
-		enabled: boolean,
-		order: number,
-	};
-
-	type OptIpaOxford = {
-		enabled: boolean,
-		order: number,
-	};
+	type OptIpaAntvaset = PronunciationFetcherOptions;
+	type OptIpaUnalengua = PronunciationFetcherOptions;
+	type OptIpaCambridge = PronunciationFetcherOptions;
+	type OptIpaOxford = PronunciationFetcherOptions;
 
 	type OptionsAudio = {
 		enabled: boolean,
@@ -106,21 +104,15 @@ declare global {
 		responsiveVoice: OptAudioResponsiveVoice,
 	};
 
-	type OptAudioRealVoice = {
-		enabled: boolean,
-		order: number,
+	type OptAudioRealVoice = PronunciationFetcherOptions & {
 		fetchTimeout: number,
 	};
 
-	type OptAudioGoogleSpeech = {
-		enabled: boolean,
-		order: number,
+	type OptAudioGoogleSpeech = PronunciationFetcherOptions & {
 		save: boolean,
 	};
 
-	type OptAudioResponsiveVoice = {
-		enabled: boolean,
-		order: number,
+	type OptAudioResponsiveVoice = PronunciationFetcherOptions & {
 		api: {
 			name: string,
 			key: string,

@@ -1,6 +1,10 @@
 import { url2document } from "../utils/element.js";
 import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { splitWords } from "../utils/string.js";
 
+/**
+ * @implements {IpaFetcher}
+ */
 export default class IFOxford {
 
 	/**
@@ -27,13 +31,6 @@ export default class IFOxford {
 	}
 
 	/**
-	 * @returns {number}
-	 */
-	get order() {
-		return this.options.order;
-	}
-
-	/**
 	 * @returns {boolean}
 	 */
 	get save() {
@@ -48,13 +45,24 @@ export default class IFOxford {
 	}
 
 	/**
+	 * @param {boolean} toText
 	 * @returns {boolean}
 	 */
-	get enabled() {
-		return (
-			this.options.enabled &&
-			!waitRateLimit(this.lastError, 10, [200, 404])
+	enabled(toText) {
+		const enabled = (
+			!toText ?
+			this.options.enabled :
+			this.options.enabledToText
 		);
+		return enabled && !waitRateLimit(this.lastError, 10, [200, 404]);
+	}
+
+	/**
+	 * @param {boolean} toText
+	 * @returns {number}
+	 */
+	order(toText) {
+		return !toText ? this.options.order : this.options.orderToText;
 	}
 
 	/**
@@ -64,18 +72,17 @@ export default class IFOxford {
 	async fetch(text) {
 		const base = "https://www.oxfordlearnersdictionaries.com/us/definition/english/";
 		const document = await url2document(`${base}${text}`);
-		const headword = document.querySelector("h1.headword");
-		if (!headword) {
-			throw new Error(`headword not found for ${text}`);
+		const button = document.querySelector(
+			`div.sound.audio_play_button.pron-us[title^="${text} "]`,
+		);
+		if (!button) {
+			throw new Error(`audio_play_button not found for ${text}`);
 		}
-		if (headword.textContent != text) {
-			throw new Error(`${text} is different from ${headword.textContent}`);
+		const title = splitWords(button?.title.trim().toLowerCase())?.[0];
+		if (title !== text) {
+			throw new Error(`${text} is different from ${title}`);
 		}
-		const phon = document.querySelector("div.phons_n_am span.phon");
-		if (!phon?.textContent) {
-			throw new Error(`phon not found for ${text}`);
-		}
-		return phon.textContent;
+		return button.nextElementSibling.textContent;
 	}
 
 }

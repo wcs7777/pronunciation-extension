@@ -205,6 +205,7 @@ export default class Addon {
 			const { ipa: ipaValue, save } = await this.fetchIpaExternally(
 				word,
 				options,
+				false,
 			);
 			ipa = ipaValue;
 			if (!ipa) {
@@ -222,9 +223,10 @@ export default class Addon {
 	/**
 	 * @param {string} text
 	 * @param {OptionsIpa} options
+	 * @param {boolean} toText
 	 * @returns {Promise<{ ipa: string | null, save: boolean }>
 	 */
-	async fetchIpaExternally(text, options) {
+	async fetchIpaExternally(text, options, toText) {
 		const timestamp = new Date().getTime();
 		const leKey = "ipaLastError";
 		/**
@@ -235,13 +237,14 @@ export default class Addon {
 		 * @type {IpaFetcher[]}
 		 */
 		const unordedFetchers = [
+			new pf.IFAntvaset(options.antvaset, le?.[pf.IFAntvaset.name]),
 			new pf.IFUnalengua(options.unalengua, le?.[pf.IFUnalengua.name]),
 			new pf.IFCambridge(options.cambridge, le?.[pf.IFCambridge.name]),
 			new pf.IFOxford(options.oxford, le?.[pf.IFOxford.name]),
 		];
 		const fetchers = unordedFetchers
-			.filter(f => f.enabled)
-			.sort((l, r) => l.order - r.order);
+			.filter(f => f.enabled(toText))
+			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of fetchers) {
 			console.log(`Searching IPA in ${f.name}`);
 			try {
@@ -288,12 +291,11 @@ export default class Addon {
 			options.close.timeout / 2 * totalWords,
 		);
 		options.close.onScroll = false;
-		options.cambridge.enabled = false;
-		options.oxford.enabled = false;
 		if (!this.ipaTextCache.hasKey(cacheKey)) {
 			const { ipa } = await this.fetchIpaExternally(
 				text,
 				options,
+				true,
 			);
 			if (!ipa) {
 				return null;
@@ -331,6 +333,7 @@ export default class Addon {
 			const { blob, save } = await this.fetchAudioExternally(
 				word,
 				options,
+				false,
 			);
 			if (!blob) {
 				return null;
@@ -354,9 +357,10 @@ export default class Addon {
 	/**
 	 * @param {string} text
 	 * @param {OptionsAudio} options
+	 * @param {boolean} toText
 	 * @returns {Promise<{ blob: Blob | null, save: boolean }>
 	 */
-	async fetchAudioExternally(text, options) {
+	async fetchAudioExternally(text, options, toText) {
 		const timestamp = new Date().getTime();
 		const leKey = "audioLastError";
 		/**
@@ -381,8 +385,8 @@ export default class Addon {
 			),
 		];
 		const fetchers = unordedFetchers
-			.filter(f => f.enabled)
-			.sort((l, r) => l.order - r.order);
+			.filter(f => f.enabled(toText))
+			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of fetchers) {
 			console.log(`Searching audio in ${f.name}`);
 			try {
@@ -430,6 +434,7 @@ export default class Addon {
 			const { blob } = await this.fetchAudioExternally(
 				text,
 				options,
+				true,
 			);
 			if (!blob) {
 				return null;

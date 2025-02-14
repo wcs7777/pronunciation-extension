@@ -1,5 +1,8 @@
 import { url2blob } from "../utils/element.js";
 
+/**
+ * @implements {AudioFetcher}
+ */
 export default class AFGstatic {
 
 	constructor() {
@@ -20,13 +23,6 @@ export default class AFGstatic {
 	}
 
 	/**
-	 * @returns {number}
-	 */
-	get order() {
-		return 1;
-	}
-
-	/**
 	 * @returns {boolean}
 	 */
 	get save() {
@@ -41,10 +37,19 @@ export default class AFGstatic {
 	}
 
 	/**
+	 * @param {boolean} toText
 	 * @returns {boolean}
 	 */
-	get enabled() {
-		return true;
+	enabled(toText) {
+		return !toText;
+	}
+
+	/**
+	 * @param {boolean} toText
+	 * @returns {number}
+	 */
+	order(toText) {
+		return !toText ? 1 : 0;
 	}
 
 	/**

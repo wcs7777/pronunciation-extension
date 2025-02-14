@@ -3,6 +3,9 @@ import AFOxford from "./afoxford.js";
 import { resolveTimeout } from "../utils/promise.js";
 import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
 
+/**
+ * @implements {AudioFetcher}
+ */
 export default class AFRealVoice {
 
 	/**
@@ -31,13 +34,6 @@ export default class AFRealVoice {
 	}
 
 	/**
-	 * @returns {number}
-	 */
-	get order() {
-		return this.options.order;
-	}
-
-	/**
 	 * @returns {boolean}
 	 */
 	get save() {
@@ -60,13 +56,24 @@ export default class AFRealVoice {
 	}
 
 	/**
+	 * @param {boolean} toText
 	 * @returns {boolean}
 	 */
-	get enabled() {
-		return (
-			this.options.enabled &&
-			!waitRateLimit(this.lastError, 10, [200, 404])
+	enabled(toText) {
+		const enabled = (
+			!toText ?
+			this.options.enabled :
+			this.options.enabledToText
 		);
+		return enabled && !waitRateLimit(this.lastError, 10, [200, 404]);
+	}
+
+	/**
+	 * @param {boolean} toText
+	 * @returns {number}
+	 */
+	order(toText) {
+		return !toText ? this.options.order : this.options.orderToText;
 	}
 
 	/**

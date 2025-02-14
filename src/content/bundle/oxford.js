@@ -27,7 +27,7 @@
 			throw {
 				status,
 				message,
-				error: new Error("Fetch error"),
+				error: new Error(response.statusText),
 			};
 		}
 		const blob = await response.blob();
@@ -189,6 +189,9 @@
 		opt.target.appendChild(popup);
 	}
 
+	/**
+	 * @implements {Table}
+	 */
 	let TableByKeyPrefix$1 = class TableByKeyPrefix {
 
 		/**
@@ -358,6 +361,9 @@
 
 	};
 
+	/**
+	 * @implements {Table}
+	 */
 	class TableByKeyPrefix {
 
 		/**

@@ -3,10 +3,10 @@ import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
 /**
  * @implements {IpaFetcher}
  */
-export default class IFUnalengua {
+export default class IFAntvaset {
 
 	/**
-	 * @param {OptIpaUnalengua} options
+	 * @param {OptIpaAntvaset} options
 	 * @param {?PronunciationFetcherLastError} lastError
 	 */
 	constructor(options, lastError) {
@@ -18,14 +18,14 @@ export default class IFUnalengua {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "unalengua";
+		return "antvaset";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return IFUnalengua.name;
+		return IFAntvaset.name;
 	}
 
 	/**
@@ -68,15 +68,23 @@ export default class IFUnalengua {
 	 * @returns {Promise<string>}
 	 */
 	async fetch(text) {
-		const response = await fetch("https://api2.unalengua.com/ipav3", {
+		// const proxy = "https://proxy.cors.sh/";
+		const proxy = "https://corsproxy.io/";
+		const base = "https://www.antvaset.com/api";
+		const response = await fetch(`${proxy}${base}`, {
 			method: "POST",
 			credentials: "omit",
 			body: JSON.stringify({
-				"lang": "en-US",
-				"mode": true,
-				"text": text,
+				jsonrpc: "2.0",
+				method: "ipaDictionary.query",
+				params: {
+					query: text,
+					lang: "en"
+				},
+				id: 0,
 			}),
 		});
+		console.log({ response });
 		const status = response.status;
 		if (status !== 200) {
 			const message = await response.text();
@@ -88,14 +96,26 @@ export default class IFUnalengua {
 		}
 		/**
 		 * @type {{
-		 * 	detected: string,
-		 * 	ipa: string,
-		 * 	lang: string,
-		 * 	spelling: string,
+		 * 	jsonrpc: string,
+		 * 	result: {
+		 * 		entries: {
+		 * 			text: string,
+		 * 			ipa: string,
+		 * 		}[],
+		 * 	},
+		 * 	id: number,
 		 * }}
 		 */
 		const jsonResponse = await response.json();
-		return `/${jsonResponse.ipa}/`;
+		const entries = jsonResponse.result.entries.map(e => `/${e.ipa}/`);
+		if (entries.length === 0) {
+			throw {
+				status: 404,
+				message: "Not found",
+				error: new Error("Not found"),
+			}
+		}
+		return entries.join(", ");
 	}
 
 }

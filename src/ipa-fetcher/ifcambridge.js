@@ -1,6 +1,9 @@
 import { url2document } from "../utils/element.js";
 import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
 
+/**
+ * @implements {IpaFetcher}
+ */
 export default class IFCambridge {
 
 	/**
@@ -27,13 +30,6 @@ export default class IFCambridge {
 	}
 
 	/**
-	 * @returns {number}
-	 */
-	get order() {
-		return this.options.order;
-	}
-
-	/**
 	 * @returns {boolean}
 	 */
 	get save() {
@@ -48,13 +44,24 @@ export default class IFCambridge {
 	}
 
 	/**
+	 * @param {boolean} toText
 	 * @returns {boolean}
 	 */
-	get enabled() {
-		return (
-			this.options.enabled &&
-			!waitRateLimit(this.lastError, 10, [200, 404])
+	enabled(toText) {
+		const enabled = (
+			!toText ?
+			this.options.enabled :
+			this.options.enabledToText
 		);
+		return enabled && !waitRateLimit(this.lastError, 10, [200, 404]);
+	}
+
+	/**
+	 * @param {boolean} toText
+	 * @returns {number}
+	 */
+	order(toText) {
+		return !toText ? this.options.order : this.options.orderToText;
 	}
 
 	/**

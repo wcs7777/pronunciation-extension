@@ -1,4 +1,7 @@
-export default class MemoryCache {
+/**
+ * @implements {MemoryCache}
+ */
+export default class MemoryCacheByObj {
 
 	/**
 	 * @param {string} name

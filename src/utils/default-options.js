@@ -22,17 +22,29 @@ const defaultOptions = {
 			actionTriggered: "below",
 		},
 		useContextColors: false,
-		unalengua: {
+		antvaset: {
 			enabled: true,
 			order: 1,
+			enabledToText: false,
+			orderToText: 1,
 		},
-		cambridge: {
+		unalengua: {
 			enabled: true,
-			order: 3,
+			order: 2,
+			enabledToText: true,
+			orderToText: 1,
 		},
 		oxford: {
 			enabled: true,
-			order: 2,
+			order: 3,
+			enabledToText: false,
+			orderToText: 0,
+		},
+		cambridge: {
+			enabled: true,
+			order: 4,
+			enabledToText: false,
+			orderToText: 0,
 		},
 	},
 	audio: {
@@ -42,16 +54,22 @@ const defaultOptions = {
 		realVoice: {
 			enabled: true,
 			order: 1,
+			enabledToText: false,
+			orderToText: 0,
 			fetchTimeout: 3000,
 		},
 		googleSpeech: {
 			enabled: true,
 			order: 4,
+			enabledToText: true,
+			orderToText: 1,
 			save: false,
 		},
 		responsiveVoice: {
 			enabled: true,
 			order: 3,
+			enabledToText: true,
+			orderToText: 2,
 			api: {
 				name: "rjs",
 				key: "O8Ic880z",
