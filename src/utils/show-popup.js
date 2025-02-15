@@ -50,6 +50,8 @@ export function showPopup(options) {
 		line-height: 1.2;
 		letter-spacing: .8px;
 		word-spacing: 6px;
+		text-wrap: wrap;
+		text-wrap: pretty;
 		color: ${opt.font.color};
 		z-index: 99999 !important;
 	`;
@@ -111,5 +113,14 @@ export function showPopup(options) {
 	document.addEventListener("keydown", onKeyDown);
 	document.addEventListener("scroll", onScroll);
 
+	popup.style.visibility = "hidden";
+	opt.target.appendChild(popup);
+	const rect = popup.getBoundingClientRect();
+	const rightMargin = window.innerWidth - rect.right;
+	popup.remove();
+	if (rightMargin <= 0) {
+		popup.style.right = "5px";
+	}
+	popup.style.visibility = "visible";
 	opt.target.appendChild(popup);
 }
