@@ -3,8 +3,8 @@ import * as af from "../audio-fetcher/fetchers.js";
 import * as pf from "../ipa-fetcher/fetchers.js";
 import { blob2base64 } from "../utils/element.js";
 import { deepMerge, removeMethods } from "../utils/object.js";
-import { generateSha1, splitWords } from "../utils/string.js";
-import { goString, resolveTimeout } from "../utils/promise.js";
+import { generateSha1, splitWords, oneSpace } from "../utils/string.js";
+import { goString } from "../utils/promise.js";
 import { threshold } from "../utils/number.js";
 
 export default class Addon {
@@ -84,7 +84,7 @@ export default class Addon {
 		  * @type {Promise<HTMLAudioElement | null> | null}
 		  */
 		let audioPromise = null;
-		if (words.length === 1 || !options.allowMultipleWords) {
+		if (words.length === 1 || !options.allowText) {
 			const word = words[0];
 			const maxCharacters = 45; // biggest english word
 			if (word.length <= maxCharacters) {
@@ -95,16 +95,10 @@ export default class Addon {
 					`Exceeded ${maxCharacters} characters allowed for words`
 				);
 				console.error(message);
-				ipaPromise = resolveTimeout(0, message);
+				ipaPromise = Promise.resolve(message);
 			}
-		} else if (options.allowMultipleWords) {
+		} else if (options.allowText) {
 			const maxCharacters = 1500; // api limitation
-			options.ipa.close.timeout = threshold(
-				options.ipa.close.timeout,
-				Math.max(300000, options.ipa.close.timeout),
-				options.ipa.close.timeout / 2 * words.length,
-			);
-			options.ipa.close.onScroll = false;
 			if (text.length <= maxCharacters) {
 				const key = await generateSha1(text);
 				ipaPromise = this.fetchIpaText(
@@ -119,7 +113,7 @@ export default class Addon {
 					`Exceeded ${maxCharacters} characters allowed for texts`
 				);
 				console.error(message);
-				ipaPromise = resolveTimeout(0, message);
+				ipaPromise = Promise.resolve(message);
 			}
 		}
 		await Promise.all([
@@ -140,9 +134,7 @@ export default class Addon {
 		try {
 			const ipa = ipaPromise !== null ? await ipaPromise : null;
 			if (!ipa) {
-				if (options.enabled) {
-					console.log("No ipa was found");
-				}
+				console.log("No IPA was found or show IPA is disabled");
 				return;
 			}
 			console.log({ ipa, tabId });
@@ -169,9 +161,7 @@ export default class Addon {
 		try {
 			const audio = audioPromise !== null ? await audioPromise : null;
 			if (!audio) {
-				if (options.enabled) {
-					console.log("No audio was found");
-				}
+				console.log("No audio was found or play audio is disabled");
 				return;
 			}
 			audio.volume = threshold(0, 1, options.volume);
@@ -189,7 +179,7 @@ export default class Addon {
 	 */
 	async fetchIpa(word, options) {
 		if (!options.enabled) {
-			console.log("Show ipa is disabled");
+			console.log("Show IPA is disabled");
 			return null;
 		}
 		/**
@@ -218,6 +208,38 @@ export default class Addon {
 		}
 		this.ipaCache.set(word, ipa);
 		return ipa;
+	}
+
+	/**
+	 * @param {string} cacheKey
+	 * @param {string} text
+	 * @param {OptionsIpa} options
+	 * @param {number} totalWords
+	 * @returns {Promise<string | null>}
+	 */
+	async fetchIpaText(cacheKey, text, options, totalWords) {
+		if (!options.enabledToText) {
+			console.log("Show IPA is disabled to text");
+			return null;
+		}
+		options.close.timeout = threshold(
+			options.close.timeout,
+			Math.max(300000, options.close.timeout),
+			options.close.timeout / 2.5 * totalWords,
+		);
+		options.close.onScroll = false;
+		if (!this.ipaTextCache.hasKey(cacheKey)) {
+			const { ipa } = await this.fetchIpaExternally(
+				text,
+				options,
+				true,
+			);
+			if (!ipa) {
+				return null;
+			}
+			this.ipaTextCache.set(cacheKey, ipa);
+		}
+		return this.ipaTextCache.get(cacheKey);
 	}
 
 	/**
@@ -274,38 +296,6 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} cacheKey
-	 * @param {string} text
-	 * @param {OptionsIpa} options
-	 * @param {number} totalWords
-	 * @returns {Promise<string | null>}
-	 */
-	async fetchIpaText(cacheKey, text, options, totalWords) {
-		if (!options.enabled) {
-			console.log("Show ipa is disabled");
-			return null;
-		}
-		options.close.timeout = threshold(
-			options.close.timeout,
-			Math.max(300000, options.close.timeout),
-			options.close.timeout / 2 * totalWords,
-		);
-		options.close.onScroll = false;
-		if (!this.ipaTextCache.hasKey(cacheKey)) {
-			const { ipa } = await this.fetchIpaExternally(
-				text,
-				options,
-				true,
-			);
-			if (!ipa) {
-				return null;
-			}
-			this.ipaTextCache.set(cacheKey, ipa);
-		}
-		return this.ipaTextCache.get(cacheKey);
-	}
-
-	/**
 	 * @param {string} word
 	 * @param {OptionsAudio} options
 	 * @returns {Promise<HTMLAudioElement | null>}
@@ -352,6 +342,38 @@ export default class Addon {
 		audio = new Audio(base64);
 		this.audioCache.set(word, audio);
 		return audio;
+	}
+
+	/**
+	 * @param {string} cacheKey
+	 * @param {string} text
+	 * @param {OptionsAudio} options
+	 * @returns {Promise<HTMLAudioElement | null>}
+	 */
+	async fetchAudioText(cacheKey, text, options) {
+		if (!options.enabledToText) {
+			console.log("Play audio is disabled to text");
+			return null;
+		}
+		options.realVoice.enabled = false;
+		/**
+		 * @type {HTMLAudioElement}
+		 */
+		let audio = null;
+		if (!this.audioTextCache.hasKey(cacheKey)) {
+			const { blob } = await this.fetchAudioExternally(
+				text,
+				options,
+				true,
+			);
+			if (!blob) {
+				return null;
+			}
+			const base64 = await blob2base64(blob);
+			audio = new Audio(base64);
+			this.audioTextCache.set(cacheKey, audio);
+		}
+		return this.audioTextCache.get(cacheKey);
 	}
 
 	/**
@@ -412,38 +434,6 @@ export default class Addon {
 			blob: null,
 			save: false,
 		};
-	}
-
-	/**
-	 * @param {string} cacheKey
-	 * @param {string} text
-	 * @param {OptionsAudio} options
-	 * @returns {Promise<HTMLAudioElement | null>}
-	 */
-	async fetchAudioText(cacheKey, text, options) {
-		if (!options.enabled) {
-			console.log("Play audio is disabled");
-			return null;
-		}
-		options.realVoice.enabled = false;
-		/**
-		 * @type {HTMLAudioElement}
-		 */
-		let audio = null;
-		if (!this.audioTextCache.hasKey(cacheKey)) {
-			const { blob } = await this.fetchAudioExternally(
-				text,
-				options,
-				true,
-			);
-			if (!blob) {
-				return null;
-			}
-			const base64 = await blob2base64(blob);
-			audio = new Audio(base64);
-			this.audioTextCache.set(cacheKey, audio);
-		}
-		return this.audioTextCache.get(cacheKey);
 	}
 
 	/**

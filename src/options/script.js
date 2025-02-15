@@ -27,11 +27,12 @@ import {
  * @type {{
  *     general: {
  *         accessKey: HTMLInputElement,
- *         allowMultipleWords: HTMLInputElement,
+ *         allowText: HTMLInputElement,
  *         save: HTMLButtonElement,
  *     },
  *     ipa: {
  *         enabled: HTMLInputElement,
+ *         enabledToText: HTMLInputElement,
  *         fontFamily: HTMLInputElement,
  *         fontSize: HTMLInputElement,
  *         fontColor: HTMLInputElement,
@@ -54,6 +55,7 @@ import {
  *     },
  *     audio: {
  *         enabled: HTMLInputElement,
+ *         enabledToText: HTMLInputElement,
  *         volume: HTMLInputElement,
  *         playbackRate: HTMLInputElement,
  *         realVoiceEnabled: HTMLInputElement,
@@ -131,11 +133,12 @@ import {
 const el = {
 	general: {
 		accessKey: byId("accessKey"),
-		allowMultipleWords: byId("allowMultipleWords"),
+		allowText: byId("allowText"),
 		save: byId("saveGeneral"),
 	},
 	ipa: {
 		enabled: byId("ipaEnabled"),
+		enabledToText: byId("ipaEnabledToText"),
 		fontFamily: byId("ipaFontFamily"),
 		fontSize: byId("ipaFontSize"),
 		fontColor: byId("ipaFontColor"),
@@ -158,6 +161,7 @@ const el = {
 	},
 	audio: {
 		enabled: byId("audioEnabled"),
+		enabledToText: byId("audioEnabledToText"),
 		volume: byId("audioVolume"),
 		playbackRate: byId("audioPlaybackRate"),
 		realVoiceEnabled: byId("audioRealVoiceEnabled"),
@@ -272,7 +276,7 @@ el.general.save.addEventListener("click", async ({ currentTarget }) => {
 		 */
 		const options = {
 			accessKey: strOr(el.general.accessKey.value, defaultOptions.accessKey),
-			allowMultipleWords: el.general.allowMultipleWords.checked,
+			allowText: el.general.allowText.checked,
 		};
 		await saveOptions(options);
 		await setFieldsValues();
@@ -290,6 +294,7 @@ el.ipa.save.addEventListener("click", async ({ currentTarget }) => {
 		const options = {
 			ipa: {
 				enabled: el.ipa.enabled.checked,
+				enabledToText: el.ipa.enabledToText.checked,
 				font: {
 					family: strOr(el.ipa.fontFamily.value, defaultOptions.ipa.font.family),
 					size: numOr(el.ipa.fontSize.value, defaultOptions.ipa.font.size, 2, 50),
@@ -340,6 +345,7 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 		const options = {
 			audio: {
 				enabled: el.audio.enabled.checked,
+				enabledToText: el.audio.enabledToText.checked,
 				volume: numOr(el.audio.volume.value, defaultOptions.audio.volume, 0, 1),
 				playbackRate: numOr(el.audio.playbackRate.value, defaultOptions.audio.playbackRate, 0.2, 2),
 				realVoice: {
@@ -728,8 +734,9 @@ async function setFieldsValues() {
 	 */
 	const opt = await optionsTable.getAll();
 	el.general.accessKey.value = opt.accessKey;
-	el.general.allowMultipleWords.checked = opt.allowMultipleWords;
+	el.general.allowText.checked = opt.allowText;
 	el.ipa.enabled.checked = opt.ipa.enabled;
+	el.ipa.enabledToText.checked = opt.ipa.enabledToText;
 	el.ipa.fontFamily.value = opt.ipa.font.family;
 	el.ipa.fontSize.value = opt.ipa.font.size.toString();
 	el.ipa.fontColor.value = opt.ipa.font.color;
@@ -749,6 +756,7 @@ async function setFieldsValues() {
 	el.ipa.oxfordEnabled.checked = opt.ipa.oxford.enabled;
 	el.ipa.oxfordOrder.value = opt.ipa.oxford.order.toString();
 	el.audio.enabled.checked = opt.audio.enabled;
+	el.audio.enabledToText.checked = opt.audio.enabledToText;
 	el.audio.volume.value = opt.audio.volume.toString();
 	el.audio.playbackRate.value = opt.audio.playbackRate.toString();
 	el.audio.realVoiceEnabled.checked = opt.audio.realVoice.enabled;

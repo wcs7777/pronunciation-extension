@@ -3,9 +3,10 @@
  */
 const defaultOptions = {
 	accessKey: "P",
-	allowMultipleWords: true,
+	allowText: true,
 	ipa: {
 		enabled: true,
+		enabledToText: true,
 		font: {
 			family: "'Lucida Sans Unicode', 'Segoe UI'",
 			size: 18, // px
@@ -49,6 +50,7 @@ const defaultOptions = {
 	},
 	audio: {
 		enabled: true,
+		enabledToText: true,
 		volume: 1.0,
 		playbackRate: 1.0,
 		realVoice: {

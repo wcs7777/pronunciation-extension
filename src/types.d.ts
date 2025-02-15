@@ -60,7 +60,7 @@ declare global {
 
 	type Options = {
 		accessKey: string,
-		allowMultipleWords: boolean,
+		allowText: boolean,
 		ipa: OptionsIpa,
 		audio: OptionsAudio,
 		setPronuncationByShortcut: OptionsSetPronuncationByShortcut,
@@ -68,6 +68,7 @@ declare global {
 
 	type OptionsIpa = {
 		enabled: boolean,
+		enabledToText: boolean,
 		font: {
 			family: string,
 			size: number, // px
@@ -97,6 +98,7 @@ declare global {
 
 	type OptionsAudio = {
 		enabled: boolean,
+		enabledToText: boolean,
 		volume: number,
 		playbackRate: number,
 		realVoice: OptAudioRealVoice,

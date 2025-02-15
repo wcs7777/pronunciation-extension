@@ -1,5 +1,6 @@
 const wordPattern = /([A-Za-z\u00C0-\u024F\-']+)/g;
 const digitPattern = /\d+/g;
+const spacePattern = /\s+/g;
 
 /**
  * @param {string} text
@@ -11,6 +12,15 @@ export function splitWords(text) {
 		.replaceAll("’", "'")
 		.match(wordPattern)
 	return words ? words : [];
+}
+
+/**
+ * Replace one or more spaces with one space
+ * @param {string} text
+ * @returns {string}
+ */
+export function oneSpace(text) {
+	return text.replaceAll(spacePattern, " ");
 }
 
 /**
