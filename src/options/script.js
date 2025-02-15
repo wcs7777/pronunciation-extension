@@ -1,4 +1,5 @@
 import "../utils/fflate.js";
+import "../utils/Sortable.min.js";
 import * as af from "../audio-fetcher/fetchers.js";
 import defaultOptions from "../utils/default-options.js";
 import { deepMerge }  from "../utils/object.js";
@@ -33,24 +34,36 @@ import {
  *     ipa: {
  *         enabled: HTMLInputElement,
  *         enabledToText: HTMLInputElement,
- *         fontFamily: HTMLInputElement,
- *         fontSize: HTMLInputElement,
- *         fontColor: HTMLInputElement,
- *         backgroundColor: HTMLInputElement,
+ *         font: {
+ *             family: HTMLInputElement,
+ *             size: HTMLInputElement,
+ *             color: HTMLInputElement,
+ *             backgroundColor: HTMLInputElement,
+ *         },
  *         useContextColors: HTMLInputElement,
- *         positionMenuTriggered: HTMLSelectElement,
- *         positionActionTriggered: HTMLSelectElement,
- *         closeTimeout: HTMLInputElement,
- *         closeShortcut: HTMLInputElement,
- *         closeOnScroll: HTMLInputElement,
- *         antvasetEnabled: HTMLInputElement,
- *         antvasetOrder: HTMLInputElement,
- *         unalenguaEnabled: HTMLInputElement,
- *         unalenguaOrder: HTMLInputElement,
- *         oxfordEnabled: HTMLInputElement,
- *         oxfordOrder: HTMLInputElement,
- *         cambridgeEnabled: HTMLInputElement,
- *         cambridgeOrder: HTMLInputElement,
+ *         position: {
+ *             menuTriggered: HTMLSelectElement,
+ *             actionTriggered: HTMLSelectElement,
+ *         },
+ *         close: {
+ *             timeout: HTMLInputElement,
+ *             shortcut: HTMLInputElement,
+ *             onScroll: HTMLInputElement,
+ *         },
+ *         order: {
+ *             antvaset: HTMLElement,
+ *             antvasetEnabled: HTMLInputElement,
+ *             unalengua: HTMLElement,
+ *             unalenguaEnabled: HTMLInputElement,
+ *             oxford: HTMLElement,
+ *             oxfordEnabled: HTMLInputElement,
+ *             cambridge: HTMLElement,
+ *             cambridgeEnabled: HTMLInputElement,
+ *         },
+ *         orderToText: {
+ *             unalengua: HTMLElement,
+ *             unalenguaEnabled: HTMLInputElement,
+ *         },
  *         save: HTMLButtonElement,
  *     },
  *     audio: {
@@ -58,21 +71,33 @@ import {
  *         enabledToText: HTMLInputElement,
  *         volume: HTMLInputElement,
  *         playbackRate: HTMLInputElement,
- *         realVoiceEnabled: HTMLInputElement,
- *         realVoiceOrder: HTMLInputElement,
- *         realVoiceFetchTimeout: HTMLInputElement,
- *         googleSpeechEnabled: HTMLInputElement,
- *         googleSpeechOrder: HTMLInputElement,
- *         googleSpeechEnabledToText: HTMLInputElement,
- *         googleSpeechOrderToText: HTMLInputElement,
- *         googleSpeechSave: HTMLInputElement,
- *         responsiveVoiceEnabled: HTMLInputElement,
- *         responsiveVoiceOrder: HTMLInputElement,
- *         responsiveVoiceEnabledToText: HTMLInputElement,
- *         responsiveVoiceOrderToText: HTMLInputElement,
- *         responsiveVoiceApiName: HTMLInputElement,
- *         responsiveVoiceApiKey: HTMLInputElement,
- *         responsiveVoiceApiGender: HTMLSelectElement,
+ *         order: {
+ *             realVoice: HTMLElement,
+ *             realVoiceEnabled: HTMLInputElement,
+ *             googleSpeech: HTMLElement,
+ *             googleSpeechEnabled: HTMLInputElement,
+ *             responsiveVoice: HTMLElement,
+ *             responsiveVoiceEnabled: HTMLInputElement,
+ *         },
+ *         orderToText: {
+ *             googleSpeech: HTMLElement,
+ *             googleSpeechEnabled: HTMLInputElement,
+ *             responsiveVoice: HTMLElement,
+ *             responsiveVoiceEnabled: HTMLInputElement,
+ *         },
+ *         realVoice: {
+ *             fetchTimeout: HTMLInputElement,
+ *         },
+ *         googleSpeech: {
+ *             save: HTMLInputElement,
+ *         },
+ *         responsiveVoice: {
+ *             api: {
+ *                 name: HTMLInputElement,
+ *                 key: HTMLInputElement,
+ *                 gender: HTMLSelectElement,
+ *             },
+ *         },
  *         save: HTMLButtonElement,
  *     },
  *     setPronuncationByShortcut: {
@@ -139,24 +164,36 @@ const el = {
 	ipa: {
 		enabled: byId("ipaEnabled"),
 		enabledToText: byId("ipaEnabledToText"),
-		fontFamily: byId("ipaFontFamily"),
-		fontSize: byId("ipaFontSize"),
-		fontColor: byId("ipaFontColor"),
-		backgroundColor: byId("ipaBackgroundColor"),
+		font: {
+			family: byId("ipaFontFamily"),
+			size: byId("ipaFontSize"),
+			color: byId("ipaFontColor"),
+			backgroundColor: byId("ipaBackgroundColor"),
+		},
 		useContextColors: byId("ipaUseContextColors"),
-		positionMenuTriggered: byId("ipaPositionMenuTriggered"),
-		positionActionTriggered: byId("ipaPositionActionTriggered"),
-		closeTimeout: byId("ipaCloseTimeout"),
-		closeShortcut: byId("ipaCloseShortcut"),
-		closeOnScroll: byId("ipaCloseOnScroll"),
-		antvasetEnabled: byId("ipaAntvasetEnabled"),
-		antvasetOrder: byId("ipaAntvasetOrder"),
-		unalenguaEnabled: byId("ipaUnalenguaEnabled"),
-		unalenguaOrder: byId("ipaUnalenguaOrder"),
-		oxfordEnabled: byId("ipaOxfordEnabled"),
-		oxfordOrder: byId("ipaOxfordOrder"),
-		cambridgeEnabled: byId("ipaCambridgeEnabled"),
-		cambridgeOrder: byId("ipaCambridgeOrder"),
+		position: {
+			menuTriggered: byId("ipaPositionMenuTriggered"),
+			actionTriggered: byId("ipaPositionActionTriggered"),
+		},
+		close: {
+			timeout: byId("ipaCloseTimeout"),
+			shortcut: byId("ipaCloseShortcut"),
+			onScroll: byId("ipaCloseOnScroll"),
+		},
+		order: {
+			antvaset: byId("ipaAntvasetOrder"),
+			antvasetEnabled: byId("ipaAntvasetEnabled"),
+			unalengua: byId("ipaUnalenguaOrder"),
+			unalenguaEnabled: byId("ipaUnalenguaEnabled"),
+			oxford: byId("ipaOxfordOrder"),
+			oxfordEnabled: byId("ipaOxfordEnabled"),
+			cambridge: byId("ipaCambridgeOrder"),
+			cambridgeEnabled: byId("ipaCambridgeEnabled"),
+		},
+		orderToText: {
+			unalengua: byId("ipaUnalenguaOrderToText"),
+			unalenguaEnabled: byId("ipaUnalenguaEnabledToText"),
+		},
 		save: byId("saveIpa"),
 	},
 	audio: {
@@ -164,21 +201,33 @@ const el = {
 		enabledToText: byId("audioEnabledToText"),
 		volume: byId("audioVolume"),
 		playbackRate: byId("audioPlaybackRate"),
-		realVoiceEnabled: byId("audioRealVoiceEnabled"),
-		realVoiceOrder: byId("audioRealVoiceOrder"),
-		realVoiceFetchTimeout: byId("audioRealVoiceFetchTimeout"),
-		googleSpeechEnabled: byId("audioGoogleSpeechEnabled"),
-		googleSpeechOrder: byId("audioGoogleSpeechOrder"),
-		googleSpeechEnabledToText: byId("audioGoogleSpeechEnabledToText"),
-		googleSpeechOrderToText: byId("audioGoogleSpeechOrderToText"),
-		googleSpeechSave: byId("audioGoogleSpeechSave"),
-		responsiveVoiceEnabled: byId("audioResponsiveVoiceEnabled"),
-		responsiveVoiceOrder: byId("audioResponsiveVoiceOrder"),
-		responsiveVoiceEnabledToText: byId("audioResponsiveVoiceEnabledToText"),
-		responsiveVoiceOrderToText: byId("audioResponsiveVoiceOrderToText"),
-		responsiveVoiceApiName: byId("audioResponsiveVoiceApiName"),
-		responsiveVoiceApiKey: byId("audioResponsiveVoiceApiKey"),
-		responsiveVoiceApiGender: byId("audioResponsiveVoiceApiGender"),
+		order: {
+			realVoice: byId("audioRealVoiceOrder"),
+			realVoiceEnabled: byId("audioRealVoiceEnabled"),
+			googleSpeech: byId("audioGoogleSpeechOrder"),
+			googleSpeechEnabled: byId("audioGoogleSpeechEnabled"),
+			responsiveVoice: byId("audioResponsiveVoiceOrder"),
+			responsiveVoiceEnabled: byId("audioResponsiveVoiceEnabled"),
+		},
+		orderToText: {
+			googleSpeech: byId("audioGoogleSpeechOrderToText"),
+			googleSpeechEnabled: byId("audioGoogleSpeechEnabledToText"),
+			responsiveVoice: byId("audioResponsiveVoiceOrderToText"),
+			responsiveVoiceEnabled: byId("audioResponsiveVoiceEnabledToText"),
+		},
+		realVoice: {
+			fetchTimeout: byId("audioRealVoiceFetchTimeout"),
+		},
+		googleSpeech: {
+			save: byId("audioGoogleSpeechSave"),
+		},
+		responsiveVoice: {
+			api: {
+				name: byId("audioResponsiveVoiceApiName"),
+				key: byId("audioResponsiveVoiceApiKey"),
+				gender: byId("audioResponsiveVoiceApiGender"),
+			},
+		},
 		save: byId("saveAudio"),
 	},
 	setPronuncationByShortcut: {
@@ -236,33 +285,58 @@ const el = {
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
+
 		console.log("Options page entered");
 
 		[
-			el.ipa.fontSize,
-			el.ipa.closeTimeout,
+			el.ipa.font.size,
+			el.ipa.close.timeout,
 			el.audio.volume,
 			el.audio.playbackRate,
-			el.audio.realVoiceFetchTimeout,
+			el.audio.realVoice.fetchTimeout,
 		].forEach(e => onlyNumber(e, true));
 
 		[
-			el.ipa.unalenguaOrder,
-			el.ipa.oxfordOrder,
-			el.ipa.cambridgeOrder,
-			el.audio.realVoiceOrder,
-			el.audio.googleSpeechOrder,
-			el.audio.realVoiceOrder,
-		].forEach(e => onlyNumber(e, false));
-
-		[
 			el.general.accessKey,
-			el.ipa.closeShortcut,
+			el.ipa.close.shortcut,
 			el.setPronuncationByShortcut.audioShortcut,
 			el.setPronuncationByShortcut.ipaShortcut,
 		].forEach(onlyShorcut);
 
 		await setFieldsValues();
+
+		/**
+		 * @type {Options}
+		 */
+		const options = await optionsTable.getAll();
+
+		createSortableOrder(
+			byId("ipaFetchersOrder"),
+			el.ipa.order,
+			options.ipa,
+			"order",
+		);
+
+		createSortableOrder(
+			byId("ipaFetchersOrderToText"),
+			el.ipa.orderToText,
+			options.ipa,
+			"orderToText",
+		);
+
+		createSortableOrder(
+			byId("audioFetchersOrder"),
+			el.audio.order,
+			options.audio,
+			"order",
+		);
+
+		createSortableOrder(
+			byId("audioFetchersOrderToText"),
+			el.audio.orderToText,
+			options.audio,
+			"orderToText",
+		);
 
 	} catch (error) {
 		console.error(error);
@@ -296,36 +370,38 @@ el.ipa.save.addEventListener("click", async ({ currentTarget }) => {
 				enabled: el.ipa.enabled.checked,
 				enabledToText: el.ipa.enabledToText.checked,
 				font: {
-					family: strOr(el.ipa.fontFamily.value, defaultOptions.ipa.font.family),
-					size: numOr(el.ipa.fontSize.value, defaultOptions.ipa.font.size, 2, 50),
-					color: strOr(el.ipa.fontColor.value, defaultOptions.ipa.font.color),
-					backgroundColor: strOr(el.ipa.backgroundColor.value, defaultOptions.ipa.font.backgroundColor),
+					family: strOr(el.ipa.font.family.value, defaultOptions.ipa.font.family),
+					size: numOr(el.ipa.font.size.value, defaultOptions.ipa.font.size, 2, 50),
+					color: strOr(el.ipa.font.color.value, defaultOptions.ipa.font.color),
+					backgroundColor: strOr(el.ipa.font.backgroundColor.value, defaultOptions.ipa.font.backgroundColor),
 				},
 				useContextColors: el.ipa.useContextColors.checked,
 				position: {
-					menuTriggered: el.ipa.positionMenuTriggered.value,
-					actionTriggered: el.ipa.positionActionTriggered.value,
+					menuTriggered: el.ipa.position.menuTriggered.value,
+					actionTriggered: el.ipa.position.actionTriggered.value,
 				},
 				close: {
-					timeout: numOr(el.ipa.closeTimeout.value, defaultOptions.ipa.close.timeout, 500, 3600000),
-					shortcut: strOr(el.ipa.closeShortcut.value, defaultOptions.ipa.close.shortcut),
-					onScroll: el.ipa.closeOnScroll.checked,
+					timeout: numOr(el.ipa.close.timeout.value, defaultOptions.ipa.close.timeout, 500, 3600000),
+					shortcut: strOr(el.ipa.close.shortcut.value, defaultOptions.ipa.close.shortcut),
+					onScroll: el.ipa.close.onScroll.checked,
 				},
 				antvaset: {
-					enabled: el.ipa.antvasetEnabled.checked,
-					order: numOr(el.ipa.antvasetOrder.value, defaultOptions.ipa.antvaset.order, 1, 20),
+					enabled: el.ipa.order.antvasetEnabled.checked,
+					order: parseInt(el.ipa.order.antvaset.dataset.order),
 				},
 				unalengua: {
-					enabled: el.ipa.unalenguaEnabled.checked,
-					order: numOr(el.ipa.unalenguaOrder.value, defaultOptions.ipa.unalengua.order, 1, 20),
+					enabled: el.ipa.order.unalenguaEnabled.checked,
+					order: parseInt(el.ipa.order.unalengua.dataset.order),
+					enabledToText: el.ipa.orderToText.unalenguaEnabled.checked,
+					orderToText: parseInt(el.ipa.orderToText.unalengua.dataset.order),
 				},
 				oxford: {
-					enabled: el.ipa.oxfordEnabled.checked,
-					order: numOr(el.ipa.oxfordOrder.value, defaultOptions.ipa.oxford.order, 1, 20),
+					enabled: el.ipa.order.oxfordEnabled.checked,
+					order: parseInt(el.ipa.order.oxford.dataset.order),
 				},
 				cambridge: {
-					enabled: el.ipa.cambridgeEnabled.checked,
-					order: numOr(el.ipa.cambridgeOrder.value, defaultOptions.ipa.cambridge.order, 1, 20),
+					enabled: el.ipa.order.cambridgeEnabled.checked,
+					order: parseInt(el.ipa.order.cambridge.dataset.order),
 				},
 			},
 		};
@@ -349,26 +425,26 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 				volume: numOr(el.audio.volume.value, defaultOptions.audio.volume, 0, 1),
 				playbackRate: numOr(el.audio.playbackRate.value, defaultOptions.audio.playbackRate, 0.2, 2),
 				realVoice: {
-					enabled: el.audio.realVoiceEnabled.checked,
-					order: numOr(el.audio.realVoiceOrder.value, defaultOptions.audio.realVoice.order, 1, 20),
-					fetchTimeout: numOr(el.audio.realVoiceFetchTimeout.value, defaultOptions.audio.realVoice.fetchTimeout, 0, 120000),
+					enabled: el.audio.order.realVoiceEnabled.checked,
+					order: parseInt(el.audio.order.realVoice.dataset.order),
+					fetchTimeout: numOr(el.audio.realVoice.fetchTimeout.value, defaultOptions.audio.realVoice.fetchTimeout, 0, 120000),
 				},
 				googleSpeech: {
-					enabled: el.audio.googleSpeechEnabled.checked,
-					order: numOr(el.audio.googleSpeechOrder.value, defaultOptions.audio.googleSpeech.order, 1, 20),
-					enabledToText: el.audio.googleSpeechEnabledToText.checked,
-					orderToText: numOr(el.audio.googleSpeechOrderToText.value, defaultOptions.audio.googleSpeech.orderToText, 1, 20),
-					save: el.audio.googleSpeechSave.checked,
+					enabled: el.audio.order.googleSpeechEnabled.checked,
+					order: parseInt(el.audio.order.googleSpeech.dataset.order),
+					enabledToText: el.audio.orderToText.googleSpeechEnabled.checked,
+					orderToText: parseInt(el.audio.orderToText.googleSpeech.dataset.order),
+					save: el.audio.googleSpeech.save.checked,
 				},
 				responsiveVoice: {
-					enabled: el.audio.responsiveVoiceEnabled.checked,
-					order: numOr(el.audio.responsiveVoiceOrder.value, defaultOptions.audio.responsiveVoice.order, 1, 20),
-					enabledToText: el.audio.responsiveVoiceEnabledToText.checked,
-					orderToText: numOr(el.audio.responsiveVoiceOrderToText.value, defaultOptions.audio.responsiveVoice.orderToText, 1, 20),
+					enabled: el.audio.order.responsiveVoiceEnabled.checked,
+					order: parseInt(el.audio.order.responsiveVoice.dataset.order),
+					enabledToText: el.audio.orderToText.responsiveVoiceEnabled.checked,
+					orderToText: parseInt(el.audio.orderToText.responsiveVoice.dataset.order),
 					api: {
-						name: strOr(el.audio.responsiveVoiceApiName.value, defaultOptions.audio.responsiveVoice.api.name),
-						key: strOr(el.audio.responsiveVoiceApiKey.value, defaultOptions.audio.responsiveVoice.api.key),
-						gender: strOr(el.audio.responsiveVoiceApiGender.value, defaultOptions.audio.responsiveVoice.api.gender),
+						name: strOr(el.audio.responsiveVoice.api.name.value, defaultOptions.audio.responsiveVoice.api.name),
+						key: strOr(el.audio.responsiveVoice.api.key.value, defaultOptions.audio.responsiveVoice.api.key),
+						gender: strOr(el.audio.responsiveVoice.api.gender.value, defaultOptions.audio.responsiveVoice.api.gender),
 					},
 				},
 			},
@@ -688,17 +764,11 @@ el.setCompleteIpa.addEventListener("click", async ({ currentTarget }) => {
 		if (!window.confirm(msg)) {
 			return;
 		}
-		console.log("Getting gzip URL");
 		const url = browser.runtime.getURL("resources/complete-ipa.json.gz");
-		console.log("Fetching gzip file");
 		const response = await fetch(url);
-		console.log("Creating gzip buffer");
 		const gzipBuffer = new Uint8Array(await response.arrayBuffer());
-		console.log("Decompressing gzip buffer");
 		const ipaBuffer = fflate.decompressSync(gzipBuffer);
-		console.log("Decoding decompressed gzip");
 		const ipaDecoded = new TextDecoder().decode(ipaBuffer);
-		console.log("Parsing decoded gzip");
 		const values = JSON.parse(ipaDecoded);
 		console.log("Storing parsed gzip");
 		await Promise.all([
@@ -737,43 +807,35 @@ async function setFieldsValues() {
 	el.general.allowText.checked = opt.allowText;
 	el.ipa.enabled.checked = opt.ipa.enabled;
 	el.ipa.enabledToText.checked = opt.ipa.enabledToText;
-	el.ipa.fontFamily.value = opt.ipa.font.family;
-	el.ipa.fontSize.value = opt.ipa.font.size.toString();
-	el.ipa.fontColor.value = opt.ipa.font.color;
-	el.ipa.backgroundColor.value = opt.ipa.font.backgroundColor;
+	el.ipa.font.family.value = opt.ipa.font.family;
+	el.ipa.font.size.value = opt.ipa.font.size.toString();
+	el.ipa.font.color.value = opt.ipa.font.color;
+	el.ipa.font.backgroundColor.value = opt.ipa.font.backgroundColor;
 	el.ipa.useContextColors.checked = opt.ipa.useContextColors;
-	el.ipa.positionMenuTriggered.value = opt.ipa.position.menuTriggered;
-	el.ipa.positionActionTriggered.value = opt.ipa.position.actionTriggered;
-	el.ipa.closeTimeout.value = opt.ipa.close.timeout.toString();
-	el.ipa.closeShortcut.value = opt.ipa.close.shortcut;
-	el.ipa.closeOnScroll.checked = opt.ipa.close.onScroll;
-	el.ipa.antvasetEnabled.checked = opt.ipa.antvaset.enabled;
-	el.ipa.antvasetOrder.value = opt.ipa.antvaset.order.toString();
-	el.ipa.unalenguaEnabled.checked = opt.ipa.unalengua.enabled;
-	el.ipa.unalenguaOrder.value = opt.ipa.unalengua.order.toString();
-	el.ipa.cambridgeEnabled.checked = opt.ipa.cambridge.enabled;
-	el.ipa.cambridgeOrder.value = opt.ipa.cambridge.order.toString();
-	el.ipa.oxfordEnabled.checked = opt.ipa.oxford.enabled;
-	el.ipa.oxfordOrder.value = opt.ipa.oxford.order.toString();
+	el.ipa.position.menuTriggered.value = opt.ipa.position.menuTriggered;
+	el.ipa.position.actionTriggered.value = opt.ipa.position.actionTriggered;
+	el.ipa.close.timeout.value = opt.ipa.close.timeout.toString();
+	el.ipa.close.shortcut.value = opt.ipa.close.shortcut;
+	el.ipa.close.onScroll.checked = opt.ipa.close.onScroll;
+	el.ipa.order.antvasetEnabled.checked = opt.ipa.antvaset.enabled;
+	el.ipa.order.unalenguaEnabled.checked = opt.ipa.unalengua.enabled;
+	el.ipa.order.oxfordEnabled.checked = opt.ipa.oxford.enabled;
+	el.ipa.order.cambridgeEnabled.checked = opt.ipa.cambridge.enabled;
+	el.ipa.orderToText.unalenguaEnabled.checked = opt.ipa.unalengua.enabledToText;
 	el.audio.enabled.checked = opt.audio.enabled;
 	el.audio.enabledToText.checked = opt.audio.enabledToText;
 	el.audio.volume.value = opt.audio.volume.toString();
 	el.audio.playbackRate.value = opt.audio.playbackRate.toString();
-	el.audio.realVoiceEnabled.checked = opt.audio.realVoice.enabled;
-	el.audio.realVoiceOrder.value = opt.audio.realVoice.order.toString();
-	el.audio.realVoiceFetchTimeout.value = opt.audio.realVoice.fetchTimeout.toString();
-	el.audio.googleSpeechEnabled.checked = opt.audio.googleSpeech.enabled;
-	el.audio.googleSpeechOrder.value = opt.audio.googleSpeech.order.toString();
-	el.audio.googleSpeechEnabledToText.checked = opt.audio.googleSpeech.enabledToText;
-	el.audio.googleSpeechOrderToText.value = opt.audio.googleSpeech.orderToText.toString();
-	el.audio.googleSpeechSave.checked = opt.audio.googleSpeech.save;
-	el.audio.responsiveVoiceEnabledToText.checked = opt.audio.responsiveVoice.enabledToText;
-	el.audio.responsiveVoiceOrderToText.value = opt.audio.responsiveVoice.orderToText.toString();
-	el.audio.responsiveVoiceEnabled.checked = opt.audio.responsiveVoice.enabled;
-	el.audio.responsiveVoiceOrder.value = opt.audio.responsiveVoice.order.toString();
-	el.audio.responsiveVoiceApiName.value = opt.audio.responsiveVoice.api.name;
-	el.audio.responsiveVoiceApiKey.value = opt.audio.responsiveVoice.api.key;
-	el.audio.responsiveVoiceApiGender.value = opt.audio.responsiveVoice.api.gender;
+	el.audio.order.realVoiceEnabled.checked = opt.audio.realVoice.enabled;
+	el.audio.order.googleSpeechEnabled.checked = opt.audio.googleSpeech.enabled;
+	el.audio.order.responsiveVoiceEnabled.checked = opt.audio.responsiveVoice.enabled;
+	el.audio.orderToText.googleSpeechEnabled.checked = opt.audio.googleSpeech.enabledToText;
+	el.audio.orderToText.responsiveVoiceEnabled.checked = opt.audio.responsiveVoice.enabledToText;
+	el.audio.realVoice.fetchTimeout.value = opt.audio.realVoice.fetchTimeout.toString();
+	el.audio.googleSpeech.save.checked = opt.audio.googleSpeech.save;
+	el.audio.responsiveVoice.api.name.value = opt.audio.responsiveVoice.api.name;
+	el.audio.responsiveVoice.api.key.value = opt.audio.responsiveVoice.api.key;
+	el.audio.responsiveVoice.api.gender.value = opt.audio.responsiveVoice.api.gender;
 	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;
@@ -858,4 +920,33 @@ function fileName(suffix) {
 		.replaceAll(":", "-")
 		.replaceAll(".", "-");
 	return `${prefix}-${suffix}`;
+}
+
+/**
+ * @param {HTMLElement} list
+ * @param {{ [key: string]: HTMLElement }} items
+ * @param {{ [key: string]: { [key: string]: number } }} initialOrder
+ * @param {string} dataIdAttr
+ */
+function createSortableOrder(list, items, initialOrder, dataIdAttr="order") {
+	const sortable = Sortable.create(list, {
+		animation: 150,
+		ghostClass: "dragging",
+		dataIdAttr: `data-${dataIdAttr}`,
+		onEnd: () => {
+			const children = Array.from(list.children);
+			for (const [index, element] of children.entries()) {
+				const order = index + 1;
+				element.dataset.order = order.toString().padStart(2, "0");
+			}
+		},
+	});
+	for (const [key, value] of Object.entries(items)) {
+		if (key in initialOrder) {
+			const order = initialOrder[key][dataIdAttr];
+			value.dataset[dataIdAttr] = order.toString().padStart(2, "0");
+		}
+	}
+	sortable.sort(sortable.toArray().toSorted(), false);
+	return sortable;
 }

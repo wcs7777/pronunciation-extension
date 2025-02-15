@@ -101,57 +101,61 @@
                 <label for="ipaCloseOnScroll">Close popup when page is scrolled</label>
             </div>
 
-            <h3>Antvaset</h3>
+            <h3>IPA fetchers order/enable</h3>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="ipaAntvasetEnabled" checked>
-                <label for="ipaAntvasetEnabled">Antvaset enabled</label>
-            </div>
-            
-            <div class="form-group">
-                <label for="ipaAntvasetOrder">Antvaset fetch order</label>
-                <input type="text" id="ipaAntvasetOrder" placeholder="Order in relation with others">
-            </div>
+			<div id="ipaFetchersOrder" class="sortable-list">
 
-            <h3>Unalengua</h3>
+				<div id="ipaAntvasetOrder" class="sortable-item" data-order="0">
+					Antvaset
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaAntvasetEnabled" checked>
+						<label for="ipaAntvasetEnabled">Enabled</label>
+					</div>
+				</div>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="ipaUnalenguaEnabled" checked>
-                <label for="ipaUnalenguaEnabled">Unalengua enabled</label>
-            </div>
-            
-            <div class="form-group">
-                <label for="ipaUnalenguaOrder">Unalengua fetch order</label>
-                <input type="text" id="ipaUnalenguaOrder" placeholder="Order in relation with others">
-            </div>
+				<div id="ipaUnalenguaOrder" class="sortable-item" data-order="0">
+					Unalengua
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaUnalenguaEnabled" checked>
+						<label for="ipaUnalenguaEnabled">Enabled</label>
+					</div>
+				</div>
 
-            <h3>Oxford</h3>
+				<div id="ipaOxfordOrder" class="sortable-item" data-order="0">
+					Oxford
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaOxfordEnabled" checked>
+						<label for="ipaOxfordEnabled">Enabled</label>
+					</div>
+				</div>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="ipaOxfordEnabled" checked>
-                <label for="ipaOxfordEnabled">Oxford enabled</label>
-            </div>
-            
-            <div class="form-group">
-                <label for="ipaOxfordOrder">Oxford fetch order</label>
-                <input type="text" id="ipaOxfordOrder" placeholder="Order in relation with others">
-            </div>
+				<div id="ipaCambridgeOrder" class="sortable-item" data-order="0">
+					Cambridge
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaCambridgeEnabled" checked>
+						<label for="ipaCambridgeEnabled">Enabled</label>
+					</div>
+				</div>
+
+			</div>
+
+            <h3>IPA fetchers order/enable to text</h3>
+
+			<div id="ipaFetchersOrderToText" class="sortable-list">
+
+				<div id="ipaUnalenguaOrderToText" class="sortable-item" data-order-to-text="0">
+					Unalengua
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaUnalenguaEnabledToText" checked>
+						<label for="ipaUnalenguaEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+			</div>
 
 			<div style="text-align: center; margin-top: 30px;">
 				<button class="btn btn-primary" id="saveIpa">Save IPA</button>
 			</div>
-
-            <h3>Cambridge</h3>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="ipaCambridgeEnabled" checked>
-                <label for="ipaCambridgeEnabled">Cambridge enabled</label>
-            </div>
-            
-            <div class="form-group">
-                <label for="ipaCambridgeOrder">Cambridge fetch order</label>
-                <input type="text" id="ipaCambridgeOrder" placeholder="Order in relation with others">
-            </div>
 
         </div>
 
@@ -179,17 +183,59 @@
                 <input type="text" id="audioPlaybackRate" placeholder="[0.2, 2.0] e.g. 1.0">
             </div>
 
-            <h3>Real Voice</h3>
+            <h3>Audio fetchers order/enable</h3>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="audioRealVoiceEnabled" checked>
-                <label for="audioRealVoiceEnabled">Real voice enabled</label>
-            </div>
-            
-            <div class="form-group">
-                <label for="audioRealVoiceOrder">Real voice fetch order</label>
-                <input type="text" id="audioRealVoiceOrder" placeholder="Order in relation with others">
-            </div>
+			<div id="audioFetchersOrder" class="sortable-list">
+
+				<div id="audioRealVoiceOrder" class="sortable-item" data-order="0">
+					Real Voice
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioRealVoiceEnabled" checked>
+						<label for="audioRealVoiceEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioGoogleSpeechOrder" class="sortable-item" data-order="0">
+					Google Speech
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioGoogleSpeechEnabled" checked>
+						<label for="audioGoogleSpeechEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioResponsiveVoiceOrder" class="sortable-item" data-order="0">
+					ResponsiveVoice
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioResponsiveVoiceEnabled" checked>
+						<label for="audioResponsiveVoiceEnabled">Enabled</label>
+					</div>
+				</div>
+
+			</div>
+
+            <h3>Audio fetchers order/enable to text</h3>
+
+			<div id="audioFetchersOrderToText" class="sortable-list">
+
+				<div id="audioGoogleSpeechOrderToText" class="sortable-item" data-order-to-text="0">
+					Google Speech
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioGoogleSpeechEnabledToText" checked>
+						<label for="audioGoogleSpeechEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioResponsiveVoiceOrderToText" class="sortable-item" data-order-to-text="0">
+					ResponsiveVoice
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioResponsiveVoiceEnabledToText" checked>
+						<label for="audioResponsiveVoiceEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+			</div>
+
+            <h3>Real Voice</h3>
 
             <div class="form-group">
                 <label for="audioRealVoiceFetchTimeout">Real voice fetch timeout (ms)</label>
@@ -199,51 +245,11 @@
             <h3>Google Speech</h3>
 
             <div class="checkbox-group">
-                <input type="checkbox" id="audioGoogleSpeechEnabled" checked>
-                <label for="audioGoogleSpeechEnabled">Google speech enabled</label>
-            </div>
-            
-            <div class="form-group">
-                <label for="audioGoogleSpeechOrder">Google speech fetch order</label>
-                <input type="text" id="audioGoogleSpeechOrder" placeholder="Order in relation with others">
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="audioGoogleSpeechEnabledToText" checked>
-                <label for="audioGoogleSpeechEnabledToText">Google speech enabled to text</label>
-            </div>
-            
-            <div class="form-group">
-                <label for="audioGoogleSpeechOrderToText">Google speech fetch order to text</label>
-                <input type="text" id="audioGoogleSpeechOrderToText" placeholder="Order in relation with others">
-            </div>
-
-            <div class="checkbox-group">
                 <input type="checkbox" id="audioGoogleSpeechSave" checked>
                 <label for="audioGoogleSpeechSave">Google speech save audio</label>
             </div>
             
             <h3>ResponsiveVoice</h3>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="audioResponsiveVoiceEnabled" checked>
-                <label for="audioResponsiveVoiceEnabled">ResponsiveVoice enabled</label>
-            </div>
-            
-            <div class="form-group">
-                <label for="audioResponsiveVoiceOrder">ResponsiveVoice fetch order</label>
-                <input type="text" id="audioResponsiveVoiceOrder" placeholder="Order in relation with others">
-            </div>
-
-            <div class="checkbox-group">
-                <input type="checkbox" id="audioResponsiveVoiceEnabledToText" checked>
-                <label for="audioResponsiveVoiceEnabledToText">ResponsiveVoice enabled to text</label>
-            </div>
-            
-            <div class="form-group">
-                <label for="audioResponsiveVoiceOrderToText">ResponsiveVoice fetch order to text</label>
-                <input type="text" id="audioResponsiveVoiceOrderToText" placeholder="Order in relation with others">
-            </div>
 
             <div class="form-group">
                 <label for="audioResponsiveVoiceApiName">ResponsiveVoice API name</label>
