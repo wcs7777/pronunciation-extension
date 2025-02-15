@@ -933,6 +933,7 @@ function createSortableOrder(list, items, initialOrder, dataIdAttr="order") {
 		animation: 150,
 		ghostClass: "dragging",
 		dataIdAttr: `data-${dataIdAttr}`,
+		forceFallback: true,
 		onEnd: () => {
 			const children = Array.from(list.children);
 			for (const [index, element] of children.entries()) {
