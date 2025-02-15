@@ -1,6 +1,7 @@
 const wordPattern = /([A-Za-z\u00C0-\u024F\-']+)/g;
 const digitPattern = /\d+/g;
-const spacePattern = /\s+/g;
+const spacePattern = / +/g;
+const newlinePattern = /(\r?\n)+/g;
 
 /**
  * @param {string} text
@@ -19,8 +20,10 @@ export function splitWords(text) {
  * @param {string} text
  * @returns {string}
  */
-export function oneSpace(text) {
-	return text.replaceAll(spacePattern, " ");
+export function removeExtraSpaces(text) {
+	return text
+		.replaceAll(spacePattern, " ")
+		.replaceAll(newlinePattern, "\n");
 }
 
 /**

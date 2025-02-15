@@ -3,9 +3,13 @@ import * as af from "../audio-fetcher/fetchers.js";
 import * as pf from "../ipa-fetcher/fetchers.js";
 import { blob2base64 } from "../utils/element.js";
 import { deepMerge, removeMethods } from "../utils/object.js";
-import { generateSha1, splitWords, oneSpace } from "../utils/string.js";
 import { goString } from "../utils/promise.js";
 import { threshold } from "../utils/number.js";
+import {
+	generateSha1,
+	removeExtraSpaces,
+	splitWords,
+} from "../utils/string.js";
 
 export default class Addon {
 
@@ -99,15 +103,16 @@ export default class Addon {
 			}
 		} else if (options.allowText) {
 			const maxCharacters = 1500; // api limitation
-			if (input.length <= maxCharacters) {
-				const key = await generateSha1(input);
+			const text = removeExtraSpaces(input);
+			if (text.length <= maxCharacters) {
+				const key = await generateSha1(text);
 				ipaPromise = this.fetchIpaText(
 					key,
-					input,
+					text,
 					options.ipa,
 					words.length,
 				);
-				audioPromise = this.fetchAudioText(key, input, options.audio);
+				audioPromise = this.fetchAudioText(key, text, options.audio);
 			} else {
 				const message = (
 					`Exceeded ${maxCharacters} characters allowed for texts`
