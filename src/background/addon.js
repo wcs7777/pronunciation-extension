@@ -123,7 +123,7 @@ export default class Addon {
 		}
 		await Promise.all([
 			this.showIpa(ipaPromise, options.ipa, tabId, origin),
-			this.playAudio(audioPromise, options.audio),
+			this.playAudio(audioPromise, options.audio, tabId),
 		]);
 		console.log("Pronunciation end");
 	}
@@ -160,13 +160,21 @@ export default class Addon {
 	/**
 	 * @param {Promise<HTMLAudioElement | null> | null} audioPromise
 	 * @param {OptionsAudio} options
+	 * @param {number} tabId
 	 * @returns {Promise<void>}
 	 */
-	async playAudio(audioPromise, options) {
+	async playAudio(audioPromise, options, tabId) {
 		try {
 			const audio = audioPromise !== null ? await audioPromise : null;
-			if (!audio) {
-				console.log("No audio was found or play audio is disabled");
+			const tab = await browser.tabs.get(tabId);
+			const muted = tab?.mutedInfo?.muted;
+			if (!audio || muted) {
+				const msg = (
+					!muted ?
+					"No audio was found or play audio is disabled" :
+					`Tab ${tabId} is muted`
+				);
+				console.log(msg);
 				return;
 			}
 			audio.volume = threshold(0, 1, options.volume);
