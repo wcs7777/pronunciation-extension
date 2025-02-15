@@ -77,10 +77,10 @@ export default class AFRealVoice {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(text) {
+	fetch(input) {
 		/**
 		 * @type {Promise<Blob>[]}
 		 */
@@ -88,10 +88,10 @@ export default class AFRealVoice {
 			resolveTimeout(this.options.fetchTimeout, null),
 		];
 		if (this.oxford.enabled) {
-			promises.push(this.oxford.fetch(text));
+			promises.push(this.oxford.fetch(input));
 		}
 		if (this.gstatic.enabled) {
-			promises.push(this.gstatic.fetch(text));
+			promises.push(this.gstatic.fetch(input));
 		}
 		return Promise.any(promises);
 	}

@@ -66,21 +66,21 @@ export default class IFOxford {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @returns {Promise<string>}
 	 */
-	async fetch(text) {
+	async fetch(input) {
 		const base = "https://www.oxfordlearnersdictionaries.com/us/definition/english/";
-		const document = await url2document(`${base}${text}`);
+		const document = await url2document(`${base}${input}`);
 		const button = document.querySelector(
-			`div.sound.audio_play_button.pron-us[title^="${text} "]`,
+			`div.sound.audio_play_button.pron-us[title^="${input} "]`,
 		);
 		if (!button) {
-			throw new Error(`audio_play_button not found for ${text}`);
+			throw new Error(`audio_play_button not found for ${input}`);
 		}
 		const title = splitWords(button?.title.trim().toLowerCase())?.[0];
-		if (title !== text) {
-			throw new Error(`${text} is different from ${title}`);
+		if (title !== input) {
+			throw new Error(`${input} is different from ${title}`);
 		}
 		return button.nextElementSibling.textContent;
 	}

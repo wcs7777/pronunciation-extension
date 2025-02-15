@@ -53,12 +53,12 @@ export default class AFGstatic {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(text) {
+	fetch(input) {
 		const base = "https://ssl.gstatic.com/dictionary/static/sounds/20200429";
-		const fileBegin = text.replaceAll("'", "_");
+		const fileBegin = input.replaceAll("'", "_");
 		const candidates = [
 			"--1_us_1.mp3",
 			"--_us_1.mp3",

@@ -64,17 +64,17 @@ export default class IFUnalengua {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @returns {Promise<string>}
 	 */
-	async fetch(text) {
+	async fetch(input) {
 		const response = await fetch("https://api2.unalengua.com/ipav3", {
 			method: "POST",
 			credentials: "omit",
 			body: JSON.stringify({
 				"lang": "en-US",
 				"mode": true,
-				"text": text,
+				"text": input,
 			}),
 		});
 		const status = response.status;

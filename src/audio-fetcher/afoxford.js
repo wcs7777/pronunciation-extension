@@ -54,12 +54,12 @@ export default class AFOxford {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(text) {
+	fetch(input) {
 		const base = "https://www.oxfordlearnersdictionaries.com/us/media/english/us_pron_ogg";
-		const fileBegin = text.replaceAll("'", "_").replaceAll("-", "_");
+		const fileBegin = input.replaceAll("'", "_").replaceAll("-", "_");
 		const candidates = [
 			"__us_1.ogg",
 			"__us_1_rr.ogg",

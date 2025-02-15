@@ -65,13 +65,13 @@ export default class AFGoogleSpeech {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(text) {
+	fetch(input) {
 		const base = "https://www.google.com/speech-api/v1/synthesize?";
 		const params = new URLSearchParams({
-			text: text,
+			text: input,
 			enc: "mpeg",
 			lang: "en",
 			speed: 0.5,

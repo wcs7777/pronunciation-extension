@@ -60,20 +60,20 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @param {number} tabId
 	 * @param {"menuItem" | "action" | "other"} origin
 	 * @returns {Promise<void>}
 	 */
-	async pronounce(text, tabId, origin) {
+	async pronounce(input, tabId, origin) {
 		/**
 		  * @type {Options}
 		  */
 		const options = this.optionsCache.getAll();
-		const words = splitWords(text.toLowerCase());
-		console.log({ text, words });
+		const words = splitWords(input.toLowerCase());
+		console.log({ input, words });
 		if (words.length === 0) {
-			console.log("No word was found in text");
+			console.log("No word was found in input");
 			return;
 		}
 		/**
@@ -99,15 +99,15 @@ export default class Addon {
 			}
 		} else if (options.allowText) {
 			const maxCharacters = 1500; // api limitation
-			if (text.length <= maxCharacters) {
-				const key = await generateSha1(text);
+			if (input.length <= maxCharacters) {
+				const key = await generateSha1(input);
 				ipaPromise = this.fetchIpaText(
 					key,
-					text,
+					input,
 					options.ipa,
 					words.length,
 				);
-				audioPromise = this.fetchAudioText(key, text, options.audio);
+				audioPromise = this.fetchAudioText(key, input, options.audio);
 			} else {
 				const message = (
 					`Exceeded ${maxCharacters} characters allowed for texts`
@@ -212,12 +212,12 @@ export default class Addon {
 
 	/**
 	 * @param {string} cacheKey
-	 * @param {string} text
+	 * @param {string} input
 	 * @param {OptionsIpa} options
 	 * @param {number} totalWords
 	 * @returns {Promise<string | null>}
 	 */
-	async fetchIpaText(cacheKey, text, options, totalWords) {
+	async fetchIpaText(cacheKey, input, options, totalWords) {
 		if (!options.enabledToText) {
 			console.log("Show IPA is disabled to text");
 			return null;
@@ -230,7 +230,7 @@ export default class Addon {
 		options.close.onScroll = false;
 		if (!this.ipaTextCache.hasKey(cacheKey)) {
 			const { ipa } = await this.fetchIpaExternally(
-				text,
+				input,
 				options,
 				true,
 			);
@@ -243,12 +243,12 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @param {OptionsIpa} options
 	 * @param {boolean} toText
 	 * @returns {Promise<{ ipa: string | null, save: boolean }>
 	 */
-	async fetchIpaExternally(text, options, toText) {
+	async fetchIpaExternally(input, options, toText) {
 		const timestamp = new Date().getTime();
 		const leKey = "ipaLastError";
 		/**
@@ -270,14 +270,14 @@ export default class Addon {
 		for (const f of fetchers) {
 			console.log(`Searching IPA in ${f.name}`);
 			try {
-				const ipa = await f.fetch(text);
+				const ipa = await f.fetch(input);
 				if (ipa) {
 					return { ipa, save: f.save };
 				}
 			} catch (error) {
 				console.log({ error });
 				if (f.saveError) {
-					await this.saveError(`${f.name}: ${text}`, error);
+					await this.saveError(`${f.name}: ${input}`, error);
 				}
 				if (error?.status) {
 					le[f.name] = {
@@ -346,11 +346,11 @@ export default class Addon {
 
 	/**
 	 * @param {string} cacheKey
-	 * @param {string} text
+	 * @param {string} input
 	 * @param {OptionsAudio} options
 	 * @returns {Promise<HTMLAudioElement | null>}
 	 */
-	async fetchAudioText(cacheKey, text, options) {
+	async fetchAudioText(cacheKey, input, options) {
 		if (!options.enabledToText) {
 			console.log("Play audio is disabled to text");
 			return null;
@@ -362,7 +362,7 @@ export default class Addon {
 		let audio = null;
 		if (!this.audioTextCache.hasKey(cacheKey)) {
 			const { blob } = await this.fetchAudioExternally(
-				text,
+				input,
 				options,
 				true,
 			);
@@ -377,12 +377,12 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @param {OptionsAudio} options
 	 * @param {boolean} toText
 	 * @returns {Promise<{ blob: Blob | null, save: boolean }>
 	 */
-	async fetchAudioExternally(text, options, toText) {
+	async fetchAudioExternally(input, options, toText) {
 		const timestamp = new Date().getTime();
 		const leKey = "audioLastError";
 		/**
@@ -412,13 +412,13 @@ export default class Addon {
 		for (const f of fetchers) {
 			console.log(`Searching audio in ${f.name}`);
 			try {
-				const blob = await f.fetch(text);
+				const blob = await f.fetch(input);
 				if (blob) {
 					return { blob, save: f.save };
 				}
 			} catch (error) {
 				if (f.saveError) {
-					await this.saveError(`${f.name}: ${text}`, error);
+					await this.saveError(`${f.name}: ${input}`, error);
 				}
 				if (error?.status) {
 					le[f.name] = {

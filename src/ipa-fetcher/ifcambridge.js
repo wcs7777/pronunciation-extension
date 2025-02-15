@@ -65,22 +65,22 @@ export default class IFCambridge {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @returns {Promise<string>}
 	 */
-	async fetch(text) {
+	async fetch(input) {
 		const base = "https://dictionary.cambridge.org/us/dictionary/english/";
-		const document = await url2document(`${base}${text}`);
+		const document = await url2document(`${base}${input}`);
 		const hw = document.querySelector("span.hw.dhw");
 		if (!hw) {
-			throw new Error(`hd not foudn for ${text}`);
+			throw new Error(`hd not foudn for ${input}`);
 		}
-		if (hw.textContent !== text) {
-			throw new Error(`${text} is different from ${hw.textContent}`);
+		if (hw.textContent !== input) {
+			throw new Error(`${input} is different from ${hw.textContent}`);
 		}
 		const ipa = document.querySelector("span.ipa");
 		if (!ipa?.textContent) {
-			throw new Error(`ipa not found for ${text}`);
+			throw new Error(`ipa not found for ${input}`);
 		}
 		return `/${ipa.textContent}/`;
 	}

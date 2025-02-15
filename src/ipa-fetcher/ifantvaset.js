@@ -64,10 +64,10 @@ export default class IFAntvaset {
 	}
 
 	/**
-	 * @param {string} text
+	 * @param {string} input
 	 * @returns {Promise<string>}
 	 */
-	async fetch(text) {
+	async fetch(input) {
 		// const proxy = "https://proxy.cors.sh/";
 		const proxy = "https://corsproxy.io/";
 		const base = "https://www.antvaset.com/api";
@@ -78,7 +78,7 @@ export default class IFAntvaset {
 				jsonrpc: "2.0",
 				method: "ipaDictionary.query",
 				params: {
-					query: text,
+					query: input,
 					lang: "en"
 				},
 				id: 0,
