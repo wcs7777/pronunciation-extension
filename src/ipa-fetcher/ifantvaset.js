@@ -84,7 +84,6 @@ export default class IFAntvaset {
 				id: 0,
 			}),
 		});
-		console.log({ response });
 		const status = response.status;
 		if (status !== 200) {
 			const message = await response.text();
