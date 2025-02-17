@@ -105,7 +105,7 @@ const defaultOptions = {
 			orderToText: 3,
 			save: true,
 			saveError: true,
-			textMaxLength: 1000, // stream endpoint
+			textMaxLength: 3000, // stream=1000, speech=3000
 			api: {
 				token: null,
 				voiceId: "Scarlett",

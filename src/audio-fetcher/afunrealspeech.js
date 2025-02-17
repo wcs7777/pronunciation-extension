@@ -73,23 +73,37 @@ export default class AFUnrealSpeech {
 	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input) {
-		const endpoint = "https://api.v7.unrealspeech.com/stream";
-		const response = await fetch(endpoint, {
+		const base = "https://api.v7.unrealspeech.com";
+		let endpoint = "";
+		let body = {
+			Text: input,
+			VoiceId: this.options.api.voiceId,
+			Bitrate: this.options.api.bitRate,
+			Speed: 0,
+			Pitch: this.options.api.pitch,
+		};
+		if (input.length <= 1000) {
+			endpoint = "stream";
+			body = {
+				...body,
+				Codec: this.options.api.codec,
+				Temperature: this.options.api.temperature,
+			};
+		} else {
+			endpoint = "speech";
+			body = {
+				...body,
+			  TimestampType: "sentence",
+			};
+		}
+		const response = await fetch(`${base}/${endpoint}`, {
 			method: "POST",
 			credentials: "omit",
 			headers: {
 				"Authorization": `Bearer ${this.options.api.token}`,
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({
-				Text: input,
-				VoiceId: this.options.api.voiceId,
-				Bitrate: this.options.api.bitRate,
-				Speed: 0,
-				Pitch: this.options.api.pitch,
-				Codec: this.options.api.codec,
-				Temperature: this.options.api.temperature,
-			}),
+			body: JSON.stringify(body),
 		});
 		const status = response.status;
 		if (status !== 200) {

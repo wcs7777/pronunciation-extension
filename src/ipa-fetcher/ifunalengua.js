@@ -76,6 +76,9 @@ export default class IFUnalengua {
 		const response = await fetch("https://api2.unalengua.com/ipav3", {
 			method: "POST",
 			credentials: "omit",
+			headers: {
+				"Content-Type": "application/json",
+			},
 			body: JSON.stringify({
 				"lang": "en-US",
 				"mode": true,

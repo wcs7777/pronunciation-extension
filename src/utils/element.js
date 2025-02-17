@@ -79,6 +79,21 @@ export async function blob2base64(blob) {
 }
 
 /**
+ * @param {string} base64
+ * @param {string} mimeType
+ * @returns {Blob}
+ */
+export function base64ToBlob(base64, mimeType) {
+    const bytesAsStr = atob(base64);
+    const length = bytesAsStr.length;
+    const array = new Uint8Array(length);
+    for (let i = 0; i < length; i++) {
+        array[i] = bytesAsStr.charCodeAt(i);
+    }
+    return new Blob([array], { type: mimeType });
+}
+
+/**
  * @param {Blob} blob
  * @returns {Promise<object | object[]>}
  */
