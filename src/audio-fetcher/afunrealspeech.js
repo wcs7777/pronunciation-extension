@@ -34,6 +34,9 @@ export default class AFUnrealSpeech {
 	 * @returns {boolean}
 	 */
 	enabled(input, toText) {
+		if (!this.options.api.token) {
+			return false;
+		}
 		let enabled = false;
 		if (!toText) {
 			enabled = this.options.enabled;

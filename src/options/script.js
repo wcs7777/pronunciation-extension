@@ -514,6 +514,14 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 				updateLastError = true;
 				delete le[af.AFResponsiveVoice.name];
 			}
+			if (
+				options.audio.unrealSpeech.api.key !==
+				currOpt.audio.unrealSpeech.api.key &&
+				af.AFUnrealSpeech.name in le
+			) {
+				updateLastError = true;
+				delete le[af.AFUnrealSpeech.name];
+			}
 			if (updateLastError) {
 				await controlTable.set(leKey, le);
 			}
