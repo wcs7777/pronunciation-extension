@@ -5,10 +5,10 @@ declare global {
 	type PronunciationFetcher = {
 		static name: string,
 		name: string,
+		enabled: (input: string, toText: boolean) => boolean,
+		order: (toText: boolean) => number,
 		save: boolean,
 		saveError: boolean,
-		enabled: (toText: boolean) => boolean,
-		order: (toText: boolean) => number,
 	};
 
 	type PronunciationFetcherOptions = {
@@ -16,6 +16,9 @@ declare global {
 		order: number,
 		enabledToText: boolean,
 		orderToText: number,
+		save: boolean,
+		saveError: boolean,
+		textMaxLength: number,
 	};
 
 	type IpaFetcher = PronunciationFetcher & {
@@ -111,9 +114,7 @@ declare global {
 		fetchTimeout: number,
 	};
 
-	type OptAudioGoogleSpeech = PronunciationFetcherOptions & {
-		save: boolean,
-	};
+	type OptAudioGoogleSpeech = PronunciationFetcherOptions;
 
 	type OptAudioResponsiveVoice = PronunciationFetcherOptions & {
 		api: {

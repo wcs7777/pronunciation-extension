@@ -23,6 +23,23 @@ export default class AFGstatic {
 	}
 
 	/**
+	 * @param {string} input
+	 * @param {boolean} toText
+	 * @returns {boolean}
+	 */
+	enabled(input, toText) {
+		return !toText;
+	}
+
+	/**
+	 * @param {boolean} toText
+	 * @returns {number}
+	 */
+	order(toText) {
+		return !toText ? 1 : 0;
+	}
+
+	/**
 	 * @returns {boolean}
 	 */
 	get save() {
@@ -34,22 +51,6 @@ export default class AFGstatic {
 	 */
 	get saveError() {
 		return false;
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {boolean}
-	 */
-	enabled(toText) {
-		return !toText;
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {number}
-	 */
-	order(toText) {
-		return !toText ? 1 : 0;
 	}
 
 	/**

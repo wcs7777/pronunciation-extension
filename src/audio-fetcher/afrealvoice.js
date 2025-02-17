@@ -34,37 +34,20 @@ export default class AFRealVoice {
 	}
 
 	/**
-	 * @returns {boolean}
-	 */
-	get save() {
-		const saveValues = [
-			this.oxford.save,
-			this.gstatic.save,
-		];
-		return saveValues.some(s => s);
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get saveError() {
-		const saveErrorValues = [
-			this.oxford.saveError,
-			this.gstatic.saveError,
-		];
-		return saveErrorValues.some(s => s);
-	}
-
-	/**
+	 * @param {string} input
 	 * @param {boolean} toText
 	 * @returns {boolean}
 	 */
-	enabled(toText) {
-		const enabled = (
-			!toText ?
-			this.options.enabled :
-			this.options.enabledToText
-		);
+	enabled(input, toText) {
+		let enabled = false;
+		if (!toText) {
+			enabled = this.options.enabled;
+		} else {
+			enabled = (
+				this.options.enabledToText &&
+				input.length <= this.options.textMaxLength
+			);
+		}
 		return enabled && !waitRateLimit(this.lastError, 10, [200, 404]);
 	}
 
@@ -74,6 +57,20 @@ export default class AFRealVoice {
 	 */
 	order(toText) {
 		return !toText ? this.options.order : this.options.orderToText;
+	}
+
+	/**
+	 * @returns {boolean}
+	 */
+	get save() {
+		return this.options.save;
+	}
+
+	/**
+	 * @returns {boolean}
+	 */
+	get saveError() {
+		return this.options.saveError;
 	}
 
 	/**

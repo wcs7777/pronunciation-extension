@@ -29,6 +29,32 @@ export default class AFUnrealSpeech {
 	}
 
 	/**
+	 * @param {string} input
+	 * @param {boolean} toText
+	 * @returns {boolean}
+	 */
+	enabled(input, toText) {
+		let enabled = false;
+		if (!toText) {
+			enabled = this.options.enabled;
+		} else {
+			enabled = (
+				this.options.enabledToText &&
+				input.length <= this.options.textMaxLength
+			);
+		}
+		return enabled && !waitRateLimit(this.lastError, 60, [200, 404]);
+	}
+
+	/**
+	 * @param {boolean} toText
+	 * @returns {number}
+	 */
+	order(toText) {
+		return !toText ? this.options.order : this.options.orderToText;
+	}
+
+	/**
 	 * @returns {boolean}
 	 */
 	get save() {
@@ -39,32 +65,7 @@ export default class AFUnrealSpeech {
 	 * @returns {boolean}
 	 */
 	get saveError() {
-		return true;
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {boolean}
-	 */
-	enabled(toText) {
-		const enabled = (
-			!toText ?
-			this.options.enabled :
-			this.options.enabledToText
-		);
-		return (
-			this.options.api.token &&
-			enabled &&
-			!waitRateLimit(this.lastError, 10, [200, 404])
-		)
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {number}
-	 */
-	order(toText) {
-		return !toText ? this.options.order : this.options.orderToText;
+		return this.options.saveError;
 	}
 
 	/**

@@ -30,6 +30,24 @@ export default class AFGoogleSpeech {
 	}
 
 	/**
+	 * @param {string} input
+	 * @param {boolean} toText
+	 * @returns {boolean}
+	 */
+	enabled(input, toText) {
+		let enabled = false;
+		if (!toText) {
+			enabled = this.options.enabled;
+		} else {
+			enabled = (
+				this.options.enabledToText &&
+				input.length <= this.options.textMaxLength
+			);
+		}
+		return enabled && !waitRateLimit(this.lastError, 10, [200, 404]);
+	}
+
+	/**
 	 * @returns {boolean}
 	 */
 	get save() {
@@ -40,20 +58,7 @@ export default class AFGoogleSpeech {
 	 * @returns {boolean}
 	 */
 	get saveError() {
-		return true;
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {boolean}
-	 */
-	enabled(toText) {
-		const enabled = (
-			!toText ?
-			this.options.enabled :
-			this.options.enabledToText
-		);
-		return enabled && !waitRateLimit(this.lastError, 10, [200, 404]);
+		return this.options.saveError;
 	}
 
 	/**

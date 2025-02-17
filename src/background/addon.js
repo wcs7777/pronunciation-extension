@@ -90,7 +90,7 @@ export default class Addon {
 		let audioPromise = null;
 		if (words.length === 1 || !options.allowText) {
 			const word = words[0];
-			const maxCharacters = 45; // biggest english word
+			const maxCharacters = 60;
 			if (word.length <= maxCharacters) {
 				ipaPromise = this.fetchIpa(word, options.ipa);
 				audioPromise = this.fetchAudio(word, options.audio);
@@ -102,24 +102,15 @@ export default class Addon {
 				ipaPromise = Promise.resolve(message);
 			}
 		} else if (options.allowText) {
-			const maxCharacters = 1500; // api limitation
 			const text = removeExtraSpaces(input);
-			if (text.length <= maxCharacters) {
-				const key = await generateSha1(text);
-				ipaPromise = this.fetchIpaText(
-					key,
-					text,
-					options.ipa,
-					words.length,
-				);
-				audioPromise = this.fetchAudioText(key, text, options.audio);
-			} else {
-				const message = (
-					`Exceeded ${maxCharacters} characters allowed for texts`
-				);
-				console.error(message);
-				ipaPromise = Promise.resolve(message);
-			}
+			const key = await generateSha1(text);
+			ipaPromise = this.fetchIpaText(
+				key,
+				text,
+				options.ipa,
+				words.length,
+			);
+			audioPromise = this.fetchAudioText(key, text, options.audio);
 		}
 		await Promise.all([
 			this.showIpa(ipaPromise, options.ipa, tabId, origin),
@@ -278,7 +269,7 @@ export default class Addon {
 			new pf.IFOxford(options.oxford, le?.[pf.IFOxford.name]),
 		];
 		const fetchers = unordedFetchers
-			.filter(f => f.enabled(toText))
+			.filter(f => f.enabled(input, toText))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of fetchers) {
 			console.log(`Searching IPA in ${f.name}`);
@@ -424,7 +415,7 @@ export default class Addon {
 			),
 		];
 		const fetchers = unordedFetchers
-			.filter(f => f.enabled(toText))
+			.filter(f => f.enabled(input, toText))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of fetchers) {
 			console.log(`Searching audio in ${f.name}`);
