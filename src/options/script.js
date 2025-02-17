@@ -4,7 +4,7 @@ import * as af from "../audio-fetcher/fetchers.js";
 import defaultOptions from "../utils/default-options.js";
 import { deepMerge }  from "../utils/object.js";
 import { showPopup } from "../utils/show-popup.js";
-import { splitWords } from "../utils/string.js";
+import { kebab2camel, splitWords } from "../utils/string.js";
 import { threshold } from "../utils/number.js";
 import {
 	addonStorage,
@@ -78,12 +78,16 @@ import {
  *             googleSpeechEnabled: HTMLInputElement,
  *             responsiveVoice: HTMLElement,
  *             responsiveVoiceEnabled: HTMLInputElement,
+ *             unrealSpeech: HTMLElement,
+ *             unrealSpeechEnabled: HTMLInputElement,
  *         },
  *         orderToText: {
  *             googleSpeech: HTMLElement,
  *             googleSpeechEnabled: HTMLInputElement,
  *             responsiveVoice: HTMLElement,
  *             responsiveVoiceEnabled: HTMLInputElement,
+ *             unrealSpeech: HTMLElement,
+ *             unrealSpeechEnabled: HTMLInputElement,
  *         },
  *         realVoice: {
  *             fetchTimeout: HTMLInputElement,
@@ -95,6 +99,16 @@ import {
  *             api: {
  *                 key: HTMLInputElement,
  *                 gender: HTMLSelectElement,
+ *             },
+ *         },
+ *         unrealSpeech: {
+ *             api: {
+ *                 token: HTMLInputElement,
+ *                 voiceId: HTMLSelectElement,
+ *                 bitRate: HTMLSelectElement,
+ *                 pitch: HTMLInputElement,
+ *                 codec: HTMLSelectElement,
+ *                 temperature: HTMLInputElement,
  *             },
  *         },
  *         save: HTMLButtonElement,
@@ -207,12 +221,16 @@ const el = {
 			googleSpeechEnabled: byId("audioGoogleSpeechEnabled"),
 			responsiveVoice: byId("audioResponsiveVoiceOrder"),
 			responsiveVoiceEnabled: byId("audioResponsiveVoiceEnabled"),
+			unrealSpeech: byId("audioUnrealSpeechOrder"),
+			unrealSpeechEnabled: byId("audioUnrealSpeechEnabled"),
 		},
 		orderToText: {
 			googleSpeech: byId("audioGoogleSpeechOrderToText"),
 			googleSpeechEnabled: byId("audioGoogleSpeechEnabledToText"),
 			responsiveVoice: byId("audioResponsiveVoiceOrderToText"),
 			responsiveVoiceEnabled: byId("audioResponsiveVoiceEnabledToText"),
+			unrealSpeech: byId("audioUnrealSpeechOrderToText"),
+			unrealSpeechEnabled: byId("audioUnrealSpeechEnabledToText"),
 		},
 		realVoice: {
 			fetchTimeout: byId("audioRealVoiceFetchTimeout"),
@@ -224,6 +242,16 @@ const el = {
 			api: {
 				key: byId("audioResponsiveVoiceApiKey"),
 				gender: byId("audioResponsiveVoiceApiGender"),
+			},
+		},
+		unrealSpeech: {
+			api: {
+				token: byId("audioUnrealSpeechApiToken"),
+				voiceId: byId("audioUnrealSpeechApiVoiceId"),
+				bitRate: byId("audioUnrealSpeechApiBitRate"),
+				pitch: byId("audioUnrealSpeechApiPitch"),
+				codec: byId("audioUnrealSpeechApiCodec"),
+				temperature: byId("audioUnrealSpeechApiTemperature"),
 			},
 		},
 		save: byId("saveAudio"),
@@ -281,6 +309,26 @@ const el = {
 	restoreDefaultOptions: byId("restoreDefaultOptions"),
 };
 
+/**
+ * @type {SortableJS}
+ */
+let sortableIpaFetchersOrder = null;
+
+/**
+ * @type {SortableJS}
+ */
+let sortableIpaFetchersOrderToText = null;
+
+/**
+ * @type {SortableJS}
+ */
+let sortableAudioFetchersOrder = null;
+
+/**
+ * @type {SortableJS}
+ */
+let sortableAudioFetchersOrderToText = null;
+
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
 
@@ -301,40 +349,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 			el.setPronuncationByShortcut.ipaShortcut,
 		].forEach(onlyShorcut);
 
-		await setFieldsValues();
-
-		/**
-		 * @type {Options}
-		 */
-		const options = await optionsTable.getAll();
-
-		createSortableOrder(
+		sortableIpaFetchersOrder = createSortableOrder(
 			byId("ipaFetchersOrder"),
-			el.ipa.order,
-			options.ipa,
 			"order",
 		);
 
-		createSortableOrder(
+		sortableIpaFetchersOrderToText = createSortableOrder(
 			byId("ipaFetchersOrderToText"),
-			el.ipa.orderToText,
-			options.ipa,
-			"orderToText",
+			"order-to-text",
 		);
 
-		createSortableOrder(
+		sortableAudioFetchersOrder = createSortableOrder(
 			byId("audioFetchersOrder"),
-			el.audio.order,
-			options.audio,
 			"order",
 		);
 
-		createSortableOrder(
+		sortableAudioFetchersOrderToText = createSortableOrder(
 			byId("audioFetchersOrderToText"),
-			el.audio.orderToText,
-			options.audio,
-			"orderToText",
+			"order-to-text",
 		);
+
+		await setFieldsValues();
 
 	} catch (error) {
 		console.error(error);
@@ -391,7 +426,7 @@ el.ipa.save.addEventListener("click", async ({ currentTarget }) => {
 					enabled: el.ipa.order.unalenguaEnabled.checked,
 					order: parseInt(el.ipa.order.unalengua.dataset.order),
 					enabledToText: el.ipa.orderToText.unalenguaEnabled.checked,
-					orderToText: parseInt(el.ipa.orderToText.unalengua.dataset.order),
+					orderToText: parseInt(el.ipa.orderToText.unalengua.dataset.orderToText),
 				},
 				oxford: {
 					enabled: el.ipa.order.oxfordEnabled.checked,
@@ -431,17 +466,31 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 					enabled: el.audio.order.googleSpeechEnabled.checked,
 					order: parseInt(el.audio.order.googleSpeech.dataset.order),
 					enabledToText: el.audio.orderToText.googleSpeechEnabled.checked,
-					orderToText: parseInt(el.audio.orderToText.googleSpeech.dataset.order),
+					orderToText: parseInt(el.audio.orderToText.googleSpeech.dataset.orderToText),
 					save: el.audio.googleSpeech.save.checked,
 				},
 				responsiveVoice: {
 					enabled: el.audio.order.responsiveVoiceEnabled.checked,
 					order: parseInt(el.audio.order.responsiveVoice.dataset.order),
 					enabledToText: el.audio.orderToText.responsiveVoiceEnabled.checked,
-					orderToText: parseInt(el.audio.orderToText.responsiveVoice.dataset.order),
+					orderToText: parseInt(el.audio.orderToText.responsiveVoice.dataset.orderToText),
 					api: {
 						key: strOr(el.audio.responsiveVoice.api.key.value, defaultOptions.audio.responsiveVoice.api.key),
 						gender: strOr(el.audio.responsiveVoice.api.gender.value, defaultOptions.audio.responsiveVoice.api.gender),
+					},
+				},
+				unrealSpeech: {
+					enabled: el.audio.order.unrealSpeechEnabled.checked,
+					order: parseInt(el.audio.order.unrealSpeech.dataset.order),
+					enabledToText: el.audio.orderToText.unrealSpeechEnabled.checked,
+					orderToText: parseInt(el.audio.orderToText.unrealSpeech.dataset.orderToText),
+					api: {
+						token: strOr(el.audio.unrealSpeech.api.token.value, defaultOptions.audio.unrealSpeech.api.token),
+						voiceId: strOr(el.audio.unrealSpeech.api.voiceId.value, defaultOptions.audio.unrealSpeech.api.voiceId),
+						bitRate: strOr(el.audio.unrealSpeech.api.bitRate.value, defaultOptions.audio.unrealSpeech.api.bitRate),
+						pitch: numOr(el.audio.unrealSpeech.api.pitch.value, defaultOptions.audio.unrealSpeech.api.pitch, 0.5, 1.5),
+						codec: strOr(el.audio.unrealSpeech.api.codec.value, defaultOptions.audio.unrealSpeech.api.codec),
+						temperature: numOr(el.audio.unrealSpeech.api.temperature.value, defaultOptions.audio.unrealSpeech.api.temperature, 0.1, 0.8),
 					},
 				},
 			},
@@ -832,6 +881,12 @@ async function setFieldsValues() {
 	el.audio.googleSpeech.save.checked = opt.audio.googleSpeech.save;
 	el.audio.responsiveVoice.api.key.value = opt.audio.responsiveVoice.api.key;
 	el.audio.responsiveVoice.api.gender.value = opt.audio.responsiveVoice.api.gender;
+	el.audio.unrealSpeech.api.token.value = opt.audio.unrealSpeech.api.token ?? "";
+	el.audio.unrealSpeech.api.voiceId.value = opt.audio.unrealSpeech.api.voiceId;
+	el.audio.unrealSpeech.api.bitRate.value = opt.audio.unrealSpeech.api.bitRate;
+	el.audio.unrealSpeech.api.pitch.value = opt.audio.unrealSpeech.api.pitch.toString();
+	el.audio.unrealSpeech.api.codec.value = opt.audio.unrealSpeech.api.codec;
+	el.audio.unrealSpeech.api.temperature.value = opt.audio.unrealSpeech.api.temperature.toString();
 	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;
@@ -845,6 +900,35 @@ async function setFieldsValues() {
 	el.updateIpaStorage.file.value = "";
 	el.updateAudioStorage.file.value = "";
 	el.updateOptionsStorage.file.value = "";
+
+	sortSortableOrder(
+		sortableIpaFetchersOrder,
+		el.ipa.order,
+		opt.ipa,
+		"order",
+	);
+
+	sortSortableOrder(
+		sortableIpaFetchersOrderToText,
+		el.ipa.orderToText,
+		opt.ipa,
+		"order-to-text",
+	);
+
+	sortSortableOrder(
+		sortableAudioFetchersOrder,
+		el.audio.order,
+		opt.audio,
+		"order",
+	);
+
+	sortSortableOrder(
+		sortableAudioFetchersOrderToText,
+		el.audio.orderToText,
+		opt.audio,
+		"order-to-text",
+	);
+
 }
 
 /**
@@ -866,8 +950,8 @@ async function saveOptions(options, currentOptions) {
 
 /**
  * @param {string} value
- * @param {string} defaultValue
- * @returns {string}
+ * @param {string | null} defaultValue
+ * @returns {string | null}
  */
 function strOr(value, defaultValue) {
 	return value.trim() || defaultValue;
@@ -920,30 +1004,47 @@ function fileName(suffix) {
 
 /**
  * @param {HTMLElement} list
- * @param {{ [key: string]: HTMLElement }} items
- * @param {{ [key: string]: { [key: string]: number } }} initialOrder
- * @param {string} dataIdAttr
+ * @param {string} dataIdAttrSuffix
+ * @returns {SortableJS}
  */
-function createSortableOrder(list, items, initialOrder, dataIdAttr="order") {
-	const sortable = Sortable.create(list, {
+function createSortableOrder(list, dataIdAttrSuffix="order") {
+	const dataIdAttr = `data-${dataIdAttrSuffix}`;
+	const datasetKey = kebab2camel(dataIdAttrSuffix);
+	return Sortable.create(list, {
 		animation: 150,
 		ghostClass: "dragging",
-		dataIdAttr: `data-${dataIdAttr}`,
+		dataIdAttr: dataIdAttr,
 		forceFallback: true,
 		onEnd: () => {
-			const children = Array.from(list.children);
+			const children = Array.from(
+				list.querySelectorAll(`[${dataIdAttr}]`),
+			);
 			for (const [index, element] of children.entries()) {
 				const order = index + 1;
-				element.dataset.order = order.toString().padStart(2, "0");
+				element.dataset[datasetKey] = order
+					.toString()
+					.padStart(2, "0");
 			}
 		},
 	});
+}
+
+/**
+ * @param {SortableJS} sortable
+ * @param {{ [key: string]: HTMLElement }} items
+ * @param {{ [key: string]: { [key: string]: number } }} initialOrder
+ * @param {string} dataIdAttrSuffix
+ * @returns {void}
+ */
+function sortSortableOrder(sortable, items, initialOrder, dataIdAttrSuffix="order") {
+	const datasetKey = kebab2camel(dataIdAttrSuffix);
 	for (const [key, value] of Object.entries(items)) {
 		if (key in initialOrder) {
-			const order = initialOrder[key][dataIdAttr];
-			value.dataset[dataIdAttr] = order.toString().padStart(2, "0");
+			const order = initialOrder[key][datasetKey];
+			value.dataset[datasetKey] = order
+				.toString()
+				.padStart(2, "0");
 		}
 	}
 	sortable.sort(sortable.toArray().toSorted(), false);
-	return sortable;
 }

@@ -211,6 +211,14 @@
 					</div>
 				</div>
 
+				<div id="audioUnrealSpeechOrder" class="sortable-item" data-order="0">
+					Unreal Speech
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioUnrealSpeechEnabled" checked>
+						<label for="audioUnrealSpeechEnabled">Enabled</label>
+					</div>
+				</div>
+
 			</div>
 
             <h3>Audio fetchers order/enable to text</h3>
@@ -230,6 +238,14 @@
 					<div class="checkbox-group">
 						<input type="checkbox" id="audioResponsiveVoiceEnabledToText" checked>
 						<label for="audioResponsiveVoiceEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioUnrealSpeechOrderToText" class="sortable-item" data-order-to-text="0">
+					Unreal Speech
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioUnrealSpeechEnabledToText" checked>
+						<label for="audioUnrealSpeechEnabledToText">Enabled</label>
 					</div>
 				</div>
 
@@ -262,6 +278,52 @@
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                 </select>
+            </div>
+            
+            <h3>Unreal Speech</h3>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiToken">Unreal Speech API token</label>
+                <input type="text" id="audioUnrealSpeechApiToken" placeholder="See Unreal Speech site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiVoiceId">Unreal Speech API voice id</label>
+                <select id="audioUnrealSpeechApiVoiceId">
+					<option value="Scarlett">Scarlett</option>
+					<option value="Dan">Dan</option>
+					<option value="Liv">Liv</option>
+					<option value="Will">Will</option>
+					<option value="Amy">Amy</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiBitRate">Unreal Speech API bit rate</label>
+                <select id="audioUnrealSpeechApiBitRate">
+					<option value="320k">320k</option>
+					<option value="256k">256k</option>
+					<option value="192k">192k</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiPitch">Unreal Speech API pitch</label>
+                <input type="text" id="audioUnrealSpeechApiPitch" placeholder="See Unreal Speech site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiCodec">Unreal Speech API codec</label>
+                <select id="audioUnrealSpeechApiCodec">
+					<option value="libmp3lame">libmp3lame</option>
+					<option value="pcm_mulaw">pcm_mulaw</option>
+					<option value="pcm_s16le">pcm_s16le</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiTemperature">Unreal Speech API temperature</label>
+                <input type="text" id="audioUnrealSpeechApiTemperature" placeholder="[0.1, 0.8]">
             </div>
 
 			<div style="text-align: center; margin-top: 30px;">

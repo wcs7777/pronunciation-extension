@@ -104,6 +104,7 @@ declare global {
 		realVoice: OptAudioRealVoice,
 		googleSpeech: OptAudioGoogleSpeech,
 		responsiveVoice: OptAudioResponsiveVoice,
+		unrealSpeech: OptAudioUnrealSpeech,
 	};
 
 	type OptAudioRealVoice = PronunciationFetcherOptions & {
@@ -119,6 +120,17 @@ declare global {
 			name: string,
 			key: string,
 			gender: string,
+		},
+	};
+
+	type OptAudioUnrealSpeech = PronunciationFetcherOptions & {
+		api: {
+			token?: string,
+			voiceId: string,
+			bitRate: string,
+			pitch: number,
+			codec: string,
+			temperature: number,
 		},
 	};
 
@@ -156,6 +168,11 @@ declare global {
 			top: number,
 			left: number,
 		},
+	};
+
+	type SortableJS = {
+		toArray: () => string[],
+		sort: (order: string[], useAnimation: boolean) => void,
 	};
 
 }

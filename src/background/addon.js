@@ -2,7 +2,7 @@ import "../utils/fflate.js";
 import * as af from "../audio-fetcher/fetchers.js";
 import * as pf from "../ipa-fetcher/fetchers.js";
 import { blob2base64 } from "../utils/element.js";
-import { deepMerge, removeMethods } from "../utils/object.js";
+import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
 import { goString } from "../utils/promise.js";
 import { threshold } from "../utils/number.js";
 import {
@@ -418,6 +418,10 @@ export default class Addon {
 				options.responsiveVoice,
 				le?.[af.AFResponsiveVoice.name],
 			),
+			new af.AFUnrealSpeech(
+				options.unrealSpeech,
+				le?.[af.AFUnrealSpeech.name],
+			),
 		];
 		const fetchers = unordedFetchers
 			.filter(f => f.enabled(toText))
@@ -644,6 +648,18 @@ export default class Addon {
 				const newAccessKey = optionsChange?.newValue?.accessKey;
 				if (oldAccessKey !== newAccessKey) {
 					await this.setMenuItem(newAccessKey);
+				}
+				const oldIpa = optionsChange?.oldValue?.ipa;
+				const newIpa = optionsChange?.newValue?.ipa;
+				if (!deepEquals(oldIpa, newIpa)) {
+					console.log(`Cleaning ${this.ipaTextCache.name} cache`);
+					this.ipaTextCache.clear();
+				}
+				const oldAudio = optionsChange?.oldValue?.audio;
+				const newAudio = optionsChange?.newValue?.audio;
+				if (!deepEquals(oldAudio, newAudio)) {
+					console.log(`Cleaning ${this.audioTextCache.name} cache`);
+					this.audioTextCache.clear();
 				}
 			}
 		} catch (error) {

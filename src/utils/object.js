@@ -31,6 +31,26 @@ export function deepMerge(target, source, prioritizeTargetObj=false) {
 }
 
 /**
+ * @param {any} left
+ * @param {any} right
+ * @return {boolean}
+ */
+export function deepEquals(left, right) {
+	if (left === right) {
+		return true;
+	}
+	if (left instanceof Object && right instanceof Object) {
+		for (const key in left) {
+			if (!deepEquals(left[key], right?.[key])) {
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+/**
  * @param {any} obj
  * @return {any}
  */

@@ -50,6 +50,17 @@ export function rgba2rgb(rgba) {
 }
 
 /**
+ * @param {string} value
+ * @returns {string}
+ */
+export function kebab2camel(value) {
+	return value.replaceAll(
+		/-+(.)/g,
+		(_, p1) => p1.toUpperCase(),
+	);
+}
+
+/**
  * @param {string} text
  * @param {number[]} ends
  * @returns {string[]}
