@@ -74,7 +74,7 @@ export default class AFResponsiveVoice {
 	 * @returns {Promise<Blob>}
 	 */
 	fetch(input) {
-		const base = "https://texttospeech.responsivevoice.org/v1/text:synthesize?";
+		const endpoint = "https://texttospeech.responsivevoice.org/v1/text:synthesize?";
 		const params = new URLSearchParams({
 			lang: "en-US",
 			engine: "g1",
@@ -86,7 +86,7 @@ export default class AFResponsiveVoice {
 			gender: this.options.api.gender,
 			text: input,
 		}).toString();
-		return url2blob(`${base}${params}`);
+		return url2blob(`${endpoint}${params}`);
 	}
 
 }

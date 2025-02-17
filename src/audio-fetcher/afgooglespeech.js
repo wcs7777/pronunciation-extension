@@ -74,7 +74,7 @@ export default class AFGoogleSpeech {
 	 * @returns {Promise<Blob>}
 	 */
 	fetch(input) {
-		const base = "https://www.google.com/speech-api/v1/synthesize?";
+		const endpoint = "https://www.google.com/speech-api/v1/synthesize?";
 		const params = new URLSearchParams({
 			text: input,
 			enc: "mpeg",
@@ -83,7 +83,7 @@ export default class AFGoogleSpeech {
 			client: "lr-language-tts",
 			use_google_only_voices: 1,
 		}).toString();
-		return url2blob(`${base}${params}`);
+		return url2blob(`${endpoint}${params}`);
 	}
 
 }

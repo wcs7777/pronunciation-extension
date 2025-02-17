@@ -35,10 +35,12 @@
 		"default_title": "How2Say"
 	},
 	"permissions": [
+		"https://api.v7.unrealspeech.com",
 		"https://api2.unalengua.com/ipav3",
 		"https://dictionary.cambridge.org/",
 		"https://ssl.gstatic.com/",
 		"https://texttospeech.responsivevoice.org/v1/text:synthesize",
+		"https://www.antvaset.com/api",
 		"https://www.google.com/",
 		"https://www.oxfordlearnersdictionaries.com/",
 		"activeTab",

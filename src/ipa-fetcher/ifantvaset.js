@@ -73,10 +73,8 @@ export default class IFAntvaset {
 	 * @returns {Promise<string>}
 	 */
 	async fetch(input) {
-		// const proxy = "https://proxy.cors.sh/";
-		const proxy = "https://corsproxy.io/";
 		const endpoint = "https://www.antvaset.com/api";
-		const response = await fetch(`${proxy}${endpoint}`, {
+		const response = await fetch(endpoint, {
 			method: "POST",
 			credentials: "omit",
 			body: JSON.stringify({
