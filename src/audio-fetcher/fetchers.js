@@ -3,6 +3,7 @@ import AFGstatic from "./afgstatic.js";
 import AFOxford from "./afoxford.js";
 import AFRealVoice from "./afrealvoice.js";
 import AFResponsiveVoice from "./afresponsivevoice.js";
+import AFSpeechify from "./afspeechify.js";
 import AFUnrealSpeech from "./afunrealspeech.js";
 
 export {
@@ -11,5 +12,6 @@ export {
 	AFOxford,
 	AFRealVoice,
 	AFResponsiveVoice,
+	AFSpeechify,
 	AFUnrealSpeech,
 };

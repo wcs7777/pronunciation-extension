@@ -108,6 +108,7 @@ declare global {
 		googleSpeech: OptAudioGoogleSpeech,
 		responsiveVoice: OptAudioResponsiveVoice,
 		unrealSpeech: OptAudioUnrealSpeech,
+		speechify: OptAudioSpeechify,
 	};
 
 	type OptAudioRealVoice = PronunciationFetcherOptions & {
@@ -132,6 +133,13 @@ declare global {
 			pitch: number,
 			codec: string,
 			temperature: number,
+		},
+	};
+
+	type OptAudioSpeechify = PronunciationFetcherOptions & {
+		api: {
+			token?: string,
+			voiceId: string,
 		},
 	};
 

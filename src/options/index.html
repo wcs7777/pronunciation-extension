@@ -219,6 +219,14 @@
 					</div>
 				</div>
 
+				<div id="audioSpeechifyOrder" class="sortable-item" data-order="0">
+					Speechify
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioSpeechifyEnabled" checked>
+						<label for="audioSpeechifyEnabled">Enabled</label>
+					</div>
+				</div>
+
 			</div>
 
             <h3>Audio fetchers order/enable to text</h3>
@@ -246,6 +254,14 @@
 					<div class="checkbox-group">
 						<input type="checkbox" id="audioUnrealSpeechEnabledToText" checked>
 						<label for="audioUnrealSpeechEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioSpeechifyOrderToText" class="sortable-item" data-order-to-text="0">
+					Speechify
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioSpeechifyEnabledToText" checked>
+						<label for="audioSpeechifyEnabledToText">Enabled</label>
 					</div>
 				</div>
 
@@ -324,6 +340,38 @@
             <div class="form-group">
                 <label for="audioUnrealSpeechApiTemperature">Unreal Speech API temperature</label>
                 <input type="text" id="audioUnrealSpeechApiTemperature" placeholder="[0.1, 0.8]">
+            </div>
+
+            <h3>Speechify</h3>
+
+            <div class="form-group">
+                <label for="audioSpeechifyApiToken">Speechify API token</label>
+                <input type="password" id="audioSpeechifyApiToken" placeholder="See Speechify site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioSpeechifyApiVoiceId">Speechify API voice id</label>
+                <select id="audioSpeechifyApiVoiceId">
+					<option value="henry">Henry</option>
+					<option value="bwyneth">Erica</option>
+					<option value="carly">Carly</option>
+					<option value="kristy">Kristy</option>
+					<option value="oliver">Oliver</option>
+					<option value="tasha">Tasha</option>
+					<option value="joe">Joe</option>
+					<option value="lisa">Lisa</option>
+					<option value="george">George</option>
+					<option value="emily">Emily</option>
+					<option value="rob">Rob</option>
+					<option value="julie">Julie</option>
+					<option value="mark">Mark</option>
+					<option value="nick">Nick</option>
+					<option value="erin">Erin</option>
+					<option value="jesse">Jesse</option>
+					<option value="ken">Keenan</option>
+					<option value="lindsey">Lindsey</option>
+					<option value="monica">Monica</option>
+                </select>
             </div>
 
 			<div style="text-align: center; margin-top: 30px;">

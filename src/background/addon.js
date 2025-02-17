@@ -413,6 +413,10 @@ export default class Addon {
 				options.unrealSpeech,
 				le?.[af.AFUnrealSpeech.name],
 			),
+			new af.AFSpeechify(
+				options.speechify,
+				le?.[af.AFSpeechify.name],
+			),
 		];
 		const fetchers = unordedFetchers
 			.filter(f => f.enabled(input, toText))

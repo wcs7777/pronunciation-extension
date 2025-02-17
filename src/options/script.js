@@ -80,6 +80,8 @@ import {
  *             responsiveVoiceEnabled: HTMLInputElement,
  *             unrealSpeech: HTMLElement,
  *             unrealSpeechEnabled: HTMLInputElement,
+ *             speechify: HTMLElement,
+ *             speechifyEnabled: HTMLInputElement,
  *         },
  *         orderToText: {
  *             googleSpeech: HTMLElement,
@@ -88,6 +90,8 @@ import {
  *             responsiveVoiceEnabled: HTMLInputElement,
  *             unrealSpeech: HTMLElement,
  *             unrealSpeechEnabled: HTMLInputElement,
+ *             speechify: HTMLElement,
+ *             speechifyEnabled: HTMLInputElement,
  *         },
  *         realVoice: {
  *             fetchTimeout: HTMLInputElement,
@@ -109,6 +113,12 @@ import {
  *                 pitch: HTMLInputElement,
  *                 codec: HTMLSelectElement,
  *                 temperature: HTMLInputElement,
+ *             },
+ *         },
+ *         speechify: {
+ *             api: {
+ *                 token: HTMLInputElement,
+ *                 voiceId: HTMLSelectElement,
  *             },
  *         },
  *         save: HTMLButtonElement,
@@ -223,6 +233,8 @@ const el = {
 			responsiveVoiceEnabled: byId("audioResponsiveVoiceEnabled"),
 			unrealSpeech: byId("audioUnrealSpeechOrder"),
 			unrealSpeechEnabled: byId("audioUnrealSpeechEnabled"),
+			speechify: byId("audioSpeechifyOrder"),
+			speechifyEnabled: byId("audioSpeechifyEnabled"),
 		},
 		orderToText: {
 			googleSpeech: byId("audioGoogleSpeechOrderToText"),
@@ -231,6 +243,8 @@ const el = {
 			responsiveVoiceEnabled: byId("audioResponsiveVoiceEnabledToText"),
 			unrealSpeech: byId("audioUnrealSpeechOrderToText"),
 			unrealSpeechEnabled: byId("audioUnrealSpeechEnabledToText"),
+			speechify: byId("audioSpeechifyOrderToText"),
+			speechifyEnabled: byId("audioSpeechifyEnabledToText"),
 		},
 		realVoice: {
 			fetchTimeout: byId("audioRealVoiceFetchTimeout"),
@@ -252,6 +266,12 @@ const el = {
 				pitch: byId("audioUnrealSpeechApiPitch"),
 				codec: byId("audioUnrealSpeechApiCodec"),
 				temperature: byId("audioUnrealSpeechApiTemperature"),
+			},
+		},
+		speechify: {
+			api: {
+				token: byId("audioSpeechifyApiToken"),
+				voiceId: byId("audioSpeechifyApiVoiceId"),
 			},
 		},
 		save: byId("saveAudio"),
@@ -493,6 +513,16 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 						temperature: numOr(el.audio.unrealSpeech.api.temperature.value, defaultOptions.audio.unrealSpeech.api.temperature, 0.1, 0.8),
 					},
 				},
+				speechify: {
+					enabled: el.audio.order.speechifyEnabled.checked,
+					order: parseInt(el.audio.order.speechify.dataset.order),
+					enabledToText: el.audio.orderToText.speechifyEnabled.checked,
+					orderToText: parseInt(el.audio.orderToText.speechify.dataset.orderToText),
+					api: {
+						token: strOr(el.audio.speechify.api.token.value, defaultOptions.audio.speechify.api.token),
+						voiceId: strOr(el.audio.speechify.api.voiceId.value, defaultOptions.audio.speechify.api.voiceId),
+					},
+				},
 			},
 		};
 		try {
@@ -521,6 +551,14 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 			) {
 				updateLastError = true;
 				delete le[af.AFUnrealSpeech.name];
+			}
+			if (
+				options.audio.speechify.api.key !==
+				currOpt.audio.speechify.api.key &&
+				af.AFSpeechify.name in le
+			) {
+				updateLastError = true;
+				delete le[af.AFSpeechify.name];
 			}
 			if (updateLastError) {
 				await controlTable.set(leKey, le);
@@ -895,6 +933,8 @@ async function setFieldsValues() {
 	el.audio.unrealSpeech.api.pitch.value = opt.audio.unrealSpeech.api.pitch.toString();
 	el.audio.unrealSpeech.api.codec.value = opt.audio.unrealSpeech.api.codec;
 	el.audio.unrealSpeech.api.temperature.value = opt.audio.unrealSpeech.api.temperature.toString();
+	el.audio.speechify.api.token.value = opt.audio.speechify.api.token ?? "";
+	el.audio.speechify.api.voiceId.value = opt.audio.speechify.api.voiceId;
 	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;

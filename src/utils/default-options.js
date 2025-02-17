@@ -115,6 +115,19 @@ const defaultOptions = {
 				temperature: 0.25,
 			},
 		},
+		speechify: {
+			enabled: true,
+			order: 5,
+			enabledToText: true,
+			orderToText: 4,
+			save: true,
+			saveError: true,
+			textMaxLength: 2000, // speech=2000
+			api: {
+				token: null,
+				voiceId: "henry",
+			},
+		},
 	},
 	setPronuncationByShortcut: {
 		enabled: false,
