@@ -47,7 +47,7 @@ export default class AFSpeechify {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(this.lastError, 60, [200, 404]);
+		return enabled && !waitRateLimit(this.lastError, 60 * 2, [200, 404]);
 	}
 
 	/**
