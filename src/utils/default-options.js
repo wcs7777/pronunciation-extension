@@ -147,6 +147,22 @@ const defaultOptions = {
 				voiceEngine: "PlayDialog",
 			},
 		},
+		elevenLabs: {
+			enabled: true,
+			order: 7,
+			enabledToText: true,
+			orderToText: 6,
+			save: true,
+			saveError: true,
+			textMaxLength: 2000,
+			api: {
+				key: null,
+				voiceId: "FGY2WhTYpPnrIDTdsKH5",
+				outputFormat: "mp3_44100_128",
+				modelId: "eleven_turbo_v2",
+				applyTextNormalization: "auto",
+			},
+		},
 	},
 	setPronuncationByShortcut: {
 		enabled: false,

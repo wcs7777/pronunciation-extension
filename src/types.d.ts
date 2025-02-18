@@ -110,6 +110,7 @@ declare global {
 		unrealSpeech: OptAudioUnrealSpeech,
 		speechify: OptAudioSpeechify,
 		playHt: OptAudioPlayHt,
+		elevenLabs: OptAudioElevenLabs,
 	};
 
 	type OptAudioRealVoice = PronunciationFetcherOptions & {
@@ -154,6 +155,16 @@ declare global {
 			sampleRate: number,
 			temperature: number | null,
 			voiceEngine: string,
+		},
+	};
+
+	type OptAudioElevenLabs = PronunciationFetcherOptions & {
+		api: {
+			key?: string,
+			voiceId: string,
+			outputFormat: string,
+			modelId: string,
+			applyTextNormalization: string,
 		},
 	};
 

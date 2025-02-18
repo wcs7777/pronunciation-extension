@@ -235,6 +235,14 @@
 					</div>
 				</div>
 
+				<div id="audioElevenLabsOrder" class="sortable-item" data-order="0">
+					ElevenLabs
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioElevenLabsEnabled" checked>
+						<label for="audioElevenLabsEnabled">Enabled</label>
+					</div>
+				</div>
+
 			</div>
 
             <h3>Audio fetchers order/enable to text</h3>
@@ -278,6 +286,14 @@
 					<div class="checkbox-group">
 						<input type="checkbox" id="audioPlayHtEnabledToText" checked>
 						<label for="audioPlayHtEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioElevenLabsOrderToText" class="sortable-item" data-order-to-text="0">
+					ElevenLabs
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioElevenLabsEnabledToText" checked>
+						<label for="audioElevenLabsEnabledToText">Enabled</label>
 					</div>
 				</div>
 
@@ -478,6 +494,78 @@
 					<option value="PlayHT2.0-turbo">PlayHT2.0-turbo</option>
 					<option value="PlayHT2.0">PlayHT2.0</option>
 					<option value="PlayHT1.0">PlayHT1.0</option>
+                </select>
+            </div>
+
+            <h3>ElevenLabs</h3>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiKey">ElevenLabs API key</label>
+                <input type="password" id="audioElevenLabsApiKey" placeholder="See ElevenLabs site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiVoiceId">ElevenLabs API voice</label>
+                <select id="audioElevenLabsApiVoiceId">
+					<option value="9BWtsMINqrJLrRacOk9x">Aria</option>
+					<option value="CwhRBWXzGAHq8TQ4Fs17">Roger</option>
+					<option value="EXAVITQu4vr4xnSDxMaL">Sarah</option>
+					<option value="FGY2WhTYpPnrIDTdsKH5">Laura</option>
+					<option value="SAz9YHcvj6GT2YYXdXww">River</option>
+					<option value="TX3LPaxmHKxFdv7VOQHJ">Liam</option>
+					<option value="XrExE9yKIg1WjnnlVkGX">Matilda</option>
+					<option value="bIHbv24MWmeRgasZH58o">Will</option>
+					<option value="cgSgspJ2msm6clMCkdW9">Jessica</option>
+					<option value="cjVigY5qzO86Huf0OWal">Eric</option>
+					<option value="iP95p4xoKVk53GoZ742B">Chris</option>
+					<option value="nPczCjzI2devNBz1zQrb">Brian</option>
+					<option value="pqHfZKP75CvOlQylNhV4">Bill</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiVoiceIdNotListed">ElevenLabs API voice id (not listed)</label>
+                <input type="text" id="audioElevenLabsApiVoiceIdNotListed" placeholder="See ElevenLabs site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiOutputFormat">ElevenLabs API output format</label>
+                <select id="audioElevenLabsApiOutputFormat">
+					<option value="mp3_22050_32">mp3_22050_32</option>
+					<option value="mp3_44100_128">mp3_44100_128</option>
+					<option value="mp3_44100_192">mp3_44100_192</option>
+					<option value="mp3_44100_32">mp3_44100_32</option>
+					<option value="mp3_44100_64">mp3_44100_64</option>
+					<option value="mp3_44100_96">mp3_44100_96</option>
+					<option value="pcm_16000">pcm_16000</option>
+					<option value="pcm_22050">pcm_22050</option>
+					<option value="pcm_24000">pcm_24000</option>
+					<option value="pcm_44100">pcm_44100</option>
+					<option value="ulaw_8000">ulaw_8000</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiModelId">ElevenLabs API model id</label>
+                <select id="audioElevenLabsApiModelId">
+					<option value="eleven_multilingual_v2">eleven_multilingual_v2</option>
+					<option value="eleven_flash_v2_5">eleven_flash_v2_5</option>
+					<option value="eleven_turbo_v2_5">eleven_turbo_v2_5</option>
+					<option value="eleven_turbo_v2">eleven_turbo_v2</option>
+					<option value="eleven_flash_v2">eleven_flash_v2</option>
+					<option value="eleven_english_sts_v2">eleven_english_sts_v2</option>
+					<option value="eleven_monolingual_v1">eleven_monolingual_v1</option>
+					<option value="eleven_multilingual_sts_v2">eleven_multilingual_sts_v2</option>
+					<option value="eleven_multilingual_v1">eleven_multilingual_v1</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiApplyTextNormalization">ElevenLabs API apply text normalization</label>
+                <select id="audioElevenLabsApiApplyTextNormalization">
+					<option value="auto">auto</option>
+					<option value="on">on</option>
+					<option value="off">off</option>
                 </select>
             </div>
 

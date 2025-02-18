@@ -421,6 +421,10 @@ export default class Addon {
 				options.playHt,
 				le?.[af.AFPlayHt.name],
 			),
+			new af.AFElevenLabs(
+				options.elevenLabs,
+				le?.[af.AFElevenLabs.name],
+			),
 		];
 		const fetchers = unordedFetchers
 			.filter(f => f.enabled(input, toText))

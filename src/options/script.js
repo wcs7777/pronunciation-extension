@@ -84,6 +84,8 @@ import {
  *             speechifyEnabled: HTMLInputElement,
  *             playHt: HTMLElement,
  *             playHtEnabled: HTMLInputElement,
+ *             elevenLabs: HTMLElement,
+ *             elevenLabsEnabled: HTMLInputElement,
  *         },
  *         orderToText: {
  *             googleSpeech: HTMLElement,
@@ -96,6 +98,8 @@ import {
  *             speechifyEnabled: HTMLInputElement,
  *             playHt: HTMLElement,
  *             playHtEnabled: HTMLInputElement,
+ *             elevenLabs: HTMLElement,
+ *             elevenLabsEnabled: HTMLInputElement,
  *         },
  *         realVoice: {
  *             fetchTimeout: HTMLInputElement,
@@ -137,6 +141,16 @@ import {
  *                 sampleRate: HTMLInputElement,
  *                 temperature: HTMLInputElement,
  *                 voiceEngine: HTMLSelectElement,
+ *             },
+ *         },
+ *         elevenLabs: {
+ *             api: {
+ *                 key: HTMLInputElement,
+ *                 voiceId: HTMLSelectElement,
+ *                 voiceIdNotListed: HTMLInputElement,
+ *                 outputFormat: HTMLSelectElement,
+ *                 modelId: HTMLSelectElement,
+ *                 applyTextNormalization: HTMLSelectElement,
  *             },
  *         },
  *         save: HTMLButtonElement,
@@ -255,6 +269,8 @@ const el = {
 			speechifyEnabled: byId("audioSpeechifyEnabled"),
 			playHt: byId("audioPlayHtOrder"),
 			playHtEnabled: byId("audioPlayHtEnabled"),
+			elevenLabs: byId("audioElevenLabsOrder"),
+			elevenLabsEnabled: byId("audioElevenLabsEnabled"),
 		},
 		orderToText: {
 			googleSpeech: byId("audioGoogleSpeechOrderToText"),
@@ -267,6 +283,8 @@ const el = {
 			speechifyEnabled: byId("audioSpeechifyEnabledToText"),
 			playHt: byId("audioPlayHtOrderToText"),
 			playHtEnabled: byId("audioPlayHtEnabledToText"),
+			elevenLabs: byId("audioElevenLabsOrderToText"),
+			elevenLabsEnabled: byId("audioElevenLabsEnabledToText"),
 		},
 		realVoice: {
 			fetchTimeout: byId("audioRealVoiceFetchTimeout"),
@@ -308,6 +326,16 @@ const el = {
 				sampleRate: byId("audioPlayHtApiSampleRate"),
 				temperature: byId("audioPlayHtApiTemperature"),
 				voiceEngine: byId("audioPlayHtApiVoiceEngine"),
+			},
+		},
+		elevenLabs: {
+			api: {
+				key: byId("audioElevenLabsApiKey"),
+				voiceId: byId("audioElevenLabsApiVoiceId"),
+				voiceIdNotListed: byId("audioElevenLabsApiVoiceIdNotListed"),
+				outputFormat: byId("audioElevenLabsApiOutputFormat"),
+				modelId: byId("audioElevenLabsApiModelId"),
+				applyTextNormalization: byId("audioElevenLabsApiApplyTextNormalization"),
 			},
 		},
 		save: byId("saveAudio"),
@@ -587,6 +615,25 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 						voiceEngine: strOr(el.audio.playHt.api.voiceEngine.value, defaultOptions.audio.playHt.api.voiceEngine),
 					},
 				},
+				elevenLabs: {
+					enabled: el.audio.order.elevenLabsEnabled.checked,
+					order: parseInt(el.audio.order.elevenLabs.dataset.order),
+					enabledToText: el.audio.orderToText.elevenLabsEnabled.checked,
+					orderToText: parseInt(el.audio.orderToText.elevenLabs.dataset.orderToText),
+					api: {
+						key: strOr(el.audio.elevenLabs.api.key.value, defaultOptions.audio.elevenLabs.api.key),
+						voiceId: strOr(
+							strOr(
+								el.audio.elevenLabs.api.voiceIdNotListed.value,
+								el.audio.elevenLabs.api.voiceId.value,
+							),
+							defaultOptions.audio.elevenLabs.api.voiceId,
+						),
+						outputFormat: strOr(el.audio.elevenLabs.api.outputFormat.value, defaultOptions.audio.elevenLabs.api.outputFormat),
+						modelId: strOr(el.audio.elevenLabs.api.modelId.value, defaultOptions.audio.elevenLabs.api.modelId),
+						applyTextNormalization: strOr(el.audio.elevenLabs.api.applyTextNormalization.value, defaultOptions.audio.elevenLabs.api.applyTextNormalization),
+					},
+				},
 			},
 		};
 		try {
@@ -631,6 +678,14 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 			) {
 				updateLastError = true;
 				delete le[af.AFPlayHt.name];
+			}
+			if (
+				options.audio.elevenLabs.api.key !==
+				currOpt.audio.elevenLabs.api.key &&
+				af.AFElevenLabs.name in le
+			) {
+				updateLastError = true;
+				delete le[af.AFElevenLabs.name];
 			}
 			if (updateLastError) {
 				await controlTable.set(leKey, le);
@@ -1015,6 +1070,11 @@ async function setFieldsValues() {
 	el.audio.playHt.api.sampleRate.value = (opt.audio.playHt.api.sampleRate ?? "").toString();
 	el.audio.playHt.api.temperature.value = (opt.audio.playHt.api.temperature ?? "").toString();
 	el.audio.playHt.api.voiceEngine.value = opt.audio.playHt.api.voiceEngine;
+	el.audio.elevenLabs.api.key.value = opt.audio.elevenLabs.api.key ?? "";
+	el.audio.elevenLabs.api.voiceId.value = opt.audio.elevenLabs.api.voiceId;
+	el.audio.elevenLabs.api.outputFormat.value = opt.audio.elevenLabs.api.outputFormat;
+	el.audio.elevenLabs.api.modelId.value = opt.audio.elevenLabs.api.modelId;
+	el.audio.elevenLabs.api.applyTextNormalization.value = opt.audio.elevenLabs.api.applyTextNormalization;
 	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;
