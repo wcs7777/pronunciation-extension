@@ -29,6 +29,7 @@ By now, the addon supports these API's, which all of them offer a free limit per
 - [Unreal Speech](https://unrealspeech.com/)
 - [Speechify](https://console.sws.speechify.com/login)
 - [PlayHT](https://play.ht/signup/?attribution=%2F)
+- [ElevenLabs](https://elevenlabs.io/app/sign-up)
 More audio sources API's are in the roadmap.
 
 Install here [How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/)   
