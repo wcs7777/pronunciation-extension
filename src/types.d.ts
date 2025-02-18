@@ -109,6 +109,7 @@ declare global {
 		responsiveVoice: OptAudioResponsiveVoice,
 		unrealSpeech: OptAudioUnrealSpeech,
 		speechify: OptAudioSpeechify,
+		playHt: OptAudioPlayHt,
 	};
 
 	type OptAudioRealVoice = PronunciationFetcherOptions & {
@@ -140,6 +141,19 @@ declare global {
 		api: {
 			token?: string,
 			voiceId: string,
+		},
+	};
+
+	type OptAudioPlayHt = PronunciationFetcherOptions & {
+		api: {
+			userId?: string,
+			key?: string,
+			voiceId: string,
+			quality: string,
+			outputFormat: string,
+			sampleRate: number,
+			temperature: number | null,
+			voiceEngine: string,
 		},
 	};
 

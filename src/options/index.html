@@ -227,6 +227,14 @@
 					</div>
 				</div>
 
+				<div id="audioPlayHtOrder" class="sortable-item" data-order="0">
+					PlayHT
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioPlayHtEnabled" checked>
+						<label for="audioPlayHtEnabled">Enabled</label>
+					</div>
+				</div>
+
 			</div>
 
             <h3>Audio fetchers order/enable to text</h3>
@@ -262,6 +270,14 @@
 					<div class="checkbox-group">
 						<input type="checkbox" id="audioSpeechifyEnabledToText" checked>
 						<label for="audioSpeechifyEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioPlayHtOrderToText" class="sortable-item" data-order-to-text="0">
+					PlayHT
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioPlayHtEnabledToText" checked>
+						<label for="audioPlayHtEnabledToText">Enabled</label>
 					</div>
 				</div>
 
@@ -371,6 +387,97 @@
 					<option value="ken">Keenan</option>
 					<option value="lindsey">Lindsey</option>
 					<option value="monica">Monica</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioSpeechifyApiVoiceIdNotListed">Speechify API voice id (not listed)</label>
+                <input type="text" id="audioSpeechifyApiVoiceIdNotListed" placeholder="See Speechify site">
+            </div>
+
+            <h3>PlayHT</h3>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiUserId">PlayHT API user id</label>
+                <input type="text" id="audioPlayHtApiUserId" placeholder="See PlayHT site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiKey">PlayHT API key</label>
+                <input type="password" id="audioPlayHtApiKey" placeholder="See PlayHT site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiVoiceId">PlayHT API voice</label>
+                <select id="audioPlayHtApiVoiceId">
+					<option value="s3://peregrine-voices/evelyn 2 saad parrot/manifest.json">Evelyn</option>
+					<option value="s3://voice-cloning-zero-shot/b3def996-302e-486f-a234-172fa0279f0e/anthonysaad/manifest.json">Anthony</option>
+					<option value="s3://voice-cloning-zero-shot/0ed97923-dd04-449f-a497-6f1109fdd9cc/jordansaad/manifest.json">Jordan</option>
+					<option value="s3://voice-cloning-zero-shot/80ba8839-a6e6-470c-8f68-7c1e5d3ee2ff/abigailsaad/manifest.json">Abigail</option>
+					<option value="s3://voice-cloning-zero-shot/75085d4f-839d-4ca5-a3e2-e329f04a591e/larrynarrativesaad/manifest.json">Larry</option>
+					<option value="s3://peregrine-voices/hudson saad parrot/manifest.json">Hudson</option>
+					<option value="s3://voice-cloning-zero-shot/4c627545-b9c0-4791-ae8e-f48f5475247c/bryansaad/manifest.json">Bryan</option>
+					<option value="s3://voice-cloning-zero-shot/c00f7eb4-fbbd-4a7d-a4c5-ff57e92faf99/williamsaad3/manifest.json">William</option>
+					<option value="s3://voice-cloning-zero-shot/f2863f63-5334-4f65-9d30-438feb79c2ec/arianasaad2/manifest.json">Ariana</option>
+					<option value="s3://voice-cloning-zero-shot/2cbffa49-5dfe-4378-a54f-b824f7bbb032/theodoresaad/manifest.json">Theodore</option>
+					<option value="s3://voice-cloning-zero-shot/f43cc4b4-b193-4a13-a903-e6b125c3d572/original/manifest.json">Luna</option>
+					<option value="s3://voice-cloning-zero-shot/0b423fde-02e2-4bea-91ce-c932162e4428/samanthasaad/manifest.json">Samantha</option>
+					<option value="s3://voice-cloning-zero-shot/f6594c50-e59b-492c-bac2-047d57f8bdd8/susanadvertisingsaad/manifest.json">Susan (Advertising)</option>
+					<option value="s3://voice-cloning-zero-shot/dc90b58b-59a9-4e65-955d-c7620deb2d7a/original/manifest.json">Richie</option>
+					<option value="s3://voice-cloning-zero-shot/2a7ddfc5-d16a-423a-9441-5b13290998b8/novasaad/manifest.json">Nova</option>
+					<option value="s3://voice-cloning-zero-shot/3b74b785-e06e-4a53-a9c4-ebed08a70ef2/susannarrativesaad/manifest.json">Susan (Narrative)</option>
+					<option value="s3://voice-cloning-zero-shot/b2da9576-07a4-4e1d-b71f-684f1657516f/owensaad/manifest.json">Owen</option>
+					<option value="s3://voice-cloning-zero-shot/92519089-3c97-4f31-8743-ab4f06047b88/larrysaad/manifest.json">Larry (Narrative)</option>
+					<option value="s3://voice-cloning-zero-shot/8ceaa707-4141-46c0-a610-4a2014d7ea97/audreysaad/manifest.json">Audrey</option>
+					<option value="s3://voice-cloning-zero-shot/b4a876c1-8730-435e-9595-141799868808/original/manifest.json">Waylon</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiVoiceIdNotListed">PlayHT API voice id (not listed)</label>
+                <input type="text" id="audioPlayHtApiVoiceIdNotListed" placeholder="See PlayHT site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiQuality">PlayHT API quality</label>
+                <select id="audioPlayHtApiQuality">
+					<option value="draft">draft</option>
+					<option value="low">low</option>
+					<option value="medium">medium</option>
+					<option value="high">high</option>
+					<option value="premium">premium</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiOutputFormat">PlayHT API output format</label>
+                <select id="audioPlayHtApiOutputFormat">
+					<option value="mp3">mp3</option>
+					<option value="mulaw">mulaw</option>
+					<option value="wav">wav</option>
+					<option value="ogg">ogg</option>
+					<option value="flac">flac</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiSampleRate">PlayHT API sample rate</label>
+                <input type="text" id="audioPlayHtApiSampleRate" placeholder="[8000, 48000]">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiTemperature">PlayHT API temperature</label>
+                <input type="text" id="audioPlayHtApiTemperature" placeholder="[0, 2]">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiVoiceEngine">PlayHT API voice engine</label>
+                <select id="audioPlayHtApiVoiceEngine">
+					<option value="Play3.0-mini">Play3.0-mini</option>
+					<option value="PlayDialog">PlayDialog</option>
+					<option value="PlayHT2.0-turbo">PlayHT2.0-turbo</option>
+					<option value="PlayHT2.0">PlayHT2.0</option>
+					<option value="PlayHT1.0">PlayHT1.0</option>
                 </select>
             </div>
 

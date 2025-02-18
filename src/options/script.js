@@ -82,6 +82,8 @@ import {
  *             unrealSpeechEnabled: HTMLInputElement,
  *             speechify: HTMLElement,
  *             speechifyEnabled: HTMLInputElement,
+ *             playHt: HTMLElement,
+ *             playHtEnabled: HTMLInputElement,
  *         },
  *         orderToText: {
  *             googleSpeech: HTMLElement,
@@ -92,6 +94,8 @@ import {
  *             unrealSpeechEnabled: HTMLInputElement,
  *             speechify: HTMLElement,
  *             speechifyEnabled: HTMLInputElement,
+ *             playHt: HTMLElement,
+ *             playHtEnabled: HTMLInputElement,
  *         },
  *         realVoice: {
  *             fetchTimeout: HTMLInputElement,
@@ -119,6 +123,20 @@ import {
  *             api: {
  *                 token: HTMLInputElement,
  *                 voiceId: HTMLSelectElement,
+ *                 voiceIdNotListed: HTMLSelectElement,
+ *             },
+ *         },
+ *         playHt: {
+ *             api: {
+ *                 userId: HTMLInputElement,
+ *                 key: HTMLInputElement,
+ *                 voiceId: HTMLSelectElement,
+ *                 voiceIdNotListed: HTMLInputElement,
+ *                 quality: HTMLSelectElement,
+ *                 outputFormat: HTMLSelectElement,
+ *                 sampleRate: HTMLInputElement,
+ *                 temperature: HTMLInputElement,
+ *                 voiceEngine: HTMLSelectElement,
  *             },
  *         },
  *         save: HTMLButtonElement,
@@ -235,6 +253,8 @@ const el = {
 			unrealSpeechEnabled: byId("audioUnrealSpeechEnabled"),
 			speechify: byId("audioSpeechifyOrder"),
 			speechifyEnabled: byId("audioSpeechifyEnabled"),
+			playHt: byId("audioPlayHtOrder"),
+			playHtEnabled: byId("audioPlayHtEnabled"),
 		},
 		orderToText: {
 			googleSpeech: byId("audioGoogleSpeechOrderToText"),
@@ -245,6 +265,8 @@ const el = {
 			unrealSpeechEnabled: byId("audioUnrealSpeechEnabledToText"),
 			speechify: byId("audioSpeechifyOrderToText"),
 			speechifyEnabled: byId("audioSpeechifyEnabledToText"),
+			playHt: byId("audioPlayHtOrderToText"),
+			playHtEnabled: byId("audioPlayHtEnabledToText"),
 		},
 		realVoice: {
 			fetchTimeout: byId("audioRealVoiceFetchTimeout"),
@@ -272,6 +294,20 @@ const el = {
 			api: {
 				token: byId("audioSpeechifyApiToken"),
 				voiceId: byId("audioSpeechifyApiVoiceId"),
+				voiceIdNotListed: byId("audioSpeechifyApiVoiceIdNotListed"),
+			},
+		},
+		playHt: {
+			api: {
+				userId: byId("audioPlayHtApiUserId"),
+				key: byId("audioPlayHtApiKey"),
+				voiceId: byId("audioPlayHtApiVoiceId"),
+				voiceIdNotListed: byId("audioPlayHtApiVoiceIdNotListed"),
+				quality: byId("audioPlayHtApiQuality"),
+				outputFormat: byId("audioPlayHtApiOutputFormat"),
+				sampleRate: byId("audioPlayHtApiSampleRate"),
+				temperature: byId("audioPlayHtApiTemperature"),
+				voiceEngine: byId("audioPlayHtApiVoiceEngine"),
 			},
 		},
 		save: byId("saveAudio"),
@@ -520,7 +556,35 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 					orderToText: parseInt(el.audio.orderToText.speechify.dataset.orderToText),
 					api: {
 						token: strOr(el.audio.speechify.api.token.value, defaultOptions.audio.speechify.api.token),
-						voiceId: strOr(el.audio.speechify.api.voiceId.value, defaultOptions.audio.speechify.api.voiceId),
+						voiceId: strOr(
+							strOr(
+								el.audio.speechify.api.voiceIdNotListed.value,
+								el.audio.speechify.api.voiceId.value,
+							),
+							defaultOptions.audio.speechify.api.voiceId,
+						),
+					},
+				},
+				playHt: {
+					enabled: el.audio.order.playHtEnabled.checked,
+					order: parseInt(el.audio.order.playHt.dataset.order),
+					enabledToText: el.audio.orderToText.playHtEnabled.checked,
+					orderToText: parseInt(el.audio.orderToText.playHt.dataset.orderToText),
+					api: {
+						userId: strOr(el.audio.playHt.api.userId.value, defaultOptions.audio.playHt.api.userId),
+						key: strOr(el.audio.playHt.api.key.value, defaultOptions.audio.playHt.api.key),
+						voiceId: strOr(
+							strOr(
+								el.audio.playHt.api.voiceIdNotListed.value,
+								el.audio.playHt.api.voiceId.value,
+							),
+							defaultOptions.audio.playHt.api.voiceId,
+						),
+						quality: strOr(el.audio.playHt.api.quality.value, defaultOptions.audio.playHt.api.quality),
+						outputFormat: strOr(el.audio.playHt.api.outputFormat.value, defaultOptions.audio.playHt.api.outputFormat),
+						sampleRate: numOr(el.audio.playHt.api.sampleRate.value, defaultOptions.audio.playHt.api.sampleRate, 8000, 48000),
+						temperature: numOr(el.audio.playHt.api.temperature.value, defaultOptions.audio.playHt.api.temperature, 0, 2),
+						voiceEngine: strOr(el.audio.playHt.api.voiceEngine.value, defaultOptions.audio.playHt.api.voiceEngine),
 					},
 				},
 			},
@@ -553,12 +617,20 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 				delete le[af.AFUnrealSpeech.name];
 			}
 			if (
-				options.audio.speechify.api.key !==
-				currOpt.audio.speechify.api.key &&
+				options.audio.speechify.api.token !==
+				currOpt.audio.speechify.api.token &&
 				af.AFSpeechify.name in le
 			) {
 				updateLastError = true;
 				delete le[af.AFSpeechify.name];
+			}
+			if (
+				options.audio.playHt.api.key !==
+				currOpt.audio.playHt.api.key &&
+				af.AFPlayHt.name in le
+			) {
+				updateLastError = true;
+				delete le[af.AFPlayHt.name];
 			}
 			if (updateLastError) {
 				await controlTable.set(leKey, le);
@@ -935,6 +1007,14 @@ async function setFieldsValues() {
 	el.audio.unrealSpeech.api.temperature.value = opt.audio.unrealSpeech.api.temperature.toString();
 	el.audio.speechify.api.token.value = opt.audio.speechify.api.token ?? "";
 	el.audio.speechify.api.voiceId.value = opt.audio.speechify.api.voiceId;
+	el.audio.playHt.api.userId.value = opt.audio.playHt.api.userId ?? "";
+	el.audio.playHt.api.key.value = opt.audio.playHt.api.key ?? "";
+	el.audio.playHt.api.voiceId.value = opt.audio.playHt.api.voiceId;
+	el.audio.playHt.api.quality.value = opt.audio.playHt.api.quality;
+	el.audio.playHt.api.outputFormat.value = opt.audio.playHt.api.outputFormat;
+	el.audio.playHt.api.sampleRate.value = (opt.audio.playHt.api.sampleRate ?? "").toString();
+	el.audio.playHt.api.temperature.value = (opt.audio.playHt.api.temperature ?? "").toString();
+	el.audio.playHt.api.voiceEngine.value = opt.audio.playHt.api.voiceEngine;
 	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;
@@ -1007,15 +1087,19 @@ function strOr(value, defaultValue) {
 
 /**
  * @param {string} value
- * @param {number} defaultValue
+ * @param {number | null} defaultValue
  * @param {number} min
  * @param {number} max
- * @returns {number}
+ * @returns {number | null}
  */
 function numOr(value, defaultValue, min=0, max=Number.MAX_VALUE) {
 	const trimmed = value.trim();
 	const num = trimmed.length > 0 ? parseFloat(trimmed) : defaultValue;
-	return threshold(min, max, num);
+	return (
+		defaultValue !== null && defaultValue !== undefined ?
+		threshold(min, max, num) :
+		null
+	);
 }
 
 /**

@@ -417,6 +417,10 @@ export default class Addon {
 				options.speechify,
 				le?.[af.AFSpeechify.name],
 			),
+			new af.AFPlayHt(
+				options.playHt,
+				le?.[af.AFPlayHt.name],
+			),
 		];
 		const fetchers = unordedFetchers
 			.filter(f => f.enabled(input, toText))
