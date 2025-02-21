@@ -425,6 +425,10 @@ export default class Addon {
 				options.elevenLabs,
 				le?.[af.AFElevenLabs.name],
 			),
+			new af.AFAmazonPolly(
+				options.amazonPolly,
+				le?.[af.AFAmazonPolly.name],
+			),
 		];
 		const fetchers = unordedFetchers
 			.filter(f => f.enabled(input, toText))

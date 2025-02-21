@@ -94,6 +94,25 @@ export function base64ToBlob(base64, mimeType) {
 }
 
 /**
+ * @param {ArrayBuffer} buffer
+ * @returns {string}
+ */
+export function buffer2hex(buffer) {
+	const array = [...new Uint8Array(buffer)];
+	return array.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * @param {ArrayBuffer} buffer
+ * @returns {string}
+ */
+export function buffer2base64(buffer) {
+	const array = [...new Uint8Array(buffer)];
+	const binary = array.map(b => String.fromCharCode(b)).join("");
+	return btoa(binary);
+}
+
+/**
  * @param {Blob} blob
  * @returns {Promise<object | object[]>}
  */

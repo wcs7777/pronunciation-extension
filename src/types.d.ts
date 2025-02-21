@@ -111,6 +111,7 @@ declare global {
 		speechify: OptAudioSpeechify,
 		playHt: OptAudioPlayHt,
 		elevenLabs: OptAudioElevenLabs,
+		amazonPolly: OptAudioAmazonPolly,
 	};
 
 	type OptAudioRealVoice = PronunciationFetcherOptions & {
@@ -165,6 +166,18 @@ declare global {
 			outputFormat: string,
 			modelId: string,
 			applyTextNormalization: string,
+		},
+	};
+
+	type OptAudioAmazonPolly = PronunciationFetcherOptions & {
+		api: {
+			accessKeyId?: string,
+			secretAccessKey?: string,
+			endpoint: string,
+			engine: string,
+			outputFormat: string,
+			sampleRate: string,
+			voiceId: string,
 		},
 	};
 
