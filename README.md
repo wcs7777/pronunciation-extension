@@ -19,18 +19,18 @@ Formerly [How2Pronounce](https://addons.mozilla.org/en-US/firefox/addon/how2pron
 - Play audio pronunciation
 - Allow to provide custom IPA and audio through the options page
 - Works for texts
-- Allow enable/disable IPA/audio for words and/or texts
+- Allow enable/disable IPA/audio for words and/or texts  
 
 ### Configuration
 The addon experience can be customized through the options page.  
 IPA and audios source order can be configured dragging the sources to change the priority, and enable/disable them.  
 By now, the addon supports these API's, which all of them offer a free limit per month, only requiring to sign their site to get the key/token and provide in the options page, which will be stored only in your device. They are:  
-- [ResponsiveVoice](https://app.responsivevoice.org/login) (the only with a key by default)
-- [Unreal Speech](https://unrealspeech.com/)
-- [Speechify](https://console.sws.speechify.com/login)
-- [PlayHT](https://play.ht/signup/?attribution=%2F)
-- [ElevenLabs](https://elevenlabs.io/app/sign-up)
-More audio sources API's are in the roadmap.
+- [ResponsiveVoice](https://app.responsivevoice.org/login) (the only with a key by default)  
+- [Unreal Speech](https://unrealspeech.com/)  
+- [Speechify](https://console.sws.speechify.com/login)  
+- [PlayHT](https://play.ht/signup/?attribution=%2F)  
+- [ElevenLabs](https://elevenlabs.io/app/sign-up)  
+More audio sources API's are in the roadmap.  
 
 Install here [How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/)   
 
