@@ -243,6 +243,14 @@
 					</div>
 				</div>
 
+				<div id="audioAmazonPollyOrder" class="sortable-item" data-order="0">
+					Amazon Polly
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioAmazonPollyEnabled" checked>
+						<label for="audioAmazonPollyEnabled">Enabled</label>
+					</div>
+				</div>
+
 			</div>
 
             <h3>Audio fetchers order/enable to text</h3>
@@ -294,6 +302,14 @@
 					<div class="checkbox-group">
 						<input type="checkbox" id="audioElevenLabsEnabledToText" checked>
 						<label for="audioElevenLabsEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioAmazonPollyOrderToText" class="sortable-item" data-order-to-text="0">
+					Amazon Polly
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioAmazonPollyEnabledToText" checked>
+						<label for="audioAmazonPollyEnabledToText">Enabled</label>
 					</div>
 				</div>
 
@@ -567,6 +583,92 @@
 					<option value="on">on</option>
 					<option value="off">off</option>
                 </select>
+            </div>
+
+            <h3>Amazon Polly</h3>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiAccessKeyId">Amazon Polly API access key id</label>
+                <input type="password" id="audioAmazonPollyApiAccessKeyId" placeholder="See Amazon Polly site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiSecretAccessKey">Amazon Polly API secret access key</label>
+                <input type="password" id="audioAmazonPollyApiSecretAccessKey" placeholder="See Amazon Polly site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiEndpoint">Amazon Polly API endpoint</label>
+                <select id="audioAmazonPollyApiEndpoint">
+					<option value="polly.us-east-2.api.aws">US East (Ohio)</option>
+					<option value="polly.us-east-1.api.aws">US East (N. Virginia)</option>
+					<option value="polly.us-west-1.api.aws">US West (N. California)</option>
+					<option value="polly.us-west-2.api.aws">US West (Oregon)</option>
+					<option value="polly.af-south-1.api.aws">Africa (Cape Town)</option>
+					<option value="polly.ap-east-1.api.aws">Asia Pacific (Hong Kong)</option>
+					<option value="polly.ap-south-1.api.aws">Asia Pacific (Mumbai)</option>
+					<option value="polly.ap-northeast-3.api.aws">Asia Pacific (Osaka)</option>
+					<option value="polly.ap-northeast-2.api.aws">Asia Pacific (Seoul)</option>
+					<option value="polly.ap-southeast-1.api.aws">Asia Pacific (Singapore)</option>
+					<option value="polly.ap-southeast-2.api.aws">Asia Pacific (Sydney)</option>
+					<option value="polly.ap-northeast-1.api.aws">Asia Pacific (Tokyo)</option>
+					<option value="polly.ca-central-1.api.aws">Canada (Central)</option>
+					<option value="polly.eu-central-1.api.aws">Europe (Frankfurt)</option>
+					<option value="polly.eu-west-1.api.aws">Europe (London)</option>
+					<option value="polly.eu-west-3.api.aws">Europe (Paris)</option>
+					<option value="polly.eu-south-2.api.aws">Europe (Spain)</option>
+					<option value="polly.eu-north-1.api.aws ">Europe (Stockholm)</option>
+					<option value="polly.me-south-1.api.aws">Middle East (Bahrain)</option>
+					<option value="polly.sa-east-1.api.aws">South America (São Paulo)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiEngine">Amazon Polly API engine</label>
+                <select id="audioAmazonPollyApiEngine">
+					<option value="standard">standard</option>
+					<option value="neural">neural</option>
+					<option value="long-form">long-form</option>
+					<option value="generative">generative</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiOutputFormat">Amazon Polly API output format</label>
+                <select id="audioAmazonPollyApiOutputFormat">
+					<option value="mp3">mp3</option>
+					<option value="ogg_vorbis">ogg_vorbis</option>
+					<option value="pcm">pcm</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiSampleRate">Amazon Polly API sample rate</label>
+                <select id="audioAmazonPollyApiSampleRate">
+					<option value="8000">8000</option>
+					<option value="16000">16000</option>
+					<option value="22050">22050</option>
+					<option value="24000">24000</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiVoiceId">Amazon Polly API voice id</label>
+                <select id="audioAmazonPollyApiVoiceId">
+					<option value="Joanna">Joanna</option>
+					<option value="Salli">Salli</option>
+					<option value="Matthew">Matthew</option>
+					<option value="Kimberly">Kimberly</option>
+					<option value="Kendra">Kendra</option>
+					<option value="Justin">Justin</option>
+					<option value="Joey">Joey</option>
+					<option value="Ivy">Ivy</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiVoiceIdNotListed">Amazon Polly API voice id (not listed)</label>
+                <input type="text" id="audioAmazonPollyApiVoiceIdNotListed" placeholder="See Amazon Polly site">
             </div>
 
 			<div style="text-align: center; margin-top: 30px;">

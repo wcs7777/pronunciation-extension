@@ -13,10 +13,10 @@ export function waitRateLimit(lastError, timeout=60, okStatus=[200, 404]) {
 		}
 		console.log(`There is previous error status: ${status}`);
 		const now = new Date().getTime();
-		const diff = now - timestamp;
-		if (diff < timeout * 60000) {
+		const remaining = timeout * 60000 - (now - timestamp);
+		if (remaining > 0) {
 			console.log(
-				`There are remaining ${diff / 60000} timeout minutes`,
+				`There are remaining ${remaining / 60000} timeout minutes`,
 			);
 			return true;
 		}

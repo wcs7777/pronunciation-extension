@@ -174,7 +174,7 @@ const defaultOptions = {
 			api: {
 				accessKeyId: null,
 				secretAccessKey: null,
-				endpoint: "polly.us-east-2.amazonaws.com",
+				endpoint: "polly.us-east-1.api.aws",
 				engine: "standard",
 				outputFormat: "mp3",
 				sampleRate: "22050",

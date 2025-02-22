@@ -86,6 +86,8 @@ import {
  *             playHtEnabled: HTMLInputElement,
  *             elevenLabs: HTMLElement,
  *             elevenLabsEnabled: HTMLInputElement,
+ *             amazonPolly: HTMLElement,
+ *             amazonPollyEnabled: HTMLInputElement,
  *         },
  *         orderToText: {
  *             googleSpeech: HTMLElement,
@@ -100,6 +102,8 @@ import {
  *             playHtEnabled: HTMLInputElement,
  *             elevenLabs: HTMLElement,
  *             elevenLabsEnabled: HTMLInputElement,
+ *             amazonPolly: HTMLElement,
+ *             amazonPollyEnabled: HTMLInputElement,
  *         },
  *         realVoice: {
  *             fetchTimeout: HTMLInputElement,
@@ -151,6 +155,18 @@ import {
  *                 outputFormat: HTMLSelectElement,
  *                 modelId: HTMLSelectElement,
  *                 applyTextNormalization: HTMLSelectElement,
+ *             },
+ *         },
+ *         amazonPolly: {
+ *             api: {
+ *                 accessKeyId: HTMLInputElement,
+ *                 secretAccessKey: HTMLInputElement,
+ *                 endpoint: HTMLSelectElement,
+ *                 engine: HTMLSelectElement,
+ *                 outputFormat: HTMLSelectElement,
+ *                 sampleRate: HTMLSelectElement,
+ *                 voiceId: HTMLSelectElement,
+ *                 voiceIdNotListed: HTMLInputElement,
  *             },
  *         },
  *         save: HTMLButtonElement,
@@ -271,6 +287,8 @@ const el = {
 			playHtEnabled: byId("audioPlayHtEnabled"),
 			elevenLabs: byId("audioElevenLabsOrder"),
 			elevenLabsEnabled: byId("audioElevenLabsEnabled"),
+			amazonPolly: byId("audioAmazonPollyOrder"),
+			amazonPollyEnabled: byId("audioAmazonPollyEnabled"),
 		},
 		orderToText: {
 			googleSpeech: byId("audioGoogleSpeechOrderToText"),
@@ -285,6 +303,8 @@ const el = {
 			playHtEnabled: byId("audioPlayHtEnabledToText"),
 			elevenLabs: byId("audioElevenLabsOrderToText"),
 			elevenLabsEnabled: byId("audioElevenLabsEnabledToText"),
+			amazonPolly: byId("audioAmazonPollyOrderToText"),
+			amazonPollyEnabled: byId("audioAmazonPollyEnabledToText"),
 		},
 		realVoice: {
 			fetchTimeout: byId("audioRealVoiceFetchTimeout"),
@@ -336,6 +356,18 @@ const el = {
 				outputFormat: byId("audioElevenLabsApiOutputFormat"),
 				modelId: byId("audioElevenLabsApiModelId"),
 				applyTextNormalization: byId("audioElevenLabsApiApplyTextNormalization"),
+			},
+		},
+		amazonPolly: {
+			api: {
+				accessKeyId: byId("audioAmazonPollyApiAccessKeyId"),
+				secretAccessKey: byId("audioAmazonPollyApiSecretAccessKey"),
+				endpoint: byId("audioAmazonPollyApiEndpoint"),
+				engine: byId("audioAmazonPollyApiEngine"),
+				outputFormat: byId("audioAmazonPollyApiOutputFormat"),
+				sampleRate: byId("audioAmazonPollyApiSampleRate"),
+				voiceId: byId("audioAmazonPollyApiVoiceId"),
+				voiceIdNotListed: byId("audioAmazonPollyApiVoiceIdNotListed"),
 			},
 		},
 		save: byId("saveAudio"),
@@ -634,6 +666,27 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 						applyTextNormalization: strOr(el.audio.elevenLabs.api.applyTextNormalization.value, defaultOptions.audio.elevenLabs.api.applyTextNormalization),
 					},
 				},
+				amazonPolly: {
+					enabled: el.audio.order.amazonPollyEnabled.checked,
+					order: parseInt(el.audio.order.amazonPolly.dataset.order),
+					enabledToText: el.audio.orderToText.amazonPollyEnabled.checked,
+					orderToText: parseInt(el.audio.orderToText.amazonPolly.dataset.orderToText),
+					api: {
+						accessKeyId: strOr(el.audio.amazonPolly.api.accessKeyId.value, defaultOptions.audio.amazonPolly.api.accessKeyId),
+						secretAccessKey: strOr(el.audio.amazonPolly.api.secretAccessKey.value, defaultOptions.audio.amazonPolly.api.secretAccessKey),
+						endpoint: strOr(el.audio.amazonPolly.api.endpoint.value, defaultOptions.audio.amazonPolly.api.endpoint),
+						engine: strOr(el.audio.amazonPolly.api.engine.value, defaultOptions.audio.amazonPolly.api.engine),
+						outputFormat: strOr(el.audio.amazonPolly.api.outputFormat.value, defaultOptions.audio.amazonPolly.api.outputFormat),
+						sampleRate: strOr(el.audio.amazonPolly.api.sampleRate.value, defaultOptions.audio.amazonPolly.api.sampleRate),
+						voiceId: strOr(
+							strOr(
+								el.audio.amazonPolly.api.voiceIdNotListed.value,
+								el.audio.amazonPolly.api.voiceId.value,
+							),
+							defaultOptions.audio.amazonPolly.api.voiceId,
+						),
+					},
+				},
 			},
 		};
 		try {
@@ -648,44 +701,56 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 			const currOpt = await optionsTable.getAll();
 			let updateLastError = false;
 			if (
+				af.AFResponsiveVoice.name in le &&
 				options.audio.responsiveVoice.api.key !==
-				currOpt.audio.responsiveVoice.api.key &&
-				af.AFResponsiveVoice.name in le
+				currOpt.audio.responsiveVoice.api.key
 			) {
 				updateLastError = true;
 				delete le[af.AFResponsiveVoice.name];
 			}
 			if (
+				af.AFUnrealSpeech.name in le &&
 				options.audio.unrealSpeech.api.key !==
-				currOpt.audio.unrealSpeech.api.key &&
-				af.AFUnrealSpeech.name in le
+				currOpt.audio.unrealSpeech.api.key
 			) {
 				updateLastError = true;
 				delete le[af.AFUnrealSpeech.name];
 			}
 			if (
+				af.AFSpeechify.name in le &&
 				options.audio.speechify.api.token !==
-				currOpt.audio.speechify.api.token &&
-				af.AFSpeechify.name in le
+				currOpt.audio.speechify.api.token
 			) {
 				updateLastError = true;
 				delete le[af.AFSpeechify.name];
 			}
 			if (
+				af.AFPlayHt.name in le &&
 				options.audio.playHt.api.key !==
-				currOpt.audio.playHt.api.key &&
-				af.AFPlayHt.name in le
+				currOpt.audio.playHt.api.key
 			) {
 				updateLastError = true;
 				delete le[af.AFPlayHt.name];
 			}
 			if (
+				af.AFElevenLabs.name in le &&
 				options.audio.elevenLabs.api.key !==
-				currOpt.audio.elevenLabs.api.key &&
-				af.AFElevenLabs.name in le
+				currOpt.audio.elevenLabs.api.key
 			) {
 				updateLastError = true;
 				delete le[af.AFElevenLabs.name];
+			}
+			if (
+				af.AFAmazonPolly.name in le &&
+				(
+					options.audio.amazonPolly.api.accessKeyId !==
+					currOpt.audio.amazonPolly.api.accessKeyId ||
+					options.audio.amazonPolly.api.secretAccessKey !==
+					currOpt.audio.amazonPolly.api.secretAccessKey
+				)
+			) {
+				updateLastError = true;
+				delete le[af.AFAmazonPolly.name];
 			}
 			if (updateLastError) {
 				await controlTable.set(leKey, le);
@@ -1075,6 +1140,13 @@ async function setFieldsValues() {
 	el.audio.elevenLabs.api.outputFormat.value = opt.audio.elevenLabs.api.outputFormat;
 	el.audio.elevenLabs.api.modelId.value = opt.audio.elevenLabs.api.modelId;
 	el.audio.elevenLabs.api.applyTextNormalization.value = opt.audio.elevenLabs.api.applyTextNormalization;
+	el.audio.amazonPolly.api.accessKeyId.value = opt.audio.amazonPolly.api.accessKeyId ?? "";
+	el.audio.amazonPolly.api.secretAccessKey.value = opt.audio.amazonPolly.api.secretAccessKey ?? "";
+	el.audio.amazonPolly.api.endpoint.value = opt.audio.amazonPolly.api.endpoint;
+	el.audio.amazonPolly.api.engine.value = opt.audio.amazonPolly.api.engine;
+	el.audio.amazonPolly.api.outputFormat.value = opt.audio.amazonPolly.api.outputFormat;
+	el.audio.amazonPolly.api.sampleRate.value = opt.audio.amazonPolly.api.sampleRate;
+	el.audio.amazonPolly.api.voiceId.value = opt.audio.amazonPolly.api.voiceId;
 	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;
