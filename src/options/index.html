@@ -251,6 +251,14 @@
 					</div>
 				</div>
 
+				<div id="audioOpenAiOrder" class="sortable-item" data-order="0">
+					OpenAI
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioOpenAiEnabled" checked>
+						<label for="audioOpenAiEnabled">Enabled</label>
+					</div>
+				</div>
+
 			</div>
 
             <h3>Audio fetchers order/enable to text</h3>
@@ -310,6 +318,14 @@
 					<div class="checkbox-group">
 						<input type="checkbox" id="audioAmazonPollyEnabledToText" checked>
 						<label for="audioAmazonPollyEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioOpenAiOrderToText" class="sortable-item" data-order-to-text="0">
+					OpenAI
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioOpenAiEnabledToText" checked>
+						<label for="audioOpenAiEnabledToText">Enabled</label>
 					</div>
 				</div>
 
@@ -669,6 +685,48 @@
             <div class="form-group">
                 <label for="audioAmazonPollyApiVoiceIdNotListed">Amazon Polly API voice id (not listed)</label>
                 <input type="text" id="audioAmazonPollyApiVoiceIdNotListed" placeholder="See Amazon Polly site">
+            </div>
+
+            <h3>OpenAI</h3>
+
+            <div class="form-group">
+                <label for="audioOpenAiApiKey">OpenAI API access key</label>
+                <input type="password" id="audioOpenAiApiKey" placeholder="See OpenAI site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioOpenAiApiModel">OpenAI API model</label>
+                <select id="audioOpenAiApiModel">
+					<option value="tts-1">tts-1</option>
+					<option value="tts-1-hd">tts-1-hd</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioOpenAiApiVoice">OpenAI API voice</label>
+                <select id="audioOpenAiApiVoice">
+					<option value="alloy">alloy</option>
+					<option value="ash">ash</option>
+					<option value="coral">coral</option>
+					<option value="echo">echo</option>
+					<option value="fable">fable</option>
+					<option value="onyx">onyx</option>
+					<option value="nova">nova</option>
+					<option value="sage">sage</option>
+					<option value="shimmer">shimmer</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioOpenAiApiResponseFormat">OpenAI API response format</label>
+                <select id="audioOpenAiApiResponseFormat">
+					<option value="mp3">mp3</option>
+					<option value="opus">opus</option>
+					<option value="aac">aac</option>
+					<option value="flac">flac</option>
+					<option value="wav">wav</option>
+					<option value="pcm">pcm</option>
+                </select>
             </div>
 
 			<div style="text-align: center; margin-top: 30px;">

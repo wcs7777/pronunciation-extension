@@ -36,6 +36,7 @@
 	},
 	"permissions": [
 		"https://api.elevenlabs.io/v1/text-to-speech/*",
+		"https://api.openai.com/v1/audio/speech/",
 		"https://api.play.ht/api/v2/tts/stream",
 		"https://api.sws.speechify.com/v1/audio/*",
 		"https://api.v7.unrealspeech.com/*",

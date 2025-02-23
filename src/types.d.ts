@@ -112,6 +112,7 @@ declare global {
 		playHt: OptAudioPlayHt,
 		elevenLabs: OptAudioElevenLabs,
 		amazonPolly: OptAudioAmazonPolly,
+		openAi: OptAudioOpenAi,
 	};
 
 	type OptAudioRealVoice = PronunciationFetcherOptions & {
@@ -178,6 +179,15 @@ declare global {
 			outputFormat: string,
 			sampleRate: string,
 			voiceId: string,
+		},
+	};
+
+	type OptAudioOpenAi = PronunciationFetcherOptions & {
+		api: {
+			key?: string,
+			model: string,
+			voice: string,
+			responseFormat: string,
 		},
 	};
 

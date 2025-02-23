@@ -2,6 +2,7 @@ import AFAmazonPolly from "./afamazonpolly.js";
 import AFElevenLabs from "./afelevenlabs.js";
 import AFGoogleSpeech from "./afgooglespeech.js";
 import AFGstatic from "./afgstatic.js";
+import AFOpenAi from "./afopenai.js";
 import AFOxford from "./afoxford.js";
 import AFPlayHt from "./afplayht.js";
 import AFRealVoice from "./afrealvoice.js";
@@ -14,6 +15,7 @@ export {
 	AFElevenLabs,
 	AFGoogleSpeech,
 	AFGstatic,
+	AFOpenAi,
 	AFOxford,
 	AFPlayHt,
 	AFRealVoice,

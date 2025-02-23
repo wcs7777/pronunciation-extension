@@ -31,6 +31,7 @@ By now, the addon supports these API's, which all of them offer a free limit per
 - [PlayHT](https://play.ht/signup/?attribution=%2F)  
 - [ElevenLabs](https://elevenlabs.io/app/sign-up)  
 - [AmazonPolly](https://aws.amazon.com/polly/) (1 year of free tier)  
+- [OpenAI](https://platform.openai.com/docs/overview) (there is no free tier)  
 
 More audio sources API's are in the roadmap.  
 

@@ -88,6 +88,8 @@ import {
  *             elevenLabsEnabled: HTMLInputElement,
  *             amazonPolly: HTMLElement,
  *             amazonPollyEnabled: HTMLInputElement,
+ *             openAi: HTMLElement,
+ *             openAiEnabled: HTMLInputElement,
  *         },
  *         orderToText: {
  *             googleSpeech: HTMLElement,
@@ -104,6 +106,8 @@ import {
  *             elevenLabsEnabled: HTMLInputElement,
  *             amazonPolly: HTMLElement,
  *             amazonPollyEnabled: HTMLInputElement,
+ *             openAi: HTMLElement,
+ *             openAiEnabled: HTMLInputElement,
  *         },
  *         realVoice: {
  *             fetchTimeout: HTMLInputElement,
@@ -167,6 +171,14 @@ import {
  *                 sampleRate: HTMLSelectElement,
  *                 voiceId: HTMLSelectElement,
  *                 voiceIdNotListed: HTMLInputElement,
+ *             },
+ *         },
+ *         openAi: {
+ *             api: {
+ *                 key: HTMLInputElement,
+ *                 model: HTMLSelectElement,
+ *                 voice: HTMLSelectElement,
+ *                 responseFormat: HTMLSelectElement,
  *             },
  *         },
  *         save: HTMLButtonElement,
@@ -289,6 +301,8 @@ const el = {
 			elevenLabsEnabled: byId("audioElevenLabsEnabled"),
 			amazonPolly: byId("audioAmazonPollyOrder"),
 			amazonPollyEnabled: byId("audioAmazonPollyEnabled"),
+			openAi: byId("audioOpenAiOrder"),
+			openAiEnabled: byId("audioOpenAiEnabled"),
 		},
 		orderToText: {
 			googleSpeech: byId("audioGoogleSpeechOrderToText"),
@@ -305,6 +319,8 @@ const el = {
 			elevenLabsEnabled: byId("audioElevenLabsEnabledToText"),
 			amazonPolly: byId("audioAmazonPollyOrderToText"),
 			amazonPollyEnabled: byId("audioAmazonPollyEnabledToText"),
+			openAi: byId("audioOpenAiOrderToText"),
+			openAiEnabled: byId("audioOpenAiEnabledToText"),
 		},
 		realVoice: {
 			fetchTimeout: byId("audioRealVoiceFetchTimeout"),
@@ -368,6 +384,14 @@ const el = {
 				sampleRate: byId("audioAmazonPollyApiSampleRate"),
 				voiceId: byId("audioAmazonPollyApiVoiceId"),
 				voiceIdNotListed: byId("audioAmazonPollyApiVoiceIdNotListed"),
+			},
+		},
+		openAi: {
+			api: {
+				key: byId("audioOpenAiApiKey"),
+				model: byId("audioOpenAiApiModel"),
+				voice: byId("audioOpenAiApiVoice"),
+				responseFormat: byId("audioOpenAiApiResponseFormat"),
 			},
 		},
 		save: byId("saveAudio"),
@@ -687,6 +711,18 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 						),
 					},
 				},
+				openAi: {
+					enabled: el.audio.order.openAiEnabled.checked,
+					order: parseInt(el.audio.order.openAi.dataset.order),
+					enabledToText: el.audio.orderToText.openAiEnabled.checked,
+					orderToText: parseInt(el.audio.orderToText.openAi.dataset.orderToText),
+					api: {
+						key: strOr(el.audio.openAi.api.key.value, defaultOptions.audio.openAi.api.key),
+						model: strOr(el.audio.openAi.api.model.value, defaultOptions.audio.openAi.api.model),
+						voice: strOr(el.audio.openAi.api.voice.value, defaultOptions.audio.openAi.api.voice),
+						responseFormat: strOr(el.audio.openAi.api.responseFormat.value, defaultOptions.audio.openAi.api.responseFormat),
+					},
+				},
 			},
 		};
 		try {
@@ -751,6 +787,14 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 			) {
 				updateLastError = true;
 				delete le[af.AFAmazonPolly.name];
+			}
+			if (
+				af.AFOpenAi.name in le &&
+				options.audio.openAi.api.key !==
+				currOpt.audio.openAi.api.key
+			) {
+				updateLastError = true;
+				delete le[af.AFOpenAi.name];
 			}
 			if (updateLastError) {
 				await controlTable.set(leKey, le);
@@ -1147,6 +1191,10 @@ async function setFieldsValues() {
 	el.audio.amazonPolly.api.outputFormat.value = opt.audio.amazonPolly.api.outputFormat;
 	el.audio.amazonPolly.api.sampleRate.value = opt.audio.amazonPolly.api.sampleRate;
 	el.audio.amazonPolly.api.voiceId.value = opt.audio.amazonPolly.api.voiceId;
+	el.audio.openAi.api.key.value = opt.audio.openAi.api.key ?? "";
+	el.audio.openAi.api.model.value = opt.audio.openAi.api.model;
+	el.audio.openAi.api.voice.value = opt.audio.openAi.api.voice;
+	el.audio.openAi.api.responseFormat.value = opt.audio.openAi.api.responseFormat;
 	el.setPronuncationByShortcut.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.setPronuncationByShortcut.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;
 	el.setPronuncationByShortcut.audioShortcut.value = opt.setPronuncationByShortcut.audioShortcut;

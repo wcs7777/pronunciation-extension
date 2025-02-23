@@ -429,6 +429,10 @@ export default class Addon {
 				options.amazonPolly,
 				le?.[af.AFAmazonPolly.name],
 			),
+			new af.AFOpenAi(
+				options.openAi,
+				le?.[af.AFOpenAi.name],
+			),
 		];
 		const fetchers = unordedFetchers
 			.filter(f => f.enabled(input, toText))

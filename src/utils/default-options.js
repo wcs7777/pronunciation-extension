@@ -181,6 +181,21 @@ const defaultOptions = {
 				voiceId: "Joanna",
 			},
 		},
+		openAi: {
+			enabled: true,
+			order: 9,
+			enabledToText: true,
+			orderToText: 8,
+			save: true,
+			saveError: true,
+			textMaxLength: 4000,
+			api: {
+				key: null,
+				model: "tts-1",
+				voice: "ash",
+				responseFormat: "mp3",
+			},
+		},
 	},
 	setPronuncationByShortcut: {
 		enabled: false,
