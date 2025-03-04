@@ -75,6 +75,9 @@ export default class Addon {
 		  */
 		const options = this.optionsCache.getAll();
 		const words = splitWords(input.toLowerCase());
+		let isText = false;
+		let sourceAudioId = null;
+		let sourceAudioTitle = null;
 		console.log({ input, words });
 		if (words.length === 0) {
 			console.log("No word was found in input");
@@ -104,6 +107,12 @@ export default class Addon {
 		} else if (options.allowText) {
 			const text = removeExtraSpaces(input);
 			const key = await generateSha1(text);
+			isText = true;
+			sourceAudioId = key;
+			sourceAudioTitle = text.slice(0, 83);
+			if (sourceAudioTitle.length > 80) {
+				sourceAudioTitle = text.slice(0, 77) + "...";
+			}
 			ipaPromise = this.fetchIpaText(
 				key,
 				text,
@@ -113,20 +122,35 @@ export default class Addon {
 			audioPromise = this.fetchAudioText(key, text, options.audio);
 		}
 		await Promise.all([
-			this.showIpa(ipaPromise, options.ipa, tabId, origin),
-			this.playAudio(audioPromise, options.audio, tabId),
+			this.showIpa({
+				ipaPromise,
+				options: options.ipa,
+				tabId,
+				origin,
+			}),
+			this.playAudio({
+				audioPromise,
+				options: options.audio,
+				tabId,
+				origin,
+				isText,
+				sourceId: sourceAudioId,
+				sourceTitle: sourceAudioTitle,
+			}),
 		]);
 		console.log("Pronunciation end");
 	}
 
 	/**
-	 * @param {Promise<string | null> | null} ipaPromise
-	 * @param {OptionsIpa} options
-	 * @param {number} tabId
-	 * @param {"menuItem" | "action" | "other"} origin
+	 * @param {{
+	 *     ipaPromise: Promise<string | null> | null,
+	 *     options: OptionsIpa,
+	 *     tabId: number,
+	 *     origin: "menuItem" | "action" | "other",
+	 * }}
 	 * @returns {Promise<void>}
 	 */
-	async showIpa(ipaPromise, options, tabId, origin) {
+	async showIpa({ ipaPromise, options, tabId, origin }) {
 		try {
 			const ipa = ipaPromise !== null ? await ipaPromise : null;
 			if (!ipa) {
@@ -149,12 +173,26 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {Promise<HTMLAudioElement | null> | null} audioPromise
-	 * @param {OptionsAudio} options
-	 * @param {number} tabId
+	 * @param {{
+	 *     audioPromise: Promise<HTMLAudioElement | null> | null,
+	 *     options: OptionsAudio,
+	 *     tabId: number,
+	 *     origin: "menuItem" | "action" | "other",
+	 *     isText: boolean,
+	 *     sourceId?: string,
+	 *     sourceTitle?: string,
+	 * }}
 	 * @returns {Promise<void>}
 	 */
-	async playAudio(audioPromise, options, tabId) {
+	async playAudio({
+		audioPromise,
+		options,
+		tabId,
+		origin,
+		isText,
+		sourceId,
+		sourceTitle,
+	}) {
 		try {
 			const audio = audioPromise !== null ? await audioPromise : null;
 			const tab = await browser.tabs.get(tabId);
@@ -168,9 +206,51 @@ export default class Addon {
 				console.log(msg);
 				return;
 			}
-			audio.volume = threshold(0, 1, options.volume);
-			audio.playbackRate = threshold(0.2, 2.0, options.playbackRate);
-			await audio.play();
+			audio.volume = threshold(
+				0,
+				1,
+				options.volume,
+			);
+			audio.playbackRate = threshold(
+				0.2,
+				2.0,
+				options.playbackRate,
+			);
+			let playInBackground = (
+				!isText ||
+				(
+					!options.playerEnabledToText &&
+					!options.shortcutsEnabledToText
+				)
+			);
+			if (!playInBackground) {
+				/**
+				 * @type {BackgroundMessage}
+				 */
+				const message = {
+					type: "playAudio",
+					origin,
+					playAudio: {
+						source: {
+							id: sourceId,
+							title: sourceTitle,
+							url: audio.src,
+						},
+						playerEnabled: options.playerEnabledToText,
+						shortcutsEnabled: options.shortcutsEnabledToText,
+						shortcuts: options.shortcuts,
+					},
+				};
+				try {
+					await browser.tabs.sendMessage(tabId, message);
+				} catch (error) {
+					console.error(error);
+					playInBackground = true;
+				}
+			}
+			if (playInBackground) {
+				await audio.play();
+			}
 		} catch (error) {
 			await this.saveError("playAudio", error);
 		}

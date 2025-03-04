@@ -1,25 +1,3 @@
-/**
- * @typedef {Object} AudioSource
- * @property {string} id
- * @property {string} url
- * @property {string} title
- */
-
-/**
- * @typedef {Object} AudioControlShortcuts
- * @property {string} togglePlay
- * @property {string} toggleMute
- * @property {string} previous
- * @property {string} next
- * @property {string} backward
- * @property {string} forward
- * @property {string} decreaseVolume
- * @property {string} increaseVolume
- * @property {string} decreaseSpeed
- * @property {string} increaseSpeed
- * @property {string} resetSpeed
- */
-
 const host = document.createElement("div");
 const shadow = host.attachShadow({
 	mode: "closed",
@@ -69,7 +47,11 @@ let playerEnabled = false;
 let shortcutsEnabled = true;
 let action2shortcut = {};
 let shortcut2action = {};
+/**
+ * @type {OptAudioShortcuts}
+ */
 let defaultShortcuts = {
+	togglePlayer: "t",
 	togglePlay: "k",
 	toggleMute: "m",
 	previous: "p",
@@ -83,6 +65,7 @@ let defaultShortcuts = {
 	resetSpeed: ";",
 };
 const action2function = {
+	togglePlayer: async () => toggleAudioPlayer(),
 	togglePlay: async () => togglePlayAudio(),
 	toggleMute: async () => toggleMuteAudio(),
 	previous: async () => previousAudio(),
@@ -136,6 +119,7 @@ setInterval(() => {
 		return;
 	}
 	el.currentTime.textContent = formatSeconds(audio.currentTime);
+	el.totalTime.textContent = formatSeconds(audio.duration);
 	el.progressbar.value = audio.currentTime;
 	updateInputRangeBar(el.progressbar);
 }, 250);
@@ -159,7 +143,7 @@ el.speedsList.addEventListener("click", ({ target }) => {
 });
 
 document.addEventListener("keydown", async (e) => {
-	if (!shortcutsEnabled) {
+	if (!shortcutsEnabled || sources.length === 0) {
 		return;
 	}
 	const key = e.key.toUpperCase();
@@ -176,13 +160,14 @@ document.addEventListener("keydown", async (e) => {
 });
 
 el.close.addEventListener("click", async () => {
-	return toggleAudioPlayer({ forceDisable: true });
+	return toggleAudioPlayer({ forceDisable: true, forcePause: true });
 });
 
 /**
  * @param {{
  *     forceEnable: boolean,
  *     forceDisable: boolean,
+ *     forcePause: boolean,
  *     player: HTMLElement,
  *     audio: HTMLAudioElement,
  *     togglePlayButton: HTMLElement,
@@ -194,6 +179,7 @@ el.close.addEventListener("click", async () => {
 export async function toggleAudioPlayer({
 	forceEnable=false,
 	forceDisable=false,
+	forcePause=false,
 	player=el.player,
 	audio=el.audio,
 	togglePlayButton=el.togglePlayButton,
@@ -208,13 +194,15 @@ export async function toggleAudioPlayer({
 	if (enable) {
 		player.classList.remove("invisible");
 	} else {
-		await togglePlayAudio({
-			audio,
-			togglePlayButton,
-			playIcon,
-			pauseIcon,
-			forcePause: true,
-		});
+		if (forcePause) {
+			await togglePlayAudio({
+				audio,
+				togglePlayButton,
+				playIcon,
+				pauseIcon,
+				forcePause,
+			});
+		}
 		player.classList.add("invisible");
 	}
 	playerEnabled = enable;
@@ -338,7 +326,7 @@ export async function removeAudioSource(id, {
 }
 
 /**
- * @param {AudioControlShortcuts} shortcuts
+ * @param {OptAudioShortcuts} shortcuts
  * @returns {void}
  */
 export function setAudioControlShortcuts(shortcuts={}) {
@@ -638,6 +626,14 @@ const html = `
 
 <style>
 
+:host {
+    --background-color-1: #101010;
+    --foreground-color-1: #b3b3b3;
+    --foreground-color-2: #e4e4e4;
+    --center-width: 40%;
+	--side-width: 25%;
+}
+
 h1,
 div,
 span,
@@ -645,9 +641,6 @@ ul,
 li,
 input,
 button {
-    --background-color-1: #101010;
-    --foreground-color-1: #b3b3b3;
-    --foreground-color-2: #e4e4e4;
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
@@ -657,7 +650,7 @@ button {
 }
 
 .audio-player {
-    position: absolute;
+    position: fixed;
     left: 0;
     bottom: 0;
     display: flex;
@@ -669,6 +662,7 @@ button {
     height: 72px;
 	padding: 0 20px;
     background-color: var(--background-color-1);
+	z-index: 99999;
 }
 
 .audio-player-close {
@@ -698,7 +692,7 @@ button {
     flex-direction: column;
     gap: 8px;
     align-items: center;
-    width: 40%;
+    width: var(--center-width);
 }
 
 .audio-player-controls {
@@ -808,7 +802,7 @@ button {
     font-size: 14px;
     font-weight: normal;
     color: var(--foreground-color-2);
-    width: 20%;
+    width: var(--side-width);
 }
 
 .audio-player-main-title {
@@ -824,7 +818,7 @@ button {
     align-items: center;
     justify-content: flex-end;
     gap: 6px;
-    width: 20%;
+    width: var(--side-width);
 }
 
 .audio-player-volume input[type="range"] {
@@ -880,6 +874,45 @@ button {
 .invisible {
     display: none;
     opacity: 0;
+}
+
+@media screen and (max-width: 1000px) {
+
+	:host {
+		--center-width: 100%;
+		--side-width: 100%;
+	}
+
+	.audio-player {
+		flex-direction: column;
+        padding: 20px 10px;
+        height: 140px;
+	}
+
+    .audio-player-center {
+        order: 0;
+    }
+
+    .audio-player-volume {
+        order: 1;
+    }
+
+    .audio-player-controls {
+        width: 100%;
+        justify-content: space-evenly;
+    }
+
+    .audio-player-volume input[type="range"] {
+        max-width: calc(100% - 20px);
+        width: calc(100% - 20px);
+    }
+
+    .audio-player-title {
+        order: 2;
+        text-align: center;
+        text-overflow: ellipsis;
+    }
+
 }
 
 </style>

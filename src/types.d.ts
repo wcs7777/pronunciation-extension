@@ -102,8 +102,11 @@ declare global {
 	type OptionsAudio = {
 		enabled: boolean,
 		enabledToText: boolean,
+		playerEnabledToText: boolean,
+		shortcutsEnabledToText: boolean,
 		volume: number,
 		playbackRate: number,
+		shortcuts: OptAudioShortcuts,
 		realVoice: OptAudioRealVoice,
 		googleSpeech: OptAudioGoogleSpeech,
 		responsiveVoice: OptAudioResponsiveVoice,
@@ -113,6 +116,21 @@ declare global {
 		elevenLabs: OptAudioElevenLabs,
 		amazonPolly: OptAudioAmazonPolly,
 		openAi: OptAudioOpenAi,
+	};
+
+	type OptAudioShortcuts = {
+		togglePlayer: string,
+		togglePlay: string,
+		toggleMute: string,
+		previous: string,
+		next: string,
+		backward: string,
+		forward: string,
+		decreaseVolume: string,
+		increaseVolume: string,
+		decreaseSpeed: string,
+		increaseSpeed: string,
+		resetSpeed: string,
 	};
 
 	type OptAudioRealVoice = PronunciationFetcherOptions & {
@@ -199,11 +217,17 @@ declare global {
 	};
 
 	type BackgroundMessage = {
-		type: "showIpa" | "getSelectedText",
+		type: "showIpa" | "getSelectedText" | "playAudio",
 		origin: "menuItem" | "action" | "other",
 		showIpa?: {
 			ipa: string,
 			options: OptionsIpa,
+		},
+		playAudio?: {
+			source?: AudioSource,
+			playerEnabled: boolean,
+			shortcutsEnabled: boolean,
+			shortcuts: OptAudioShortcuts,
 		},
 	};
 
@@ -225,6 +249,12 @@ declare global {
 			top: number,
 			left: number,
 		},
+	};
+
+	type AudioSource = {
+		id: string,
+		title: string,
+		url: string,
 	};
 
 	type SortableJS = {

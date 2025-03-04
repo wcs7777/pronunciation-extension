@@ -221,7 +221,19 @@ export function download(url, filename) {
  * @param {string} id
  * @returns {HTMLElement | null}
  */
-export const byId = (id) => document.getElementById(id);
+export const byIdd = (id) => document.getElementById(id);
+
+/**
+ * @param {string} id
+ * @returns {HTMLElement | null}
+ */
+export function byId(id) {
+	const el = document.getElementById(id);
+	if (el === null) {
+		throw Error(`${id} not found`);
+	}
+	return el;
+}
 
 /**
  * @param {HTMLInputElement} target
@@ -247,11 +259,12 @@ export function onlyNumber(target, includesDot=true) {
 
 /**
  * @param {HTMLInputElement} target
+ * @param {boolean} allowArrows
  * @returns {void}
  */
-export function onlyShorcut(target) {
+export function onlyShorcut(target, allowArrows=false) {
 	target.addEventListener("keydown", (e) => {
-		if (e.key.length === 1) {
+		if (e.key.length === 1 || allowArrows && e.key.startsWith("Arrow")) {
 			e.preventDefault();
 			target.value = e.key.toUpperCase();
 		}

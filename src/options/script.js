@@ -69,8 +69,24 @@ import {
  *     audio: {
  *         enabled: HTMLInputElement,
  *         enabledToText: HTMLInputElement,
+ *         playerEnabledToText: HTMLInputElement,
+ *         shortcutsEnabledToText: HTMLInputElement,
  *         volume: HTMLInputElement,
  *         playbackRate: HTMLInputElement,
+ *         shortcuts: {
+ *             togglePlayer: HTMLInputElement,
+ *             togglePlay: HTMLInputElement,
+ *             toggleMute: HTMLInputElement,
+ *             previous: HTMLInputElement,
+ *             next: HTMLInputElement,
+ *             backward: HTMLInputElement,
+ *             forward: HTMLInputElement,
+ *             decreaseVolume: HTMLInputElement,
+ *             increaseVolume: HTMLInputElement,
+ *             decreaseSpeed: HTMLInputElement,
+ *             increaseSpeed: HTMLInputElement,
+ *             resetSpeed: HTMLInputElement,
+ *         },
  *         order: {
  *             realVoice: HTMLElement,
  *             realVoiceEnabled: HTMLInputElement,
@@ -282,8 +298,24 @@ const el = {
 	audio: {
 		enabled: byId("audioEnabled"),
 		enabledToText: byId("audioEnabledToText"),
+		playerEnabledToText: byId("audioPlayerEnabledToText"),
+		shortcutsEnabledToText: byId("audioShortcutsEnabledToText"),
 		volume: byId("audioVolume"),
 		playbackRate: byId("audioPlaybackRate"),
+		shortcuts: {
+			togglePlayer: byId("audioShortcutTogglePlayer"),
+			togglePlay: byId("audioShortcutTogglePlay"),
+			toggleMute: byId("audioShortcutToggleMute"),
+			previous: byId("audioShortcutPrevious"),
+			next: byId("audioShortcutNext"),
+			backward: byId("audioShortcutBackward"),
+			forward: byId("audioShortcutForward"),
+			decreaseVolume: byId("audioShortcutDecreaseVolume"),
+			increaseVolume: byId("audioShortcutIncreaseVolume"),
+			decreaseSpeed: byId("audioShortcutDecreaseSpeed"),
+			increaseSpeed: byId("audioShortcutIncreaseSpeed"),
+			resetSpeed: byId("audioShortcutResetSpeed"),
+		},
 		order: {
 			realVoice: byId("audioRealVoiceOrder"),
 			realVoiceEnabled: byId("audioRealVoiceEnabled"),
@@ -489,6 +521,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 			el.setPronuncationByShortcut.ipaShortcut,
 		].forEach(onlyShorcut);
 
+		[
+			el.audio.shortcuts.togglePlayer,
+			el.audio.shortcuts.togglePlay,
+			el.audio.shortcuts.toggleMute,
+			el.audio.shortcuts.previous,
+			el.audio.shortcuts.next,
+			el.audio.shortcuts.backward,
+			el.audio.shortcuts.forward,
+			el.audio.shortcuts.decreaseVolume,
+			el.audio.shortcuts.increaseVolume,
+			el.audio.shortcuts.decreaseSpeed,
+			el.audio.shortcuts.increaseSpeed,
+			el.audio.shortcuts.resetSpeed,
+		].forEach(e => onlyShorcut(e, true));
+
 		sortableIpaFetchersOrder = createSortableOrder(
 			byId("ipaFetchersOrder"),
 			"order",
@@ -595,8 +642,24 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 			audio: {
 				enabled: el.audio.enabled.checked,
 				enabledToText: el.audio.enabledToText.checked,
+				playerEnabledToText: el.audio.playerEnabledToText.checked,
+				shortcutsEnabledToText: el.audio.shortcutsEnabledToText.checked,
 				volume: numOr(el.audio.volume.value, defaultOptions.audio.volume, 0, 1),
 				playbackRate: numOr(el.audio.playbackRate.value, defaultOptions.audio.playbackRate, 0.2, 2),
+				shortcuts: {
+					togglePlayer: strOr(el.audio.shortcuts.togglePlayer.value, defaultOptions.audio.shortcuts.togglePlayer),
+					togglePlay: strOr(el.audio.shortcuts.togglePlay.value, defaultOptions.audio.shortcuts.togglePlay),
+					toggleMute: strOr(el.audio.shortcuts.toggleMute.value, defaultOptions.audio.shortcuts.toggleMute),
+					previous: strOr(el.audio.shortcuts.previous.value, defaultOptions.audio.shortcuts.previous),
+					next: strOr(el.audio.shortcuts.next.value, defaultOptions.audio.shortcuts.next),
+					backward: strOr(el.audio.shortcuts.backward.value, defaultOptions.audio.shortcuts.backward),
+					forward: strOr(el.audio.shortcuts.forward.value, defaultOptions.audio.shortcuts.forward),
+					decreaseVolume: strOr(el.audio.shortcuts.decreaseVolume.value, defaultOptions.audio.shortcuts.decreaseVolume),
+					increaseVolume: strOr(el.audio.shortcuts.increaseVolume.value, defaultOptions.audio.shortcuts.increaseVolume),
+					decreaseSpeed: strOr(el.audio.shortcuts.decreaseSpeed.value, defaultOptions.audio.shortcuts.decreaseSpeed),
+					increaseSpeed: strOr(el.audio.shortcuts.increaseSpeed.value, defaultOptions.audio.shortcuts.increaseSpeed),
+					resetSpeed: strOr(el.audio.shortcuts.resetSpeed.value, defaultOptions.audio.shortcuts.resetSpeed),
+				},
 				realVoice: {
 					enabled: el.audio.order.realVoiceEnabled.checked,
 					order: parseInt(el.audio.order.realVoice.dataset.order),
@@ -799,6 +862,26 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 			if (updateLastError) {
 				await controlTable.set(leKey, le);
 			}
+		} catch (error) {
+			console.error(error);
+		}
+		try {
+			/**
+			 * @type {BackgroundMessage}
+			 */
+			const message = {
+				type: "playAudio",
+				origin,
+				playAudio: {
+					playerEnabled: options.audio.playerEnabledToText,
+					shortcutsEnabled: options.audio.shortcutsEnabledToText,
+					shortcuts: options.audio.shortcuts,
+				},
+			};
+			const tabs = await browser.tabs.query({});
+			await Promise.allSettled(
+				tabs.map(t => browser.tabs.sendMessage(t.id, message)),
+			);
 		} catch (error) {
 			console.error(error);
 		}
@@ -1152,8 +1235,22 @@ async function setFieldsValues() {
 	el.ipa.orderToText.unalenguaEnabled.checked = opt.ipa.unalengua.enabledToText;
 	el.audio.enabled.checked = opt.audio.enabled;
 	el.audio.enabledToText.checked = opt.audio.enabledToText;
+	el.audio.playerEnabledToText.checked = opt.audio.playerEnabledToText;
+	el.audio.shortcutsEnabledToText.checked = opt.audio.shortcutsEnabledToText;
 	el.audio.volume.value = opt.audio.volume.toString();
 	el.audio.playbackRate.value = opt.audio.playbackRate.toString();
+	el.audio.shortcuts.togglePlayer.value = opt.audio.shortcuts.togglePlayer;
+	el.audio.shortcuts.togglePlay.value = opt.audio.shortcuts.togglePlay;
+	el.audio.shortcuts.toggleMute.value = opt.audio.shortcuts.toggleMute;
+	el.audio.shortcuts.previous.value = opt.audio.shortcuts.previous;
+	el.audio.shortcuts.next.value = opt.audio.shortcuts.next;
+	el.audio.shortcuts.backward.value = opt.audio.shortcuts.backward;
+	el.audio.shortcuts.forward.value = opt.audio.shortcuts.forward;
+	el.audio.shortcuts.decreaseVolume.value = opt.audio.shortcuts.decreaseVolume;
+	el.audio.shortcuts.increaseVolume.value = opt.audio.shortcuts.increaseVolume;
+	el.audio.shortcuts.decreaseSpeed.value = opt.audio.shortcuts.decreaseSpeed;
+	el.audio.shortcuts.increaseSpeed.value = opt.audio.shortcuts.increaseSpeed;
+	el.audio.shortcuts.resetSpeed.value = opt.audio.shortcuts.resetSpeed;
 	el.audio.order.realVoiceEnabled.checked = opt.audio.realVoice.enabled;
 	el.audio.order.googleSpeechEnabled.checked = opt.audio.googleSpeech.enabled;
 	el.audio.order.responsiveVoiceEnabled.checked = opt.audio.responsiveVoice.enabled;
