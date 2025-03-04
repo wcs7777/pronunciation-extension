@@ -918,7 +918,7 @@ button {
 
     <div id="audio-player" class="audio-player invisible">
         <span id="audio-player-close" class="audio-player-close">
-            ×
+            &#215;
         </span>
         <div class="audio-player-title">
             <h1 id="audio-player-main-title" class="audio-player-main-title"></h1>
