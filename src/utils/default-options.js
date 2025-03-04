@@ -8,7 +8,7 @@ const defaultOptions = {
 		enabled: true,
 		enabledToText: true,
 		font: {
-			family: "'Lucida Sans Unicode', 'Segoe UI'",
+			family: "'Lucida Sans Unicode', 'Segoe UI', serif",
 			size: 18, // px
 			color: "#282828",
 			backgroundColor: "#FFFFFF",
@@ -17,6 +17,8 @@ const defaultOptions = {
 			timeout: 3000,
 			shortcut: "\\",
 			onScroll: false,
+			buttonColor: "#737373",
+			buttonHoverColor: "#010101",
 		},
 		position: {
 			menuTriggered: "above",

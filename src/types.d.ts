@@ -232,7 +232,6 @@ declare global {
 	};
 
 	type OptionsPopup = {
-		target: HTMLElement | Node,
 		text: string,
 		font: {
 			family: string,
@@ -244,6 +243,8 @@ declare global {
 			timeout: number,
 			shortcut: string,
 			onScroll: boolean,
+			buttonColor: string,
+			buttonHoverColor: string,
 		},
 		position: {
 			top: number,

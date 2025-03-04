@@ -110,7 +110,6 @@ export default class IpaPopup {
 		 * @type {OptionsPopup}
 		 */
 		const options = {
-			target: this.target(),
 			text: this.ipa,
 			font: { ...this.options.font, ...this.fontColors() },
 			close: this.options.close,

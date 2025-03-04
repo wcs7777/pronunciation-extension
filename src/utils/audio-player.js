@@ -1,4 +1,11 @@
-const host = document.createElement("div");
+const host = document.createElement("span");
+host.dataset.role = "pronunciation-addon-audio-player-host";
+host.style.display = "inline";
+host.style.width = "0px";
+host.style.height = "0px";
+host.style.border = "0px";
+host.style.margin = "0px";
+host.style.padding = "0px";
 const shadow = host.attachShadow({
 	mode: "closed",
 	clonable: false,
