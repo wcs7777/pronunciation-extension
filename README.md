@@ -8,18 +8,21 @@
 [How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/) is a Firefox extension to help you to know how to pronounce a word showing its IPA and playing its audio.  
 Formerly [How2Pronounce](https://addons.mozilla.org/en-US/firefox/addon/how2pronounce/), but I lost the access to the account.  
 
-- Select a word or text
-- Right click to open the context menu and click the extension item
-- Or, in Firefox Android, click the extension menu, them the addon icon
+- Select a word or text  
+- Right click to open the context menu and click the extension item  
+- Or, in Firefox Android, click the extension menu, them the addon icon  
 - ✨ Magic ✨
 
 ## Features
 
-- Show word IPA
-- Play audio pronunciation
-- Allow to provide custom IPA and audio through the options page
-- Works for texts
+- Show word IPA  
+- Play audio pronunciation  
+- Allow to provide custom IPA and audio through the options page  
+- Works for texts  
 - Allow enable/disable IPA/audio for words and/or texts  
+- Allow control audio with a player for texts (enable/disable through options)  
+- Allow control audio with shortcuts for texts (enable/disable through options)  
+- Highly customizable through the options [page](about:addons)  
 
 ### Configuration
 The addon experience can be customized through the options page.  
