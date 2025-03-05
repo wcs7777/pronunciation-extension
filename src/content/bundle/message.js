@@ -481,7 +481,7 @@
 		el.currentTime.textContent = formatSeconds(audio.currentTime);
 		el.totalTime.textContent = formatSeconds(audio.duration);
 		el.progressbar.max = audio.duration;
-		el.progressbar.value = audio.currentTime;
+		el.progressbar.value = Math.min(audio.currentTime, audio.duration);
 		updateInputRangeBar(el.progressbar);
 	}, 250);
 
@@ -875,7 +875,7 @@
 	function updateInputRangeBar(input) {
 		const current = parseFloat(input.value);
 		const max = parseFloat(input.max);
-		const progress = (current / max) * 100;
+		const progress = current < max ? (current / max) * 100 : 100;
 		input.style.background = `
 		linear-gradient(
 			to right,
