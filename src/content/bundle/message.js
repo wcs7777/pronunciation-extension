@@ -480,6 +480,7 @@
 		}
 		el.currentTime.textContent = formatSeconds(audio.currentTime);
 		el.totalTime.textContent = formatSeconds(audio.duration);
+		el.progressbar.max = audio.duration;
 		el.progressbar.value = audio.currentTime;
 		updateInputRangeBar(el.progressbar);
 	}, 250);
