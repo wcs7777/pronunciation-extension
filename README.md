@@ -10,7 +10,7 @@ Formerly [How2Pronounce](https://addons.mozilla.org/en-US/firefox/addon/how2pron
 
 - Select a word or text  
 - Right click to open the context menu and click the extension item  
-- Or, in Firefox Android, click the extension menu, them the addon icon  
+- Or, in Firefox Android, click the extension menu, then the addon icon  
 - ✨ Magic ✨
 
 ## Features
