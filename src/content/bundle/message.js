@@ -444,7 +444,7 @@
 	el.currentTime.textContent = formatSeconds(0);
 	el.totalTime.textContent = formatSeconds(0);
 
-	audio.addEventListener("canplay", async () => {
+	audio.addEventListener("loadedmetadata", async () => {
 		await togglePlayAudio({
 			forcePlay: !audio.paused,
 			forcePause: audio.paused,
@@ -453,16 +453,19 @@
 			forceMute: audio.muted,
 			forceUnmute: !audio.muted,
 		});
-		el.progressbar.max = audio.duration;
-		el.totalTime.textContent = formatSeconds(audio.duration);
+		const duration = await audioDuration(audio);
+		el.progressbar.max = duration;
+		el.totalTime.textContent = formatSeconds(duration);
 		changeAudioVolume(audio.volume);
-		updateInputRangeBar(el.progressbar);
 		changeAudioSpeed(audio.playbackRate);
 	});
 
 	audio.addEventListener("ended", async () => {
 		await togglePlayAudio({ forcePause: true });
-		el.totalTime.textContent = formatSeconds(audio.duration);
+		const duration = await audioDuration(audio);
+		el.progressbar.value = duration;
+		el.totalTime.textContent = formatSeconds(duration);
+		el.progressbar.style.background = "var(--range-color)";
 	});
 
 	el.progressbar.addEventListener("input", () => {
@@ -471,19 +474,14 @@
 
 	el.volumeControl.addEventListener("input", () => {
 		audio.volume = parseFloat(el.volumeControl.value);
-		updateInputRangeBar(el.volumeControl);
 	});
 
-	setInterval(() => {
-		if (!audio.src) {
-			return;
-		}
-		el.currentTime.textContent = formatSeconds(audio.currentTime);
+	audio.addEventListener("timeupdate", () => {
 		el.totalTime.textContent = formatSeconds(audio.duration);
-		el.progressbar.max = audio.duration;
-		el.progressbar.value = Math.min(audio.currentTime, audio.duration);
-		updateInputRangeBar(el.progressbar);
-	}, 250);
+		el.currentTime.textContent = formatSeconds(audio.currentTime);
+		el.progressbar.value = audio.currentTime;
+		el.progressbar.style.background = "var(--range-background)";
+	});
 
 	el.togglePlayButton.addEventListener("click", async () => togglePlayAudio());
 	el.toggleMuteButton.addEventListener("click", () => toggleMuteAudio());
@@ -832,7 +830,6 @@
 		const value = Math.max(0, Math.min(volume, 1));
 		volumeControl.value = value;
 		audio.volume = value;
-		updateInputRangeBar(volumeControl);
 	}
 
 	/**
@@ -869,20 +866,30 @@
 	}
 
 	/**
-	 * @param {HTMLInputElement} input
-	 * @returns {void}
+	 * @param {HTMLAudioElement} audio
+	 * @returns {Promise<number>}
 	 */
-	function updateInputRangeBar(input) {
-		const current = parseFloat(input.value);
-		const max = parseFloat(input.max);
-		const progress = current < max ? (current / max) * 100 : 100;
-		input.style.background = `
-		linear-gradient(
-			to right,
-			var(--range-color) ${progress}%,
-			var(--range-background) ${progress}%
-		)
-	`;
+	async function audioDuration(audio) {
+		return new Promise((resolve) => {
+			if (
+				audio.duration !== Infinity &&
+				!isNaN(Number(audio.duration)) &&
+				audio.duration !== 0
+			) {
+				return resolve(audio.duration);
+			}
+			audio.currentTime = 1e101;
+			audio.addEventListener("timeupdate", onTimeUpdate);
+
+			function onTimeUpdate() {
+				console.log("audioDuration1");
+				audio.currentTime = 0;
+				audio.removeEventListener("timeupdate", onTimeUpdate);
+				console.log("audioDuration2");
+				resolve(audio.duration);
+			}
+
+		});
 	}
 
 	/**
@@ -1137,7 +1144,6 @@ button {
 	--range-color-shadow-size-1: 9px;
 	--range-color-shadow-size-2: 12px;
 	--range-pointer-size: 0px;
-	-webkit-appearance: none;
 	appearance: none;
 	width: 100%;
 	cursor: pointer;
@@ -1153,15 +1159,8 @@ button {
 	--range-pointer-size: 12px;
 }
 
-.input-range::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	appearance: none;
-	height: var(--range-pointer-size);
-	width: var(--range-pointer-size);
+.input-range::-moz-range-progress {
 	background-color: var(--range-color);
-	border-radius: 50%;
-	border: none;
-	transition: .1s linear;
 }
 
 .input-range::-moz-range-thumb {
@@ -1179,7 +1178,7 @@ button {
 	opacity: 0;
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 600px) {
 
 	:host {
 		--center-width: 100%;
@@ -1214,6 +1213,12 @@ button {
 		order: 2;
 		text-align: center;
 		text-overflow: ellipsis;
+	}
+
+	@media only screen and (hover: none) and (pointer: coarse) {
+		.audio-player-volume {
+			display: none;
+		}
 	}
 
 }
@@ -1330,7 +1335,7 @@ button {
             </div>
             <div class="audio-player-time">
                 <span id="audio-player-current-time">0:00</span>
-                <input id="audio-player-progresssbar" class="input-range" type="range" min="0" max="100" step="0.5"
+                <input id="audio-player-progresssbar" class="input-range" type="range" min="0" max="100" step="0.01"
                     value="30">
                 <span id="audio-player-total-time">0:00</span>
             </div>
