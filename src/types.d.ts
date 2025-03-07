@@ -82,6 +82,8 @@ declare global {
 			timeout: number,
 			shortcut: string,
 			onScroll: boolean,
+			buttonColor: string,
+			buttonHoverColor: string,
 		},
 		position: {
 			menuTriggered: "above" | "below",

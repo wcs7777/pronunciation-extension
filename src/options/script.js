@@ -49,6 +49,8 @@ import {
  *             timeout: HTMLInputElement,
  *             shortcut: HTMLInputElement,
  *             onScroll: HTMLInputElement,
+ *             buttonColor: HTMLInputElement,
+ *             buttonHoverColor: HTMLInputElement,
  *         },
  *         order: {
  *             antvaset: HTMLElement,
@@ -278,6 +280,8 @@ const el = {
 			timeout: byId("ipaCloseTimeout"),
 			shortcut: byId("ipaCloseShortcut"),
 			onScroll: byId("ipaCloseOnScroll"),
+			buttonColor: byId("ipaButtonColor"),
+			buttonHoverColor: byId("ipaButtonHoverColor"),
 		},
 		order: {
 			antvaset: byId("ipaAntvasetOrder"),
@@ -604,6 +608,8 @@ el.ipa.save.addEventListener("click", async ({ currentTarget }) => {
 					timeout: numOr(el.ipa.close.timeout.value, defaultOptions.ipa.close.timeout, 500, 3600000),
 					shortcut: strOr(el.ipa.close.shortcut.value, defaultOptions.ipa.close.shortcut),
 					onScroll: el.ipa.close.onScroll.checked,
+					buttonColor: strOr(el.ipa.close.buttonColor.value, defaultOptions.ipa.close.buttonColor),
+					buttonHoverColor: strOr(el.ipa.close.buttonHoverColor.value, defaultOptions.ipa.close.buttonHoverColor),
 				},
 				antvaset: {
 					enabled: el.ipa.order.antvasetEnabled.checked,
@@ -1228,6 +1234,8 @@ async function setFieldsValues() {
 	el.ipa.close.timeout.value = opt.ipa.close.timeout.toString();
 	el.ipa.close.shortcut.value = opt.ipa.close.shortcut;
 	el.ipa.close.onScroll.checked = opt.ipa.close.onScroll;
+	el.ipa.close.buttonColor.value = opt.ipa.close.buttonColor;
+	el.ipa.close.buttonHoverColor.value = opt.ipa.close.buttonHoverColor;
 	el.ipa.order.antvasetEnabled.checked = opt.ipa.antvaset.enabled;
 	el.ipa.order.unalenguaEnabled.checked = opt.ipa.unalengua.enabled;
 	el.ipa.order.oxfordEnabled.checked = opt.ipa.oxford.enabled;
