@@ -65,6 +65,7 @@ const defaultOptions = {
 	audio: {
 		enabled: true,
 		enabledToText: true,
+		saveTextAudio: false,
 		playerEnabledToText: true,
 		shortcutsEnabledToText: false,
 		volume: 1.0,
@@ -73,6 +74,7 @@ const defaultOptions = {
 			togglePlayer: "T",
 			togglePlay: "K",
 			toggleMute: "M",
+			rewind: "HOME",
 			previous: "P",
 			next: "N",
 			backward: "ARROWLEFT",

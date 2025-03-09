@@ -11,6 +11,7 @@ const shadow = host.attachShadow({
 	clonable: false,
 });
 const audio = new Audio();
+audio.autoplay = false;
 shadow.replaceChildren(...createAudioPlayerUI());
 shadow.appendChild(audio);
 document.body.appendChild(host);
@@ -36,6 +37,7 @@ const el = {
 	togglePlayButton: byId("audio-player-toggle-play"),
 	playIcon: byId("audio-player-icon-play"),
 	pauseIcon: byId("audio-player-icon-pause"),
+	rewind: byId("audio-player-rewind"),
 	backward: byId("audio-player-backward"),
 	forward: byId("audio-player-forward"),
 	previous: byId("audio-player-previous"),
@@ -63,6 +65,7 @@ let defaultShortcuts = {
 	toggleMute: "m",
 	previous: "p",
 	next: "n",
+	rewind: "Home",
 	backward: "ArrowLeft",
 	forward: "ArrowRight",
 	decreaseVolume: "i",
@@ -77,6 +80,7 @@ const action2function = {
 	toggleMute: async () => toggleMuteAudio(),
 	previous: async () => previousAudio(),
 	next: async () => nextAudio(),
+	rewind: async () => rewindAudio(),
 	backward: async () => backwardAudio(2.3),
 	forward: async () => forwardAudio(2),
 	decreaseVolume: async () => changeAudioVolume(audio.volume - 0.05),
@@ -91,7 +95,7 @@ setAudioControlShortcuts(defaultShortcuts);
 el.currentTime.textContent = formatSeconds(0);
 el.totalTime.textContent = formatSeconds(0);
 
-audio.addEventListener("loadedmetadata", async () => {
+audio.addEventListener("canplay", async () => {
 	await togglePlayAudio({
 		forcePlay: !audio.paused,
 		forcePause: audio.paused,
@@ -109,9 +113,8 @@ audio.addEventListener("loadedmetadata", async () => {
 
 audio.addEventListener("ended", async () => {
 	await togglePlayAudio({ forcePause: true });
-	const duration = await audioDuration(audio);
-	el.progressbar.value = duration;
-	el.totalTime.textContent = formatSeconds(duration);
+	el.progressbar.value = audio.duration;
+	el.totalTime.textContent = formatSeconds(audio.duration);
 	el.progressbar.style.background = "var(--range-color)";
 });
 
@@ -125,6 +128,7 @@ el.volumeControl.addEventListener("input", () => {
 
 audio.addEventListener("timeupdate", () => {
 	el.totalTime.textContent = formatSeconds(audio.duration);
+	el.progressbar.max = audio.duration;
 	el.currentTime.textContent = formatSeconds(audio.currentTime);
 	el.progressbar.value = audio.currentTime;
 	el.progressbar.style.background = "var(--range-background)";
@@ -132,6 +136,7 @@ audio.addEventListener("timeupdate", () => {
 
 el.togglePlayButton.addEventListener("click", async () => togglePlayAudio());
 el.toggleMuteButton.addEventListener("click", () => toggleMuteAudio());
+el.rewind.addEventListener("click", () => rewindAudio());
 el.backward.addEventListener("click", () => backwardAudio(2.3));
 el.forward.addEventListener("click", () => forwardAudio(2));
 el.previous.addEventListener("click", async () => previousAudio());
@@ -153,7 +158,10 @@ document.addEventListener("keydown", async (e) => {
 		return;
 	}
 	const key = e.key.toUpperCase();
-	if (!(key in shortcut2action)) {
+	if (
+		!(key in shortcut2action) ||
+		[e.altKey, e.ctrlKey, e.metaKey].some(v => v)
+	) {
 		return;
 	}
 	e.preventDefault();
@@ -413,6 +421,19 @@ function toggleMuteAudio({
 }
 
 /**
+ * @param {{
+ *     audio: HTMLAudioElement,
+ * }}
+ * @returns {Promise<void>}
+ */
+async function rewindAudio({
+	audio=el.audio,
+}={}) {
+	audio.currentTime = 0;
+	await audio.play();
+}
+
+/**
  * @param {number} seconds
  * @param {{
  *     audio: HTMLAudioElement,
@@ -574,26 +595,26 @@ function changeAudioSpeed(speed, {
  * @returns {Promise<number>}
  */
 async function audioDuration(audio) {
-	return new Promise((resolve) => {
-		if (
-			audio.duration !== Infinity &&
-			!isNaN(Number(audio.duration)) &&
-			audio.duration !== 0
-		) {
-			return resolve(audio.duration);
-		}
-		audio.currentTime = 1e101;
-		audio.addEventListener("timeupdate", onTimeUpdate);
+	if (validAudioDuration(audio)) {
+		return audio.duration;
+	}
+	console.log("pron addon: getting audio duration from AudioContext");
+	const response = await fetch(audio.src);
+	if (response.status !== 200) {
+		throw new Error(`Status: ${response.status}`);
+	}
+	const arrayBuffer = await response.arrayBuffer();
+	const audioContext = new AudioContext();
+	const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+	return audioBuffer.duration;
+}
 
-		function onTimeUpdate() {
-			console.log("audioDuration1");
-			audio.currentTime = 0;
-			audio.removeEventListener("timeupdate", onTimeUpdate);
-			console.log("audioDuration2");
-			resolve(audio.duration);
-		}
-
-	});
+/**
+ * @param {HTMLAudioElement} audio
+ * @returns {boolean}
+ */
+function validAudioDuration(audio) {
+	return Number.isFinite(audio.duration) && audio.duration !== 0;
 }
 
 /**
@@ -938,32 +959,19 @@ button {
         </div>
         <div class="audio-player-center">
             <div class="audio-player-controls">
-                <div class="audio-player-speed">
-                    <button id="audio-player-show-speeds" class="audio-player-btn">1x</button>
-                    <ul id="audio-player-speeds" class="audio-player-speeds invisible">
-                        <li class="audio-player-speed-title">Plackback speed</li>
-                        <li data-speed="0.2" class="audio-player-speed-option">0.2x</li>
-                        <li data-speed="0.3" class="audio-player-speed-option">0.3x</li>
-                        <li data-speed="0.4" class="audio-player-speed-option">0.4x</li>
-                        <li data-speed="0.5" class="audio-player-speed-option">0.5x</li>
-                        <li data-speed="0.6" class="audio-player-speed-option">0.6x</li>
-                        <li data-speed="0.7" class="audio-player-speed-option">0.7x</li>
-                        <li data-speed="0.8" class="audio-player-speed-option">0.8x</li>
-                        <li data-speed="0.9" class="audio-player-speed-option">0.9x</li>
-                        <li data-speed="1.0" class="audio-player-speed-option audio-player-speed-option-current">
-                            1x</li>
-                        <li data-speed="1.1" class="audio-player-speed-option">1.1x</li>
-                        <li data-speed="1.2" class="audio-player-speed-option">1.2x</li>
-                        <li data-speed="1.3" class="audio-player-speed-option">1.3x</li>
-                        <li data-speed="1.4" class="audio-player-speed-option">1.4x</li>
-                        <li data-speed="1.5" class="audio-player-speed-option">1.5x</li>
-                        <li data-speed="1.6" class="audio-player-speed-option">1.6x</li>
-                        <li data-speed="1.7" class="audio-player-speed-option">1.7x</li>
-                        <li data-speed="1.8" class="audio-player-speed-option">1.8x</li>
-                        <li data-speed="1.9" class="audio-player-speed-option">1.9x</li>
-                        <li data-speed="2.0" class="audio-player-speed-option">2x</li>
-                    </ul>
-                </div>
+                <button id="audio-player-rewind" class="audio-player-btn" title="Rewind audio">
+                    <svg width="16" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20.465 20.465"
+                        xml:space="preserve">
+                        <path d="M11.354,1.373c-0.141-0.069-0.304-0.049-0.425,0.044L0.152,9.918C0.059,9.996,0,10.11,0,10.231
+                                s0.059,0.24,0.152,0.316l10.776,8.5c0.073,0.057,0.163,0.086,0.249,0.086l0.176-0.04c0.138-0.064,0.225-0.205,0.225-0.36v-17
+                                C11.578,1.582,11.491,1.438,11.354,1.373z"></path>
+                        <path d="M20.242,1.373c-0.142-0.069-0.305-0.049-0.426,0.044L9.039,9.918
+                                c-0.094,0.078-0.152,0.192-0.152,0.313s0.059,0.24,0.152,0.316l10.777,8.5c0.072,0.057,0.162,0.086,0.248,0.086l0.178-0.04
+                                c0.137-0.064,0.223-0.205,0.223-0.36v-17C20.465,1.582,20.379,1.438,20.242,1.373z">
+                        </path>
+                    </svg>
+                </button>
                 <button id="audio-player-backward" class="audio-player-btn" title="Skip back 2 seconds">
                     <svg viewBox="0 0 16 16">
                         <path
@@ -1009,10 +1017,9 @@ button {
                         </path>
                     </svg>
                 </button>
-                <!-- keep center alignment -->
-                <div class="audio-player-speed" style="visibility: hidden;">
-                    <button class="audio-player-btn">1x</button>
-                    <ul class="audio-player-speeds invisible">
+                <div class="audio-player-speed">
+                    <button id="audio-player-show-speeds" class="audio-player-btn">1x</button>
+                    <ul id="audio-player-speeds" class="audio-player-speeds invisible">
                         <li class="audio-player-speed-title">Plackback speed</li>
                         <li data-speed="0.2" class="audio-player-speed-option">0.2x</li>
                         <li data-speed="0.3" class="audio-player-speed-option">0.3x</li>

@@ -97,15 +97,6 @@ export function base64ToBlob(base64, mimeType) {
  * @param {ArrayBuffer} buffer
  * @returns {string}
  */
-export function buffer2hex(buffer) {
-	const array = [...new Uint8Array(buffer)];
-	return array.map(b => b.toString(16).padStart(2, "0")).join("");
-}
-
-/**
- * @param {ArrayBuffer} buffer
- * @returns {string}
- */
 export function buffer2base64(buffer) {
 	const array = [...new Uint8Array(buffer)];
 	const binary = array.map(b => String.fromCharCode(b)).join("");
@@ -259,12 +250,12 @@ export function onlyNumber(target, includesDot=true) {
 
 /**
  * @param {HTMLInputElement} target
- * @param {boolean} allowArrows
+ * @param {boolean} allowNonCharacterKeys
  * @returns {void}
  */
-export function onlyShorcut(target, allowArrows=false) {
+export function onlyShorcut(target, allowNonCharacterKeys=false) {
 	target.addEventListener("keydown", (e) => {
-		if (e.key.length === 1 || allowArrows && e.key.startsWith("Arrow")) {
+		if (e.key.length === 1 || allowNonCharacterKeys) {
 			e.preventDefault();
 			target.value = e.key.toUpperCase();
 		}

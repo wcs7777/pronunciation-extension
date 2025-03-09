@@ -74,11 +74,12 @@ export function textHierarchy(text, ends) {
  * @returns {Promise<string>}
  */
 export async function generateSha1(message) {
-	const encoder = new TextEncoder();
-	const hashBuffer = encoder.encode(encoder.encode(message));
-	return Array.from(new Uint8Array(hashBuffer))
-		.map(byte => byte.toString(16).padStart(2, "0"))
-		.join("");
+	const buffer = await crypto.subtle.digest(
+		"SHA-1",
+		new TextEncoder("utf-8").encode(message),
+	);
+	const array = [...new Uint8Array(buffer)];
+	return array.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
 /**

@@ -4,11 +4,17 @@ import * as af from "../audio-fetcher/fetchers.js";
 import defaultOptions from "../utils/default-options.js";
 import { deepMerge }  from "../utils/object.js";
 import { showPopup } from "../utils/show-popup.js";
-import { kebab2camel, splitWords } from "../utils/string.js";
 import { threshold } from "../utils/number.js";
+import {
+	generateSha1,
+	kebab2camel,
+	removeExtraSpaces,
+	splitWords,
+} from "../utils/string.js";
 import {
 	addonStorage,
 	audioTable,
+	audioTextTable,
 	controlTable,
 	defaultIpaTable,
 	errorsTable,
@@ -71,6 +77,7 @@ import {
  *     audio: {
  *         enabled: HTMLInputElement,
  *         enabledToText: HTMLInputElement,
+ *         saveTextAudio: HTMLInputElement,
  *         playerEnabledToText: HTMLInputElement,
  *         shortcutsEnabledToText: HTMLInputElement,
  *         volume: HTMLInputElement,
@@ -79,6 +86,7 @@ import {
  *             togglePlayer: HTMLInputElement,
  *             togglePlay: HTMLInputElement,
  *             toggleMute: HTMLInputElement,
+ *             rewind: HTMLInputElement,
  *             previous: HTMLInputElement,
  *             next: HTMLInputElement,
  *             backward: HTMLInputElement,
@@ -218,6 +226,11 @@ import {
  *         file: HTMLInputElement,
  *         save: HTMLButtonElement,
  *     },
+ *     setCustomAudioText: {
+ *         text: HTMLInputElement,
+ *         file: HTMLInputElement,
+ *         save: HTMLButtonElement,
+ *     },
  *     removeIpa: {
  *         word: HTMLInputElement,
  *         save: HTMLButtonElement,
@@ -229,6 +242,7 @@ import {
  *     downloadStorage: {
  *         ipa: HTMLButtonElement,
  *         audio: HTMLButtonElement,
+ *         audioText: HTMLButtonElement,
  *         options: HTMLButtonElement,
  *         errors: HTMLButtonElement,
  *         all: HTMLButtonElement,
@@ -245,9 +259,10 @@ import {
  *         file: HTMLInputElement,
  *         update: HTMLButtonElement,
  *     },
- *     removeStorage: {
+ *     clearStorage: {
  *         ipa: HTMLButtonElement,
  *         audio: HTMLButtonElement,
+ *         audioText: HTMLButtonElement,
  *         options: HTMLButtonElement,
  *         errors: HTMLButtonElement,
  *         all: HTMLButtonElement,
@@ -302,6 +317,7 @@ const el = {
 	audio: {
 		enabled: byId("audioEnabled"),
 		enabledToText: byId("audioEnabledToText"),
+		saveTextAudio: byId("audioSaveTextAudio"),
 		playerEnabledToText: byId("audioPlayerEnabledToText"),
 		shortcutsEnabledToText: byId("audioShortcutsEnabledToText"),
 		volume: byId("audioVolume"),
@@ -310,6 +326,7 @@ const el = {
 			togglePlayer: byId("audioShortcutTogglePlayer"),
 			togglePlay: byId("audioShortcutTogglePlay"),
 			toggleMute: byId("audioShortcutToggleMute"),
+			rewind: byId("audioShortcutRewind"),
 			previous: byId("audioShortcutPrevious"),
 			next: byId("audioShortcutNext"),
 			backward: byId("audioShortcutBackward"),
@@ -449,6 +466,11 @@ const el = {
 		file: byId("setCustomAudioFile"),
 		save: byId("saveCustomAudio"),
 	},
+	setCustomAudioText: {
+		text: byId("setCustomAudioText"),
+		file: byId("setCustomAudioTextFile"),
+		save: byId("saveCustomAudioText"),
+	},
 	removeIpa: {
 		word: byId("removeIpaWord"),
 		save: byId("saveRemoveIpa"),
@@ -460,6 +482,7 @@ const el = {
 	downloadStorage: {
 		ipa: byId("downloadIpaStorage"),
 		audio: byId("downloadAudioStorage"),
+		audioText: byId("downloadAudioTextStorage"),
 		options: byId("downloadOptionsStorage"),
 		errors: byId("downloadErrorsStorage"),
 		all: byId("downloadAllStorage"),
@@ -476,10 +499,11 @@ const el = {
 		file: byId("updateOptionsStorageFile"),
 		update: byId("updateOptionsStorage"),
 	},
-	removeStorage: {
-		ipa: byId("removeIpaStorage"),
-		audio: byId("removeAudioStorage"),
-		errors: byId("removeErrorsStorage"),
+	clearStorage: {
+		ipa: byId("clearIpaStorage"),
+		audio: byId("clearAudioStorage"),
+		audioText: byId("clearAudioTextStorage"),
+		errors: byId("clearErrorsStorage"),
 	},
 	setCompleteIpa: byId("setCompleteIpa"),
 	restoreDefaultOptions: byId("restoreDefaultOptions"),
@@ -529,6 +553,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			el.audio.shortcuts.togglePlayer,
 			el.audio.shortcuts.togglePlay,
 			el.audio.shortcuts.toggleMute,
+			el.audio.shortcuts.rewind,
 			el.audio.shortcuts.previous,
 			el.audio.shortcuts.next,
 			el.audio.shortcuts.backward,
@@ -648,6 +673,7 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 			audio: {
 				enabled: el.audio.enabled.checked,
 				enabledToText: el.audio.enabledToText.checked,
+				saveTextAudio: el.audio.saveTextAudio.checked,
 				playerEnabledToText: el.audio.playerEnabledToText.checked,
 				shortcutsEnabledToText: el.audio.shortcutsEnabledToText.checked,
 				volume: numOr(el.audio.volume.value, defaultOptions.audio.volume, 0, 1),
@@ -656,6 +682,7 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 					togglePlayer: strOr(el.audio.shortcuts.togglePlayer.value, defaultOptions.audio.shortcuts.togglePlayer),
 					togglePlay: strOr(el.audio.shortcuts.togglePlay.value, defaultOptions.audio.shortcuts.togglePlay),
 					toggleMute: strOr(el.audio.shortcuts.toggleMute.value, defaultOptions.audio.shortcuts.toggleMute),
+					rewind: strOr(el.audio.shortcuts.rewind.value, defaultOptions.audio.shortcuts.rewind),
 					previous: strOr(el.audio.shortcuts.previous.value, defaultOptions.audio.shortcuts.previous),
 					next: strOr(el.audio.shortcuts.next.value, defaultOptions.audio.shortcuts.next),
 					backward: strOr(el.audio.shortcuts.backward.value, defaultOptions.audio.shortcuts.backward),
@@ -978,9 +1005,46 @@ el.setCustomAudio.save.addEventListener("click", async ({ currentTarget }) => {
 			const audio = new Audio(base64);
 			audio.volume = 0;
 			await audio.play();
+			audio.pause();
 			await audioTable.set(word, base64);
 			await setFieldsValues();
 			showInfo(currentTarget, `${word} audio saved`);
+		} catch (error) {
+			showInfo(currentTarget, `Error with the file: ${error}`);
+			console.error(error);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+el.setCustomAudioText.save.addEventListener("click", async ({ currentTarget }) => {
+	try {
+		const rawText = el.setCustomAudioText.text.value.trim();
+		if (rawText.length === 0) {
+			showInfo(currentTarget, "No text was found in input");
+			return;
+		}
+		const key = await generateSha1(removeExtraSpaces(rawText));
+		const file = el.setCustomAudioText.file.files?.[0];
+		if (!file) {
+			showInfo(currentTarget, "No file was found in input");
+			return;
+		}
+		const mb = file.size / 1000 / 1000;
+		if (mb > 500) {
+			showInfo(currentTarget, `File max size is 500MB, but this has ${mb}MB`);
+			return;
+		}
+		try {
+			const base64 = await blob2base64(file);
+			const audio = new Audio(base64);
+			audio.volume = 0;
+			await audio.play();
+			audio.pause();
+			await audioTextTable.set(key, base64);
+			await setFieldsValues();
+			showInfo(currentTarget, `${key} audio text saved`);
 		} catch (error) {
 			showInfo(currentTarget, `Error with the file: ${error}`);
 			console.error(error);
@@ -1046,6 +1110,16 @@ el.downloadStorage.audio.addEventListener("click", async () => {
 	try {
 		const audioStorage = await audioTable.getAll();
 		await downloadObject(audioStorage, fileName("pronunciation-audio-storage.json"));
+		await setFieldsValues();
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+el.downloadStorage.audioText.addEventListener("click", async () => {
+	try {
+		const audioTextStorage = await audioTextTable.getAll();
+		await downloadObject(audioTextStorage, fileName("pronunciation-audio-text-storage.json"));
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
@@ -1133,43 +1207,57 @@ el.updateOptionsStorage.update.addEventListener("click", async ({ currentTarget 
 	}
 });
 
-el.removeStorage.ipa.addEventListener("click", async ({ currentTarget }) => {
+el.clearStorage.ipa.addEventListener("click", async ({ currentTarget }) => {
 	try {
-		const msg = "Are you sure to remove IPA storage?";
+		const msg = "Are you sure to clear IPA storage?";
 		if (!window.confirm(msg)) {
 			return;
 		}
 		await ipaTable.clear();
 		await setFieldsValues();
-		showInfo(currentTarget, "IPA storage removed");
+		showInfo(currentTarget, "IPA storage cleared");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.removeStorage.audio.addEventListener("click", async ({ currentTarget }) => {
+el.clearStorage.audio.addEventListener("click", async ({ currentTarget }) => {
 	try {
-		const msg = "Are you sure to remove audio storage?";
+		const msg = "Are you sure to clear audio storage?";
 		if (!window.confirm(msg)) {
 			return;
 		}
 		await audioTable.clear();
 		await setFieldsValues();
-		showInfo(currentTarget, "Audio storage removed");
+		showInfo(currentTarget, "Audio storage cleared");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.removeStorage.errors.addEventListener("click", async ({ currentTarget }) => {
+el.clearStorage.audioText.addEventListener("click", async ({ currentTarget }) => {
 	try {
-		const msg = "Are you sure to remove errors storage?";
+		const msg = "Are you sure to clear audio text storage?";
+		if (!window.confirm(msg)) {
+			return;
+		}
+		await audioTextTable.clear();
+		await setFieldsValues();
+		showInfo(currentTarget, "Audio text storage cleared");
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+el.clearStorage.errors.addEventListener("click", async ({ currentTarget }) => {
+	try {
+		const msg = "Are you sure to clear errors storage?";
 		if (!window.confirm(msg)) {
 			return;
 		}
 		await errorsTable.clear();
 		await setFieldsValues();
-		showInfo(currentTarget, "Errors storage removed");
+		showInfo(currentTarget, "Errors storage cleared");
 	} catch (error) {
 		console.error(error);
 	}
@@ -1243,6 +1331,7 @@ async function setFieldsValues() {
 	el.ipa.orderToText.unalenguaEnabled.checked = opt.ipa.unalengua.enabledToText;
 	el.audio.enabled.checked = opt.audio.enabled;
 	el.audio.enabledToText.checked = opt.audio.enabledToText;
+	el.audio.saveTextAudio.checked = opt.audio.saveTextAudio;
 	el.audio.playerEnabledToText.checked = opt.audio.playerEnabledToText;
 	el.audio.shortcutsEnabledToText.checked = opt.audio.shortcutsEnabledToText;
 	el.audio.volume.value = opt.audio.volume.toString();
@@ -1250,6 +1339,7 @@ async function setFieldsValues() {
 	el.audio.shortcuts.togglePlayer.value = opt.audio.shortcuts.togglePlayer;
 	el.audio.shortcuts.togglePlay.value = opt.audio.shortcuts.togglePlay;
 	el.audio.shortcuts.toggleMute.value = opt.audio.shortcuts.toggleMute;
+	el.audio.shortcuts.rewind.value = opt.audio.shortcuts.rewind;
 	el.audio.shortcuts.previous.value = opt.audio.shortcuts.previous;
 	el.audio.shortcuts.next.value = opt.audio.shortcuts.next;
 	el.audio.shortcuts.backward.value = opt.audio.shortcuts.backward;
@@ -1308,6 +1398,8 @@ async function setFieldsValues() {
 	el.setCustomIpa.ipa.value = "";
 	el.setCustomAudio.word.value = "";
 	el.setCustomAudio.file.value = "";
+	el.setCustomAudioText.text.value = "";
+	el.setCustomAudioText.file.value = "";
 	el.removeIpa.word.value = "";
 	el.removeAudio.word.value = "";
 	el.updateIpaStorage.file.value = "";

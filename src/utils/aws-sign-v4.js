@@ -1,5 +1,3 @@
-import { buffer2hex } from "./element.js";
-
 export class AwsFetcher {
 	
 	#authorization = null;
@@ -476,4 +474,13 @@ function digest(message) {
 		"SHA-256",
 		new TextEncoder("utf-8").encode(message),
 	);
+}
+
+/**
+ * @param {ArrayBuffer} buffer
+ * @returns {string}
+ */
+function buffer2hex(buffer) {
+	const array = [...new Uint8Array(buffer)];
+	return array.map(b => b.toString(16).padStart(2, "0")).join("");
 }

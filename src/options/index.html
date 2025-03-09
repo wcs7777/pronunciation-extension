@@ -184,6 +184,11 @@
             </div>
             
             <div class="checkbox-group">
+                <input type="checkbox" id="audioSaveTextAudio" checked>
+                <label for="audioSaveTextAudio">Save text audio</label>
+            </div>
+            
+            <div class="checkbox-group">
                 <input type="checkbox" id="audioPlayerEnabledToText" checked>
                 <label for="audioPlayerEnabledToText">Player enabled to text</label>
             </div>
@@ -218,6 +223,11 @@
             <div class="form-group">
                 <label for="audioShortcutToggleMute">Shortcut toggle mute</label>
                 <input type="text" id="audioShortcutToggleMute">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutRewind">Shortcut rewind</label>
+                <input type="text" id="audioShortcutRewind">
             </div>
 
             <div class="form-group">
@@ -892,6 +902,26 @@
 
         <div class="settings-section">
 
+            <h2>Set Custom Audio Text</h2>
+
+            <div class="form-group">
+                <label for="setCustomAudioText">Text</label>
+                <input type="text" id="setCustomAudioText" placeholder="e.g. Once upon a time...">
+            </div>
+
+            <div class="form-group">
+                <label for="setCustomAudioTextFile">File</label>
+				<input type="file" accept="audio/*" id="setCustomAudioTextFile" placeholder="File until 60KB size">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveCustomAudioText">Save Custom Audio Text</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
 			<h2>Remove IPA</h2>
 
             <div class="form-group">
@@ -930,6 +960,10 @@
 
 			<div style="text-align: center; margin-top: 30px;">
 				<button class="btn btn-primary" id="downloadAudioStorage">Download Audio Storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadAudioTextStorage">Download Audio Text Storage</button>
 			</div>
 
 			<div style="text-align: center; margin-top: 30px;">
@@ -993,18 +1027,22 @@
 
          <div class="settings-section">
 
-            <h2>Remove Storage</h2>
+            <h2>Clear Storage</h2>
 
 			<div style="text-align: center; margin-top: 30px;">
-				<button class="btn btn-primary" id="removeIpaStorage">Remove IPA storage</button>
+				<button class="btn btn-primary" id="clearIpaStorage">Clear IPA storage</button>
 			</div>
 
 			<div style="text-align: center; margin-top: 30px;">
-				<button class="btn btn-primary" id="removeAudioStorage">Remove Audio Storage</button>
+				<button class="btn btn-primary" id="clearAudioStorage">Clear Audio Storage</button>
 			</div>
 
 			<div style="text-align: center; margin-top: 30px;">
-				<button class="btn btn-primary" id="removeErrorsStorage">Remove Errors Storage</button>
+				<button class="btn btn-primary" id="clearAudioTextStorage">Clear Audio Text Storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="clearErrorsStorage">Clear Errors Storage</button>
 			</div>
 
         </div>

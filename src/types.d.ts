@@ -104,6 +104,7 @@ declare global {
 	type OptionsAudio = {
 		enabled: boolean,
 		enabledToText: boolean,
+		saveTextAudio: boolean,
 		playerEnabledToText: boolean,
 		shortcutsEnabledToText: boolean,
 		volume: number,
@@ -124,6 +125,7 @@ declare global {
 		togglePlayer: string,
 		togglePlay: string,
 		toggleMute: string,
+		rewind: string,
 		previous: string,
 		next: string,
 		backward: string,

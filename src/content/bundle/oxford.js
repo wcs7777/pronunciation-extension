@@ -594,6 +594,17 @@
 	const defaultIpaTable = new TableByKeyPrefix(addonStorage, "defaultIpa");
 	const optionsTable = new TableByKeyPrefix(addonStorage, "options");
 
+	/*
+	a
+	control
+	defaultIpa
+	defaultOptions
+	errorsTable
+	i
+	options
+	ta
+	*/
+
 	/**
 	 * @returns {Promise<void>}
 	 */

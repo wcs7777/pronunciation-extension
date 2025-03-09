@@ -27,6 +27,7 @@ export default class Addon {
 	 *     defaultOptionsTable: Table,
 	 *     controlTable: Table,
 	 *     errorsTable: Table,
+	 *     audioTextTable: Table,
 	 *     audioTextCache: MemoryCache,
 	 *     ipaTextCache: MemoryCache,
 	 * }}
@@ -44,6 +45,7 @@ export default class Addon {
 		defaultOptionsTable,
 		controlTable,
 		errorsTable,
+		audioTextTable,
 		audioTextCache,
 		ipaTextCache,
 	}) {
@@ -59,6 +61,7 @@ export default class Addon {
 		this.defaultOptionsTable = defaultOptionsTable;
 		this.controlTable = controlTable;
 		this.errorsTable = errorsTable;
+		this.audioTextTable = audioTextTable;
 		this.audioTextCache = audioTextCache;
 		this.ipaTextCache = ipaTextCache;
 	}
@@ -109,9 +112,11 @@ export default class Addon {
 			const key = await generateSha1(text);
 			isText = true;
 			sourceAudioId = key;
-			sourceAudioTitle = text.slice(0, 83);
+			sourceAudioTitle = text;
 			if (sourceAudioTitle.length > 80) {
-				sourceAudioTitle = text.slice(0, 77) + "...";
+				const begin = text.slice(0, 60);
+				const end = text.slice(-17);
+				sourceAudioTitle = `${begin}...${end}`;
 			}
 			ipaPromise = this.fetchIpaText(
 				key,
@@ -439,13 +444,22 @@ export default class Addon {
 			console.log("Play audio is disabled to text");
 			return null;
 		}
-		options.realVoice.enabled = false;
 		/**
-		 * @type {HTMLAudioElement}
+		 * @type {HTMLAudioElement | null}
 		 */
-		let audio = null;
-		if (!this.audioTextCache.hasKey(cacheKey)) {
-			const { blob } = await this.fetchAudioExternally(
+		let audio = this.audioCache.get(cacheKey, false) ?? null;
+		if (audio) {
+			return audio;
+		}
+		const { value } = await goString(
+			this.audioTextTable.getValue(cacheKey),
+		);
+		/**
+		 * @type {string | null}
+		 */
+		let base64 = value;
+		if (!value) {
+			const { blob, save } = await this.fetchAudioExternally(
 				input,
 				options,
 				true,
@@ -453,11 +467,26 @@ export default class Addon {
 			if (!blob) {
 				return null;
 			}
-			const base64 = await blob2base64(blob);
-			audio = new Audio(base64);
-			this.audioTextCache.set(cacheKey, audio);
+			const { error, value } = await goString(blob2base64(blob));
+			base64 = value;
+			if (error) {
+				await this.saveError(`blob2base64: ${word}`, error);
+				return null;
+			}
+			if (save && options.saveTextAudio) {
+				let short = input;
+				if (short.length > 15) {
+					const begin = input.slice(0, 7);
+					const end = input.slice(-5);
+					short = `${begin}...${end}`;
+				}
+				console.log(`Adding [${short}] to audioText storage`);
+				await this.audioTextTable.set(cacheKey, base64);
+			}
 		}
-		return this.audioTextCache.get(cacheKey);
+		audio = new Audio(base64);
+		this.audioTextCache.set(cacheKey, audio);
+		return audio;
 	}
 
 	/**
