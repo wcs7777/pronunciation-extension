@@ -255,6 +255,10 @@ import {
  *         file: HTMLInputElement,
  *         update: HTMLButtonElement,
  *     },
+ *     updateAudioTextStorage: {
+ *         file: HTMLInputElement,
+ *         update: HTMLButtonElement,
+ *     },
  *     updateOptionsStorage: {
  *         file: HTMLInputElement,
  *         update: HTMLButtonElement,
@@ -494,6 +498,10 @@ const el = {
 	updateAudioStorage: {
 		file: byId("updateAudioStorageFile"),
 		update: byId("updateAudioStorage"),
+	},
+	updateAudioTextStorage: {
+		file: byId("updateAudioTextStorageFile"),
+		update: byId("updateAudioTextStorage"),
 	},
 	updateOptionsStorage: {
 		file: byId("updateOptionsStorageFile"),
@@ -1188,6 +1196,22 @@ el.updateAudioStorage.update.addEventListener("click", async ({ currentTarget })
 	}
 });
 
+el.updateAudioTextStorage.update.addEventListener("click", async ({ currentTarget }) => {
+	try {
+		const file = el.updateAudioTextStorage.file.files?.[0];
+		if (!file) {
+			showInfo(currentTarget, "No file was found in input");
+			return;
+		}
+		const values = await blob2object(file);
+		await audioTextTable.setMany(values);
+		await setFieldsValues();
+		showInfo(currentTarget, "Audio text storage updated");
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 el.updateOptionsStorage.update.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		const file = el.updateOptionsStorage.file.files?.[0];
@@ -1404,6 +1428,7 @@ async function setFieldsValues() {
 	el.removeAudio.word.value = "";
 	el.updateIpaStorage.file.value = "";
 	el.updateAudioStorage.file.value = "";
+	el.updateAudioTextStorage.file.value = "";
 	el.updateOptionsStorage.file.value = "";
 
 	sortSortableOrder(
