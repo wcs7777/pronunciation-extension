@@ -110,6 +110,7 @@ export default class Addon {
 		} else if (options.allowText) {
 			const text = removeExtraSpaces(input);
 			const key = await generateSha1(text);
+			console.log({ textKey: key });
 			isText = true;
 			sourceAudioId = key;
 			sourceAudioTitle = text;
