@@ -36,7 +36,7 @@ By now, the addon supports these API's, which all of them offer a free limit per
 - [AmazonPolly](https://aws.amazon.com/polly/) (1 year of free tier)  
 - [OpenAI](https://platform.openai.com/docs/overview) (there is no free tier)  
 
-More audio sources API's are in the roadmap.  
+Tip: if you have a good internet speed, decrease the Real voice fetch timeout (ms) to around 1200.  
 
 Install here [How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/)   
 
