@@ -123,6 +123,7 @@ export function showPopup(options) {
 	}
 
 }
+
 /**
  * @returns {HTMLTemplateElement}
  */

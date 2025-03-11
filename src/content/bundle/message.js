@@ -151,6 +151,7 @@
 		}
 
 	}
+
 	/**
 	 * @returns {HTMLTemplateElement}
 	 */
