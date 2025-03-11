@@ -370,6 +370,13 @@
 	shadow.appendChild(audio);
 	document.body.appendChild(host);
 
+	document.addEventListener("securitypolicyviolation", (e) => {
+		if (host.contains(e.target)) {
+			console.log({ pronAddonSecuritypolicyviolation: e });
+			host.remove();
+		}
+	});
+
 	/**
 	 * @param {string} id
 	 * @returns {HTMLElement | null}
