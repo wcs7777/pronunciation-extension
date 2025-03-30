@@ -206,6 +206,8 @@
 	function createTemplate() {
 	const html = `
 
+<!-- Code injected by How2Say addon -->
+
 <style>
 
 :where(div, span) {

@@ -667,6 +667,8 @@ function divAndMod(a, b) {
 function createAudioPlayerUI() {
 const html = `
 
+<!-- Code injected by How2Say addon -->
+
 <style>
 
 :host {
