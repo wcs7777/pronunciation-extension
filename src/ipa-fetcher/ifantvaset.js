@@ -69,9 +69,10 @@ export default class IFAntvaset {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
-	async fetch(input) {
+	async fetch(input, analysis) {
 		const endpoint = "https://www.antvaset.com/api";
 		const response = await fetch(endpoint, {
 			method: "POST",

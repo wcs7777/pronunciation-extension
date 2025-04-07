@@ -57,9 +57,10 @@ export default class AFOxford {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(input) {
+	fetch(input, analysis) {
 		const base = "https://www.oxfordlearnersdictionaries.com/us/media/english/us_pron_ogg";
 		const fileBegin = input.replaceAll("'", "_").replaceAll("-", "_");
 		const candidates = [

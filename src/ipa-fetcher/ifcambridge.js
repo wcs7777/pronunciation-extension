@@ -70,9 +70,16 @@ export default class IFCambridge {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
-	async fetch(input) {
+	async fetch(input, analysis) {
+		if (
+			(analysis?.type === "Verb" && analysis?.root !== input) ||
+			analysis?.confidence < 0.5
+		) {
+			throw new Error(`${input} is not in root form`);
+		}
 		const base = "https://dictionary.cambridge.org/us/dictionary/english/";
 		const document = await url2document(`${base}${input}`);
 		const hw = document.querySelector("span.hw.dhw");

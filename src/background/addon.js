@@ -1,6 +1,7 @@
 import "../utils/fflate.js";
 import * as af from "../audio-fetcher/fetchers.js";
 import * as pf from "../ipa-fetcher/fetchers.js";
+import analyseWord from "../utils/analyse-word.js";
 import { blob2base64 } from "../utils/element.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
 import { goString } from "../utils/promise.js";
@@ -98,8 +99,18 @@ export default class Addon {
 			const word = words[0];
 			const maxCharacters = 60;
 			if (word.length <= maxCharacters) {
-				ipaPromise = this.fetchIpa(word, options.ipa);
-				audioPromise = this.fetchAudio(word, options.audio);
+				const analysis = analyseWord(word);
+				console.log({ analysis });
+				ipaPromise = this.fetchIpa(
+					word,
+					options.ipa,
+					analysis,
+				);
+				audioPromise = this.fetchAudio(
+					word,
+					options.audio,
+					analysis,
+				);
 			} else {
 				const message = (
 					`Exceeded ${maxCharacters} characters allowed for words`
@@ -265,9 +276,10 @@ export default class Addon {
 	/**
 	 * @param {string} word
 	 * @param {OptionsIpa} options
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<string | null>}
 	 */
-	async fetchIpa(word, options) {
+	async fetchIpa(word, options, analysis) {
 		if (!options.enabled) {
 			console.log("Show IPA is disabled");
 			return null;
@@ -286,6 +298,7 @@ export default class Addon {
 				word,
 				options,
 				false,
+				analysis,
 			);
 			ipa = ipaValue;
 			if (!ipa) {
@@ -337,8 +350,9 @@ export default class Addon {
 	 * @param {OptionsIpa} options
 	 * @param {boolean} toText
 	 * @returns {Promise<{ ipa: string | null, save: boolean }>
+	 * @param {?WordAnalyse} analysis
 	 */
-	async fetchIpaExternally(input, options, toText) {
+	async fetchIpaExternally(input, options, toText, analysis) {
 		const timestamp = new Date().getTime();
 		const leKey = "ipaLastError";
 		/**
@@ -360,7 +374,7 @@ export default class Addon {
 		for (const f of fetchers) {
 			console.log(`Searching IPA in ${f.name}`);
 			try {
-				const ipa = await f.fetch(input);
+				const ipa = await f.fetch(input, analysis);
 				if (ipa) {
 					return { ipa, save: f.save };
 				}
@@ -388,9 +402,10 @@ export default class Addon {
 	/**
 	 * @param {string} word
 	 * @param {OptionsAudio} options
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<HTMLAudioElement | null>}
 	 */
-	async fetchAudio(word, options) {
+	async fetchAudio(word, options, analysis) {
 		if (!options.enabled) {
 			console.log("Play audio is disabled");
 			return null;
@@ -414,6 +429,7 @@ export default class Addon {
 				word,
 				options,
 				false,
+				analysis,
 			);
 			if (!blob) {
 				return null;
@@ -495,8 +511,9 @@ export default class Addon {
 	 * @param {OptionsAudio} options
 	 * @param {boolean} toText
 	 * @returns {Promise<{ blob: Blob | null, save: boolean }>
+	 * @param {?WordAnalyse} analysis
 	 */
-	async fetchAudioExternally(input, options, toText) {
+	async fetchAudioExternally(input, options, toText, analysis) {
 		const timestamp = new Date().getTime();
 		const leKey = "audioLastError";
 		/**
@@ -523,7 +540,7 @@ export default class Addon {
 		for (const f of fetchers) {
 			console.log(`Searching audio in ${f.name}`);
 			try {
-				const blob = await f.fetch(input);
+				const blob = await f.fetch(input, analysis);
 				if (blob) {
 					return { blob, save: f.save };
 				}

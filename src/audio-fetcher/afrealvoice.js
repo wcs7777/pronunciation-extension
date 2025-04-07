@@ -74,9 +74,10 @@ export default class AFRealVoice {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(input) {
+	fetch(input, analysis) {
 		/**
 		 * @type {Promise<Blob>[]}
 		 */

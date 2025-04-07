@@ -22,11 +22,11 @@ declare global {
 	};
 
 	type IpaFetcher = PronunciationFetcher & {
-		fetch: (input: string) => Promise<string>,
+		fetch: (input: string, analysis?: WordAnalyse) => Promise<string>,
 	};
 
 	type AudioFetcher = PronunciationFetcher & {
-		fetch: (input: string) => Promise<Blob>,
+		fetch: (input: string, analysis?: WordAnalyse) => Promise<Blob>,
 	};
 
 	type PronunciationFetcherLastError = {
@@ -265,6 +265,13 @@ declare global {
 	type SortableJS = {
 		toArray: () => string[],
 		sort: (order: string[], useAnimation: boolean) => void,
+	};
+
+	// compromise
+	type WordAnalyse = {
+		root: string,
+		confidence: number,
+		type: "Noun" | "Verb",
 	};
 
 }

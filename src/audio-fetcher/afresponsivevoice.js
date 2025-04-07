@@ -70,9 +70,10 @@ export default class AFResponsiveVoice {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(input) {
+	fetch(input, analysis) {
 		const endpoint = "https://texttospeech.responsivevoice.org/v1/text:synthesize?";
 		const params = new URLSearchParams({
 			lang: "en-US",

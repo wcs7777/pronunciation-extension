@@ -56,9 +56,10 @@ export default class AFGstatic {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(input) {
+	fetch(input, analysis) {
 		const base = "https://ssl.gstatic.com/dictionary/static/sounds";
 		const fileBegin = input.replaceAll("'", "_");
 		/**

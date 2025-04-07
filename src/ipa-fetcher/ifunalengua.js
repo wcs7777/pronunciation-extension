@@ -69,9 +69,10 @@ export default class IFUnalengua {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
-	async fetch(input) {
+	async fetch(input, analysis) {
 		const response = await fetch("https://api2.unalengua.com/ipav3", {
 			method: "POST",
 			credentials: "omit",

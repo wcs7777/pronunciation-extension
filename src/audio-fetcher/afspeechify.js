@@ -73,9 +73,10 @@ export default class AFSpeechify {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input) {
+	async fetch(input, analysis) {
 		const endpoint = "https://api.sws.speechify.com/v1/audio/speech";
 		const response = await fetch(endpoint, {
 			method: "POST",

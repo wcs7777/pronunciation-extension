@@ -76,9 +76,10 @@ export default class AFAmazonPolly {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input) {
+	async fetch(input, analysis) {
 		const url = `https://${this.options.api.endpoint}/v1/speech`;
 		const response = await fetchAws(url,
 			{

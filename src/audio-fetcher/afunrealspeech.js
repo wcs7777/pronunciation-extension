@@ -72,9 +72,10 @@ export default class AFUnrealSpeech {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input) {
+	async fetch(input, analysis) {
 		const base = "https://api.v7.unrealspeech.com";
 		let endpoint = "";
 		let body = {

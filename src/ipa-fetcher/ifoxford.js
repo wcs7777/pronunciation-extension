@@ -71,11 +71,20 @@ export default class IFOxford {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
-	async fetch(input) {
+	async fetch(input, analysis) {
+		if (analysis?.confidence < 0.5) {
+			throw new Error(`${input} has not sufficient confidence ${analysis.confidence}`);
+		}
+		const word = (
+			analysis?.type !== "Noun" && analysis?.root ?
+			analysis.root :
+			input
+		);
 		const base = "https://www.oxfordlearnersdictionaries.com/us/definition/english/";
-		const document = await url2document(`${base}${input}`);
+		const document = await url2document(`${base}${word}`);
 		const button = document.querySelector(
 			`div.sound.audio_play_button.pron-us[title^="${input} "]`,
 		);

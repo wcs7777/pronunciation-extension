@@ -70,9 +70,10 @@ export default class AFGoogleSpeech {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(input) {
+	fetch(input, analysis) {
 		const endpoint = "https://www.google.com/speech-api/v1/synthesize?";
 		const params = new URLSearchParams({
 			text: input,

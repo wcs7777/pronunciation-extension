@@ -72,9 +72,10 @@ export default class AFElevenLabs {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input) {
+	async fetch(input, analysis) {
 		const base = "https://api.elevenlabs.io/v1/text-to-speech";
 		const endpoint = `${base}/${this.options.api.voiceId}/stream?`;
 		const queryParams = new URLSearchParams({

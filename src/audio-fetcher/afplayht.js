@@ -78,9 +78,10 @@ export default class AFPlayHt {
 
 	/**
 	 * @param {string} input
+	 * @param {?WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input) {
+	async fetch(input, analysis) {
 		const endpoint = "https://api.play.ht/api/v2/tts/stream";
 		const response = await fetch(endpoint, {
 			method: "POST",
