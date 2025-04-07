@@ -7,11 +7,9 @@ export default class AFElevenLabs {
 
 	/**
 	 * @param {OptAudioElevenLabs} options
-	 * @param {?PronunciationFetcherLastError} lastError
 	 */
-	constructor(options, lastError) {
+	constructor(options) {
 		this.options = options;
-		this.lastError = lastError;
 	}
 
 	/**
@@ -31,9 +29,10 @@ export default class AFElevenLabs {
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
+	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText) {
+	enabled(input, toText, lastError) {
 		if (!this.options.api.key) {
 			return false;
 		}
@@ -46,7 +45,7 @@ export default class AFElevenLabs {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(this.lastError, 60 * 2, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 60 * 2, [200, 404]);
 	}
 
 	/**

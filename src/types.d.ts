@@ -5,7 +5,7 @@ declare global {
 	type PronunciationFetcher = {
 		static name: string,
 		name: string,
-		enabled: (input: string, toText: boolean) => boolean,
+		enabled: (input: string, toText: boolean, lastError?: PronunciationFetcherLastError) => boolean,
 		order: (toText: boolean) => number,
 		save: boolean,
 		saveError: boolean,
@@ -22,11 +22,11 @@ declare global {
 	};
 
 	type IpaFetcher = PronunciationFetcher & {
-		fetch: (text: string) => Promise<string>,
+		fetch: (input: string) => Promise<string>,
 	};
 
 	type AudioFetcher = PronunciationFetcher & {
-		fetch: (text: string) => Promise<Blob>,
+		fetch: (input: string) => Promise<Blob>,
 	};
 
 	type PronunciationFetcherLastError = {

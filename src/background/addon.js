@@ -349,13 +349,13 @@ export default class Addon {
 		 * @type {IpaFetcher[]}
 		 */
 		const unordedFetchers = [
-			new pf.IFAntvaset(options.antvaset, le?.[pf.IFAntvaset.name]),
-			new pf.IFUnalengua(options.unalengua, le?.[pf.IFUnalengua.name]),
-			new pf.IFCambridge(options.cambridge, le?.[pf.IFCambridge.name]),
-			new pf.IFOxford(options.oxford, le?.[pf.IFOxford.name]),
+			new pf.IFAntvaset(options.antvaset),
+			new pf.IFUnalengua(options.unalengua),
+			new pf.IFCambridge(options.cambridge),
+			new pf.IFOxford(options.oxford),
 		];
 		const fetchers = unordedFetchers
-			.filter(f => f.enabled(input, toText))
+			.filter(f => f.enabled(input, toText, le?.[f.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of fetchers) {
 			console.log(`Searching IPA in ${f.name}`);
@@ -507,45 +507,18 @@ export default class Addon {
 		 * @type {AudioFetcher[]}
 		 */
 		const unordedFetchers = [
-			new af.AFRealVoice(
-				options.realVoice,
-				le?.[af.AFRealVoice.name],
-			),
-			new af.AFGoogleSpeech(
-				options.googleSpeech,
-				le?.[af.AFGoogleSpeech.name],
-			),
-			new af.AFResponsiveVoice(
-				options.responsiveVoice,
-				le?.[af.AFResponsiveVoice.name],
-			),
-			new af.AFUnrealSpeech(
-				options.unrealSpeech,
-				le?.[af.AFUnrealSpeech.name],
-			),
-			new af.AFSpeechify(
-				options.speechify,
-				le?.[af.AFSpeechify.name],
-			),
-			new af.AFPlayHt(
-				options.playHt,
-				le?.[af.AFPlayHt.name],
-			),
-			new af.AFElevenLabs(
-				options.elevenLabs,
-				le?.[af.AFElevenLabs.name],
-			),
-			new af.AFAmazonPolly(
-				options.amazonPolly,
-				le?.[af.AFAmazonPolly.name],
-			),
-			new af.AFOpenAi(
-				options.openAi,
-				le?.[af.AFOpenAi.name],
-			),
+			new af.AFRealVoice(options.realVoice),
+			new af.AFGoogleSpeech(options.googleSpeech),
+			new af.AFResponsiveVoice(options.responsiveVoice),
+			new af.AFUnrealSpeech(options.unrealSpeech),
+			new af.AFSpeechify(options.speechify),
+			new af.AFPlayHt(options.playHt),
+			new af.AFElevenLabs(options.elevenLabs),
+			new af.AFAmazonPolly(options.amazonPolly),
+			new af.AFOpenAi(options.openAi),
 		];
 		const fetchers = unordedFetchers
-			.filter(f => f.enabled(input, toText))
+			.filter(f => f.enabled(input, toText, le?.[f.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of fetchers) {
 			console.log(`Searching audio in ${f.name}`);

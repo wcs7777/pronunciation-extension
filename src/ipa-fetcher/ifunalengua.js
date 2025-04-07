@@ -7,11 +7,9 @@ export default class IFUnalengua {
 
 	/**
 	 * @param {OptIpaUnalengua} options
-	 * @param {?PronunciationFetcherLastError} lastError
 	 */
-	constructor(options, lastError) {
+	constructor(options) {
 		this.options = options;
-		this.lastError = lastError;
 	}
 
 	/**
@@ -31,6 +29,7 @@ export default class IFUnalengua {
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
+	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText) {
@@ -43,7 +42,7 @@ export default class IFUnalengua {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(this.lastError, 10, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 10, [200, 404]);
 	}
 
 	/**

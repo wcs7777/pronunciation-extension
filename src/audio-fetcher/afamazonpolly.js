@@ -8,11 +8,9 @@ export default class AFAmazonPolly {
 
 	/**
 	 * @param {OptAudioAmazonPolly} options
-	 * @param {?PronunciationFetcherLastError} lastError
 	 */
-	constructor(options, lastError) {
+	constructor(options) {
 		this.options = options;
-		this.lastError = lastError;
 	}
 
 	/**
@@ -32,9 +30,10 @@ export default class AFAmazonPolly {
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
+	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText) {
+	enabled(input, toText, lastError) {
 		if (
 			!this.options.api.accessKeyId ||
 			!this.options.api.secretAccessKey
@@ -50,7 +49,7 @@ export default class AFAmazonPolly {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(this.lastError, 30, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 30, [200, 404]);
 	}
 
 	/**

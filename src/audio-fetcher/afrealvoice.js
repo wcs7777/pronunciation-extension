@@ -10,11 +10,9 @@ export default class AFRealVoice {
 
 	/**
 	 * @param {OptAudioRealVoice} options
-	 * @param {?PronunciationFetcherLastError} lastError
 	 */
-	constructor(options, lastError) {
+	constructor(options) {
 		this.options = options;
-		this.lastError = lastError;
 		this.oxford = new AFOxford();
 		this.gstatic = new AFGstatic();
 	}
@@ -36,6 +34,7 @@ export default class AFRealVoice {
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
+	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText) {
@@ -48,7 +47,7 @@ export default class AFRealVoice {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(this.lastError, 10, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 10, [200, 404]);
 	}
 
 	/**

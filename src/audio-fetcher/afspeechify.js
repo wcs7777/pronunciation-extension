@@ -8,11 +8,9 @@ export default class AFSpeechify {
 
 	/**
 	 * @param {OptAudioSpeechify} options
-	 * @param {?PronunciationFetcherLastError} lastError
 	 */
-	constructor(options, lastError) {
+	constructor(options) {
 		this.options = options;
-		this.lastError = lastError;
 	}
 
 	/**
@@ -32,6 +30,7 @@ export default class AFSpeechify {
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
+	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText) {
@@ -47,7 +46,7 @@ export default class AFSpeechify {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(this.lastError, 60 * 2, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 60 * 2, [200, 404]);
 	}
 
 	/**

@@ -8,11 +8,9 @@ export default class AFResponsiveVoice {
 
 	/**
 	 * @param {OptAudioResponsiveVoice} options
-	 * @param {?PronunciationFetcherLastError} lastError
 	 */
-	constructor(options, lastError) {
+	constructor(options) {
 		this.options = options;
-		this.lastError = lastError;
 	 }
 
 	/**
@@ -32,6 +30,7 @@ export default class AFResponsiveVoice {
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
+	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText) {
@@ -44,7 +43,7 @@ export default class AFResponsiveVoice {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(this.lastError, 60, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 60, [200, 404]);
 	}
 
 	/**

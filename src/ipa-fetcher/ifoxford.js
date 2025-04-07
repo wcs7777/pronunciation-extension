@@ -9,11 +9,9 @@ export default class IFOxford {
 
 	/**
 	 * @param {OptIpaOxford} options
-	 * @param {?PronunciationFetcherLastError} lastError
 	 */
-	constructor(options, lastError) {
+	constructor(options) {
 		this.options = options;
-		this.lastError = lastError;
 	}
 
 	/**
@@ -33,6 +31,7 @@ export default class IFOxford {
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
+	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText) {
@@ -45,7 +44,7 @@ export default class IFOxford {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(this.lastError, 10, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 10, [200, 404]);
 	}
 
 	/**
