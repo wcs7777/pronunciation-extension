@@ -33,7 +33,7 @@ export default class AFSpeechify {
 	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText) {
+	enabled(input, toText, lastError) {
 		if (!this.options.api.token) {
 			return false;
 		}

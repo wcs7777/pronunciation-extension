@@ -32,7 +32,7 @@ export default class AFUnrealSpeech {
 	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText) {
+	enabled(input, toText, lastError) {
 		if (!this.options.api.token) {
 			return false;
 		}

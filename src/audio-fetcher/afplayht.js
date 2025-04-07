@@ -32,7 +32,7 @@ export default class AFPlayHt {
 	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText) {
+	enabled(input, toText, lastError) {
 		if (!this.options.api.userId || !this.options.api.key) {
 			return false;
 		}

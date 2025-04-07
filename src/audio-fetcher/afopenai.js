@@ -32,7 +32,7 @@ export default class AFOpenAi {
 	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText) {
+	enabled(input, toText, lastError) {
 		if (!this.options.api.key) {
 			return false;
 		}

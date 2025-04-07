@@ -32,7 +32,7 @@ export default class IFUnalengua {
 	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText) {
+	enabled(input, toText, lastError) {
 		let enabled = false;
 		if (!toText) {
 			enabled = this.options.enabled;

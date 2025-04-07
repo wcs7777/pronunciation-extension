@@ -25,9 +25,10 @@ export default class AFGstatic {
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
+	 * @param {?PronunciationFetcherLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText) {
+	enabled(input, toText, lastError) {
 		return !toText;
 	}
 
