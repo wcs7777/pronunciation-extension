@@ -5,7 +5,11 @@ import { url2blob } from "../utils/element.js";
  */
 export default class AFGstatic {
 
-	constructor() {
+	/**
+	 * @param {OptAudioGstatic} options
+	 */
+	constructor(options) {
+		this.options = options;
 	}
 
 	/**
@@ -29,7 +33,16 @@ export default class AFGstatic {
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
-		return !toText;
+		let enabled = false;
+		if (!toText) {
+			enabled = this.options.enabled;
+		} else {
+			enabled = (
+				this.options.enabledToText &&
+				input.length <= this.options.textMaxLength
+			);
+		}
+		return enabled;
 	}
 
 	/**
@@ -37,29 +50,32 @@ export default class AFGstatic {
 	 * @returns {number}
 	 */
 	order(toText) {
-		return !toText ? 1 : 0;
+		return !toText ? this.options.order : this.options.orderToText;
 	}
 
 	/**
 	 * @returns {boolean}
 	 */
 	get save() {
-		return true;
+		return this.options.save;
 	}
 
 	/**
 	 * @returns {boolean}
 	 */
 	get saveError() {
-		return false;
+		return this.options.saveError;
 	}
 
 	/**
 	 * @param {string} input
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
 	fetch(input, analysis) {
+		if (!analysis.isValid) {
+			throw new Error(`${input} probably is not a valid word`);
+		}
 		const base = "https://ssl.gstatic.com/dictionary/static/sounds";
 		const fileBegin = input.replaceAll("'", "_");
 		/**

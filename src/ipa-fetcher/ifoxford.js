@@ -71,18 +71,14 @@ export default class IFOxford {
 
 	/**
 	 * @param {string} input
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
 	async fetch(input, analysis) {
-		if (analysis?.confidence < 0.5) {
-			throw new Error(`${input} has not sufficient confidence ${analysis.confidence}`);
+		if (!analysis.isValid) {
+			throw new Error(`${input} probably is not a valid word`);
 		}
-		const word = (
-			analysis?.type !== "Noun" && analysis?.root ?
-			analysis.root :
-			input
-		);
+		const word = analysis.isVerb ? analysis.root : input;
 		const base = "https://www.oxfordlearnersdictionaries.com/us/definition/english/";
 		const document = await url2document(`${base}${word}`);
 		const button = document.querySelector(
@@ -92,7 +88,7 @@ export default class IFOxford {
 			throw new Error(`audio_play_button not found for ${input}`);
 		}
 		const title = splitWords(button?.title.trim().toLowerCase())?.[0];
-		if (title !== input) {
+		if (title.toLowerCase() !== input) {
 			throw new Error(`${input} is different from ${title}`);
 		}
 		return button.nextElementSibling.textContent;

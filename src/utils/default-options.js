@@ -25,7 +25,7 @@ const defaultOptions = {
 			actionTriggered: "below",
 		},
 		useContextColors: false,
-		antvaset: {
+		cambridge: {
 			enabled: true,
 			order: 1,
 			enabledToText: false,
@@ -34,16 +34,16 @@ const defaultOptions = {
 			saveError: true,
 			textMaxLength: 0,
 		},
-		unalengua: {
+		oxford: {
 			enabled: true,
 			order: 2,
-			enabledToText: true,
-			orderToText: 1,
+			enabledToText: false,
+			orderToText: 0,
 			save: true,
 			saveError: true,
-			textMaxLength: 1500,
+			textMaxLength: 0,
 		},
-		oxford: {
+		antvaset: {
 			enabled: true,
 			order: 3,
 			enabledToText: false,
@@ -52,14 +52,14 @@ const defaultOptions = {
 			saveError: true,
 			textMaxLength: 0,
 		},
-		cambridge: {
+		unalengua: {
 			enabled: true,
 			order: 4,
-			enabledToText: false,
-			orderToText: 0,
+			enabledToText: true,
+			orderToText: 1,
 			save: true,
 			saveError: true,
-			textMaxLength: 0,
+			textMaxLength: 1500,
 		},
 	},
 	audio: {
@@ -85,9 +85,36 @@ const defaultOptions = {
 			increaseSpeed: ">",
 			resetSpeed: ";",
 		},
-		realVoice: {
+		cambridge: {
 			enabled: true,
 			order: 1,
+			enabledToText: false,
+			orderToText: 0,
+			save: true,
+			saveError: true,
+			textMaxLength: 0,
+		},
+		linguee: {
+			enabled: true,
+			order: 2,
+			enabledToText: false,
+			orderToText: 0,
+			save: true,
+			saveError: true,
+			textMaxLength: 0,
+		},
+		oxford: {
+			enabled: true,
+			order: 3,
+			enabledToText: false,
+			orderToText: 0,
+			save: true,
+			saveError: true,
+			textMaxLength: 0,
+		},
+		gstatic: {
+			enabled: true,
+			order: 4,
 			enabledToText: false,
 			orderToText: 0,
 			save: true,
@@ -97,7 +124,7 @@ const defaultOptions = {
 		},
 		googleSpeech: {
 			enabled: true,
-			order: 3,
+			order: 5,
 			enabledToText: true,
 			orderToText: 2,
 			save: false,
@@ -106,7 +133,7 @@ const defaultOptions = {
 		},
 		responsiveVoice: {
 			enabled: true,
-			order: 2,
+			order: 6,
 			enabledToText: true,
 			orderToText: 1,
 			save: true,
@@ -120,7 +147,7 @@ const defaultOptions = {
 		},
 		unrealSpeech: {
 			enabled: true,
-			order: 4,
+			order: 7,
 			enabledToText: true,
 			orderToText: 3,
 			save: true,
@@ -137,7 +164,7 @@ const defaultOptions = {
 		},
 		speechify: {
 			enabled: true,
-			order: 5,
+			order: 8,
 			enabledToText: true,
 			orderToText: 4,
 			save: true,
@@ -150,7 +177,7 @@ const defaultOptions = {
 		},
 		playHt: {
 			enabled: true,
-			order: 6,
+			order: 9,
 			enabledToText: true,
 			orderToText: 5,
 			save: true,
@@ -169,7 +196,7 @@ const defaultOptions = {
 		},
 		elevenLabs: {
 			enabled: true,
-			order: 7,
+			order: 10,
 			enabledToText: true,
 			orderToText: 6,
 			save: true,
@@ -185,7 +212,7 @@ const defaultOptions = {
 		},
 		amazonPolly: {
 			enabled: true,
-			order: 8,
+			order: 11,
 			enabledToText: true,
 			orderToText: 7,
 			save: true,
@@ -203,7 +230,7 @@ const defaultOptions = {
 		},
 		openAi: {
 			enabled: true,
-			order: 9,
+			order: 12,
 			enabledToText: true,
 			orderToText: 8,
 			save: true,

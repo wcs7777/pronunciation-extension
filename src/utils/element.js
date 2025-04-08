@@ -1,22 +1,33 @@
 import { isDigit } from "./string.js";
+import MemoryCache from "./memory-cache.js";
+
+const documentCache = new MemoryCache("fetchDocumentCache", 6);
 
 /**
  * @param {string} url
  * @returns {Promise<Document>}
  */
 export async function url2document(url, credentials="omit") {
-	const response = await fetch(url, { credentials });
-	const status = response.status;
-	if (status !== 200) {
-		const message = await response.text();
-		throw {
-			status,
-			message,
-			error: new Error(response.statusText),
-		};
+	/**
+	 * @type {Document | null}
+	 */
+	let document = documentCache.get(url, false);
+	if (!document) {
+		const response = await fetch(url, { credentials });
+		const status = response.status;
+		if (status !== 200) {
+			const message = await response.text();
+			throw {
+				status,
+				message,
+				error: new Error(response.statusText),
+			};
+		}
+		const text = await response.text();
+		document = new DOMParser().parseFromString(text, "text/html");
+		documentCache.set(url, document);
 	}
-	const text = await response.text();
-	return new DOMParser().parseFromString(text, "text/html");
+	return document;
 }
 
 /**

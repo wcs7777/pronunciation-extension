@@ -72,7 +72,7 @@ export default class AFElevenLabs {
 
 	/**
 	 * @param {string} input
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input, analysis) {

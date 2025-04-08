@@ -714,7 +714,7 @@
 	 */
 	function getWord(lastAudioPlayed) {
 		const words = splitWords(lastAudioPlayed.title.trim().toLowerCase());
-		return words[0];
+		return words[0].toLowerCase();
 	}
 
 	(async () => main())().catch(console.error);

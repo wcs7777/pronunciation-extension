@@ -1,12 +1,17 @@
-import { textHierarchy } from "../utils/string.js";
-import { url2blob } from "../utils/element.js";
+import { splitWords } from "../utils/string.js";
+import { url2blob, url2document } from "../utils/element.js";
+import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
 
 /**
  * @implements {AudioFetcher}
  */
 export default class AFOxford {
 
-	constructor() {
+	/**
+	 * @param {OptAudioOxford} options
+	 */
+	constructor(options) {
+		this.options = options;
 	}
 
 	/**
@@ -30,7 +35,16 @@ export default class AFOxford {
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
-		return !toText;
+		let enabled = false;
+		if (!toText) {
+			enabled = this.options.enabled;
+		} else {
+			enabled = (
+				this.options.enabledToText &&
+				input.length <= this.options.textMaxLength
+			);
+		}
+		return enabled && !waitRateLimit(lastError, 10, [200, 404]);
 	}
 
 	/**
@@ -38,40 +52,55 @@ export default class AFOxford {
 	 * @returns {number}
 	 */
 	order(toText) {
-		return !toText ? 1 : 0;
+		return !toText ? this.options.order : this.options.orderToText;
 	}
 
 	/**
 	 * @returns {boolean}
 	 */
 	get save() {
-		return true;
+		return this.options.save;
 	}
 
 	/**
 	 * @returns {boolean}
 	 */
 	get saveError() {
-		return false;
+		return this.options.saveError;
 	}
 
 	/**
 	 * @param {string} input
-	 * @param {?WordAnalyse} analysis
-	 * @returns {Promise<Blob>}
+	 * @param {WordAnalyse} analysis
+	 * @returns {Promise<string>}
 	 */
-	fetch(input, analysis) {
-		const base = "https://www.oxfordlearnersdictionaries.com/us/media/english/us_pron_ogg";
-		const fileBegin = input.replaceAll("'", "_").replaceAll("-", "_");
-		const candidates = [
-			"__us_1.ogg",
-			"__us_1_rr.ogg",
-		].map(fileEnd => {
-			const file = `${fileBegin}${fileEnd}`;
-			const path = textHierarchy(file, [1, 3, 5]).join("/");
-			return `${base}/${path}/${file}`;
-		});
-		return Promise.any(candidates.map(url => url2blob(url)));
+	async fetch(input, analysis) {
+		if (!analysis.isValid) {
+			throw new Error(`${input} probably is not a valid word`);
+		}
+		const word = analysis.isVerb ? analysis.root : input;
+		const base = "https://www.oxfordlearnersdictionaries.com/us/definition/english/";
+		const document = await url2document(`${base}${word}`);
+		const button = document.querySelector(
+			`div.sound.audio_play_button.pron-us[title^="${input} "]`,
+		);
+		if (!button) {
+			throw new Error(`audio_play_button not found for ${input}`);
+		}
+		const title = splitWords(button?.title.trim().toLowerCase())?.[0];
+		if (title.toLowerCase() !== input) {
+			throw new Error(`${input} is different from ${title}`);
+		}
+		const src = button.dataset?.srcOgg;
+		if (!src) {
+			throw new Error(`Audio not found for ${input}`);
+		}
+		const url = (
+			src.startsWith("https://") ?
+			src :
+			`${window.location.origin}${src}`
+		);
+		return url2blob(url);
 	}
 
 }

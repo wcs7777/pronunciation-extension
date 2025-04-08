@@ -70,7 +70,7 @@ export default class AFResponsiveVoice {
 
 	/**
 	 * @param {string} input
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
 	fetch(input, analysis) {

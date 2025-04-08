@@ -73,12 +73,12 @@ export default class AFLinguee {
 
 	/**
 	 * @param {string} input
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input, analysis) {
-		if (analysis?.confidence < 0.5) {
-			throw new Error(`${input} has not sufficient confidence ${analysis.confidence}`);
+		if (!analysis.isValid) {
+			throw new Error(`${input} probably is not a valid word`);
 		}
 		const endpoint = "https://www.linguee.com/english-spanish/search";
 		const params = new URLSearchParams({
@@ -87,9 +87,9 @@ export default class AFLinguee {
 		}).toString();
 		const document = await url2document(`${endpoint}?${params}`);
 		const title = splitWords(
-			document.querySelector("a.dictLink")?.innerHTML,
-		)?.[0];
-		if (title !== input) {
+			document.querySelector("a.dictLink")?.innerHTML ?? "",
+		)[0];
+		if (title.toLowerCase() !== input) {
 			throw new Error(`${input} is different from ${title}`);
 		}
 		const onclick = document

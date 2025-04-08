@@ -69,7 +69,7 @@ export default class IFAntvaset {
 
 	/**
 	 * @param {string} input
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
 	async fetch(input, analysis) {

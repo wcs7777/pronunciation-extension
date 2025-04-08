@@ -22,14 +22,15 @@ declare global {
 	};
 
 	type IpaFetcher = PronunciationFetcher & {
-		fetch: (input: string, analysis?: WordAnalyse) => Promise<string>,
+		fetch: (input: string, analysis: WordAnalyse) => Promise<string>,
 	};
 
 	type AudioFetcher = PronunciationFetcher & {
-		fetch: (input: string, analysis?: WordAnalyse) => Promise<Blob>,
+		fetch: (input: string, analysis: WordAnalyse) => Promise<Blob>,
 	};
 
 	type PronunciationFetcherLastError = {
+		fetcher: string,
 		timestamp: number,
 		status?: number,
 		message?: string,
@@ -90,16 +91,16 @@ declare global {
 			actionTriggered: "above" | "below",
 		},
 		useContextColors: boolean,
+		cambridge: OptIpaCambridge,
+		oxford: OptIpaOxford,
 		antvaset: OptIpaAntvaset,
 		unalengua: OptIpaUnalengua,
-		oxford: OptIpaOxford,
-		cambridge: OptIpaCambridge,
 	};
 
-	type OptIpaAntvaset = PronunciationFetcherOptions;
-	type OptIpaUnalengua = PronunciationFetcherOptions;
 	type OptIpaCambridge = PronunciationFetcherOptions;
 	type OptIpaOxford = PronunciationFetcherOptions;
+	type OptIpaAntvaset = PronunciationFetcherOptions;
+	type OptIpaUnalengua = PronunciationFetcherOptions;
 
 	type OptionsAudio = {
 		enabled: boolean,
@@ -110,7 +111,10 @@ declare global {
 		volume: number,
 		playbackRate: number,
 		shortcuts: OptAudioShortcuts,
-		realVoice: OptAudioRealVoice,
+		cambridge: OptAudioCambridge,
+		linguee: OptAudioLinguee,
+		oxford: OptAudioOxford,
+		gstatic: OptAudioGstatic,
 		googleSpeech: OptAudioGoogleSpeech,
 		responsiveVoice: OptAudioResponsiveVoice,
 		unrealSpeech: OptAudioUnrealSpeech,
@@ -137,7 +141,11 @@ declare global {
 		resetSpeed: string,
 	};
 
-	type OptAudioRealVoice = PronunciationFetcherOptions & {
+	type OptAudioCambridge = PronunciationFetcherOptions;
+	type OptAudioLinguee = PronunciationFetcherOptions;
+	type OptAudioOxford = PronunciationFetcherOptions;
+
+	type OptAudioGstatic = PronunciationFetcherOptions & {
 		fetchTimeout: number,
 	};
 
@@ -271,7 +279,11 @@ declare global {
 	type WordAnalyse = {
 		root: string,
 		confidence: number,
-		type: "Noun" | "Verb",
+		type: "Noun" | "Verb" | "Text",
+		isNoun: boolean,
+		isVerb: boolean,
+		isValid: boolean,
+		isText: boolean,
 	};
 
 }

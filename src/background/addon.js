@@ -1,7 +1,7 @@
 import "../utils/fflate.js";
 import * as af from "../audio-fetcher/fetchers.js";
 import * as pf from "../ipa-fetcher/fetchers.js";
-import analyseWord from "../utils/analyse-word.js";
+import { cachedAnalyseWord } from "../utils/analyse-word.js";
 import { blob2base64 } from "../utils/element.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
 import { goString } from "../utils/promise.js";
@@ -99,7 +99,7 @@ export default class Addon {
 			const word = words[0];
 			const maxCharacters = 60;
 			if (word.length <= maxCharacters) {
-				const analysis = analyseWord(word);
+				const analysis = await cachedAnalyseWord(word);
 				console.log({ analysis });
 				ipaPromise = this.fetchIpa(
 					word,
@@ -276,7 +276,7 @@ export default class Addon {
 	/**
 	 * @param {string} word
 	 * @param {OptionsIpa} options
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<string | null>}
 	 */
 	async fetchIpa(word, options, analysis) {
@@ -336,6 +336,15 @@ export default class Addon {
 				input,
 				options,
 				true,
+				{
+					root: "",
+					confidence: 1,
+					type: "Text",
+					isNoun: false,
+					isVerb: false,
+					isValid: true,
+					isText: true,
+				},
 			);
 			if (!ipa) {
 				return null;
@@ -350,7 +359,7 @@ export default class Addon {
 	 * @param {OptionsIpa} options
 	 * @param {boolean} toText
 	 * @returns {Promise<{ ipa: string | null, save: boolean }>
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 */
 	async fetchIpaExternally(input, options, toText, analysis) {
 		const timestamp = new Date().getTime();
@@ -362,13 +371,13 @@ export default class Addon {
 		/**
 		 * @type {IpaFetcher[]}
 		 */
-		const unordedFetchers = [
-			new pf.IFAntvaset(options.antvaset),
-			new pf.IFUnalengua(options.unalengua),
-			new pf.IFCambridge(options.cambridge),
-			new pf.IFOxford(options.oxford),
-		];
-		const fetchers = unordedFetchers
+		const fetchers = [
+			pf.IFCambridge,
+			pf.IFOxford,
+			pf.IFAntvaset,
+			pf.IFUnalengua,
+		]
+			 .map(F => new F(options[F.name]))
 			.filter(f => f.enabled(input, toText, le?.[f.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of fetchers) {
@@ -385,6 +394,7 @@ export default class Addon {
 				}
 				if (error?.status) {
 					le[f.name] = {
+						fetcher: f.name,
 						...error,
 						error: removeMethods(error?.error ?? {}),
 						timestamp,
@@ -402,7 +412,7 @@ export default class Addon {
 	/**
 	 * @param {string} word
 	 * @param {OptionsAudio} options
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<HTMLAudioElement | null>}
 	 */
 	async fetchAudio(word, options, analysis) {
@@ -480,6 +490,15 @@ export default class Addon {
 				input,
 				options,
 				true,
+				{
+					root: "",
+					confidence: 1,
+					type: "Text",
+					isNoun: false,
+					isVerb: false,
+					isValid: true,
+					isText: true,
+				},
 			);
 			if (!blob) {
 				return null;
@@ -511,7 +530,7 @@ export default class Addon {
 	 * @param {OptionsAudio} options
 	 * @param {boolean} toText
 	 * @returns {Promise<{ blob: Blob | null, save: boolean }>
-	 * @param {?WordAnalyse} analysis
+	 * @param {WordAnalyse} analysis
 	 */
 	async fetchAudioExternally(input, options, toText, analysis) {
 		const timestamp = new Date().getTime();
@@ -523,18 +542,21 @@ export default class Addon {
 		/**
 		 * @type {AudioFetcher[]}
 		 */
-		const unordedFetchers = [
-			new af.AFRealVoice(options.realVoice),
-			new af.AFGoogleSpeech(options.googleSpeech),
-			new af.AFResponsiveVoice(options.responsiveVoice),
-			new af.AFUnrealSpeech(options.unrealSpeech),
-			new af.AFSpeechify(options.speechify),
-			new af.AFPlayHt(options.playHt),
-			new af.AFElevenLabs(options.elevenLabs),
-			new af.AFAmazonPolly(options.amazonPolly),
-			new af.AFOpenAi(options.openAi),
-		];
-		const fetchers = unordedFetchers
+		const fetchers = [
+			af.AFCambridge,
+			af.AFLinguee,
+			af.AFOxford,
+			af.AFGstatic,
+			af.AFGoogleSpeech,
+			af.AFResponsiveVoice,
+			af.AFUnrealSpeech,
+			af.AFSpeechify,
+			af.AFPlayHt,
+			af.AFElevenLabs,
+			af.AFAmazonPolly,
+			af.AFOpenAi,
+		]
+			.map(F => new F(options[F.name]))
 			.filter(f => f.enabled(input, toText, le?.[f.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of fetchers) {
@@ -550,6 +572,7 @@ export default class Addon {
 				}
 				if (error?.status) {
 					le[f.name] = {
+						fetcher: f.name,
 						...error,
 						error: removeMethods(error?.error ?? {}),
 						timestamp,

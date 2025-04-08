@@ -640,7 +640,7 @@
 					.textContent
 					.trim()
 					.toLowerCase();
-				const word = splitWords(rawWord)[0];
+				const word = splitWords(rawWord)[0].toLowerCase();
 				console.log("Pronunciation shortcut", { word });
 				const cb = {
 					[options.ipaShortcut]: async () => {
