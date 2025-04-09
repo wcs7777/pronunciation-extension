@@ -1,12 +1,13 @@
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { fetchAws } from "../utils/aws-sign-v4.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {AudioSource}
  */
-export default class AFOpenAi {
+export default class ASAmazonPolly {
 
 	/**
-	 * @param {OptAudioOpenAi} options
+	 * @param {OptAudioAmazonPolly} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -16,24 +17,27 @@ export default class AFOpenAi {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "openAi";
+		return "amazonPolly";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return AFOpenAi.name;
+		return ASAmazonPolly.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
-		if (!this.options.api.key) {
+		if (
+			!this.options.api.accessKeyId ||
+			!this.options.api.secretAccessKey
+		) {
 			return false;
 		}
 		let enabled = false;
@@ -76,22 +80,31 @@ export default class AFOpenAi {
 	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input, analysis) {
-		const endpoint = "https://api.openai.com/v1/audio/speech";
-		const response = await fetch(endpoint, {
-			method: "POST",
-			credentials: "omit",
-			headers: {
-				"Authorization": `Bearer ${this.options.api.key}`,
-				"Content-Type": "application/json",
-				"Accept": "*/*",
+		const url = `https://${this.options.api.endpoint}/v1/speech`;
+		const response = await fetchAws(url,
+			{
+				accessKeyId: this.options.api.accessKeyId,
+				secretAccessKey: this.options.api.secretAccessKey,
+				service: "polly",
 			},
-			body: JSON.stringify({
-				model: this.options.api.model,
-				input: input,
-				voice: this.options.api.voice,
-				response_format: this.options.api.responseFormat,
-			}),
-		});
+			{
+				method: "POST",
+				credentials: "omit",
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "*/*",
+				},
+				body: JSON.stringify({
+					Engine: this.options.api.engine,
+					LanguageCode: "en-US",
+					OutputFormat: this.options.api.outputFormat,
+					SampleRate: this.options.api.sampleRate,
+					Text: input,
+					TextType: "text",
+					VoiceId: this.options.api.voiceId,
+				}),
+			},
+		);
 		const status = response.status;
 		if (status !== 200) {
 			const message = await response.text();

@@ -1,14 +1,16 @@
-import { url2document } from "../utils/element.js";
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
 import { splitWords } from "../utils/string.js";
+import { url2blob, url2document } from "../utils/element.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
+
+const urlPattern = /(https:\/\/assets\.linguee\.com\/static\/[\w-]+\/mp3\/EN_US\/\w+\/[\w-]+.*?)"/;
 
 /**
- * @implements {IpaFetcher}
+ * @implements {AudioSource}
  */
-export default class IFOxford {
+export default class ASLinguee {
 
 	/**
-	 * @param {OptIpaOxford} options
+	 * @param {OptAudioLinguee} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -18,20 +20,20 @@ export default class IFOxford {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "oxford";
+		return "linguee";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return IFOxford.name;
+		return ASLinguee.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
@@ -72,26 +74,35 @@ export default class IFOxford {
 	/**
 	 * @param {string} input
 	 * @param {WordAnalyse} analysis
-	 * @returns {Promise<string>}
+	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input, analysis) {
 		if (!analysis.isValid) {
 			throw new Error(`${input} probably is not a valid word`);
 		}
-		const word = analysis.isVerb ? analysis.root : input;
-		const base = "https://www.oxfordlearnersdictionaries.com/us/definition/english/";
-		const document = await url2document(`${base}${word}`);
-		const button = document.querySelector(
-			`div.sound.audio_play_button.pron-us[title^="${input} "]`,
-		);
-		if (!button) {
-			throw new Error(`audio_play_button not found for ${input}`);
-		}
-		const title = splitWords(button?.title.trim().toLowerCase())?.[0];
+		const endpoint = "https://www.linguee.com/english-spanish/search";
+		const params = new URLSearchParams({
+			source: "english",
+			query: input,
+		}).toString();
+		const document = await url2document(`${endpoint}?${params}`);
+		const title = splitWords(
+			document.querySelector("a.dictLink")?.innerHTML ?? "",
+		)[0];
 		if (title.toLowerCase() !== input) {
 			throw new Error(`${input} is different from ${title}`);
 		}
-		return button.nextElementSibling.textContent;
+		const onclick = document
+			.querySelector("a.audio[onclick]")
+			?.getAttribute("onclick");
+		if (!onclick) {
+			throw new Error("Audio onclick not found");
+		}
+		const url = onclick.match(urlPattern)?.[1];
+		if (!url) {
+			throw new Error("Audio url not found");
+		}
+		return url2blob(`${url}.mp3`);
 	}
 
 }

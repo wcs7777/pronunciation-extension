@@ -1,14 +1,14 @@
+import { url2document } from "../utils/element.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 import { splitWords } from "../utils/string.js";
-import { url2blob, url2document } from "../utils/element.js";
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {IpaSource}
  */
-export default class AFOxford {
+export default class ISOxford {
 
 	/**
-	 * @param {OptAudioOxford} options
+	 * @param {OptIpaOxford} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -25,13 +25,13 @@ export default class AFOxford {
 	 * @returns {string}
 	 */
 	get name() {
-		return AFOxford.name;
+		return ISOxford.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
@@ -91,16 +91,7 @@ export default class AFOxford {
 		if (title.toLowerCase() !== input) {
 			throw new Error(`${input} is different from ${title}`);
 		}
-		const src = button.dataset?.srcOgg;
-		if (!src) {
-			throw new Error(`Audio not found for ${input}`);
-		}
-		const url = (
-			src.startsWith("https://") ?
-			src :
-			`${window.location.origin}${src}`
-		);
-		return url2blob(url);
+		return button.nextElementSibling.textContent;
 	}
 
 }

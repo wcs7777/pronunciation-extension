@@ -1,6 +1,6 @@
 import "../utils/fflate.js";
-import * as af from "../audio-fetcher/fetchers.js";
-import * as pf from "../ipa-fetcher/fetchers.js";
+import * as af from "../audio-source/sources.js";
+import * as pf from "../ipa-source/sources.js";
 import { cachedAnalyseWord } from "../utils/analyse-word.js";
 import { blob2base64 } from "../utils/element.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
@@ -365,22 +365,22 @@ export default class Addon {
 		const timestamp = new Date().getTime();
 		const leKey = "ipaLastError";
 		/**
-		 * @type{{ [key: string]: PronunciationFetcherLastError}
+		 * @type{{ [key: string]: PronunciationSourceLastError}
 		 */
 		const le = await this.controlTable.getValue(leKey, false) ?? {};
 		/**
-		 * @type {IpaFetcher[]}
+		 * @type {IpaSource[]}
 		 */
-		const fetchers = [
-			pf.IFCambridge,
-			pf.IFOxford,
-			pf.IFAntvaset,
-			pf.IFUnalengua,
+		const sources = [
+			pf.ISCambridge,
+			pf.ISOxford,
+			pf.ISAntvaset,
+			pf.ISUnalengua,
 		]
 			 .map(F => new F(options[F.name]))
 			.filter(f => f.enabled(input, toText, le?.[f.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
-		for (const f of fetchers) {
+		for (const f of sources) {
 			console.log(`Searching IPA in ${f.name}`);
 			try {
 				const ipa = await f.fetch(input, analysis);
@@ -394,7 +394,7 @@ export default class Addon {
 				}
 				if (error?.status) {
 					le[f.name] = {
-						fetcher: f.name,
+						source: f.name,
 						...error,
 						error: removeMethods(error?.error ?? {}),
 						timestamp,
@@ -536,30 +536,30 @@ export default class Addon {
 		const timestamp = new Date().getTime();
 		const leKey = "audioLastError";
 		/**
-		 * @type{{ [key: string]: PronunciationFetcherLastError}
+		 * @type{{ [key: string]: PronunciationSourceLastError}
 		 */
 		const le = await this.controlTable.getValue(leKey, false) ?? {};
 		/**
-		 * @type {AudioFetcher[]}
+		 * @type {AudioSource[]}
 		 */
-		const fetchers = [
-			af.AFCambridge,
-			af.AFLinguee,
-			af.AFOxford,
-			af.AFGstatic,
-			af.AFGoogleSpeech,
-			af.AFResponsiveVoice,
-			af.AFUnrealSpeech,
-			af.AFSpeechify,
-			af.AFPlayHt,
-			af.AFElevenLabs,
-			af.AFAmazonPolly,
-			af.AFOpenAi,
+		const sources = [
+			af.ASCambridge,
+			af.ASLinguee,
+			af.ASOxford,
+			af.ASGstatic,
+			af.ASGoogleSpeech,
+			af.ASResponsiveVoice,
+			af.ASUnrealSpeech,
+			af.ASSpeechify,
+			af.ASPlayHt,
+			af.ASElevenLabs,
+			af.ASAmazonPolly,
+			af.ASOpenAi,
 		]
 			.map(F => new F(options[F.name]))
 			.filter(f => f.enabled(input, toText, le?.[f.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
-		for (const f of fetchers) {
+		for (const f of sources) {
 			console.log(`Searching audio in ${f.name}`);
 			try {
 				const blob = await f.fetch(input, analysis);
@@ -572,7 +572,7 @@ export default class Addon {
 				}
 				if (error?.status) {
 					le[f.name] = {
-						fetcher: f.name,
+						source: f.name,
 						...error,
 						error: removeMethods(error?.error ?? {}),
 						timestamp,

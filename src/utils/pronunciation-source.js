@@ -1,5 +1,5 @@
 /**
- * @param {?PronunciationFetcherLastError} lastError
+ * @param {?PronunciationSourceLastError} lastError
  * @param {number} timeout - in minutes
  * @param {number[]} okStatus
  * @returns {boolean}
@@ -11,12 +11,12 @@ export function waitRateLimit(lastError, timeout=60, okStatus=[200, 404]) {
 		if (timestamp === null || timestamp == undefined) {
 			throw Error("lastError.timestamp must be set");
 		}
-		console.log(`${lastError.fetcher} previous error status: ${status}`);
+		console.log(`${lastError.source} previous error status: ${status}`);
 		const now = new Date().getTime();
 		const remaining = timeout * 60000 - (now - timestamp);
 		if (remaining > 0) {
 			console.log(
-				`${lastError.fetcher} remaining ` +
+				`${lastError.source} remaining ` +
 				`${remaining / 60000} timeout minutes`,
 			);
 			return true;

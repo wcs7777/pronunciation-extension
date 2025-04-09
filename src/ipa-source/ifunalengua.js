@@ -1,9 +1,9 @@
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {IpaFetcher}
+ * @implements {IpaSource}
  */
-export default class IFUnalengua {
+export default class ISUnalengua {
 
 	/**
 	 * @param {OptIpaUnalengua} options
@@ -23,13 +23,13 @@ export default class IFUnalengua {
 	 * @returns {string}
 	 */
 	get name() {
-		return IFUnalengua.name;
+		return ISUnalengua.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {

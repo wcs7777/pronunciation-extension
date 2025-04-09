@@ -1,12 +1,13 @@
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { base64ToBlob } from "../utils/element.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {AudioSource}
  */
-export default class AFUnrealSpeech {
+export default class ASSpeechify {
 
 	/**
-	 * @param {OptAudioUnrealSpeech} options
+	 * @param {OptAudioSpeechify} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -16,20 +17,20 @@ export default class AFUnrealSpeech {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "unrealSpeech";
+		return "speechify";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return AFUnrealSpeech.name;
+		return ASSpeechify.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
@@ -76,37 +77,22 @@ export default class AFUnrealSpeech {
 	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input, analysis) {
-		const base = "https://api.v7.unrealspeech.com";
-		let endpoint = "";
-		let body = {
-			Text: input,
-			VoiceId: this.options.api.voiceId,
-			Bitrate: this.options.api.bitRate,
-			Speed: 0,
-			Pitch: this.options.api.pitch,
-		};
-		if (input.length <= 1000) {
-			endpoint = "stream";
-			body = {
-				...body,
-				Codec: this.options.api.codec,
-				Temperature: this.options.api.temperature,
-			};
-		} else {
-			endpoint = "speech";
-			body = {
-				...body,
-			  TimestampType: "sentence",
-			};
-		}
-		const response = await fetch(`${base}/${endpoint}`, {
+		const endpoint = "https://api.sws.speechify.com/v1/audio/speech";
+		const response = await fetch(endpoint, {
 			method: "POST",
 			credentials: "omit",
 			headers: {
 				"Authorization": `Bearer ${this.options.api.token}`,
 				"Content-Type": "application/json",
+				"Accept": "*/*",
 			},
-			body: JSON.stringify(body),
+			body: JSON.stringify({
+				audio_format: "mp3",
+				input: input,
+				language: "en",
+				model: "simba-english",
+				voice_id: this.options.api.voiceId,
+			}),
 		});
 		const status = response.status;
 		if (status !== 200) {
@@ -117,7 +103,11 @@ export default class AFUnrealSpeech {
 				error: new Error(response.statusText),
 			};
 		}
-		return response.blob()
+		/**
+		 * @type{{ audio_data: string, audio_format: string }}
+		 */
+		const jsonResponse = await response.json();
+		return base64ToBlob(jsonResponse.audio_data, "audio/mpeg");
 	}
 
 }

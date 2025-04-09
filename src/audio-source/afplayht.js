@@ -1,9 +1,9 @@
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {AudioSource}
  */
-export default class AFPlayHt {
+export default class ASPlayHt {
 
 	/**
 	 * @param {OptAudioPlayHt} options
@@ -23,13 +23,13 @@ export default class AFPlayHt {
 	 * @returns {string}
 	 */
 	get name() {
-		return AFPlayHt.name;
+		return ASPlayHt.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {

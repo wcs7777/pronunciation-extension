@@ -1,13 +1,12 @@
-import { base64ToBlob } from "../utils/element.js";
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {IpaSource}
  */
-export default class AFSpeechify {
+export default class ISAntvaset {
 
 	/**
-	 * @param {OptAudioSpeechify} options
+	 * @param {OptIpaAntvaset} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -17,26 +16,23 @@ export default class AFSpeechify {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "speechify";
+		return "antvaset";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return AFSpeechify.name;
+		return ISAntvaset.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
-		if (!this.options.api.token) {
-			return false;
-		}
 		let enabled = false;
 		if (!toText) {
 			enabled = this.options.enabled;
@@ -46,7 +42,7 @@ export default class AFSpeechify {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(lastError, 60 * 2, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 10, [200, 404]);
 	}
 
 	/**
@@ -74,24 +70,21 @@ export default class AFSpeechify {
 	/**
 	 * @param {string} input
 	 * @param {WordAnalyse} analysis
-	 * @returns {Promise<Blob>}
+	 * @returns {Promise<string>}
 	 */
 	async fetch(input, analysis) {
-		const endpoint = "https://api.sws.speechify.com/v1/audio/speech";
+		const endpoint = "https://www.antvaset.com/api";
 		const response = await fetch(endpoint, {
 			method: "POST",
 			credentials: "omit",
-			headers: {
-				"Authorization": `Bearer ${this.options.api.token}`,
-				"Content-Type": "application/json",
-				"Accept": "*/*",
-			},
 			body: JSON.stringify({
-				audio_format: "mp3",
-				input: input,
-				language: "en",
-				model: "simba-english",
-				voice_id: this.options.api.voiceId,
+				jsonrpc: "2.0",
+				method: "ipaDictionary.query",
+				params: {
+					query: input,
+					lang: "en"
+				},
+				id: 0,
 			}),
 		});
 		const status = response.status;
@@ -104,10 +97,27 @@ export default class AFSpeechify {
 			};
 		}
 		/**
-		 * @type{{ audio_data: string, audio_format: string }}
+		 * @type {{
+		 * 	jsonrpc: string,
+		 * 	result: {
+		 * 		entries: {
+		 * 			text: string,
+		 * 			ipa: string,
+		 * 		}[],
+		 * 	},
+		 * 	id: number,
+		 * }}
 		 */
 		const jsonResponse = await response.json();
-		return base64ToBlob(jsonResponse.audio_data, "audio/mpeg");
+		const entries = jsonResponse.result.entries.map(e => `/${e.ipa}/`);
+		if (entries.length === 0) {
+			throw {
+				status: 404,
+				message: "Not found",
+				error: new Error("Not found"),
+			}
+		}
+		return entries.join(", ");
 	}
 
 }

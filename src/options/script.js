@@ -1,6 +1,6 @@
 import "../utils/fflate.js";
 import "../utils/Sortable.min.js";
-import * as af from "../audio-fetcher/fetchers.js";
+import * as af from "../audio-source/sources.js";
 import defaultOptions from "../utils/default-options.js";
 import { deepMerge }  from "../utils/object.js";
 import { showPopup } from "../utils/show-popup.js";
@@ -520,22 +520,22 @@ const el = {
 /**
  * @type {SortableJS}
  */
-let sortableIpaFetchersOrder = null;
+let sortableIpaSourcesOrder = null;
 
 /**
  * @type {SortableJS}
  */
-let sortableIpaFetchersOrderToText = null;
+let sortableIpaSourcesOrderToText = null;
 
 /**
  * @type {SortableJS}
  */
-let sortableAudioFetchersOrder = null;
+let sortableAudioSourcesOrder = null;
 
 /**
  * @type {SortableJS}
  */
-let sortableAudioFetchersOrderToText = null;
+let sortableAudioSourcesOrderToText = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
@@ -573,23 +573,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 			el.audio.shortcuts.resetSpeed,
 		].forEach(e => onlyShorcut(e, true));
 
-		sortableIpaFetchersOrder = createSortableOrder(
-			byId("ipaFetchersOrder"),
+		sortableIpaSourcesOrder = createSortableOrder(
+			byId("ipaSourcesOrder"),
 			"order",
 		);
 
-		sortableIpaFetchersOrderToText = createSortableOrder(
-			byId("ipaFetchersOrderToText"),
+		sortableIpaSourcesOrderToText = createSortableOrder(
+			byId("ipaSourcesOrderToText"),
 			"order-to-text",
 		);
 
-		sortableAudioFetchersOrder = createSortableOrder(
-			byId("audioFetchersOrder"),
+		sortableAudioSourcesOrder = createSortableOrder(
+			byId("audioSourcesOrder"),
 			"order",
 		);
 
-		sortableAudioFetchersOrderToText = createSortableOrder(
-			byId("audioFetchersOrderToText"),
+		sortableAudioSourcesOrderToText = createSortableOrder(
+			byId("audioSourcesOrderToText"),
 			"order-to-text",
 		);
 
@@ -832,7 +832,7 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 		try {
 			const leKey = "audioLastError";
 			/**
-			 * @type{{ [key: string]: PronunciationFetcherLastError}
+			 * @type{{ [key: string]: PronunciationSourceLastError}
 			 */
 			const le = await controlTable.getValue(leKey);
 			/**
@@ -841,47 +841,47 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 			const currOpt = await optionsTable.getAll();
 			let updateLastError = false;
 			if (
-				af.AFResponsiveVoice.name in le &&
+				af.ASResponsiveVoice.name in le &&
 				options.audio.responsiveVoice.api.key !==
 				currOpt.audio.responsiveVoice.api.key
 			) {
 				updateLastError = true;
-				delete le[af.AFResponsiveVoice.name];
+				delete le[af.ASResponsiveVoice.name];
 			}
 			if (
-				af.AFUnrealSpeech.name in le &&
+				af.ASUnrealSpeech.name in le &&
 				options.audio.unrealSpeech.api.key !==
 				currOpt.audio.unrealSpeech.api.key
 			) {
 				updateLastError = true;
-				delete le[af.AFUnrealSpeech.name];
+				delete le[af.ASUnrealSpeech.name];
 			}
 			if (
-				af.AFSpeechify.name in le &&
+				af.ASSpeechify.name in le &&
 				options.audio.speechify.api.token !==
 				currOpt.audio.speechify.api.token
 			) {
 				updateLastError = true;
-				delete le[af.AFSpeechify.name];
+				delete le[af.ASSpeechify.name];
 			}
 			if (
-				af.AFPlayHt.name in le &&
+				af.ASPlayHt.name in le &&
 				options.audio.playHt.api.key !==
 				currOpt.audio.playHt.api.key
 			) {
 				updateLastError = true;
-				delete le[af.AFPlayHt.name];
+				delete le[af.ASPlayHt.name];
 			}
 			if (
-				af.AFElevenLabs.name in le &&
+				af.ASElevenLabs.name in le &&
 				options.audio.elevenLabs.api.key !==
 				currOpt.audio.elevenLabs.api.key
 			) {
 				updateLastError = true;
-				delete le[af.AFElevenLabs.name];
+				delete le[af.ASElevenLabs.name];
 			}
 			if (
-				af.AFAmazonPolly.name in le &&
+				af.ASAmazonPolly.name in le &&
 				(
 					options.audio.amazonPolly.api.accessKeyId !==
 					currOpt.audio.amazonPolly.api.accessKeyId ||
@@ -890,15 +890,15 @@ el.audio.save.addEventListener("click", async ({ currentTarget }) => {
 				)
 			) {
 				updateLastError = true;
-				delete le[af.AFAmazonPolly.name];
+				delete le[af.ASAmazonPolly.name];
 			}
 			if (
-				af.AFOpenAi.name in le &&
+				af.ASOpenAi.name in le &&
 				options.audio.openAi.api.key !==
 				currOpt.audio.openAi.api.key
 			) {
 				updateLastError = true;
-				delete le[af.AFOpenAi.name];
+				delete le[af.ASOpenAi.name];
 			}
 			if (updateLastError) {
 				await controlTable.set(leKey, le);
@@ -1432,28 +1432,28 @@ async function setFieldsValues() {
 	el.updateOptionsStorage.file.value = "";
 
 	sortSortableOrder(
-		sortableIpaFetchersOrder,
+		sortableIpaSourcesOrder,
 		el.ipa.order,
 		opt.ipa,
 		"order",
 	);
 
 	sortSortableOrder(
-		sortableIpaFetchersOrderToText,
+		sortableIpaSourcesOrderToText,
 		el.ipa.orderToText,
 		opt.ipa,
 		"order-to-text",
 	);
 
 	sortSortableOrder(
-		sortableAudioFetchersOrder,
+		sortableAudioSourcesOrder,
 		el.audio.order,
 		opt.audio,
 		"order",
 	);
 
 	sortSortableOrder(
-		sortableAudioFetchersOrderToText,
+		sortableAudioSourcesOrderToText,
 		el.audio.orderToText,
 		opt.audio,
 		"order-to-text",

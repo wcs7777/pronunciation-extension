@@ -1,35 +1,36 @@
 import { url2blob } from "../utils/element.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {AudioSource}
  */
-export default class AFGstatic {
+export default class ASResponsiveVoice {
 
 	/**
-	 * @param {OptAudioGstatic} options
+	 * @param {OptAudioResponsiveVoice} options
 	 */
 	constructor(options) {
 		this.options = options;
-	}
+	 }
 
 	/**
 	 * @returns {string}
 	 */
 	static get name() {
-		return "gstatic";
+		return "responsiveVoice";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return AFGstatic.name;
+		return ASResponsiveVoice.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
@@ -42,7 +43,7 @@ export default class AFGstatic {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled;
+		return enabled && !waitRateLimit(lastError, 60, [200, 404]);
 	}
 
 	/**
@@ -73,29 +74,19 @@ export default class AFGstatic {
 	 * @returns {Promise<Blob>}
 	 */
 	fetch(input, analysis) {
-		if (!analysis.isValid) {
-			throw new Error(`${input} probably is not a valid word`);
-		}
-		const base = "https://ssl.gstatic.com/dictionary/static/sounds";
-		const fileBegin = input.replaceAll("'", "_");
-		/**
-		 * @type {string[]}
-		 */
-		let candidates = [];
-		for (const date of ["20200429", "20220808"]) {
-			const candidatesDate = [
-				"--1_us_1.mp3",
-				"--_us_1.mp3",
-				"--_us_1_rr.mp3",
-				"--_us_2.mp3",
-				"--_us_2_rr.mp3",
-				"--_us_3.mp3",
-				"--_us_3_rr.mp3",
-				"_--1_us_1.mp3",
-			].map(fileEnd => `${base}/${date}/${fileBegin}${fileEnd}`);
-			candidates = candidates.concat(candidatesDate);
-		}
-		return Promise.any(candidates.map(url => url2blob(url)));
+		const endpoint = "https://texttospeech.responsivevoice.org/v1/text:synthesize?";
+		const params = new URLSearchParams({
+			lang: "en-US",
+			engine: "g1",
+			name: this.options.api.name,
+			pitch: "0.5",
+			rate: "0.5",
+			volume: "1",
+			key: this.options.api.key,
+			gender: this.options.api.gender,
+			text: input,
+		}).toString();
+		return url2blob(`${endpoint}${params}`);
 	}
 
 }

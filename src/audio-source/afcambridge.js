@@ -1,13 +1,14 @@
-import { url2document } from "../utils/element.js";
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { splitWords } from "../utils/string.js";
+import { url2blob, url2document } from "../utils/element.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {IpaFetcher}
+ * @implements {AudioSource}
  */
-export default class IFCambridge {
+export default class ASCambridge {
 
 	/**
-	 * @param {OptIpaCambridge} options
+	 * @param {OptAudioCambridge} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -24,13 +25,13 @@ export default class IFCambridge {
 	 * @returns {string}
 	 */
 	get name() {
-		return IFCambridge.name;
+		return ASCambridge.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
@@ -71,7 +72,7 @@ export default class IFCambridge {
 	/**
 	 * @param {string} input
 	 * @param {WordAnalyse} analysis
-	 * @returns {Promise<string>}
+	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input, analysis) {
 		if (
@@ -80,24 +81,34 @@ export default class IFCambridge {
 		) {
 			throw new Error(`${input} is not in root form`);
 		}
-		const base = "https://dictionary.cambridge.org/us/dictionary/english/";
-		const document = await url2document(`${base}${input}`);
+		const endpoint = "https://dictionary.cambridge.org/us/dictionary/english/";
+		const document = await url2document(`${endpoint}/${input}`);
 		const entry = document.querySelector(".entry:has(.ipa)");
 		if (!entry) {
 			throw new Error(`Entry not found for ${input}`);
 		}
-		const hw = entry.querySelector(".hw.dhw");
-		if (!hw) {
-			throw new Error(`hd not foudn for ${input}`);
+		const rawWord = entry
+			.querySelector(".hw.dhw")
+			.textContent
+			.trim()
+			.toLowerCase();
+		const word = splitWords(rawWord)[0];
+		console.log({ word });
+		if (word.toLowerCase() != input) {
+			throw new Error(`Word (${word}) different from input ${input}`);
 		}
-		if (hw.textContent.toLowerCase() !== input) {
-			throw new Error(`${input} is different from ${hw.textContent}`);
+		const src = document
+			.querySelector("span.us audio source")
+			?.getAttribute("src");
+		if (!src) {
+			throw new Error(`Audio not found for ${word}`);
 		}
-		const ipa = document.querySelector("span.ipa");
-		if (!ipa?.textContent) {
-			throw new Error(`ipa not found for ${input}`);
-		}
-		return `/${ipa.textContent}/`;
+		const url = (
+			src.startsWith("https://") ?
+			src :
+			`https://dictionary.cambridge.org${src}`
+		);
+		return url2blob(url);
 	}
 
 }

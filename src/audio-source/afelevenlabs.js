@@ -1,13 +1,12 @@
-import { fetchAws } from "../utils/aws-sign-v4.js";
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {AudioSource}
  */
-export default class AFAmazonPolly {
+export default class ASElevenLabs {
 
 	/**
-	 * @param {OptAudioAmazonPolly} options
+	 * @param {OptAudioElevenLabs} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -17,27 +16,24 @@ export default class AFAmazonPolly {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "amazonPolly";
+		return "elevenLabs";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return AFAmazonPolly.name;
+		return ASElevenLabs.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
-		if (
-			!this.options.api.accessKeyId ||
-			!this.options.api.secretAccessKey
-		) {
+		if (!this.options.api.key) {
 			return false;
 		}
 		let enabled = false;
@@ -49,7 +45,7 @@ export default class AFAmazonPolly {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(lastError, 30, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 60 * 2, [200, 404]);
 	}
 
 	/**
@@ -80,31 +76,27 @@ export default class AFAmazonPolly {
 	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input, analysis) {
-		const url = `https://${this.options.api.endpoint}/v1/speech`;
-		const response = await fetchAws(url,
-			{
-				accessKeyId: this.options.api.accessKeyId,
-				secretAccessKey: this.options.api.secretAccessKey,
-				service: "polly",
+		const base = "https://api.elevenlabs.io/v1/text-to-speech";
+		const endpoint = `${base}/${this.options.api.voiceId}/stream?`;
+		const queryParams = new URLSearchParams({
+			output_format: this.options.api.outputFormat,
+		}).toString();
+		const response = await fetch(`${endpoint}${queryParams}`, {
+			method: "POST",
+			credentials: "omit",
+			headers: {
+				"xi-api-key": this.options.api.key,
+				"Content-Type": "application/json",
+				"Accept": "*/*",
 			},
-			{
-				method: "POST",
-				credentials: "omit",
-				headers: {
-					"Content-Type": "application/json",
-					"Accept": "*/*",
-				},
-				body: JSON.stringify({
-					Engine: this.options.api.engine,
-					LanguageCode: "en-US",
-					OutputFormat: this.options.api.outputFormat,
-					SampleRate: this.options.api.sampleRate,
-					Text: input,
-					TextType: "text",
-					VoiceId: this.options.api.voiceId,
-				}),
-			},
-		);
+			body: JSON.stringify({
+				text: input,
+				model_id: this.options.api.modelId,
+				apply_text_normalization: (
+					this.options.api.applyTextNormalization
+				),
+			}),
+		});
 		const status = response.status;
 		if (status !== 200) {
 			const message = await response.text();

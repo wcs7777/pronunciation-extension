@@ -1,12 +1,12 @@
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {AudioSource}
  */
-export default class AFElevenLabs {
+export default class ASOpenAi {
 
 	/**
-	 * @param {OptAudioElevenLabs} options
+	 * @param {OptAudioOpenAi} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -16,20 +16,20 @@ export default class AFElevenLabs {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "elevenLabs";
+		return "openAi";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return AFElevenLabs.name;
+		return ASOpenAi.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
@@ -45,7 +45,7 @@ export default class AFElevenLabs {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(lastError, 60 * 2, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 30, [200, 404]);
 	}
 
 	/**
@@ -76,25 +76,20 @@ export default class AFElevenLabs {
 	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input, analysis) {
-		const base = "https://api.elevenlabs.io/v1/text-to-speech";
-		const endpoint = `${base}/${this.options.api.voiceId}/stream?`;
-		const queryParams = new URLSearchParams({
-			output_format: this.options.api.outputFormat,
-		}).toString();
-		const response = await fetch(`${endpoint}${queryParams}`, {
+		const endpoint = "https://api.openai.com/v1/audio/speech";
+		const response = await fetch(endpoint, {
 			method: "POST",
 			credentials: "omit",
 			headers: {
-				"xi-api-key": this.options.api.key,
+				"Authorization": `Bearer ${this.options.api.key}`,
 				"Content-Type": "application/json",
 				"Accept": "*/*",
 			},
 			body: JSON.stringify({
-				text: input,
-				model_id: this.options.api.modelId,
-				apply_text_normalization: (
-					this.options.api.applyTextNormalization
-				),
+				model: this.options.api.model,
+				input: input,
+				voice: this.options.api.voice,
+				response_format: this.options.api.responseFormat,
 			}),
 		});
 		const status = response.status;

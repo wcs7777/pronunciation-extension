@@ -1,10 +1,10 @@
 import { url2blob } from "../utils/element.js";
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {AudioSource}
  */
-export default class AFGoogleSpeech {
+export default class ASGoogleSpeech {
 
 	/**
 	 * @param {OptAudioGoogleSpeech} options
@@ -24,13 +24,13 @@ export default class AFGoogleSpeech {
 	 * @returns {string}
 	 */
 	get name() {
-		return AFGoogleSpeech.name;
+		return ASGoogleSpeech.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {

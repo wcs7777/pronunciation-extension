@@ -1,12 +1,12 @@
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {IpaFetcher}
+ * @implements {AudioSource}
  */
-export default class IFAntvaset {
+export default class ASUnrealSpeech {
 
 	/**
-	 * @param {OptIpaAntvaset} options
+	 * @param {OptAudioUnrealSpeech} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -16,23 +16,26 @@ export default class IFAntvaset {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "antvaset";
+		return "unrealSpeech";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return IFAntvaset.name;
+		return ASUnrealSpeech.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
+		if (!this.options.api.token) {
+			return false;
+		}
 		let enabled = false;
 		if (!toText) {
 			enabled = this.options.enabled;
@@ -42,7 +45,7 @@ export default class IFAntvaset {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(lastError, 10, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 60 * 2, [200, 404]);
 	}
 
 	/**
@@ -70,22 +73,40 @@ export default class IFAntvaset {
 	/**
 	 * @param {string} input
 	 * @param {WordAnalyse} analysis
-	 * @returns {Promise<string>}
+	 * @returns {Promise<Blob>}
 	 */
 	async fetch(input, analysis) {
-		const endpoint = "https://www.antvaset.com/api";
-		const response = await fetch(endpoint, {
+		const base = "https://api.v7.unrealspeech.com";
+		let endpoint = "";
+		let body = {
+			Text: input,
+			VoiceId: this.options.api.voiceId,
+			Bitrate: this.options.api.bitRate,
+			Speed: 0,
+			Pitch: this.options.api.pitch,
+		};
+		if (input.length <= 1000) {
+			endpoint = "stream";
+			body = {
+				...body,
+				Codec: this.options.api.codec,
+				Temperature: this.options.api.temperature,
+			};
+		} else {
+			endpoint = "speech";
+			body = {
+				...body,
+			  TimestampType: "sentence",
+			};
+		}
+		const response = await fetch(`${base}/${endpoint}`, {
 			method: "POST",
 			credentials: "omit",
-			body: JSON.stringify({
-				jsonrpc: "2.0",
-				method: "ipaDictionary.query",
-				params: {
-					query: input,
-					lang: "en"
-				},
-				id: 0,
-			}),
+			headers: {
+				"Authorization": `Bearer ${this.options.api.token}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
 		});
 		const status = response.status;
 		if (status !== 200) {
@@ -96,28 +117,7 @@ export default class IFAntvaset {
 				error: new Error(response.statusText),
 			};
 		}
-		/**
-		 * @type {{
-		 * 	jsonrpc: string,
-		 * 	result: {
-		 * 		entries: {
-		 * 			text: string,
-		 * 			ipa: string,
-		 * 		}[],
-		 * 	},
-		 * 	id: number,
-		 * }}
-		 */
-		const jsonResponse = await response.json();
-		const entries = jsonResponse.result.entries.map(e => `/${e.ipa}/`);
-		if (entries.length === 0) {
-			throw {
-				status: 404,
-				message: "Not found",
-				error: new Error("Not found"),
-			}
-		}
-		return entries.join(", ");
+		return response.blob()
 	}
 
 }

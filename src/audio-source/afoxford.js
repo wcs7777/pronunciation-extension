@@ -1,16 +1,14 @@
 import { splitWords } from "../utils/string.js";
 import { url2blob, url2document } from "../utils/element.js";
-import { waitRateLimit } from "../utils/pronunciation-fetcher.js";
-
-const urlPattern = /(https:\/\/assets\.linguee\.com\/static\/[\w-]+\/mp3\/EN_US\/\w+\/[\w-]+.*?)"/;
+import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
- * @implements {AudioFetcher}
+ * @implements {AudioSource}
  */
-export default class AFLinguee {
+export default class ASOxford {
 
 	/**
-	 * @param {OptAudioLinguee} options
+	 * @param {OptAudioOxford} options
 	 */
 	constructor(options) {
 		this.options = options;
@@ -20,20 +18,20 @@ export default class AFLinguee {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "linguee";
+		return "oxford";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return AFLinguee.name;
+		return ASOxford.name;
 	}
 
 	/**
 	 * @param {string} input
 	 * @param {boolean} toText
-	 * @param {?PronunciationFetcherLastError} lastError
+	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
@@ -74,35 +72,35 @@ export default class AFLinguee {
 	/**
 	 * @param {string} input
 	 * @param {WordAnalyse} analysis
-	 * @returns {Promise<Blob>}
+	 * @returns {Promise<string>}
 	 */
 	async fetch(input, analysis) {
 		if (!analysis.isValid) {
 			throw new Error(`${input} probably is not a valid word`);
 		}
-		const endpoint = "https://www.linguee.com/english-spanish/search";
-		const params = new URLSearchParams({
-			source: "english",
-			query: input,
-		}).toString();
-		const document = await url2document(`${endpoint}?${params}`);
-		const title = splitWords(
-			document.querySelector("a.dictLink")?.innerHTML ?? "",
-		)[0];
+		const word = analysis.isVerb ? analysis.root : input;
+		const base = "https://www.oxfordlearnersdictionaries.com/us/definition/english/";
+		const document = await url2document(`${base}${word}`);
+		const button = document.querySelector(
+			`div.sound.audio_play_button.pron-us[title^="${input} "]`,
+		);
+		if (!button) {
+			throw new Error(`audio_play_button not found for ${input}`);
+		}
+		const title = splitWords(button?.title.trim().toLowerCase())?.[0];
 		if (title.toLowerCase() !== input) {
 			throw new Error(`${input} is different from ${title}`);
 		}
-		const onclick = document
-			.querySelector("a.audio[onclick]")
-			?.getAttribute("onclick");
-		if (!onclick) {
-			throw new Error("Audio onclick not found");
+		const src = button.dataset?.srcOgg;
+		if (!src) {
+			throw new Error(`Audio not found for ${input}`);
 		}
-		const url = onclick.match(urlPattern)?.[1];
-		if (!url) {
-			throw new Error("Audio url not found");
-		}
-		return url2blob(`${url}.mp3`);
+		const url = (
+			src.startsWith("https://") ?
+			src :
+			`${window.location.origin}${src}`
+		);
+		return url2blob(url);
 	}
 
 }

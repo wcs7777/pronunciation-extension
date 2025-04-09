@@ -2,16 +2,16 @@ export {};
 
 declare global {
 	
-	type PronunciationFetcher = {
+	type PronunciationSource = {
 		static name: string,
 		name: string,
-		enabled: (input: string, toText: boolean, lastError?: PronunciationFetcherLastError) => boolean,
+		enabled: (input: string, toText: boolean, lastError?: PronunciationSourceLastError) => boolean,
 		order: (toText: boolean) => number,
 		save: boolean,
 		saveError: boolean,
 	};
 
-	type PronunciationFetcherOptions = {
+	type PronunciationSourceOptions = {
 		enabled: boolean,
 		order: number,
 		enabledToText: boolean,
@@ -21,16 +21,16 @@ declare global {
 		textMaxLength: number,
 	};
 
-	type IpaFetcher = PronunciationFetcher & {
+	type IpaSource = PronunciationSource & {
 		fetch: (input: string, analysis: WordAnalyse) => Promise<string>,
 	};
 
-	type AudioFetcher = PronunciationFetcher & {
+	type AudioSource = PronunciationSource & {
 		fetch: (input: string, analysis: WordAnalyse) => Promise<Blob>,
 	};
 
-	type PronunciationFetcherLastError = {
-		fetcher: string,
+	type PronunciationSourceLastError = {
+		source: string,
 		timestamp: number,
 		status?: number,
 		message?: string,
@@ -97,10 +97,10 @@ declare global {
 		unalengua: OptIpaUnalengua,
 	};
 
-	type OptIpaCambridge = PronunciationFetcherOptions;
-	type OptIpaOxford = PronunciationFetcherOptions;
-	type OptIpaAntvaset = PronunciationFetcherOptions;
-	type OptIpaUnalengua = PronunciationFetcherOptions;
+	type OptIpaCambridge = PronunciationSourceOptions;
+	type OptIpaOxford = PronunciationSourceOptions;
+	type OptIpaAntvaset = PronunciationSourceOptions;
+	type OptIpaUnalengua = PronunciationSourceOptions;
 
 	type OptionsAudio = {
 		enabled: boolean,
@@ -141,17 +141,17 @@ declare global {
 		resetSpeed: string,
 	};
 
-	type OptAudioCambridge = PronunciationFetcherOptions;
-	type OptAudioLinguee = PronunciationFetcherOptions;
-	type OptAudioOxford = PronunciationFetcherOptions;
+	type OptAudioCambridge = PronunciationSourceOptions;
+	type OptAudioLinguee = PronunciationSourceOptions;
+	type OptAudioOxford = PronunciationSourceOptions;
 
-	type OptAudioGstatic = PronunciationFetcherOptions & {
+	type OptAudioGstatic = PronunciationSourceOptions & {
 		fetchTimeout: number,
 	};
 
-	type OptAudioGoogleSpeech = PronunciationFetcherOptions;
+	type OptAudioGoogleSpeech = PronunciationSourceOptions;
 
-	type OptAudioResponsiveVoice = PronunciationFetcherOptions & {
+	type OptAudioResponsiveVoice = PronunciationSourceOptions & {
 		api: {
 			name: string,
 			key: string,
@@ -159,7 +159,7 @@ declare global {
 		},
 	};
 
-	type OptAudioUnrealSpeech = PronunciationFetcherOptions & {
+	type OptAudioUnrealSpeech = PronunciationSourceOptions & {
 		api: {
 			token?: string,
 			voiceId: string,
@@ -170,14 +170,14 @@ declare global {
 		},
 	};
 
-	type OptAudioSpeechify = PronunciationFetcherOptions & {
+	type OptAudioSpeechify = PronunciationSourceOptions & {
 		api: {
 			token?: string,
 			voiceId: string,
 		},
 	};
 
-	type OptAudioPlayHt = PronunciationFetcherOptions & {
+	type OptAudioPlayHt = PronunciationSourceOptions & {
 		api: {
 			userId?: string,
 			key?: string,
@@ -190,7 +190,7 @@ declare global {
 		},
 	};
 
-	type OptAudioElevenLabs = PronunciationFetcherOptions & {
+	type OptAudioElevenLabs = PronunciationSourceOptions & {
 		api: {
 			key?: string,
 			voiceId: string,
@@ -200,7 +200,7 @@ declare global {
 		},
 	};
 
-	type OptAudioAmazonPolly = PronunciationFetcherOptions & {
+	type OptAudioAmazonPolly = PronunciationSourceOptions & {
 		api: {
 			accessKeyId?: string,
 			secretAccessKey?: string,
@@ -212,7 +212,7 @@ declare global {
 		},
 	};
 
-	type OptAudioOpenAi = PronunciationFetcherOptions & {
+	type OptAudioOpenAi = PronunciationSourceOptions & {
 		api: {
 			key?: string,
 			model: string,
