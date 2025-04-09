@@ -8,11 +8,17 @@ const newlinePattern = /(\r?\n)+/g;
  * @returns {string[]}
  */
 export function splitWords(text) {
+	// strangely some word matchs results in multiple words
+	const hasSpace = spacePattern.test(text);
 	const words = text
 		.trim()
 		.replaceAll("’", "'")
 		.match(wordPattern)
-	return words ? words : [];
+	if (words) {
+		return !hasSpace ? [words.join("")] : words;
+	} else {
+		return [];
+	}
 }
 
 /**
