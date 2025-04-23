@@ -34,10 +34,12 @@
 	 */
 	const defaultOptionsPopup = {
 		text: "Default text",
-		font: {
-			family: "Arial, serif",
-			size: 20,
-			color: "#282828",
+		style: {
+			font: {
+				family: "Arial, serif",
+				size: 20,
+				color: "#282828",
+			},
 			backgroundColor: "#FFFFFF",
 		},
 		close: {
@@ -98,10 +100,10 @@
 
 		setProperty("--top", `${opt.position.top}px`);
 		setProperty("--left", `${opt.position.left}px`);
-		setProperty("--background-color", opt.font.backgroundColor);
-		setProperty("--font-family", opt.font.family);
-		setProperty("--font-size", `${opt.font.size}px`);
-		setProperty("--font-color", opt.font.color);
+		setProperty("--background-color", opt.style.backgroundColor);
+		setProperty("--font-family", opt.style.font.family);
+		setProperty("--font-size", `${opt.style.font.size}px`);
+		setProperty("--font-color", opt.style.font.color);
 		setProperty("--close-button-color", opt.close.buttonColor);
 		setProperty("--close-button-color-hover", opt.close.buttonHoverColor);
 
@@ -277,12 +279,12 @@
 		}
 
 		/**
-		 * @returns {{ color: string, backgroundColor: string }}
+		 * @returns {{ font: { color: string }, backgroundColor: string }}
 		 */
-		fontColors() {
-			let color = this.options.font.color;
-			let backgroundColor = this.options.font.backgroundColor;
-			if (this.options.useContextColors) {
+		style() {
+			let color = this.options.style.font.color;
+			let backgroundColor = this.options.style.backgroundColor;
+			if (this.options.style.useContextColors) {
 				const computed = window.getComputedStyle(this.target());
 				// not 100%, but ok
 				color = rgba2rgb(computed.color); // remove transparency
@@ -299,7 +301,7 @@
 					element = element.parentElement;
 				}
 			}
-			return { color, backgroundColor };
+			return { font: { color }, backgroundColor };
 		}
 
 		/**
@@ -325,7 +327,7 @@
 					shiftTimes = 2.5;
 				}
 				return {
-					top: top + this.options.font.size * shiftTimes,
+					top: top + this.options.style.font.size * shiftTimes,
 					left,
 				};
 			} else {
@@ -340,12 +342,19 @@
 		 * @returns {OptionsPopup}
 		 */
 		popupOptions() {
+			const style = this.style();
 			/**
 			 * @type {OptionsPopup}
 			 */
 			const options = {
 				text: this.ipa,
-				font: { ...this.options.font, ...this.fontColors() },
+				style: {
+					font: {
+						...this.options.style.font,
+						color: style.font.color,
+					},
+					backgroundColor: style.backgroundColor,
+				},
 				close: this.options.close,
 				position: this.position(),
 			};

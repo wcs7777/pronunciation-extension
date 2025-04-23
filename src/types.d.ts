@@ -72,12 +72,17 @@ declare global {
 
 	type OptionsIpa = {
 		enabled: boolean,
-		enabledToText: boolean,
-		font: {
-			family: string,
-			size: number, // px
-			color: string,
+		text: {
+			enabled: boolean,
+		},
+		style: {
+			font: {
+				family: string,
+				size: number, // px
+				color: string,
+			},
 			backgroundColor: string,
+			useContextColors: boolean,
 		},
 		close: {
 			timeout: number,
@@ -90,11 +95,12 @@ declare global {
 			menuTriggered: "above" | "below",
 			actionTriggered: "above" | "below",
 		},
-		useContextColors: boolean,
-		cambridge: OptIpaCambridge,
-		oxford: OptIpaOxford,
-		antvaset: OptIpaAntvaset,
-		unalengua: OptIpaUnalengua,
+		sources: {
+			cambridge: OptIpaCambridge,
+			oxford: OptIpaOxford,
+			antvaset: OptIpaAntvaset,
+			unalengua: OptIpaUnalengua,
+		},
 	};
 
 	type OptIpaCambridge = PronunciationSourceOptions;
@@ -104,25 +110,29 @@ declare global {
 
 	type OptionsAudio = {
 		enabled: boolean,
-		enabledToText: boolean,
-		saveTextAudio: boolean,
-		playerEnabledToText: boolean,
-		shortcutsEnabledToText: boolean,
+		text: {
+			enabled: boolean,
+			save: boolean,
+			playerEnabled: boolean,
+			shortcutsEnabled: boolean,
+			shortcuts: OptAudioShortcuts,
+		},
 		volume: number,
 		playbackRate: number,
-		shortcuts: OptAudioShortcuts,
-		cambridge: OptAudioCambridge,
-		linguee: OptAudioLinguee,
-		oxford: OptAudioOxford,
-		gstatic: OptAudioGstatic,
-		googleSpeech: OptAudioGoogleSpeech,
-		responsiveVoice: OptAudioResponsiveVoice,
-		unrealSpeech: OptAudioUnrealSpeech,
-		speechify: OptAudioSpeechify,
-		playHt: OptAudioPlayHt,
-		elevenLabs: OptAudioElevenLabs,
-		amazonPolly: OptAudioAmazonPolly,
-		openAi: OptAudioOpenAi,
+		sources: {
+			cambridge: OptAudioCambridge,
+			linguee: OptAudioLinguee,
+			oxford: OptAudioOxford,
+			gstatic: OptAudioGstatic,
+			googleSpeech: OptAudioGoogleSpeech,
+			responsiveVoice: OptAudioResponsiveVoice,
+			unrealSpeech: OptAudioUnrealSpeech,
+			speechify: OptAudioSpeechify,
+			playHt: OptAudioPlayHt,
+			elevenLabs: OptAudioElevenLabs,
+			amazonPolly: OptAudioAmazonPolly,
+			openAi: OptAudioOpenAi,
+		},
 	};
 
 	type OptAudioShortcuts = {
@@ -245,11 +255,14 @@ declare global {
 
 	type OptionsPopup = {
 		text: string,
-		font: {
-			family: string,
-			size: number, // px
-			color: string,
+		style: {
+			font: {
+				family: string,
+				size: number, // px
+				color: string,
+			},
 			backgroundColor: string,
+			useContextColors: boolean,
 		},
 		close: {
 			timeout: number,

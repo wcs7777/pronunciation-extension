@@ -1,6 +1,6 @@
 import "../utils/fflate.js";
-import * as af from "../audio-source/sources.js";
-import * as pf from "../ipa-source/sources.js";
+import * as as from "../audio-source/sources.js";
+import * as is from "../ipa-source/sources.js";
 import { cachedAnalyseWord } from "../utils/analyse-word.js";
 import { blob2base64 } from "../utils/element.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
@@ -236,8 +236,8 @@ export default class Addon {
 			let playInBackground = (
 				!isText ||
 				(
-					!options.playerEnabledToText &&
-					!options.shortcutsEnabledToText
+					!options.text.playerEnabled &&
+					!options.text.shortcutsEnabled
 				)
 			);
 			if (!playInBackground) {
@@ -253,9 +253,9 @@ export default class Addon {
 							title: sourceTitle,
 							url: audio.src,
 						},
-						playerEnabled: options.playerEnabledToText,
-						shortcutsEnabled: options.shortcutsEnabledToText,
-						shortcuts: options.shortcuts,
+						playerEnabled: options.text.playerEnabled,
+						shortcutsEnabled: options.text.shortcutsEnabled,
+						shortcuts: options.text.shortcutsEnabled,
 					},
 				};
 				try {
@@ -321,7 +321,7 @@ export default class Addon {
 	 * @returns {Promise<string | null>}
 	 */
 	async fetchIpaText(cacheKey, input, options, totalWords) {
-		if (!options.enabledToText) {
+		if (!options.text.enabled) {
 			console.log("Show IPA is disabled to text");
 			return null;
 		}
@@ -372,13 +372,13 @@ export default class Addon {
 		 * @type {IpaSource[]}
 		 */
 		const sources = [
-			pf.ISCambridge,
-			pf.ISOxford,
-			pf.ISAntvaset,
-			pf.ISUnalengua,
+			is.ISCambridge,
+			is.ISOxford,
+			is.ISAntvaset,
+			is.ISUnalengua,
 		]
-			 .map(F => new F(options[F.name]))
-			.filter(f => f.enabled(input, toText, le?.[f.name]))
+			 .map(S => new S(options.sources[S.name]))
+			.filter(s => s.enabled(input, toText, le?.[s.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of sources) {
 			console.log(`Searching IPA in ${f.name}`);
@@ -467,7 +467,7 @@ export default class Addon {
 	 * @returns {Promise<HTMLAudioElement | null>}
 	 */
 	async fetchAudioText(cacheKey, input, options) {
-		if (!options.enabledToText) {
+		if (!options.text.enabled) {
 			console.log("Play audio is disabled to text");
 			return null;
 		}
@@ -509,7 +509,7 @@ export default class Addon {
 				await this.saveError(`blob2base64: ${word}`, error);
 				return null;
 			}
-			if (save && options.saveTextAudio) {
+			if (save && options.text.save) {
 				let short = input;
 				if (short.length > 15) {
 					const begin = input.slice(0, 7);
@@ -543,21 +543,21 @@ export default class Addon {
 		 * @type {AudioSource[]}
 		 */
 		const sources = [
-			af.ASCambridge,
-			af.ASLinguee,
-			af.ASOxford,
-			af.ASGstatic,
-			af.ASGoogleSpeech,
-			af.ASResponsiveVoice,
-			af.ASUnrealSpeech,
-			af.ASSpeechify,
-			af.ASPlayHt,
-			af.ASElevenLabs,
-			af.ASAmazonPolly,
-			af.ASOpenAi,
+			as.ASCambridge,
+			as.ASLinguee,
+			as.ASOxford,
+			as.ASGstatic,
+			as.ASGoogleSpeech,
+			as.ASResponsiveVoice,
+			as.ASUnrealSpeech,
+			as.ASSpeechify,
+			as.ASPlayHt,
+			as.ASElevenLabs,
+			as.ASAmazonPolly,
+			as.ASOpenAi,
 		]
-			.map(F => new F(options[F.name]))
-			.filter(f => f.enabled(input, toText, le?.[f.name]))
+			.map(S => new S(options.sources[S.name]))
+			.filter(s => s.enabled(input, toText, le?.[s.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of sources) {
 			console.log(`Searching audio in ${f.name}`);

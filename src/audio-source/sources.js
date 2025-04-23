@@ -1,15 +1,15 @@
-import ASAmazonPolly from "./afamazonpolly.js";
-import ASCambridge from "./afcambridge.js";
-import ASElevenLabs from "./afelevenlabs.js";
-import ASGoogleSpeech from "./afgooglespeech.js";
-import ASGstatic from "./afgstatic.js";
-import ASLinguee from "./aflinguee.js";
-import ASOpenAi from "./afopenai.js";
-import ASOxford from "./afoxford.js";
-import ASPlayHt from "./afplayht.js";
-import ASResponsiveVoice from "./afresponsivevoice.js";
-import ASSpeechify from "./afspeechify.js";
-import ASUnrealSpeech from "./afunrealspeech.js";
+import ASAmazonPolly from "./asamazonpolly.js";
+import ASCambridge from "./ascambridge.js";
+import ASElevenLabs from "./aselevenlabs.js";
+import ASGoogleSpeech from "./asgooglespeech.js";
+import ASGstatic from "./asgstatic.js";
+import ASLinguee from "./aslinguee.js";
+import ASOpenAi from "./asopenai.js";
+import ASOxford from "./asoxford.js";
+import ASPlayHt from "./asplayht.js";
+import ASResponsiveVoice from "./asresponsivevoice.js";
+import ASSpeechify from "./asspeechify.js";
+import ASUnrealSpeech from "./asunrealspeech.js";
 
 export {
 	ASAmazonPolly,

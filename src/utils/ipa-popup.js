@@ -43,12 +43,12 @@ export default class IpaPopup {
 	}
 
 	/**
-	 * @returns {{ color: string, backgroundColor: string }}
+	 * @returns {{ font: { color: string }, backgroundColor: string }}
 	 */
-	fontColors() {
-		let color = this.options.font.color;
-		let backgroundColor = this.options.font.backgroundColor;
-		if (this.options.useContextColors) {
+	style() {
+		let color = this.options.style.font.color;
+		let backgroundColor = this.options.style.backgroundColor;
+		if (this.options.style.useContextColors) {
 			const computed = window.getComputedStyle(this.target());
 			// not 100%, but ok
 			color = rgba2rgb(computed.color); // remove transparency
@@ -65,7 +65,7 @@ export default class IpaPopup {
 				element = element.parentElement;
 			}
 		}
-		return { color, backgroundColor };
+		return { font: { color }, backgroundColor };
 	}
 
 	/**
@@ -91,7 +91,7 @@ export default class IpaPopup {
 				shiftTimes = 2.5;
 			}
 			return {
-				top: top + this.options.font.size * shiftTimes,
+				top: top + this.options.style.font.size * shiftTimes,
 				left,
 			};
 		} else {
@@ -106,12 +106,19 @@ export default class IpaPopup {
 	 * @returns {OptionsPopup}
 	 */
 	popupOptions() {
+		const style = this.style();
 		/**
 		 * @type {OptionsPopup}
 		 */
 		const options = {
 			text: this.ipa,
-			font: { ...this.options.font, ...this.fontColors() },
+			style: {
+				font: {
+					...this.options.style.font,
+					color: style.font.color,
+				},
+				backgroundColor: style.backgroundColor,
+			},
 			close: this.options.close,
 			position: this.position(),
 		};

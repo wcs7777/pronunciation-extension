@@ -2,17 +2,24 @@
 	'use strict';
 
 	const wordPattern = /([A-Za-z\u00C0-\u024F\-']+)/g;
+	const spacePattern = / +/g;
 
 	/**
 	 * @param {string} text
 	 * @returns {string[]}
 	 */
 	function splitWords(text) {
+		// strangely some word matchs results in multiple words
+		const hasSpace = spacePattern.test(text);
 		const words = text
 			.trim()
 			.replaceAll("’", "'")
 			.match(wordPattern);
-		return words ? words : [];
+		if (words) {
+			return !hasSpace ? [words.join("")] : words;
+		} else {
+			return [];
+		}
 	}
 
 	/**
@@ -82,10 +89,12 @@
 	 */
 	const defaultOptionsPopup = {
 		text: "Default text",
-		font: {
-			family: "Arial, serif",
-			size: 20,
-			color: "#282828",
+		style: {
+			font: {
+				family: "Arial, serif",
+				size: 20,
+				color: "#282828",
+			},
 			backgroundColor: "#FFFFFF",
 		},
 		close: {
@@ -146,10 +155,10 @@
 
 		setProperty("--top", `${opt.position.top}px`);
 		setProperty("--left", `${opt.position.left}px`);
-		setProperty("--background-color", opt.font.backgroundColor);
-		setProperty("--font-family", opt.font.family);
-		setProperty("--font-size", `${opt.font.size}px`);
-		setProperty("--font-color", opt.font.color);
+		setProperty("--background-color", opt.style.backgroundColor);
+		setProperty("--font-family", opt.style.font.family);
+		setProperty("--font-size", `${opt.style.font.size}px`);
+		setProperty("--font-color", opt.style.font.color);
 		setProperty("--close-button-color", opt.close.buttonColor);
 		setProperty("--close-button-color-hover", opt.close.buttonHoverColor);
 
