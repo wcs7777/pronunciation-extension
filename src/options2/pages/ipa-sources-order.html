@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<div class="container">
+		<header class="header"></header>
+		<main>
+			<div class="settings-section">
+
+				<h2>IPA Sources Order/Enable</h2>
+
+				<div id="sourcesOrder" class="sortable-list">
+
+					<div id="antvasetOrder" class="sortable-item" data-order="0">
+						Antvaset
+						<div class="checkbox-group">
+							<input type="checkbox" id="antvasetEnabled" checked>
+							<label for="antvasetEnabled">Enabled</label>
+						</div>
+					</div>
+
+					<div id="unalenguaOrder" class="sortable-item" data-order="0">
+						Unalengua
+						<div class="checkbox-group">
+							<input type="checkbox" id="unalenguaEnabled" checked>
+							<label for="unalenguaEnabled">Enabled</label>
+						</div>
+					</div>
+
+					<div id="oxfordOrder" class="sortable-item" data-order="0">
+						Oxford
+						<div class="checkbox-group">
+							<input type="checkbox" id="oxfordEnabled" checked>
+							<label for="oxfordEnabled">Enabled</label>
+						</div>
+					</div>
+
+					<div id="cambridgeOrder" class="sortable-item" data-order="0">
+						Cambridge
+						<div class="checkbox-group">
+							<input type="checkbox" id="cambridgeEnabled" checked>
+							<label for="cambridgeEnabled">Enabled</label>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="center">
+					<button class="btn btn-primary" id="save">Save</button>
+				</div>
+
+			</div>
+		</main>
+	</div>
+    <script type="module">
+		import { createNavCB } from "../js/create-nav.js";
+		createNavCB("./ipa-general.html", "./ipa-sources-order.html");
+	</script>
+    <script type="module" src="../js/ipa-sources-order.js"></script>
+</body>
+</html>

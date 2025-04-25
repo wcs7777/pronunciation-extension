@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+
+        <h1>How2Say Settings</h1>
+        
+        <div class="settings-section">
+
+            <h2>General</h2>
+            
+            <div class="form-group">
+                <label for="accessKey">Context menu item access key</label>
+                <input type="text" id="accessKey" placeholder="e.g. P">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="allowText" checked>
+                <label for="allowText">Allow multiple words at once</label>
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveGeneral">Save General</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h2>IPA</h2>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaEnabled" checked>
+                <label for="ipaEnabled">Enabled</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaEnabledToText" checked>
+                <label for="ipaEnabledToText">Enabled to text</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="ipaFontFamily">Font family</label>
+                <input type="text" id="ipaFontFamily" placeholder="e.g. 'Lucida Sans Unicode'">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaFontSize">Font size (px)</label>
+                <input type="text" id="ipaFontSize" placeholder="e.g. 18">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaFontColor">Font color</label>
+                <input type="text" id="ipaFontColor" placeholder="e.g. #282828">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaBackgroundColor">Background color</label>
+                <input type="text" id="ipaBackgroundColor" placeholder="e.g. #FFFFFF">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaUseContextColors" checked>
+                <label for="ipaUseContextColors">Use context color</label>
+            </div>
+
+            <div class="form-group">
+                <label for="ipaPositionMenuTriggered">Position menu triggered</label>
+                <select id="ipaPositionMenuTriggered">
+                    <option value="above">Above</option>
+                    <option value="below">Below</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ipaPositionActionTriggered">Position action triggered</label>
+                <select id="ipaPositionActionTriggered">
+                    <option value="above">Above</option>
+                    <option value="below">Below</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ipaCloseTimeout">Close popup timeout (ms)</label>
+				<input type="text" id="ipaCloseTimeout" placeholder="e.g. 3000">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaCloseShortcut">Close popup shortcut</label>
+                <input type="text" id="ipaCloseShortcut" placeholder="e.g. \">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="ipaCloseOnScroll" checked>
+                <label for="ipaCloseOnScroll">Close popup when page is scrolled</label>
+            </div>
+
+            <div class="form-group">
+                <label for="ipaButtonColor">Close popup button color</label>
+                <input type="text" id="ipaButtonColor">
+            </div>
+
+            <div class="form-group">
+                <label for="ipaButtonHoverColor">Close popup button hover color</label>
+                <input type="text" id="ipaButtonHoverColor">
+            </div>
+
+            <h3>IPA fetchers order/enable</h3>
+
+			<div id="ipaFetchersOrder" class="sortable-list">
+
+				<div id="ipaAntvasetOrder" class="sortable-item" data-order="0">
+					Antvaset
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaAntvasetEnabled" checked>
+						<label for="ipaAntvasetEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="ipaUnalenguaOrder" class="sortable-item" data-order="0">
+					Unalengua
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaUnalenguaEnabled" checked>
+						<label for="ipaUnalenguaEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="ipaOxfordOrder" class="sortable-item" data-order="0">
+					Oxford
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaOxfordEnabled" checked>
+						<label for="ipaOxfordEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="ipaCambridgeOrder" class="sortable-item" data-order="0">
+					Cambridge
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaCambridgeEnabled" checked>
+						<label for="ipaCambridgeEnabled">Enabled</label>
+					</div>
+				</div>
+
+			</div>
+
+            <h3>IPA fetchers order/enable to text</h3>
+
+			<div id="ipaFetchersOrderToText" class="sortable-list">
+
+				<div id="ipaUnalenguaOrderToText" class="sortable-item" data-order-to-text="0">
+					Unalengua
+					<div class="checkbox-group">
+						<input type="checkbox" id="ipaUnalenguaEnabledToText" checked>
+						<label for="ipaUnalenguaEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveIpa">Save IPA</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h2>Audio</h2>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioEnabled" checked>
+                <label for="audioEnabled">Enabled</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioEnabledToText" checked>
+                <label for="audioEnabledToText">Enabled to text</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioSaveTextAudio" checked>
+                <label for="audioSaveTextAudio">Save text audio</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioPlayerEnabledToText" checked>
+                <label for="audioPlayerEnabledToText">Player enabled to text</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioShortcutsEnabledToText" checked>
+                <label for="audioShortcutsEnabledToText">Shortcuts enabled to text</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="audioVolume">Volume</label>
+                <input type="text" id="audioVolume" placeholder="[0.0, 1.0] e.g. 1.0">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlaybackRate">Playback rate</label>
+                <input type="text" id="audioPlaybackRate" placeholder="[0.2, 2.0] e.g. 1.0">
+            </div>
+
+            <h3>Shortcuts to text</h3>
+
+            <div class="form-group">
+                <label for="audioShortcutTogglePlayer">Shortcut toggle player</label>
+                <input type="text" id="audioShortcutTogglePlayer">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutTogglePlay">Shortcut toggle play</label>
+                <input type="text" id="audioShortcutTogglePlay">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutToggleMute">Shortcut toggle mute</label>
+                <input type="text" id="audioShortcutToggleMute">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutRewind">Shortcut rewind</label>
+                <input type="text" id="audioShortcutRewind">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutPrevious">Shortcut previous</label>
+                <input type="text" id="audioShortcutPrevious">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutNext">Shortcut next</label>
+                <input type="text" id="audioShortcutNext">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutBackward">Shortcut backward</label>
+                <input type="text" id="audioShortcutBackward">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutForward">Shortcut forward</label>
+                <input type="text" id="audioShortcutForward">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutDecreaseVolume">Shortcut decrease volume</label>
+                <input type="text" id="audioShortcutDecreaseVolume">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutIncreaseVolume">Shortcut increase volume</label>
+                <input type="text" id="audioShortcutIncreaseVolume">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutDecreaseSpeed">Shortcut decrease speed</label>
+                <input type="text" id="audioShortcutDecreaseSpeed">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutIncreaseSpeed">Shortcut increase speed</label>
+                <input type="text" id="audioShortcutIncreaseSpeed">
+            </div>
+
+            <div class="form-group">
+                <label for="audioShortcutResetSpeed">Shortcut reset speed</label>
+                <input type="text" id="audioShortcutResetSpeed">
+            </div>
+
+            <h3>Audio fetchers order/enable</h3>
+
+			<div id="audioFetchersOrder" class="sortable-list">
+
+				<div id="audioRealVoiceOrder" class="sortable-item" data-order="0">
+					Real Voice
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioRealVoiceEnabled" checked>
+						<label for="audioRealVoiceEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioGoogleSpeechOrder" class="sortable-item" data-order="0">
+					Google Speech
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioGoogleSpeechEnabled" checked>
+						<label for="audioGoogleSpeechEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioResponsiveVoiceOrder" class="sortable-item" data-order="0">
+					ResponsiveVoice
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioResponsiveVoiceEnabled" checked>
+						<label for="audioResponsiveVoiceEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioUnrealSpeechOrder" class="sortable-item" data-order="0">
+					Unreal Speech
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioUnrealSpeechEnabled" checked>
+						<label for="audioUnrealSpeechEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioSpeechifyOrder" class="sortable-item" data-order="0">
+					Speechify
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioSpeechifyEnabled" checked>
+						<label for="audioSpeechifyEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioPlayHtOrder" class="sortable-item" data-order="0">
+					PlayHT
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioPlayHtEnabled" checked>
+						<label for="audioPlayHtEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioElevenLabsOrder" class="sortable-item" data-order="0">
+					ElevenLabs
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioElevenLabsEnabled" checked>
+						<label for="audioElevenLabsEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioAmazonPollyOrder" class="sortable-item" data-order="0">
+					Amazon Polly
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioAmazonPollyEnabled" checked>
+						<label for="audioAmazonPollyEnabled">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioOpenAiOrder" class="sortable-item" data-order="0">
+					OpenAI
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioOpenAiEnabled" checked>
+						<label for="audioOpenAiEnabled">Enabled</label>
+					</div>
+				</div>
+
+			</div>
+
+            <h3>Audio fetchers order/enable to text</h3>
+
+			<div id="audioFetchersOrderToText" class="sortable-list">
+
+				<div id="audioGoogleSpeechOrderToText" class="sortable-item" data-order-to-text="0">
+					Google Speech
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioGoogleSpeechEnabledToText" checked>
+						<label for="audioGoogleSpeechEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioResponsiveVoiceOrderToText" class="sortable-item" data-order-to-text="0">
+					ResponsiveVoice
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioResponsiveVoiceEnabledToText" checked>
+						<label for="audioResponsiveVoiceEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioUnrealSpeechOrderToText" class="sortable-item" data-order-to-text="0">
+					Unreal Speech
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioUnrealSpeechEnabledToText" checked>
+						<label for="audioUnrealSpeechEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioSpeechifyOrderToText" class="sortable-item" data-order-to-text="0">
+					Speechify
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioSpeechifyEnabledToText" checked>
+						<label for="audioSpeechifyEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioPlayHtOrderToText" class="sortable-item" data-order-to-text="0">
+					PlayHT
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioPlayHtEnabledToText" checked>
+						<label for="audioPlayHtEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioElevenLabsOrderToText" class="sortable-item" data-order-to-text="0">
+					ElevenLabs
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioElevenLabsEnabledToText" checked>
+						<label for="audioElevenLabsEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioAmazonPollyOrderToText" class="sortable-item" data-order-to-text="0">
+					Amazon Polly
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioAmazonPollyEnabledToText" checked>
+						<label for="audioAmazonPollyEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+				<div id="audioOpenAiOrderToText" class="sortable-item" data-order-to-text="0">
+					OpenAI
+					<div class="checkbox-group">
+						<input type="checkbox" id="audioOpenAiEnabledToText" checked>
+						<label for="audioOpenAiEnabledToText">Enabled</label>
+					</div>
+				</div>
+
+			</div>
+
+            <h3>Real Voice</h3>
+
+            <div class="form-group">
+                <label for="audioRealVoiceFetchTimeout">Real voice fetch timeout (ms)</label>
+                <input type="text" id="audioRealVoiceFetchTimeout" placeholder="↑ if slow internet, e.g. 3000">
+            </div>
+
+            <h3>Google Speech</h3>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="audioGoogleSpeechSave" checked>
+                <label for="audioGoogleSpeechSave">Google speech save audio</label>
+            </div>
+            
+            <h3>ResponsiveVoice</h3>
+
+            <div class="form-group">
+                <label for="audioResponsiveVoiceApiKey">ResponsiveVoice API key</label>
+                <input type="password" id="audioResponsiveVoiceApiKey" placeholder="See ResponsiveVoice site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioResponsiveVoiceApiGender">ResponsiveVoice API gender</label>
+                <select id="audioResponsiveVoiceApiGender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            
+            <h3>Unreal Speech</h3>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiToken">Unreal Speech API token</label>
+                <input type="password" id="audioUnrealSpeechApiToken" placeholder="See Unreal Speech site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiVoiceId">Unreal Speech API voice id</label>
+                <select id="audioUnrealSpeechApiVoiceId">
+					<option value="Scarlett">Scarlett</option>
+					<option value="Dan">Dan</option>
+					<option value="Liv">Liv</option>
+					<option value="Will">Will</option>
+					<option value="Amy">Amy</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiBitRate">Unreal Speech API bit rate</label>
+                <select id="audioUnrealSpeechApiBitRate">
+					<option value="320k">320k</option>
+					<option value="256k">256k</option>
+					<option value="192k">192k</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiPitch">Unreal Speech API pitch</label>
+                <input type="text" id="audioUnrealSpeechApiPitch" placeholder="See Unreal Speech site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiCodec">Unreal Speech API codec</label>
+                <select id="audioUnrealSpeechApiCodec">
+					<option value="libmp3lame">libmp3lame</option>
+					<option value="pcm_mulaw">pcm_mulaw</option>
+					<option value="pcm_s16le">pcm_s16le</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="audioUnrealSpeechApiTemperature">Unreal Speech API temperature</label>
+                <input type="text" id="audioUnrealSpeechApiTemperature" placeholder="[0.1, 0.8]">
+            </div>
+
+            <h3>Speechify</h3>
+
+            <div class="form-group">
+                <label for="audioSpeechifyApiToken">Speechify API token</label>
+                <input type="password" id="audioSpeechifyApiToken" placeholder="See Speechify site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioSpeechifyApiVoiceId">Speechify API voice id</label>
+                <select id="audioSpeechifyApiVoiceId">
+					<option value="henry">Henry</option>
+					<option value="bwyneth">Erica</option>
+					<option value="carly">Carly</option>
+					<option value="kristy">Kristy</option>
+					<option value="oliver">Oliver</option>
+					<option value="tasha">Tasha</option>
+					<option value="joe">Joe</option>
+					<option value="lisa">Lisa</option>
+					<option value="george">George</option>
+					<option value="emily">Emily</option>
+					<option value="rob">Rob</option>
+					<option value="julie">Julie</option>
+					<option value="mark">Mark</option>
+					<option value="nick">Nick</option>
+					<option value="erin">Erin</option>
+					<option value="jesse">Jesse</option>
+					<option value="ken">Keenan</option>
+					<option value="lindsey">Lindsey</option>
+					<option value="monica">Monica</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioSpeechifyApiVoiceIdNotListed">Speechify API voice id (not listed)</label>
+                <input type="text" id="audioSpeechifyApiVoiceIdNotListed" placeholder="See Speechify site">
+            </div>
+
+            <h3>PlayHT</h3>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiUserId">PlayHT API user id</label>
+                <input type="text" id="audioPlayHtApiUserId" placeholder="See PlayHT site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiKey">PlayHT API key</label>
+                <input type="password" id="audioPlayHtApiKey" placeholder="See PlayHT site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiVoiceId">PlayHT API voice</label>
+                <select id="audioPlayHtApiVoiceId">
+					<option value="s3://peregrine-voices/evelyn 2 saad parrot/manifest.json">Evelyn</option>
+					<option value="s3://voice-cloning-zero-shot/b3def996-302e-486f-a234-172fa0279f0e/anthonysaad/manifest.json">Anthony</option>
+					<option value="s3://voice-cloning-zero-shot/0ed97923-dd04-449f-a497-6f1109fdd9cc/jordansaad/manifest.json">Jordan</option>
+					<option value="s3://voice-cloning-zero-shot/80ba8839-a6e6-470c-8f68-7c1e5d3ee2ff/abigailsaad/manifest.json">Abigail</option>
+					<option value="s3://voice-cloning-zero-shot/75085d4f-839d-4ca5-a3e2-e329f04a591e/larrynarrativesaad/manifest.json">Larry</option>
+					<option value="s3://peregrine-voices/hudson saad parrot/manifest.json">Hudson</option>
+					<option value="s3://voice-cloning-zero-shot/4c627545-b9c0-4791-ae8e-f48f5475247c/bryansaad/manifest.json">Bryan</option>
+					<option value="s3://voice-cloning-zero-shot/c00f7eb4-fbbd-4a7d-a4c5-ff57e92faf99/williamsaad3/manifest.json">William</option>
+					<option value="s3://voice-cloning-zero-shot/f2863f63-5334-4f65-9d30-438feb79c2ec/arianasaad2/manifest.json">Ariana</option>
+					<option value="s3://voice-cloning-zero-shot/2cbffa49-5dfe-4378-a54f-b824f7bbb032/theodoresaad/manifest.json">Theodore</option>
+					<option value="s3://voice-cloning-zero-shot/f43cc4b4-b193-4a13-a903-e6b125c3d572/original/manifest.json">Luna</option>
+					<option value="s3://voice-cloning-zero-shot/0b423fde-02e2-4bea-91ce-c932162e4428/samanthasaad/manifest.json">Samantha</option>
+					<option value="s3://voice-cloning-zero-shot/f6594c50-e59b-492c-bac2-047d57f8bdd8/susanadvertisingsaad/manifest.json">Susan (Advertising)</option>
+					<option value="s3://voice-cloning-zero-shot/dc90b58b-59a9-4e65-955d-c7620deb2d7a/original/manifest.json">Richie</option>
+					<option value="s3://voice-cloning-zero-shot/2a7ddfc5-d16a-423a-9441-5b13290998b8/novasaad/manifest.json">Nova</option>
+					<option value="s3://voice-cloning-zero-shot/3b74b785-e06e-4a53-a9c4-ebed08a70ef2/susannarrativesaad/manifest.json">Susan (Narrative)</option>
+					<option value="s3://voice-cloning-zero-shot/b2da9576-07a4-4e1d-b71f-684f1657516f/owensaad/manifest.json">Owen</option>
+					<option value="s3://voice-cloning-zero-shot/92519089-3c97-4f31-8743-ab4f06047b88/larrysaad/manifest.json">Larry (Narrative)</option>
+					<option value="s3://voice-cloning-zero-shot/8ceaa707-4141-46c0-a610-4a2014d7ea97/audreysaad/manifest.json">Audrey</option>
+					<option value="s3://voice-cloning-zero-shot/b4a876c1-8730-435e-9595-141799868808/original/manifest.json">Waylon</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiVoiceIdNotListed">PlayHT API voice id (not listed)</label>
+                <input type="text" id="audioPlayHtApiVoiceIdNotListed" placeholder="See PlayHT site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiQuality">PlayHT API quality</label>
+                <select id="audioPlayHtApiQuality">
+					<option value="draft">draft</option>
+					<option value="low">low</option>
+					<option value="medium">medium</option>
+					<option value="high">high</option>
+					<option value="premium">premium</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiOutputFormat">PlayHT API output format</label>
+                <select id="audioPlayHtApiOutputFormat">
+					<option value="mp3">mp3</option>
+					<option value="mulaw">mulaw</option>
+					<option value="wav">wav</option>
+					<option value="ogg">ogg</option>
+					<option value="flac">flac</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiSampleRate">PlayHT API sample rate</label>
+                <input type="text" id="audioPlayHtApiSampleRate" placeholder="[8000, 48000]">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiTemperature">PlayHT API temperature</label>
+                <input type="text" id="audioPlayHtApiTemperature" placeholder="[0, 2]">
+            </div>
+
+            <div class="form-group">
+                <label for="audioPlayHtApiVoiceEngine">PlayHT API voice engine</label>
+                <select id="audioPlayHtApiVoiceEngine">
+					<option value="Play3.0-mini">Play3.0-mini</option>
+					<option value="PlayDialog">PlayDialog</option>
+					<option value="PlayHT2.0-turbo">PlayHT2.0-turbo</option>
+					<option value="PlayHT2.0">PlayHT2.0</option>
+					<option value="PlayHT1.0">PlayHT1.0</option>
+                </select>
+            </div>
+
+            <h3>ElevenLabs</h3>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiKey">ElevenLabs API key</label>
+                <input type="password" id="audioElevenLabsApiKey" placeholder="See ElevenLabs site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiVoiceId">ElevenLabs API voice</label>
+                <select id="audioElevenLabsApiVoiceId">
+					<option value="9BWtsMINqrJLrRacOk9x">Aria</option>
+					<option value="CwhRBWXzGAHq8TQ4Fs17">Roger</option>
+					<option value="EXAVITQu4vr4xnSDxMaL">Sarah</option>
+					<option value="FGY2WhTYpPnrIDTdsKH5">Laura</option>
+					<option value="SAz9YHcvj6GT2YYXdXww">River</option>
+					<option value="TX3LPaxmHKxFdv7VOQHJ">Liam</option>
+					<option value="XrExE9yKIg1WjnnlVkGX">Matilda</option>
+					<option value="bIHbv24MWmeRgasZH58o">Will</option>
+					<option value="cgSgspJ2msm6clMCkdW9">Jessica</option>
+					<option value="cjVigY5qzO86Huf0OWal">Eric</option>
+					<option value="iP95p4xoKVk53GoZ742B">Chris</option>
+					<option value="nPczCjzI2devNBz1zQrb">Brian</option>
+					<option value="pqHfZKP75CvOlQylNhV4">Bill</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiVoiceIdNotListed">ElevenLabs API voice id (not listed)</label>
+                <input type="text" id="audioElevenLabsApiVoiceIdNotListed" placeholder="See ElevenLabs site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiOutputFormat">ElevenLabs API output format</label>
+                <select id="audioElevenLabsApiOutputFormat">
+					<option value="mp3_22050_32">mp3_22050_32</option>
+					<option value="mp3_44100_128">mp3_44100_128</option>
+					<option value="mp3_44100_192">mp3_44100_192</option>
+					<option value="mp3_44100_32">mp3_44100_32</option>
+					<option value="mp3_44100_64">mp3_44100_64</option>
+					<option value="mp3_44100_96">mp3_44100_96</option>
+					<option value="pcm_16000">pcm_16000</option>
+					<option value="pcm_22050">pcm_22050</option>
+					<option value="pcm_24000">pcm_24000</option>
+					<option value="pcm_44100">pcm_44100</option>
+					<option value="ulaw_8000">ulaw_8000</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiModelId">ElevenLabs API model id</label>
+                <select id="audioElevenLabsApiModelId">
+					<option value="eleven_multilingual_v2">eleven_multilingual_v2</option>
+					<option value="eleven_flash_v2_5">eleven_flash_v2_5</option>
+					<option value="eleven_turbo_v2_5">eleven_turbo_v2_5</option>
+					<option value="eleven_turbo_v2">eleven_turbo_v2</option>
+					<option value="eleven_flash_v2">eleven_flash_v2</option>
+					<option value="eleven_english_sts_v2">eleven_english_sts_v2</option>
+					<option value="eleven_monolingual_v1">eleven_monolingual_v1</option>
+					<option value="eleven_multilingual_sts_v2">eleven_multilingual_sts_v2</option>
+					<option value="eleven_multilingual_v1">eleven_multilingual_v1</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioElevenLabsApiApplyTextNormalization">ElevenLabs API apply text normalization</label>
+                <select id="audioElevenLabsApiApplyTextNormalization">
+					<option value="auto">auto</option>
+					<option value="on">on</option>
+					<option value="off">off</option>
+                </select>
+            </div>
+
+            <h3>Amazon Polly</h3>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiAccessKeyId">Amazon Polly API access key id</label>
+                <input type="password" id="audioAmazonPollyApiAccessKeyId" placeholder="See Amazon Polly site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiSecretAccessKey">Amazon Polly API secret access key</label>
+                <input type="password" id="audioAmazonPollyApiSecretAccessKey" placeholder="See Amazon Polly site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiEndpoint">Amazon Polly API endpoint</label>
+                <select id="audioAmazonPollyApiEndpoint">
+					<option value="polly.us-east-2.api.aws">US East (Ohio)</option>
+					<option value="polly.us-east-1.api.aws">US East (N. Virginia)</option>
+					<option value="polly.us-west-1.api.aws">US West (N. California)</option>
+					<option value="polly.us-west-2.api.aws">US West (Oregon)</option>
+					<option value="polly.af-south-1.api.aws">Africa (Cape Town)</option>
+					<option value="polly.ap-east-1.api.aws">Asia Pacific (Hong Kong)</option>
+					<option value="polly.ap-south-1.api.aws">Asia Pacific (Mumbai)</option>
+					<option value="polly.ap-northeast-3.api.aws">Asia Pacific (Osaka)</option>
+					<option value="polly.ap-northeast-2.api.aws">Asia Pacific (Seoul)</option>
+					<option value="polly.ap-southeast-1.api.aws">Asia Pacific (Singapore)</option>
+					<option value="polly.ap-southeast-2.api.aws">Asia Pacific (Sydney)</option>
+					<option value="polly.ap-northeast-1.api.aws">Asia Pacific (Tokyo)</option>
+					<option value="polly.ca-central-1.api.aws">Canada (Central)</option>
+					<option value="polly.eu-central-1.api.aws">Europe (Frankfurt)</option>
+					<option value="polly.eu-west-1.api.aws">Europe (London)</option>
+					<option value="polly.eu-west-3.api.aws">Europe (Paris)</option>
+					<option value="polly.eu-south-2.api.aws">Europe (Spain)</option>
+					<option value="polly.eu-north-1.api.aws ">Europe (Stockholm)</option>
+					<option value="polly.me-south-1.api.aws">Middle East (Bahrain)</option>
+					<option value="polly.sa-east-1.api.aws">South America (São Paulo)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiEngine">Amazon Polly API engine</label>
+                <select id="audioAmazonPollyApiEngine">
+					<option value="standard">standard</option>
+					<option value="neural">neural</option>
+					<option value="long-form">long-form</option>
+					<option value="generative">generative</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiOutputFormat">Amazon Polly API output format</label>
+                <select id="audioAmazonPollyApiOutputFormat">
+					<option value="mp3">mp3</option>
+					<option value="ogg_vorbis">ogg_vorbis</option>
+					<option value="pcm">pcm</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiSampleRate">Amazon Polly API sample rate</label>
+                <select id="audioAmazonPollyApiSampleRate">
+					<option value="8000">8000</option>
+					<option value="16000">16000</option>
+					<option value="22050">22050</option>
+					<option value="24000">24000</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiVoiceId">Amazon Polly API voice id</label>
+                <select id="audioAmazonPollyApiVoiceId">
+					<option value="Joanna">Joanna</option>
+					<option value="Salli">Salli</option>
+					<option value="Matthew">Matthew</option>
+					<option value="Kimberly">Kimberly</option>
+					<option value="Kendra">Kendra</option>
+					<option value="Justin">Justin</option>
+					<option value="Joey">Joey</option>
+					<option value="Ivy">Ivy</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioAmazonPollyApiVoiceIdNotListed">Amazon Polly API voice id (not listed)</label>
+                <input type="text" id="audioAmazonPollyApiVoiceIdNotListed" placeholder="See Amazon Polly site">
+            </div>
+
+            <h3>OpenAI</h3>
+
+            <div class="form-group">
+                <label for="audioOpenAiApiKey">OpenAI API access key</label>
+                <input type="password" id="audioOpenAiApiKey" placeholder="See OpenAI site">
+            </div>
+
+            <div class="form-group">
+                <label for="audioOpenAiApiModel">OpenAI API model</label>
+                <select id="audioOpenAiApiModel">
+					<option value="tts-1">tts-1</option>
+					<option value="tts-1-hd">tts-1-hd</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioOpenAiApiVoice">OpenAI API voice</label>
+                <select id="audioOpenAiApiVoice">
+					<option value="alloy">alloy</option>
+					<option value="ash">ash</option>
+					<option value="coral">coral</option>
+					<option value="echo">echo</option>
+					<option value="fable">fable</option>
+					<option value="onyx">onyx</option>
+					<option value="nova">nova</option>
+					<option value="sage">sage</option>
+					<option value="shimmer">shimmer</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="audioOpenAiApiResponseFormat">OpenAI API response format</label>
+                <select id="audioOpenAiApiResponseFormat">
+					<option value="mp3">mp3</option>
+					<option value="opus">opus</option>
+					<option value="aac">aac</option>
+					<option value="flac">flac</option>
+					<option value="wav">wav</option>
+					<option value="pcm">pcm</option>
+                </select>
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveAudio">Save Audio</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h2>Set pronounciation on sites</h2>
+            <h3>Cambridge</h3>
+            <h3>Oxford</h3>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="setPronuncationByShortcutEnabled" checked>
+                <label for="setPronuncationByShortcutEnabled">Enabled</label>
+            </div>
+            
+            <div class="form-group">
+                <label for="setPronuncationByShortcutAudioShortcut">Set audio shortcut (CTRL+?)</label>
+                <input type="text" id="setPronuncationByShortcutAudioShortcut" placeholder="e.g. A">
+            </div>
+
+            <div class="form-group">
+                <label for="setPronuncationByShortcutIpaShortcut">Set IPA shortcut (CTRL+?)</label>
+                <input type="text" id="setPronuncationByShortcutIpaShortcut" placeholder="e.g. Z">
+            </div>
+
+            <div class="form-group">
+                <label for="setPronuncationByShortcutRestoreDefaultIpaShortcut">Restore default IPA shortcut (CTRL+?)</label>
+                <input type="text" id="setPronuncationByShortcutRestoreDefaultIpaShortcut" placeholder="e.g. X">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveSetPronunciationOnSites">Save</button>
+			</div>
+
+        </div>
+
+
+        <div class="settings-section">
+
+			<h2>Set Custom IPA</h2>
+
+            <div class="form-group">
+                <label for="setCustomIpaWord">Word</label>
+                <input type="text" id="setCustomIpaWord" placeholder="e.g. throughout">
+            </div>
+
+            <div class="form-group">
+				<label for="setCustomIpa">IPA</label>
+                <input type="text" id="setCustomIpa" placeholder="e.g. /θɹuˈaʊt/">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveCustomIpa">Save Custom IPA</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h2>Set Custom Audio</h2>
+
+            <div class="form-group">
+                <label for="setCustomAudioWord">Word</label>
+                <input type="text" id="setCustomAudioWord" placeholder="e.g. throughout">
+            </div>
+
+            <div class="form-group">
+                <label for="setCustomAudioFile">File</label>
+				<input type="file" accept="audio/*" id="setCustomAudioFile" placeholder="File until 60KB size">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveCustomAudio">Save Custom Audio</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+            <h2>Set Custom Audio Text</h2>
+
+            <div class="form-group">
+                <label for="setCustomAudioText">Text</label>
+				<textarea id="setCustomAudioText" placeholder="e.g. Once upon a time..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="setCustomAudioTextFile">File</label>
+				<input type="file" accept="audio/*" id="setCustomAudioTextFile" placeholder="File until 60KB size">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveCustomAudioText">Save Custom Audio Text</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Remove IPA</h2>
+
+            <div class="form-group">
+                <label for="removeIpaWord">Word</label>
+                <input type="text" id="removeIpaWord" placeholder="e.g. throughout">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveRemoveIpa">Remove IPA</button>
+			</div>
+
+        </div>
+
+         <div class="settings-section">
+
+            <h2>Remove Audio</h2>
+
+            <div class="form-group">
+                <label for="removeAudioWord">Word</label>
+                <input type="text" id="removeAudioWord" placeholder="e.g. throughout">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="saveRemoveAudio">Remove Audio</button>
+			</div>
+
+        </div>
+
+         <div class="settings-section">
+
+            <h2>Download Storage</h2>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadIpaStorage">Download IPA storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadAudioStorage">Download Audio Storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadAudioTextStorage">Download Audio Text Storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadOptionsStorage">Download Options Storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadErrorsStorage">Download Errors Storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="downloadAllStorage">Download All Storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Update IPA Storage</h2>
+
+            <div class="form-group">
+                <label for="updateIpaStorageFile">File (json)</label>
+				<input type="file" accept="application/JSON" id="updateIpaStorageFile">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="updateIpaStorage">Update IPA Storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Update Audio Storage</h2>
+
+            <div class="form-group">
+                <label for="updateAudioStorageFile">File (json)</label>
+				<input type="file" accept="application/JSON" id="updateAudioStorageFile">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="updateAudioStorage">Update Audio Storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Update Audio Text Storage</h2>
+
+            <div class="form-group">
+                <label for="updateAudioTextStorageFile">File (json)</label>
+				<input type="file" accept="application/JSON" id="updateAudioTextStorageFile">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="updateAudioTextStorage">Update Audio Text Storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Update Options Storage</h2>
+
+            <div class="form-group">
+                <label for="updateOptionsStorageFile">File (json)</label>
+				<input type="file" accept="application/JSON" id="updateOptionsStorageFile">
+            </div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="updateOptionsStorage">Update Options Storage</button>
+			</div>
+
+        </div>
+
+         <div class="settings-section">
+
+            <h2>Clear Storage</h2>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="clearIpaStorage">Clear IPA storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="clearAudioStorage">Clear Audio Storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="clearAudioTextStorage">Clear Audio Text Storage</button>
+			</div>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="clearErrorsStorage">Clear Errors Storage</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Set Complete Pre-defined IPA Definitions</h2>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="setCompleteIpa">Set Complete Pre-defined IPA</button>
+			</div>
+
+        </div>
+
+        <div class="settings-section">
+
+			<h2>Restore Default</h2>
+
+			<div style="text-align: center; margin-top: 30px;">
+				<button class="btn btn-primary" id="restoreDefaultOptions">Restore Default Options</button>
+			</div>
+
+        </div>
+
+   </div>
+
+    <script type="module" src="./script.js"></script>
+</body>
+</html>

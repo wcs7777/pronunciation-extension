@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<div class="container">
+		<header class="header"></header>
+		<main>
+
+			<div class="settings-section">
+
+				<h2>Speechify</h2>
+
+				<div class="form-group">
+					<label for="token">Token</label>
+					<input type="password" id="token" placeholder="See Speechify site">
+				</div>
+
+				<div class="form-group">
+					<label for="voiceId">Voice id</label>
+					<select id="voiceId">
+						<option value="henry">Henry</option>
+						<option value="bwyneth">Erica</option>
+						<option value="carly">Carly</option>
+						<option value="kristy">Kristy</option>
+						<option value="oliver">Oliver</option>
+						<option value="tasha">Tasha</option>
+						<option value="joe">Joe</option>
+						<option value="lisa">Lisa</option>
+						<option value="george">George</option>
+						<option value="emily">Emily</option>
+						<option value="rob">Rob</option>
+						<option value="julie">Julie</option>
+						<option value="mark">Mark</option>
+						<option value="nick">Nick</option>
+						<option value="erin">Erin</option>
+						<option value="jesse">Jesse</option>
+						<option value="ken">Keenan</option>
+						<option value="lindsey">Lindsey</option>
+						<option value="monica">Monica</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="voiceIdNotListed">Voice id (not listed)</label>
+					<input type="text" id="voiceIdNotListed" placeholder="See Speechify site">
+				</div>
+
+				<div class="center">
+					<button class="btn btn-primary" id="save">Save</button>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+    <script type="module">
+		import { createNavCB } from "../js/create-nav.js";
+		createNavCB("./audio-general.html", "./audio-speechify.html");
+	</script>
+    <script type="module" src="../js/audio-speechify.js"></script>
+</body>
+</html>

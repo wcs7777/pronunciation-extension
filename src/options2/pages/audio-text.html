@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<div class="container">
+		<header class="header"></header>
+		<main>
+
+			<div class="settings-section">
+
+				<h2>Audio Text</h2>
+
+				<div class="checkbox-group">
+					<input type="checkbox" id="enabled" checked>
+					<label for="enabled">Enabled</label>
+				</div>
+				
+				<div class="checkbox-group">
+					<input type="checkbox" id="saveAudio" checked>
+					<label for="saveAudio">Save audio</label>
+				</div>
+				
+				<div class="checkbox-group">
+					<input type="checkbox" id="playerEnabled" checked>
+					<label for="playerEnabled">Player enabled</label>
+				</div>
+				
+				<div class="checkbox-group">
+					<input type="checkbox" id="shortcutsEnabled" checked>
+					<label for="shortcutsEnabled">Shortcuts enabled</label>
+				</div>
+				
+				<div class="center">
+					<button class="btn btn-primary" id="save">Save</button>
+				</div>
+
+			</div>
+
+			<div class="settings-section">
+
+				<h2>Audio Shortcuts to Text</h2>
+
+				<div class="form-group">
+					<label for="shortcutTogglePlayer">Toggle Player</label>
+					<input type="text" id="shortcutTogglePlayer">
+				</div>
+				<div class="form-group">
+					<label for="shortcutTogglePlay">Toggle Play</label>
+					<input type="text" id="shortcutTogglePlay">
+				</div>
+				<div class="form-group">
+					<label for="shortcutToggleMute">Toggle Mute</label>
+					<input type="text" id="shortcutToggleMute">
+				</div>
+				<div class="form-group">
+					<label for="shortcutRewind">Rewind</label>
+					<input type="text" id="shortcutRewind">
+				</div>
+				<div class="form-group">
+					<label for="shortcutPrevious">Previous</label>
+					<input type="text" id="shortcutPrevious">
+				</div>
+				<div class="form-group">
+					<label for="shortcutNext">Next</label>
+					<input type="text" id="shortcutNext">
+				</div>
+				<div class="form-group">
+					<label for="shortcutBackward">Backward</label>
+					<input type="text" id="shortcutBackward">
+				</div>
+				<div class="form-group">
+					<label for="shortcutForward">Forward</label>
+					<input type="text" id="shortcutForward">
+				</div>
+				<div class="form-group">
+					<label for="shortcutDecreaseVolume">Decrease Volume</label>
+					<input type="text" id="shortcutDecreaseVolume">
+				</div>
+				<div class="form-group">
+					<label for="shortcutIncreaseVolume">Increase Volume</label>
+					<input type="text" id="shortcutIncreaseVolume">
+				</div>
+				<div class="form-group">
+					<label for="shortcutDecreaseSpeed">Decrease Speed</label>
+					<input type="text" id="shortcutDecreaseSpeed">
+				</div>
+				<div class="form-group">
+					<label for="shortcutIncreaseSpeed">Increase Speed</label>
+					<input type="text" id="shortcutIncreaseSpeed">
+				</div>
+				<div class="form-group">
+					<label for="shortcutResetSpeed">Reset Speed</label>
+					<input type="text" id="shortcutResetSpeed">
+				</div>
+				
+				<div class="center">
+					<button class="btn btn-primary" id="saveShortcuts">Save</button>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+    <script type="module">
+		import { createNavCB } from "../js/create-nav.js";
+		createNavCB("./audio-general.html", "./audio-text.html");
+	</script>
+    <script type="module" src="../js/audio-text.js"></script>
+</body>
+</html>

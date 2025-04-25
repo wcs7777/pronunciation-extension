@@ -154,10 +154,7 @@ declare global {
 	type OptAudioCambridge = PronunciationSourceOptions;
 	type OptAudioLinguee = PronunciationSourceOptions;
 	type OptAudioOxford = PronunciationSourceOptions;
-
-	type OptAudioGstatic = PronunciationSourceOptions & {
-		fetchTimeout: number,
-	};
+	type OptAudioGstatic = PronunciationSourceOptions;
 
 	type OptAudioGoogleSpeech = PronunciationSourceOptions;
 

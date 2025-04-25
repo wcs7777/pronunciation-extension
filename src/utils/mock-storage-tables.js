@@ -2,8 +2,12 @@ import MemoryCache from "./memory-cache.js";
 import MockStorage from "./mock-storage.js";
 import TableByKeyPrefix from "./table-by-key-prefix.js";
 import TableByParentKey from "./table-by-parent-key.js";
+import defaultOptions from "./default-options.js";
 
-export const addonStorage = new MockStorage();
+export const addonStorage = new MockStorage({
+	options: defaultOptions,
+	defaultOptions,
+});
 export const audioTable = new TableByKeyPrefix(addonStorage, "a");
 export const audioCache = new MemoryCache("audioCache", 100);
 export const ipaTable = new TableByKeyPrefix(addonStorage, "i");

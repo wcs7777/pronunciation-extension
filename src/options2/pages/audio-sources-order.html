@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<div class="container">
+		<header class="header"></header>
+		<main>
+
+			<div class="settings-section">
+
+				<h2>Audio Sources Order/Enable</h2>
+
+				<div id="sourcesOrder" class="sortable-list">
+
+					<div id="cambridgeOrder" class="sortable-item" data-order="0">
+						Cambridge
+						<div class="checkbox-group">
+							<input type="checkbox" id="cambridgeEnabled" checked>
+							<label for="cambridgeEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="lingueeOrder" class="sortable-item" data-order="0">
+						Linguee
+						<div class="checkbox-group">
+							<input type="checkbox" id="lingueeEnabled" checked>
+							<label for="lingueeEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="oxfordOrder" class="sortable-item" data-order="0">
+						Oxford
+						<div class="checkbox-group">
+							<input type="checkbox" id="oxfordEnabled" checked>
+							<label for="oxfordEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="gstaticOrder" class="sortable-item" data-order="0">
+						Gstatic
+						<div class="checkbox-group">
+							<input type="checkbox" id="gstaticEnabled" checked>
+							<label for="gstaticEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="googleSpeechOrder" class="sortable-item" data-order="0">
+						GoogleSpeech
+						<div class="checkbox-group">
+							<input type="checkbox" id="googleSpeechEnabled" checked>
+							<label for="googleSpeechEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="responsiveVoiceOrder" class="sortable-item" data-order="0">
+						ResponsiveVoice
+						<div class="checkbox-group">
+							<input type="checkbox" id="responsiveVoiceEnabled" checked>
+							<label for="responsiveVoiceEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="unrealSpeechOrder" class="sortable-item" data-order="0">
+						UnrealSpeech
+						<div class="checkbox-group">
+							<input type="checkbox" id="unrealSpeechEnabled" checked>
+							<label for="unrealSpeechEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="speechifyOrder" class="sortable-item" data-order="0">
+						Speechify
+						<div class="checkbox-group">
+							<input type="checkbox" id="speechifyEnabled" checked>
+							<label for="speechifyEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="playHtOrder" class="sortable-item" data-order="0">
+						PlayHt
+						<div class="checkbox-group">
+							<input type="checkbox" id="playHtEnabled" checked>
+							<label for="playHtEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="elevenLabsOrder" class="sortable-item" data-order="0">
+						ElevenLabs
+						<div class="checkbox-group">
+							<input type="checkbox" id="elevenLabsEnabled" checked>
+							<label for="elevenLabsEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="amazonPollyOrder" class="sortable-item" data-order="0">
+						AmazonPolly
+						<div class="checkbox-group">
+							<input type="checkbox" id="amazonPollyEnabled" checked>
+							<label for="amazonPollyEnabled">Enabled</label>
+						</div>
+					</div>
+					<div id="openAiOrder" class="sortable-item" data-order="0">
+						OpenAi
+						<div class="checkbox-group">
+							<input type="checkbox" id="openAiEnabled" checked>
+							<label for="openAiEnabled">Enabled</label>
+						</div>
+					</div>
+				</div>
+				
+				<div class="center">
+					<button class="btn btn-primary" id="save">Save</button>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+    <script type="module">
+		import { createNavCB } from "../js/create-nav.js";
+		createNavCB("./audio-general.html", "./audio-sources-order.html");
+	</script>
+    <script type="module" src="../js/audio-sources-order.js"></script>
+</body>
+</html>

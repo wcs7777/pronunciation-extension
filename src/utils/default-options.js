@@ -129,7 +129,6 @@ const defaultOptions = {
 				save: true,
 				saveError: true,
 				textMaxLength: 0,
-				fetchTimeout: 3000,
 			},
 			googleSpeech: {
 				enabled: true,

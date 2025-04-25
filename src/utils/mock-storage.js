@@ -3,8 +3,11 @@
  */
 export default class MockStorage {
 	
-	constructor() {
-		this.storage = {};
+	/**
+	 * @param {{ [key: string]: initialStorage }} storage
+	 */
+	constructor(storage={}) {
+		this.storage = storage;
 	}
 
 	/**
