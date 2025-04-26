@@ -38,8 +38,8 @@ document.addEventListener("DOMContentLoaded", () => {
 el.ipa.addEventListener("click", async () => {
 	try {
 		const ipaStorage = await ipaTable.getAll();
-		await downloadObject(ipaStorage, fileName("pronunciation-ipa-storage.json"));
 		showStorage("IPA", ipaStorage);
+		await downloadObject(ipaStorage, fileName("pronunciation-ipa-storage.json"));
 	} catch (error) {
 		console.error(error);
 	}
@@ -48,8 +48,8 @@ el.ipa.addEventListener("click", async () => {
 el.audio.addEventListener("click", async () => {
 	try {
 		const audioStorage = await audioTable.getAll();
-		await downloadObject(audioStorage, fileName("pronunciation-audio-storage.json"));
 		showStorage("Audio", audioStorage);
+		await downloadObject(audioStorage, fileName("pronunciation-audio-storage.json"));
 	} catch (error) {
 		console.error(error);
 	}
@@ -58,8 +58,8 @@ el.audio.addEventListener("click", async () => {
 el.audioText.addEventListener("click", async () => {
 	try {
 		const audioTextStorage = await audioTextTable.getAll();
-		await downloadObject(audioTextStorage, fileName("pronunciation-audioText-storage.json"));
 		showStorage("Audio Text", audioTextStorage);
+		await downloadObject(audioTextStorage, fileName("pronunciation-audioText-storage.json"));
 	} catch (error) {
 		console.error(error);
 	}
@@ -68,8 +68,8 @@ el.audioText.addEventListener("click", async () => {
 el.options.addEventListener("click", async () => {
 	try {
 		const optionsStorage = await optionsTable.getAll();
-		await downloadObject(optionsStorage, fileName("pronunciation-options-storage.json"));
 		showStorage("Options", optionsStorage);
+		await downloadObject(optionsStorage, fileName("pronunciation-options-storage.json"));
 	} catch (error) {
 		console.error(error);
 	}
@@ -78,8 +78,8 @@ el.options.addEventListener("click", async () => {
 el.errors.addEventListener("click", async () => {
 	try {
 		const errorsStorage = await errorsTable.getAll();
-		await downloadObject(errorsStorage, fileName("pronunciation-errors-storage.json"));
 		showStorage("Errors", errorsStorage);
+		await downloadObject(errorsStorage, fileName("pronunciation-errors-storage.json"));
 	} catch (error) {
 		console.error(error);
 	}
@@ -88,8 +88,8 @@ el.errors.addEventListener("click", async () => {
 el.all.addEventListener("click", async () => {
 	try {
 		const storage = await addonStorage.get();
-		await downloadObject(storage, fileName("pronunciation-all-storage.json"));
 		showStorage("All", storage);
+		await downloadObject(storage, fileName("pronunciation-all-storage.json"));
 	} catch (error) {
 		console.error(error);
 	}
