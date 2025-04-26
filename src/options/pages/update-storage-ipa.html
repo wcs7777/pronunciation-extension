@@ -7,6 +7,8 @@
 	<link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
+	<input id="mainPage" type="hidden" value="./update-storage-ipa.html">
+	<input id="subPage" type="hidden" value="./update-storage-ipa.html">
 	<div class="container">
 		<header class="header"></header>
 		<main>
@@ -35,10 +37,7 @@
 			</div>
 		</main>
 	</div>
-    <script type="module">
-		import { createNavCB } from "../js/create-nav.js";
-		createNavCB("./update-storage-ipa.html", "./update-storage-ipa.html");
-	</script>
+    <script type="module" src="../js/create-nav.js"></script>
     <script type="module" src="../js/update-storage-ipa.js"></script>
 </body>
 </html>

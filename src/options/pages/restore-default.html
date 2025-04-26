@@ -7,6 +7,8 @@
 	<link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
+	<input id="mainPage" type="hidden" value="./restore-default.html">
+	<input id="subPage" type="hidden" value="">
 	<div class="container">
 		<header class="header"></header>
 		<main>
@@ -21,10 +23,7 @@
 			</div>
 		</main>
 	</div>
-    <script type="module">
-		import { createNavCB } from "../js/create-nav.js";
-		createNavCB("./restore-default.html");
-	</script>
+    <script type="module" src="../js/create-nav.js"></script>
     <script type="module" src="../js/restore-default.js"></script>
 </body>
 </html>

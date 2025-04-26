@@ -7,6 +7,8 @@
 	<link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
+	<input id="mainPage" type="hidden" value="./audio-general.html">
+	<input id="subPage" type="hidden" value="./audio-playht.html">
 	<div class="container">
 		<header class="header"></header>
 		<main>
@@ -107,10 +109,7 @@
 
 		</main>
 	</div>
-    <script type="module">
-		import { createNavCB } from "../js/create-nav.js";
-		createNavCB("./audio-general.html", "./audio-playht.html");
-	</script>
+    <script type="module" src="../js/create-nav.js"></script>
     <script type="module" src="../js/audio-playht.js"></script>
 </body>
 </html>

@@ -7,6 +7,8 @@
 	<link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
+	<input id="mainPage" type="hidden" value="./ipa-general.html">
+	<input id="subPage" type="hidden" value="./ipa-sources-order.html">
 	<div class="container">
 		<header class="header"></header>
 		<main>
@@ -57,10 +59,7 @@
 			</div>
 		</main>
 	</div>
-    <script type="module">
-		import { createNavCB } from "../js/create-nav.js";
-		createNavCB("./ipa-general.html", "./ipa-sources-order.html");
-	</script>
+    <script type="module" src="../js/create-nav.js"></script>
     <script type="module" src="../js/ipa-sources-order.js"></script>
 </body>
 </html>

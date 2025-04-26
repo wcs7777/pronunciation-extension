@@ -1,13 +1,8 @@
-/**
- * @param {string} mainPage
- * @param {?string} subPage
- * @returns {void}
- */
-export function createNavCB(mainPage, subPage=null) {
-	document.addEventListener("DOMContentLoaded", () => {
-		createNav(mainPage, subPage);
-	});
-}
+document.addEventListener("DOMContentLoaded", () => {
+	const mainPage = document.getElementById("mainPage").value;
+	const subPage = document.getElementById("subPage").value;
+	createNav(mainPage, subPage);
+});
 
 /**
  * @param {string} mainPage
