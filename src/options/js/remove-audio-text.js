@@ -1,4 +1,4 @@
-import { audioTextTable } from "../../utils/mock-storage-tables.js";
+import { audioTextTable } from "../../utils/storage-tables.js";
 import { byId } from "../../utils/element.js";
 import { generateSha1, removeExtraSpaces } from "../../utils/string.js";
 import { showInfo } from "./utils.js";

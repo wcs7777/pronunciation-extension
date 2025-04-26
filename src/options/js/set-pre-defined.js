@@ -1,6 +1,6 @@
 import "../../utils/fflate.js";
 import { byId } from "../../utils/element.js";
-import { defaultIpaTable, ipaTable } from "../../utils/mock-storage-tables.js";
+import { defaultIpaTable, ipaTable } from "../../utils/storage-tables.js";
 import { showInfo } from "./utils.js";
 
 /**
@@ -20,8 +20,7 @@ el.ipaShort.addEventListener("click", async ({ currentTarget }) => {
 		if (!window.confirm(msg)) {
 			return;
 		}
-		// const url = browser.runtime.getURL("resources/ipa-short.json.gz");
-		const url = "../resources/ipa-short.json.gz";
+		const url = browser.runtime.getURL("resources/ipa-short.json.gz");
 		const response = await fetch(url);
 		const gzipBuffer = new Uint8Array(await response.arrayBuffer());
 		const ipaBuffer = fflate.decompressSync(gzipBuffer);
@@ -44,8 +43,7 @@ el.ipaLong.addEventListener("click", async ({ currentTarget }) => {
 		if (!window.confirm(msg)) {
 			return;
 		}
-		// const url = browser.runtime.getURL("resources/ipa-long.json.gz");
-		const url = "../resources/ipa-long.json.gz";
+		const url = browser.runtime.getURL("resources/ipa-long.json.gz");
 		const response = await fetch(url);
 		const gzipBuffer = new Uint8Array(await response.arrayBuffer());
 		const ipaBuffer = fflate.decompressSync(gzipBuffer);

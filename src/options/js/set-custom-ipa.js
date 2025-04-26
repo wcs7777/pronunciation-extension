@@ -1,17 +1,19 @@
 import { byId } from "../../utils/element.js";
-import { ipaTable } from "../../utils/mock-storage-tables.js";
+import { ipaTable } from "../../utils/storage-tables.js";
 import { showInfo } from "./utils.js";
 import { splitWords } from "../../utils/string.js";
 
 /**
  * @type {{
  *     word: HTMLInputElement,
- *     remove: HTMLButtonElement,
+ *     ipa: HTMLInputElement,
+ *     save: HTMLButtonElement,
  * }}
  */
 const el = {
 	word: byId("word"),
-	remove: byId("remove"),
+	ipa: byId("ipa"),
+	save: byId("save"),
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -22,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.remove.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
 		const rawWord = el.word.value.trim().toLowerCase();
 		const words = splitWords(rawWord);
@@ -35,9 +37,18 @@ el.remove.addEventListener("click", async ({ currentTarget }) => {
 			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
 			return;
 		}
-		await ipaTable.remove(word);
+		const ipa = el.ipa.value.trim();
+		if (ipa.length === 0) {
+			showInfo(currentTarget, "No IPA was found in input");
+			return;
+		}
+		if (ipa.length > 60) {
+			showInfo(currentTarget, `IPA max length is 60, but this has ${ipa.length}`);
+			return;
+		}
+		await ipaTable.set(word, ipa);
 		await setFieldsValues();
-		showInfo(currentTarget, `${word} IPA removed`);
+		showInfo(currentTarget, `${word} = ${ipa}`);
 	} catch (error) {
 		console.error(error);
 	}
@@ -48,4 +59,5 @@ el.remove.addEventListener("click", async ({ currentTarget }) => {
  */
 async function setFieldsValues() {
 	el.word.value = "";
+	el.ipa.value = "";
 }

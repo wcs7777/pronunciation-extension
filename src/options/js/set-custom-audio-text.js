@@ -1,17 +1,17 @@
+import { audioTextTable } from "../../utils/storage-tables.js";
 import { byId, blob2base64 } from "../../utils/element.js";
-import { audioTable } from "../../utils/mock-storage-tables.js";
+import { generateSha1, removeExtraSpaces } from "../../utils/string.js";
 import { showInfo } from "./utils.js";
-import { splitWords } from "../../utils/string.js";
 
 /**
  * @type {{
- *     word: HTMLInputElement,
+ *     text: HTMLTextAreaElement,
  *     file: HTMLInputElement,
  *     save: HTMLButtonElement,
  * }}
  */
 const el = {
-	word: byId("word"),
+	text: byId("text"),
 	file: byId("file"),
 	save: byId("save"),
 };
@@ -26,26 +26,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
-		const rawWord = el.word.value.trim().toLowerCase();
-		const words = splitWords(rawWord);
-		if (words.length === 0) {
-			showInfo(currentTarget, "No word was found in input");
+		const rawText = el.text.value.trim();
+		if (rawText.length === 0) {
+			showInfo(currentTarget, "No text was found in input");
 			return;
 		}
-		const word = words[0];
-		if (word.length > 45) {
-			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
-			return;
-		}
+		const key = await generateSha1(removeExtraSpaces(rawText));
 		const file = el.file.files?.[0];
 		if (!file) {
 			showInfo(currentTarget, "No file was found in input");
 			return;
 		}
-		const kb = file.size / 1000;
-		const maxSize = 200;
-		if (kb > maxSize) {
-			showInfo(currentTarget, `File max size is ${maxSize}KB, but this has ${kb}KB`);
+		const mb = file.size / 1000 / 1000;
+		const maxSize = 500;
+		if (mb > maxSize) {
+			showInfo(currentTarget, `File max size is ${maxSize}MB, but this has ${mb}MB`);
 			return;
 		}
 		try {
@@ -54,9 +49,9 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 			audio.volume = 0;
 			await audio.play();
 			audio.pause();
-			await audioTable.set(word, base64);
+			await audioTextTable.set(key, base64);
 			await setFieldsValues();
-			showInfo(currentTarget, `${word} audio saved`);
+			showInfo(currentTarget, `${key} audio text saved`);
 		} catch (error) {
 			showInfo(currentTarget, `Error with the file: ${error}`);
 			console.error(error);
@@ -70,6 +65,6 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	el.word.value = "";
+	el.text.value = "";
 	el.file.value = "";
 }

@@ -5,7 +5,7 @@ import {
 	audioTextTable,
 	errorsTable,
 	ipaTable,
-} from "../../utils/mock-storage-tables.js";
+} from "../../utils/storage-tables.js";
 
 /**
  * @type {{

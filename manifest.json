@@ -25,7 +25,7 @@
 		"persistent": true
 	},
 	"options_ui": {
-		"page": "src/options/index.html"
+		"page": "src/options/entry-point.html"
 	},
 	"browser_action": {
 		"default_icon": {
@@ -35,12 +35,14 @@
 		"default_title": "How2Say"
 	},
 	"permissions": [
+		"https://api.datamuse.com/*",
 		"https://api.elevenlabs.io/v1/text-to-speech/*",
 		"https://api.openai.com/v1/audio/speech/",
 		"https://api.play.ht/api/v2/tts/stream",
 		"https://api.sws.speechify.com/v1/audio/*",
 		"https://api.v7.unrealspeech.com/*",
 		"https://api2.unalengua.com/ipav3/",
+		"https://assets.linguee.com/static/*",
 		"https://dictionary.cambridge.org/*",
 		"https://polly.af-south-1.api.aws/v1/speech",
 		"https://polly.ap-east-1.api.aws/v1/speech",
@@ -66,7 +68,8 @@
 		"https://texttospeech.responsivevoice.org/v1/*",
 		"https://www.antvaset.com/api",
 		"https://www.google.com/speech-api/v1/*",
-		"https://www.oxfordlearnersdictionaries.com/",
+		"https://www.linguee.com/*",
+		"https://www.oxfordlearnersdictionaries.com/*",
 		"activeTab",
 		"alarms",
 		"downloads",

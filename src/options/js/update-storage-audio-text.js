@@ -1,5 +1,5 @@
 import { byId, blob2object } from "../../utils/element.js";
-import { audioTable } from "../../utils/mock-storage-tables.js";
+import { audioTextTable } from "../../utils/storage-tables.js";
 import { showInfo } from "./utils.js";
 
 /**
@@ -35,9 +35,9 @@ el.update.addEventListener("click", async ({ currentTarget }) => {
 			}
 			values = JSON.parse(text);
 		}
-		await audioTable.setMany(values);
+		await audioTextTable.setMany(values);
 		setFieldsValues();
-		showInfo(currentTarget, "Audio storage updated");
+		showInfo(currentTarget, "Audio Text storage updated");
 	} catch (error) {
 		if (error instanceof SyntaxError) {
 			showInfo(currentTarget, "Invalid JSON");

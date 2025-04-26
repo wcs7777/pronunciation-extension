@@ -1,6 +1,6 @@
 import defaultOptions from "../../utils/default-options.js";
 import { byId } from "../../utils/element.js";
-import { optionsTable } from "../../utils/mock-storage-tables.js";
+import { optionsTable } from "../../utils/storage-tables.js";
 import { showInfo } from "./utils.js";
 
 /**

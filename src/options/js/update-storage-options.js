@@ -1,5 +1,5 @@
 import { byId, blob2object } from "../../utils/element.js";
-import { ipaTable } from "../../utils/mock-storage-tables.js";
+import { optionsTable } from "../../utils/storage-tables.js";
 import { showInfo } from "./utils.js";
 
 /**
@@ -35,9 +35,9 @@ el.update.addEventListener("click", async ({ currentTarget }) => {
 			}
 			values = JSON.parse(text);
 		}
-		await ipaTable.setMany(values);
+		await optionsTable.setMany(values);
 		setFieldsValues();
-		showInfo(currentTarget, "IPA storage updated");
+		showInfo(currentTarget, "Options storage updated");
 	} catch (error) {
 		if (error instanceof SyntaxError) {
 			showInfo(currentTarget, "Invalid JSON");

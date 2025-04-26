@@ -1,6 +1,5 @@
 import { deepMerge }  from "../../utils/object.js";
-// import { optionsTable } from "../../utils/storage-tables.js";
-import { optionsTable } from "../../utils/mock-storage-tables.js";
+import { optionsTable } from "../../utils/storage-tables.js";
 import { showPopup } from "../../utils/show-popup.js";
 import { threshold } from "../../utils/number.js";
 

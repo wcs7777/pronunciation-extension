@@ -1,5 +1,4 @@
-// import { byId, downloadObject } from "../../utils/element.js";
-import { byId } from "../../utils/element.js";
+import { byId, downloadObject } from "../../utils/element.js";
 import {
 	addonStorage,
 	audioTable,
@@ -7,7 +6,7 @@ import {
 	errorsTable,
 	ipaTable,
 	optionsTable,
-} from "../../utils/mock-storage-tables.js";
+} from "../../utils/storage-tables.js";
 
 /**
  * @type {{
@@ -117,13 +116,4 @@ function showStorage(storageType, storage) {
 	el.storageType.value = storageType;
 	el.storageValue.value = JSON.stringify(storage, null, 4);
 	el.storageValue.select();
-}
-
-/**
- * @param {object} obj
- * @param {string} filename
- * @returns {Promise<void>}
- */
-async function downloadObject(obj, filename) {
-	console.log("downloading", { obj, filename });
 }

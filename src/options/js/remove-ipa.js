@@ -1,5 +1,5 @@
-import { audioTable } from "../../utils/mock-storage-tables.js";
 import { byId } from "../../utils/element.js";
+import { ipaTable } from "../../utils/storage-tables.js";
 import { showInfo } from "./utils.js";
 import { splitWords } from "../../utils/string.js";
 
@@ -35,9 +35,9 @@ el.remove.addEventListener("click", async ({ currentTarget }) => {
 			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
 			return;
 		}
-		await audioTable.remove(word);
+		await ipaTable.remove(word);
 		await setFieldsValues();
-		showInfo(currentTarget, `${word} audio removed`);
+		showInfo(currentTarget, `${word} IPA removed`);
 	} catch (error) {
 		console.error(error);
 	}
