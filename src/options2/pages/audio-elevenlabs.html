@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<div class="container">
+		<header class="header"></header>
+		<main>
+
+			<div class="settings-section">
+
+				<h2>ElevenLabs</h2>
+
+					<div class="form-group">
+						<label for="key">Key</label>
+						<input type="password" id="key" placeholder="See ElevenLabs site">
+					</div>
+
+					<div class="form-group">
+						<label for="voiceId">Voice</label>
+						<select id="voiceId">
+							<option value="9BWtsMINqrJLrRacOk9x">Aria</option>
+							<option value="CwhRBWXzGAHq8TQ4Fs17">Roger</option>
+							<option value="EXAVITQu4vr4xnSDxMaL">Sarah</option>
+							<option value="FGY2WhTYpPnrIDTdsKH5">Laura</option>
+							<option value="SAz9YHcvj6GT2YYXdXww">River</option>
+							<option value="TX3LPaxmHKxFdv7VOQHJ">Liam</option>
+							<option value="XrExE9yKIg1WjnnlVkGX">Matilda</option>
+							<option value="bIHbv24MWmeRgasZH58o">Will</option>
+							<option value="cgSgspJ2msm6clMCkdW9">Jessica</option>
+							<option value="cjVigY5qzO86Huf0OWal">Eric</option>
+							<option value="iP95p4xoKVk53GoZ742B">Chris</option>
+							<option value="nPczCjzI2devNBz1zQrb">Brian</option>
+							<option value="pqHfZKP75CvOlQylNhV4">Bill</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="voiceIdNotListed">Voice id (not listed)</label>
+						<input type="text" id="voiceIdNotListed" placeholder="See ElevenLabs site">
+					</div>
+
+					<div class="form-group">
+						<label for="outputFormat">Output format</label>
+						<select id="outputFormat">
+							<option value="mp3_22050_32">mp3_22050_32</option>
+							<option value="mp3_44100_128">mp3_44100_128</option>
+							<option value="mp3_44100_192">mp3_44100_192</option>
+							<option value="mp3_44100_32">mp3_44100_32</option>
+							<option value="mp3_44100_64">mp3_44100_64</option>
+							<option value="mp3_44100_96">mp3_44100_96</option>
+							<option value="pcm_16000">pcm_16000</option>
+							<option value="pcm_22050">pcm_22050</option>
+							<option value="pcm_24000">pcm_24000</option>
+							<option value="pcm_44100">pcm_44100</option>
+							<option value="ulaw_8000">ulaw_8000</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="modelId">Model id</label>
+						<select id="modelId">
+							<option value="eleven_multilingual_v2">eleven_multilingual_v2</option>
+							<option value="eleven_flash_v2_5">eleven_flash_v2_5</option>
+							<option value="eleven_turbo_v2_5">eleven_turbo_v2_5</option>
+							<option value="eleven_turbo_v2">eleven_turbo_v2</option>
+							<option value="eleven_flash_v2">eleven_flash_v2</option>
+							<option value="eleven_english_sts_v2">eleven_english_sts_v2</option>
+							<option value="eleven_monolingual_v1">eleven_monolingual_v1</option>
+							<option value="eleven_multilingual_sts_v2">eleven_multilingual_sts_v2</option>
+							<option value="eleven_multilingual_v1">eleven_multilingual_v1</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="applyTextNormalization">Apply text normalization</label>
+						<select id="applyTextNormalization">
+							<option value="auto">auto</option>
+							<option value="on">on</option>
+							<option value="off">off</option>
+						</select>
+					</div>
+
+				<div class="center">
+					<button class="btn btn-primary" id="save">Save</button>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+    <script type="module">
+		import { createNavCB } from "../js/create-nav.js";
+		createNavCB("./audio-general.html", "./audio-elevenlabs.html");
+	</script>
+    <script type="module" src="../js/audio-elevenlabs.js"></script>
+</body>
+</html>

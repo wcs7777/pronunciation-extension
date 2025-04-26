@@ -4,16 +4,22 @@ import { getAllOptions, saveOptions, showInfo, strOr } from "./utils.js";
 
 /**
  * @type {{
- *     token: HTMLInputElement,
+ *     key: HTMLInputElement,
  *     voiceId: HTMLSelectElement,
  *     voiceIdNotListed: HTMLInputElement,
+ *     outputFormat: HTMLSelectElement,
+ *     modelId: HTMLSelectElement,
+ *     applyTextNormalization: HTMLSelectElement,
  *     save: HTMLButtonElement,
  * }}
  */
 const el = {
-	token: byId("token"),
+	key: byId("key"),
 	voiceId: byId("voiceId"),
 	voiceIdNotListed: byId("voiceIdNotListed"),
+	outputFormat: byId("outputFormat"),
+	modelId: byId("modelId"),
+	applyTextNormalization: byId("applyTextNormalization"),
 	save: byId("save"),
 };
 
@@ -27,16 +33,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
-		const defaultApi = defaultOptions.audio.sources.speechify.api;
+		const defaultApi = defaultOptions.audio.sources.elevenLabs.api;
 		/**
 		 * @type {Options}
 		 */
 		const options = {
 			audio: {
 				sources: {
-					speechify: {
+					elevenLabs: {
 						api: {
-							token: strOr(el.token.value, defaultApi.token),
+							key: strOr(el.key.value, defaultApi.key),
 							voiceId: strOr(
 								strOr(
 									el.voiceIdNotListed.value,
@@ -44,6 +50,9 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 								),
 								defaultApi.voiceId,
 							),
+							outputFormat: strOr(el.outputFormat.value, defaultApi.outputFormat),
+							modelId: strOr(el.modelId.value, defaultApi.modelId),
+							applyTextNormalization: strOr(el.applyTextNormalization.value, defaultApi.applyTextNormalization),
 						},
 					},
 				},
@@ -51,7 +60,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "Speechify settings saved");
+		showInfo(currentTarget, "ElevenLabs settings saved");
 	} catch (error) {
 		console.error(error);
 	}
@@ -65,8 +74,11 @@ async function setFieldsValues() {
 	 * @type {Options}
 	 */
 	const opt = await getAllOptions();
-	const optApi = opt.audio.sources.speechify.api;
-	el.token.value = optApi.token ?? "";
+	const optApi = opt.audio.sources.elevenLabs.api;
+	el.key.value = optApi.key ?? "";
 	el.voiceId.value = optApi.voiceId;
 	el.voiceIdNotListed.value = "";
+	el.outputFormat.value = optApi.outputFormat;
+	el.modelId.value = optApi.modelId;
+	el.applyTextNormalization.value = optApi.applyTextNormalization;
 }

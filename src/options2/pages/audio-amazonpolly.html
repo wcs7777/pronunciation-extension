@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<div class="container">
+		<header class="header"></header>
+		<main>
+
+			<div class="settings-section">
+
+				<h2>Amazon Polly</h2>
+
+					<div class="form-group">
+						<label for="accessKeyId">Access key id</label>
+						<input type="password" id="accessKeyId" placeholder="See Amazon Polly site">
+					</div>
+
+					<div class="form-group">
+						<label for="secretAccessKey">Secret access key</label>
+						<input type="password" id="secretAccessKey" placeholder="See Amazon Polly site">
+					</div>
+
+					<div class="form-group">
+						<label for="endpoint">Endpoint</label>
+						<select id="endpoint">
+							<option value="polly.us-east-2.api.aws">US East (Ohio)</option>
+							<option value="polly.us-east-1.api.aws">US East (N. Virginia)</option>
+							<option value="polly.us-west-1.api.aws">US West (N. California)</option>
+							<option value="polly.us-west-2.api.aws">US West (Oregon)</option>
+							<option value="polly.af-south-1.api.aws">Africa (Cape Town)</option>
+							<option value="polly.ap-east-1.api.aws">Asia Pacific (Hong Kong)</option>
+							<option value="polly.ap-south-1.api.aws">Asia Pacific (Mumbai)</option>
+							<option value="polly.ap-northeast-3.api.aws">Asia Pacific (Osaka)</option>
+							<option value="polly.ap-northeast-2.api.aws">Asia Pacific (Seoul)</option>
+							<option value="polly.ap-southeast-1.api.aws">Asia Pacific (Singapore)</option>
+							<option value="polly.ap-southeast-2.api.aws">Asia Pacific (Sydney)</option>
+							<option value="polly.ap-northeast-1.api.aws">Asia Pacific (Tokyo)</option>
+							<option value="polly.ca-central-1.api.aws">Canada (Central)</option>
+							<option value="polly.eu-central-1.api.aws">Europe (Frankfurt)</option>
+							<option value="polly.eu-west-1.api.aws">Europe (London)</option>
+							<option value="polly.eu-west-3.api.aws">Europe (Paris)</option>
+							<option value="polly.eu-south-2.api.aws">Europe (Spain)</option>
+							<option value="polly.eu-north-1.api.aws ">Europe (Stockholm)</option>
+							<option value="polly.me-south-1.api.aws">Middle East (Bahrain)</option>
+							<option value="polly.sa-east-1.api.aws">South America (São Paulo)</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="engine">Engine</label>
+						<select id="engine">
+							<option value="standard">standard</option>
+							<option value="neural">neural</option>
+							<option value="long-form">long-form</option>
+							<option value="generative">generative</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="outputFormat">Output format</label>
+						<select id="outputFormat">
+							<option value="mp3">mp3</option>
+							<option value="ogg_vorbis">ogg_vorbis</option>
+							<option value="pcm">pcm</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="sampleRate">Sample rate</label>
+						<select id="sampleRate">
+							<option value="8000">8000</option>
+							<option value="16000">16000</option>
+							<option value="22050">22050</option>
+							<option value="24000">24000</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="voiceId">Voice id</label>
+						<select id="voiceId">
+							<option value="Joanna">Joanna</option>
+							<option value="Salli">Salli</option>
+							<option value="Matthew">Matthew</option>
+							<option value="Kimberly">Kimberly</option>
+							<option value="Kendra">Kendra</option>
+							<option value="Justin">Justin</option>
+							<option value="Joey">Joey</option>
+							<option value="Ivy">Ivy</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="voiceIdNotListed">Voice id (not listed)</label>
+						<input type="text" id="voiceIdNotListed" placeholder="See Amazon Polly site">
+					</div>
+
+				<div class="center">
+					<button class="btn btn-primary" id="save">Save</button>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+    <script type="module">
+		import { createNavCB } from "../js/create-nav.js";
+		createNavCB("./audio-general.html", "./audio-amazonpolly.html");
+	</script>
+    <script type="module" src="../js/audio-amazonpolly.js"></script>
+</body>
+</html>

@@ -1,24 +1,34 @@
 import defaultOptions from "../../utils/default-options.js";
-import { byId } from "../../utils/element.js";
-import { getAllOptions, saveOptions, showInfo, strOr, } from "./utils.js";
+import { byId, onlyNumber } from "../../utils/element.js";
+import { getAllOptions, numOr, saveOptions, showInfo, strOr } from "./utils.js";
 
 /**
  * @type {{
  *     token: HTMLInputElement,
  *     voiceId: HTMLSelectElement,
- *     voiceIdNotListed: HTMLInputElement,
+ *     bitRate: HTMLSelectElement,
+ *     pitch: HTMLInputElement,
+ *     codec: HTMLSelectElement,
+ *     temperature: HTMLInputElement,
  *     save: HTMLButtonElement,
  * }}
  */
 const el = {
 	token: byId("token"),
 	voiceId: byId("voiceId"),
-	voiceIdNotListed: byId("voiceIdNotListed"),
+	bitRate: byId("bitRate"),
+	pitch: byId("pitch"),
+	codec: byId("codec"),
+	temperature: byId("temperature"),
 	save: byId("save"),
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
+		[
+			el.pitch,
+			el.temperature,
+		].forEach(e => onlyNumber(e, true));
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
@@ -27,23 +37,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async ({ currentTarget }) => {
 	try {
-		const defaultApi = defaultOptions.audio.sources.speechify.api;
+		const defaultApi = defaultOptions.audio.sources.unrealSpeech.api;
 		/**
 		 * @type {Options}
 		 */
 		const options = {
 			audio: {
 				sources: {
-					speechify: {
+					unrealSpeech: {
 						api: {
 							token: strOr(el.token.value, defaultApi.token),
-							voiceId: strOr(
-								strOr(
-									el.voiceIdNotListed.value,
-									el.voiceId.value,
-								),
-								defaultApi.voiceId,
-							),
+							voiceId: strOr(el.voiceId.value, defaultApi.voiceId),
+							bitRate: strOr(el.bitRate.value, defaultApi.bitRate),
+							pitch: numOr(el.pitch.value, defaultApi.pitch, 0.5, 1.5),
+							codec: strOr(el.codec.value, defaultApi.codec),
+							temperature: numOr(el.temperature.value, defaultApi.temperature, 0.1, 0.8),
 						},
 					},
 				},
@@ -51,7 +59,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "Speechify settings saved");
+		showInfo(currentTarget, "UnrealSpeech settings saved");
 	} catch (error) {
 		console.error(error);
 	}
@@ -65,7 +73,11 @@ async function setFieldsValues() {
 	 * @type {Options}
 	 */
 	const opt = await getAllOptions();
-	el.token.value = opt.audio.sources.speechify.api.token ?? "";
-	el.voiceId.value = opt.audio.sources.speechify.api.voiceId;
-	el.voiceIdNotListed.value = "";
+	const optApi = opt.audio.sources.unrealSpeech.api;
+	el.token.value = optApi.token ?? "";
+	el.voiceId.value = optApi.voiceId;
+	el.bitRate.value = optApi.bitRate;
+	el.pitch.value = optApi.pitch.toString();
+	el.codec.value = optApi.codec;
+	el.temperature.value = optApi.temperature.toString();
 }

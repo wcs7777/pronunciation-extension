@@ -1,6 +1,6 @@
 import defaultOptions from "../../utils/default-options.js";
 import { byId } from "../../utils/element.js";
-import { getAllOptions, saveOptions, showInfo, strOr, } from "./utils.js";
+import { getAllOptions, saveOptions, showInfo, strOr } from "./utils.js";
 
 /**
  * @type {{
@@ -57,6 +57,7 @@ async function setFieldsValues() {
 	 * @type {Options}
 	 */
 	const opt = await getAllOptions();
-	el.key.value = opt.audio.sources.responsiveVoice.api.key;
-	el.gender.value = opt.audio.sources.responsiveVoice.api.gender;
+	const optApi = opt.audio.sources.responsiveVoice.api;
+	el.key.value = optApi.key;
+	el.gender.value = optApi.gender;
 }

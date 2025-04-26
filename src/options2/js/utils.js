@@ -48,7 +48,7 @@ export function numOr(value, defaultValue, min=0, max=Number.MAX_VALUE) {
 	const trimmed = value.trim();
 	const num = trimmed.length > 0 ? parseFloat(trimmed) : defaultValue;
 	return (
-		defaultValue !== null && defaultValue !== undefined ?
+		num !== null && num !== undefined ?
 		threshold(min, max, num) :
 		null
 	);
