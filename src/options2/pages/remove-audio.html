@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<div class="container">
+		<header class="header"></header>
+		<main>
+			<div class="settings-section">
+
+				<h2>Remove Audio</h2>
+
+				<div class="form-group">
+					<label for="word">Word</label>
+					<input type="text" id="word" placeholder="e.g. throughout">
+				</div>
+
+				<div class="center">
+					<button class="btn btn-primary" id="remove">Remove</button>
+				</div>
+
+			</div>
+		</main>
+	</div>
+    <script type="module">
+		import { createNavCB } from "../js/create-nav.js";
+		createNavCB("./remove-ipa.html", "./remove-audio.html");
+	</script>
+    <script type="module" src="../js/remove-audio.js"></script>
+</body>
+</html>

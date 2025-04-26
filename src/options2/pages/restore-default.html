@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<div class="container">
+		<header class="header"></header>
+		<main>
+			<div class="settings-section">
+
+				<h2>Restore Default</h2>
+
+				<div style="text-align: center; margin-top: 30px;">
+					<button class="btn btn-primary" id="options">Restore Default Options</button>
+				</div>
+
+			</div>
+		</main>
+	</div>
+    <script type="module">
+		import { createNavCB } from "../js/create-nav.js";
+		createNavCB("./restore-default.html");
+	</script>
+    <script type="module" src="../js/restore-default.js"></script>
+</body>
+</html>

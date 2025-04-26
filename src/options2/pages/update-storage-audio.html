@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<div class="container">
+		<header class="header"></header>
+		<main>
+			<div class="settings-section">
+
+				<h2>Update Audio Storage</h2>
+
+				<div class="form-group">
+					<label for="file">JSON file</label>
+					<input type="file" accept="application/JSON" id="file">
+				</div>
+
+				<div class="form-group">
+					<label for="text">JSON text (if file not works)</label>
+					<textarea id="text" rows="10"></textarea>
+				</div>
+
+				<div style="text-align: center; margin-top: 30px;">
+					<button class="btn btn-primary" id="update">Update</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="clear">Clear</button>
+				</div>
+
+			</div>
+		</main>
+	</div>
+    <script type="module">
+		import { createNavCB } from "../js/create-nav.js";
+		createNavCB("./update-storage-ipa.html", "./update-storage-audio.html");
+	</script>
+    <script type="module" src="../js/update-storage-audio.js"></script>
+</body>
+</html>

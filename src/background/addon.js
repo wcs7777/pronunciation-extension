@@ -1,4 +1,3 @@
-import "../utils/fflate.js";
 import * as as from "../audio-source/sources.js";
 import * as is from "../ipa-source/sources.js";
 import { cachedAnalyseWord } from "../utils/analyse-word.js";
@@ -16,7 +15,6 @@ export default class Addon {
 
 	/**
 	 * @param {{
-	 *     initialIpaFile: string,
 	 *     defaultOptions: Options,
 	 *     audioTable: Table,
 	 *     audioCache: MemoryCache,
@@ -34,7 +32,6 @@ export default class Addon {
 	 * }}
 	 */
 	constructor({
-		initialIpaFile,
 		defaultOptions,
 		audioTable,
 		audioCache,
@@ -50,7 +47,6 @@ export default class Addon {
 		audioTextCache,
 		ipaTextCache,
 	}) {
-		this.initialIpaFile = initialIpaFile;
 		this.defaultOptions = defaultOptions;
 		this.audioTable = audioTable;
 		this.audioCache = audioCache;
@@ -621,13 +617,8 @@ export default class Addon {
 			await browser.browserAction.setTitle({ title: message });
 			await browser.browserAction.setBadgeText({ text: message });
 			console.log("Setup begin");
-			console.log("Populating options and ipa");
-			console.time("populate");
-			await Promise.all([
-				this.populateOptions(),
-				this.populateInitialIpa(),
-			]);
-			console.timeEnd("populate");
+			console.log("Populating options");
+			await this.populateOptions();
 			console.log("Setting menuItem and action");
 			console.log("Setup end");
 			await browser?.menus?.remove(menuId);
@@ -653,33 +644,6 @@ export default class Addon {
 		if (!populated) {
 			this.optionsTable.setMany(this.defaultOptions);
 			await this.controlTable.set(this.optionsTable.name, true);
-		}
-	}
-
-	/**
-	 * @returns {Promise<void>}
-	 */
-	async populateInitialIpa() {
-		/**
-		 * @type {boolean | null | undefined}
-		 */
-		const populated = await this.controlTable.getValue(
-			this.ipaTable.name,
-			false,
-		);
-		if (populated) {
-			console.log("IPA table is already populated");
-		} else {
-			const url = browser.runtime.getURL(this.initialIpaFile);
-			const response = await fetch(url);
-			const gzipBuffer = new Uint8Array(await response.arrayBuffer());
-			const ipaBuffer = fflate.decompressSync(gzipBuffer);
-			const values = JSON.parse(new TextDecoder().decode(ipaBuffer));
-			await Promise.all([
-				this.ipaTable.setMany(values),
-				this.defaultIpaTable.setMany(values),
-			]);
-			await this.controlTable.set(this.ipaTable.name, true);
 		}
 	}
 

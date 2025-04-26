@@ -185,6 +185,15 @@ export async function downloadObject(obj, filename) {
 }
 
 /**
+ * @param {object} obj
+ * @param {string} filename
+ * @returns {Promise<void>}
+ */
+export async function downloadObjectMock(obj, filename) {
+	console.log("downloading", { obj, filename });
+}
+
+/**
  * @param {string} url
  * @param {string} filename
  * @returns {Promise<void>}

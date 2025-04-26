@@ -89,25 +89,58 @@ export function createNav(mainPage, subPage=null) {
 				},
 			},
 		},
-		"./set-from-sites.html": {
-			label: "Set From Sites",
+		"./pron-by-sites.html": {
+			label: "Pron By Sites",
 			subPages: {},
 		},
-		"./set-custom.html": {
+		"./set-custom-ipa.html": {
 			label: "Set Custom",
-			subPages: {},
+			subPages: {
+				"./set-custom-ipa.html": {
+					label: "IPA",
+				},
+				"./set-custom-audio.html": {
+					label: "Audio",
+				},
+				"./set-custom-audio-text.html": {
+					label: "Audio Text",
+				},
+			},
 		},
-		"./remove.html": {
+		"./remove-ipa.html": {
 			label: "Remove",
-			subPages: {},
+			subPages: {
+				"./remove-ipa.html": {
+					label: "Remove IPA",
+				},
+				"./remove-audio.html": {
+					label: "Remove Audio",
+				},
+				"./remove-audio-text.html": {
+					label: "Remove Audio Text",
+				},
+			},
 		},
 		"./download-storage.html": {
 			label: "Download Storage",
 			subPages: {},
 		},
-		"./update-storage.html": {
+		"./update-storage-ipa.html": {
 			label: "Update Storage",
-			subPages: {},
+			subPages: {
+				"./update-storage-ipa.html": {
+					label: "Update IPA Storage",
+				},
+				"./update-storage-audio.html": {
+					label: "Update Audio Storage",
+				},
+				"./update-storage-audio-text.html": {
+					label: "Update Audio Text Storage",
+				},
+				"./update-storage-options.html": {
+					label: "Update Options Storage",
+				},
+			},
 		},
 		"./clear-storage.html": {
 			label: "Clear Storage",
