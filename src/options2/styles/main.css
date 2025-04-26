@@ -6,8 +6,9 @@
 }
 
 body {
+	--font-color: #333;
 	background-color: #f5f5f5;
-	color: #333;
+	color: var(--font-color);
 	line-height: 1.6;
 	padding: 20px;
 	width: 100vw;
@@ -22,57 +23,51 @@ body {
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Base styles */
 .header {
-    color: black;
     padding: 1rem 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Main navigation container */
 .options-container {
     display: flex;
+	flex-direction: row;
     flex-wrap: wrap;
+	justify-content: center;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
-/* Sub-options container (indented slightly) */
 .suboptions-container {
-    margin-left: 1.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+    border-top: 2px solid rgba(31, 42, 204, 0.418);
 }
 
-/* Navigation links */
 .option {
-    color: rgba(255, 255, 255, 0.9);
-	color: black;
+    background-color: rgba(25, 88, 223, 0.15);
+	color: var(--font-color);
     text-decoration: none;
     padding: 0.5rem 1rem;
     border-radius: 4px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     transition: all 0.3s ease;
     position: relative;
     display: inline-block;
+	min-width: 4rem;
+	text-align: center;
 }
 
-/* Hover state */
 .option:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(15, 80, 221, 0.4);
     transform: translateY(-2px);
 }
 
-/* Current page indicator */
 .option[data-option-current="yes"] {
-    background-color: #e74c3c;
-    color: white;
-	color: black;
+	background-color: rgba(62, 96, 207, 0.952);
+	color: #fff;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+    box-shadow: 0 2px 8px rgba(62, 96, 207, 0.3);
 }
 
-/* Add a small arrow for the current page */
 .option[data-option-current="yes"]::after {
     content: '';
     position: absolute;
@@ -83,15 +78,14 @@ body {
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 6px solid #e74c3c;
+    border-top: 6px solid rgba(62, 96, 207, 0.952);
 }
 
-/* For suboptions, make the arrow point up */
 .suboptions-container .option[data-option-current="yes"]::after {
     bottom: auto;
     top: -8px;
     border-top: none;
-    border-bottom: 6px solid #e74c3c;
+    border-bottom: 6px solid rgba(62, 96, 207, 0.952);
 }
 
 .settings-section {
@@ -146,6 +140,10 @@ select:focus,
 textarea:focus {
 	border-color: #4299e1;
 	outline: none;
+}
+
+select {
+	cursor: pointer;
 }
 
 .checkbox-group {
