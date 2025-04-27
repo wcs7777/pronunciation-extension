@@ -405,7 +405,7 @@ export default class Addon {
 						message: error?.message,
 						error: removeMethods(error?.error ?? {}),
 					};
-					await this.sourceLastErrorTable(f.name, lastError);
+					await this.sourceLastErrorTable.set(f.name, lastError);
 				}
 			}
 		}
@@ -584,7 +584,7 @@ export default class Addon {
 						message: error?.message,
 						error: removeMethods(error?.error ?? {}),
 					};
-					await this.sourceLastErrorTable(f.name, lastError);
+					await this.sourceLastErrorTable.set(f.name, lastError);
 				}
 			}
 		}
