@@ -193,4 +193,22 @@ export function createNav(mainPage, subPage=null) {
 			}
 		}
 	}
+	const toggle = document.createElement("div");
+	toggle.style.cursor = "pointer";
+	toggle.style.width = "100%";
+	toggle.style.height = "18px";
+	toggle.style.color = "#333";
+	toggle.style.fontSize = "10px";
+	toggle.style.fontWeight = "bold";
+	toggle.style.textAlign = "center";
+	toggle.innerHTML = "&#9650;";
+	let visible = true;
+	toggle.addEventListener("click", () => {
+		visible = !visible;
+		for (const nav of header.querySelectorAll("nav")) {
+			nav.classList.toggle("invisible", !visible);
+		}
+	toggle.innerHTML = visible ? "&#9650;" : "&#9660;";
+	});
+	header.appendChild(toggle);
 }
