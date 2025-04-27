@@ -141,6 +141,17 @@ export function createNav(mainPage, subPage=null) {
 			label: "Clear Storage",
 			subPages: {},
 		},
+		"./source-last-error-show-download.html": {
+			label: "Source Last Error",
+			subPages: {
+				"./source-last-error-show-download.html": {
+					label: "Show/Download",
+				},
+				"./source-last-error-clear.html": {
+					label: "Clear",
+				},
+			},
+		},
 		"./set-pre-defined.html": {
 			label: "Set Pre-Defined",
 			subPages: {},

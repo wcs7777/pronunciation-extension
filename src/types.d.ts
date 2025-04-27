@@ -31,8 +31,9 @@ declare global {
 
 	type PronunciationSourceLastError = {
 		source: string,
-		timestamp: number,
+		datetime: Date,
 		status?: number,
+		timestamp: number,
 		message?: string,
 		error: Error,
 	};

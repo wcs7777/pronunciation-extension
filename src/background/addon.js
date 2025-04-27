@@ -26,6 +26,7 @@ export default class Addon {
 	 *     defaultOptionsTable: Table,
 	 *     controlTable: Table,
 	 *     errorsTable: Table,
+	 *     sourceLastErrorTable: Table,
 	 *     audioTextTable: Table,
 	 *     audioTextCache: MemoryCache,
 	 *     ipaTextCache: MemoryCache,
@@ -43,6 +44,7 @@ export default class Addon {
 		defaultOptionsTable,
 		controlTable,
 		errorsTable,
+		sourceLastErrorTable,
 		audioTextTable,
 		audioTextCache,
 		ipaTextCache,
@@ -58,6 +60,7 @@ export default class Addon {
 		this.defaultOptionsTable = defaultOptionsTable;
 		this.controlTable = controlTable;
 		this.errorsTable = errorsTable;
+		this.sourceLastErrorTable = sourceLastErrorTable;
 		this.audioTextTable = audioTextTable;
 		this.audioTextCache = audioTextCache;
 		this.ipaTextCache = ipaTextCache;
@@ -358,12 +361,14 @@ export default class Addon {
 	 * @param {WordAnalyse} analysis
 	 */
 	async fetchIpaExternally(input, options, toText, analysis) {
-		const timestamp = new Date().getTime();
-		const leKey = "ipaLastError";
 		/**
-		 * @type{{ [key: string]: PronunciationSourceLastError}
+		 * @param {string} source
+		 * @returns {?PronunciationSourceLastError}
 		 */
-		const le = await this.controlTable.getValue(leKey, false) ?? {};
+		const le = source => this.sourceLastErrorTable.get(source, false);
+		const now = new Date();
+		const datetime = now.toISOString();
+		const timestamp = now.getTime();
 		/**
 		 * @type {IpaSource[]}
 		 */
@@ -374,7 +379,7 @@ export default class Addon {
 			is.ISUnalengua,
 		]
 			 .map(S => new S(options.sources[S.name]))
-			.filter(s => s.enabled(input, toText, le?.[s.name]))
+			.filter(s => s.enabled(input, toText, le(s.name)))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of sources) {
 			console.log(`Searching IPA in ${f.name}`);
@@ -389,13 +394,18 @@ export default class Addon {
 					await this.saveError(`${f.name}: ${input}`, error);
 				}
 				if (error?.status) {
-					le[f.name] = {
+					/**
+					 * @type {PronunciationSourceLastError}
+					 */
+					const lastError = {
 						source: f.name,
-						...error,
-						error: removeMethods(error?.error ?? {}),
+						datetime,
+						status: error?.status,
 						timestamp,
+						message: error?.message,
+						error: removeMethods(error?.error ?? {}),
 					};
-					await this.controlTable.set(leKey, le);
+					await this.sourceLastErrorTable(f.name, lastError);
 				}
 			}
 		}
@@ -529,12 +539,14 @@ export default class Addon {
 	 * @param {WordAnalyse} analysis
 	 */
 	async fetchAudioExternally(input, options, toText, analysis) {
-		const timestamp = new Date().getTime();
-		const leKey = "audioLastError";
 		/**
-		 * @type{{ [key: string]: PronunciationSourceLastError}
+		 * @param {string} source
+		 * @returns {?PronunciationSourceLastError}
 		 */
-		const le = await this.controlTable.getValue(leKey, false) ?? {};
+		const le = source => this.sourceLastErrorTable.get(source, false);
+		const now = new Date();
+		const datetime = now.toISOString();
+		const timestamp = now.getTime();
 		/**
 		 * @type {AudioSource[]}
 		 */
@@ -553,7 +565,7 @@ export default class Addon {
 			as.ASOpenAi,
 		]
 			.map(S => new S(options.sources[S.name]))
-			.filter(s => s.enabled(input, toText, le?.[s.name]))
+			.filter(s => s.enabled(input, toText, le(s.name)))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const f of sources) {
 			console.log(`Searching audio in ${f.name}`);
@@ -567,13 +579,18 @@ export default class Addon {
 					await this.saveError(`${f.name}: ${input}`, error);
 				}
 				if (error?.status) {
-					le[f.name] = {
+					/**
+					 * @type {PronunciationSourceLastError}
+					 */
+					const lastError = {
 						source: f.name,
-						...error,
-						error: removeMethods(error?.error ?? {}),
+						datetime,
+						status: error?.status,
 						timestamp,
+						message: error?.message,
+						error: removeMethods(error?.error ?? {}),
 					};
-					await this.controlTable.set(leKey, le);
+					await this.sourceLastErrorTable(f.name, lastError);
 				}
 			}
 		}

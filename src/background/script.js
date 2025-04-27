@@ -14,6 +14,7 @@ const addon = new Addon({
 	defaultOptionsTable: st.defaultOptionsTable,
 	controlTable: st.controlTable,
 	errorsTable: st.errorsTable,
+	sourceLastErrorTable: st.sourceLastErrorTable,
 	audioTextTable: st.audioTextTable,
 	audioTextCache: st.audioTextCache,
 	ipaTextCache: st.ipaTextCache,

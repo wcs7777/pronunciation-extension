@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<input id="mainPage" type="hidden" value="./source-last-error-show-download.html">
+	<input id="subPage" type="hidden" value="./source-last-error-show-download.html">
+	<div class="container">
+		<header class="header"></header>
+		<main>
+
+			<div class="settings-section">
+
+				<h2>Source Last Error Show/Download</h2>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="cambridge">Cambridge</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="linguee">Linguee</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="oxford">Oxford</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="gstatic">Gstatic</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="googleSpeech">GoogleSpeech</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="responsiveVoice">ResponsiveVoice</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="unrealSpeech">UnrealSpeech</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="speechify">Speechify</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="playHt">PlayHt</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="elevenLabs">ElevenLabs</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="amazonPolly">AmazonPolly</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="openAi">OpenAi</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="antvaset">Antvaset</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="unalengua">Unalengua</button>
+				</div>
+
+				<div style="text-align: center;">
+					<button class="btn btn-primary" id="all">All</button>
+				</div>
+
+				<div class="form-group">
+					<label for="sourceName">Source name</label>
+					<input type="text" id="sourceName" readonly>
+				</div>
+
+				<div class="form-group">
+					<label for="lastErrorValue">Last error value</label>
+					<textarea id="lastErrorValue" rows="40" readonly></textarea>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+    <script type="module" src="../js/create-nav.js"></script>
+    <script type="module" src="../js/source-last-error-show-download.js"></script>
+</body>
+</html>
