@@ -12,7 +12,7 @@ export async function cachedAnalyseWord(word) {
 	/**
 	 * @type {WordAnalyse}
 	 */
-	let analysis = analysisCache.get(word, false);
+	let analysis = analysisCache.get(word);
 	if (!analysis) {
 		analysis = analyseWord(word);
 		analysisCache.set(word, analysis);
@@ -45,7 +45,7 @@ export async function analyseWord(word) {
 		/**
 		 * @type {{word: string, score: number}}
 		 */
-		const cached = datamuseCache.get(word, false);
+		const cached = datamuseCache.get(word);
 		if (cached) {
 			entry.word = cached.word;
 			entry.score = cached.score;

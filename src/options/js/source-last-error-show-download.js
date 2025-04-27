@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	el.unalengua,
 ].forEach(s => {
 	s.addEventListener("click", async () => {
-		const le = await sourceLastErrorTable.get(s.id, false) ?? {};
+		const le = await sourceLastErrorTable.getValue(s.id) ?? {};
 		showLastError(s.textContent, le);
 		await downloadObject(le, fileName(`pronunciation-${s.id}-source-last-error.json`));
 	});

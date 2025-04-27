@@ -287,12 +287,11 @@ export default class Addon {
 		/**
 		  * @type {string | null}
 		  */
-		let ipa = this.ipaTextCache.get(word, false) ?? null;
+		let ipa = this.ipaTextCache.get(word) ?? null;
 		if (ipa) {
 			return ipa;
 		}
-		const { value } = await goString(this.ipaTable.getValue(word));
-		ipa = value;
+		ipa = await this.ipaTable.getValue(word);
 		if (!ipa) {
 			const { ipa: ipaValue, save } = await this.fetchIpaExternally(
 				word,
@@ -366,7 +365,7 @@ export default class Addon {
 		 * @param {string} source
 		 * @returns {?PronunciationSourceLastError}
 		 */
-		const le = source => this.sourceLastErrorTable.get(source, false);
+		const le = source => this.sourceLastErrorTable.getValue(source);
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
@@ -430,18 +429,15 @@ export default class Addon {
 		/**
 		  * @type {HTMLAudioElement | null}
 		  */
-		let audio = this.audioCache.get(word, false) ?? null;
+		let audio = this.audioCache.get(word) ?? null;
 		if (audio) {
 			return audio;
 		}
-		const { value } = await goString(
-			this.audioTable.getValue(word),
-		);
 		/**
 		 * @type {string | null}
 		 */
-		let base64 = value;
-		if (!value) {
+		let base64 = await this.audioTable.getValue(word);
+		if (!base64) {
 			const { blob, save } = await this.fetchAudioExternally(
 				word,
 				options,
@@ -481,18 +477,15 @@ export default class Addon {
 		/**
 		 * @type {HTMLAudioElement | null}
 		 */
-		let audio = this.audioCache.get(cacheKey, false) ?? null;
+		let audio = this.audioCache.get(cacheKey) ?? null;
 		if (audio) {
 			return audio;
 		}
-		const { value } = await goString(
-			this.audioTextTable.getValue(cacheKey),
-		);
 		/**
 		 * @type {string | null}
 		 */
-		let base64 = value;
-		if (!value) {
+		let base64 = await this.audioTextTable.getValue(cacheKey);
+		if (!base64) {
 			const { blob, save } = await this.fetchAudioExternally(
 				input,
 				options,
@@ -544,7 +537,7 @@ export default class Addon {
 		 * @param {string} source
 		 * @returns {?PronunciationSourceLastError}
 		 */
-		const le = source => this.sourceLastErrorTable.get(source, false);
+		const le = source => this.sourceLastErrorTable.getValue(source);
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
@@ -657,7 +650,6 @@ export default class Addon {
 		 */
 		const populated = await this.controlTable.getValue(
 			this.optionsTable.name,
-			false,
 		);
 		if (!populated) {
 			this.optionsTable.setMany(this.defaultOptions);

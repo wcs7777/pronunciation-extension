@@ -41,13 +41,9 @@ export default class MemoryCacheByObj {
 
 	/**
 	 * @param {string} key
-	 * @param {boolean} throwNotFound
 	 * @returns {any}
 	 */
-	get(key, throwNotFound=true) {
-		if (throwNotFound && !this.hasKey(key)) {
-			throw new Error(`${key} not in cache`);
-		}
+	get(key) {
 		return this.entries[key];
 	}
 

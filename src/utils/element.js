@@ -11,7 +11,7 @@ export async function url2document(url, credentials="omit") {
 	/**
 	 * @type {Document | null}
 	 */
-	let document = documentCache.get(url, false);
+	let document = documentCache.get(url);
 	if (!document) {
 		const response = await fetch(url, { credentials });
 		const status = response.status;

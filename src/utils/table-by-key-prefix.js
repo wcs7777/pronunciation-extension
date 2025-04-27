@@ -41,21 +41,13 @@ export default class TableByKeyPrefix {
 
 	/**
 	  * @param {string | string[] | null} keys
-	  * @param {boolean} throwNotFound
 	  * @returns {Promise<{ [key: string]: any }>}
 	  */
-	async get(keys, throwNotFound=true) {
+	async get(keys) {
 		const removePrefix = false;
 		let values = {};
-		if (keys !== null && keys != undefined) {
+		if (keys !== null && keys !== undefined) {
 			values = await this.storage.get(this.fullKeys(keys));
-			if (
-				throwNotFound &&
-				keys.length > 0 &&
-				Object.keys(values).length === 0
-			) {
-				throw Error(`${keys} not found`);
-			}
 		} else {
 			const allKeys = await this.getKeys(removePrefix);
 			values = await this.storage.get(allKeys);
@@ -79,21 +71,19 @@ export default class TableByKeyPrefix {
 
 	/**
 	  * @param {string} key
-	  * @param {boolean} throwNotFound
 	  * @returns {Promise<any>}
 	  */
-	async getValue(key, throwNotFound=true) {
-		const results = await this.get(key, throwNotFound);
+	async getValue(key) {
+		const results = await this.get(key);
 		return results[key];
 	}
 
 	/**
 	  * @param {string | string[] | null} keys
-	  * @param {boolean} throwNotFound
 	  * @returns {Promise<any[]>}
 	  */
-	async getValues(keys, throwNotFound) {
-		return Object.values(await this.get(keys, throwNotFound));
+	async getValues(keys) {
+		return Object.values(await this.get(keys));
 	}
 
 	/**

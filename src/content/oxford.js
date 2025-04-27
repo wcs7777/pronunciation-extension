@@ -57,7 +57,7 @@ async function main() {
 						.nextElementSibling
 						.textContent;
 					console.log("Pronunciation shortcut", { ipa });
-					const oldIpa = await ipaTable.getValue(word, false);
+					const oldIpa = await ipaTable.getValue(word);
 					await ipaTable.set(word, ipa);
 					showPopup({ text: `${oldIpa} -> ${ipa}` });
 				},
