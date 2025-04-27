@@ -1,9 +1,10 @@
 import * as as from "../audio-source/sources.js";
 import * as is from "../ipa-source/sources.js";
-import { cachedAnalyseWord } from "../utils/analyse-word.js";
 import { blob2base64 } from "../utils/element.js";
+import { cachedAnalyseWord } from "../utils/analyse-word.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
 import { goString } from "../utils/promise.js";
+import { migrateToV3 } from "./migrations.js";
 import { threshold } from "../utils/number.js";
 import {
 	generateSha1,
@@ -789,9 +790,9 @@ export default class Addon {
 	async onInstalled(details) {
 		console.clear();
 		if (details.reason === "update") {
-			if (parseInt(details.previousVersion) < 1) { // break change
-				console.log("Cleaning storage due to update break change");
-				await browser.storage.local.clear();
+			const previousVersion = parseInt(details.previousVersion);
+			if (previousVersion < 3) { // break change
+				await migrateToV3();
 			}
 		}
 		if (details.temporary) {
