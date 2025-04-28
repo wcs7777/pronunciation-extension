@@ -82,7 +82,7 @@ export default class Addon {
 		let isText = false;
 		let sourceAudioId = null;
 		let sourceAudioTitle = null;
-		console.log({ input, words });
+		console.log({ input, length: input.length, words });
 		if (words.length === 0) {
 			console.log("No word was found in input");
 			return;
