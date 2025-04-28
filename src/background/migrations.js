@@ -1,4 +1,5 @@
 export async function migrateToV3() {
+	console.log("migrating options to v3");
 	const result = await browser.storage.local.get("options");
 	if (!("options" in result)) {
 		console.log("options not in storage");
