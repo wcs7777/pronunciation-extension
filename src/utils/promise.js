@@ -43,7 +43,7 @@ export function sleep(timeout) {
 /**
  * @param {number} timeout - ms
  * @param {any} value - resolve argument
- * @returns {Promise<void>}
+ * @returns {Promise<any>}
  */
 export function resolveTimeout(timeout, value) {
 	return new Promise((resolve, _) => {
