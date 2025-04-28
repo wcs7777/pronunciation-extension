@@ -101,16 +101,20 @@ export default class Addon {
 			if (word.length <= maxCharacters) {
 				const analysis = await cachedAnalyseWord(word);
 				console.log({ analysis });
-				ipaPromise = this.fetchIpa(
+				ipaPromise = this.fetchIpa({
 					word,
-					options.ipa,
+					options: options.ipa,
 					analysis,
-				);
-				audioPromise = this.fetchAudio(
+					tabId,
+					origin,
+				});
+				audioPromise = this.fetchAudio({
 					word,
-					options.audio,
+					options: options.audio,
 					analysis,
-				);
+					tabId,
+					origin,
+				});
 			} else {
 				const message = (
 					`Exceeded ${maxCharacters} characters allowed for words`
@@ -130,13 +134,21 @@ export default class Addon {
 				const end = text.slice(-17);
 				sourceAudioTitle = `${begin}...${end}`;
 			}
-			ipaPromise = this.fetchIpaText(
-				key,
-				text,
-				options.ipa,
-				words.length,
-			);
-			audioPromise = this.fetchAudioText(key, text, options.audio);
+			ipaPromise = this.fetchIpaText({
+				cacheKey: key,
+				input: text,
+				options: options.ipa,
+				totalWords: words.length,
+				tabId,
+				origin,
+			});
+			audioPromise = this.fetchAudioText({
+				cacheKey: key,
+				input: text,
+				options: options.audio,
+				tabId,
+				origin,
+			});
 		}
 		await Promise.all([
 			this.showIpa({
@@ -274,12 +286,16 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} word
-	 * @param {OptionsIpa} options
-	 * @param {WordAnalyse} analysis
+	 * @param {{
+	 *     word: string,
+	 *     options: OptionsIpa,
+	 *     analysis: WordAnalyse,
+	 *     tabId: number,
+	 *     origin: "menuItem" | "action" | "other",
+	 * }}
 	 * @returns {Promise<string | null>}
 	 */
-	async fetchIpa(word, options, analysis) {
+	async fetchIpa({ word, options, analysis, tabId, origin }) {
 		if (!options.enabled) {
 			console.log("Show IPA is disabled");
 			return null;
@@ -293,12 +309,14 @@ export default class Addon {
 		}
 		ipa = await this.ipaTable.getValue(word);
 		if (!ipa) {
-			const { ipa: ipaValue, save } = await this.fetchIpaExternally(
-				word,
+			const { ipa: ipaValue, save } = await this.fetchIpaExternally({
+				input: word,
 				options,
-				false,
 				analysis,
-			);
+				toText: false,
+				tabId,
+				origin,
+			});
 			ipa = ipaValue;
 			if (!ipa) {
 				return null;
@@ -313,13 +331,24 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} cacheKey
-	 * @param {string} input
-	 * @param {OptionsIpa} options
-	 * @param {number} totalWords
+	 * @param {{
+	 *     cacheKey: string,
+	 *     input: string,
+	 *     options: OptionsIpa,
+	 *     totalWords: number,
+	 *     tabId: number,
+	 *     origin: "menuItem" | "action" | "other",
+	 * }}
 	 * @returns {Promise<string | null>}
 	 */
-	async fetchIpaText(cacheKey, input, options, totalWords) {
+	async fetchIpaText({
+		cacheKey,
+		input,
+		options,
+		totalWords,
+		tabId,
+		origin,
+	}) {
 		if (!options.text.enabled) {
 			console.log("Show IPA is disabled to text");
 			return null;
@@ -331,11 +360,10 @@ export default class Addon {
 		);
 		options.close.onScroll = false;
 		if (!this.ipaTextCache.hasKey(cacheKey)) {
-			const { ipa } = await this.fetchIpaExternally(
+			const { ipa } = await this.fetchIpaExternally({
 				input,
 				options,
-				true,
-				{
+				analysis: {
 					root: "",
 					confidence: 1,
 					type: "Text",
@@ -344,7 +372,10 @@ export default class Addon {
 					isValid: true,
 					isText: true,
 				},
-			);
+				toText: true,
+				tabId,
+				origin,
+			});
 			if (!ipa) {
 				return null;
 			}
@@ -354,13 +385,24 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {OptionsIpa} options
-	 * @param {boolean} toText
+	 * @param {{
+	 *     input: string,
+	 *     options: OptionsIpa,
+	 *     analysis: WordAnalyse,
+	 *     toText: boolean,
+	 *     tabId: number,
+	 *     origin: "menuItem" | "action" | "other",
+	 * }}
 	 * @returns {Promise<{ ipa: string | null, save: boolean }>
-	 * @param {WordAnalyse} analysis
 	 */
-	async fetchIpaExternally(input, options, toText, analysis) {
+	async fetchIpaExternally({
+		input,
+		options,
+		analysis,
+		toText,
+		tabId,
+		origin,
+	}) {
 		/**
 		 * @param {string} source
 		 * @returns {?PronunciationSourceLastError}
@@ -393,19 +435,27 @@ export default class Addon {
 				if (f.saveError) {
 					await this.saveError(`${f.name}: ${input}`, error);
 				}
-				if (error?.status) {
+				if (error?.status && error.status !== 404) {
 					/**
 					 * @type {PronunciationSourceLastError}
 					 */
 					const lastError = {
 						source: f.name,
 						datetime,
-						status: error?.status,
+						status: error.status,
 						timestamp,
-						message: error?.message,
+						message: error.message,
+						messageContentType: error.messageContentType,
 						error: removeMethods(error?.error ?? {}),
 					};
 					await this.sourceLastErrorTable.set(f.name, lastError);
+					if (options.showSourceLastError) {
+						await this.showInfo({
+							info: `${lastError.source}: ${lastError.status}`,
+							tabId,
+							origin,
+						});
+					}
 				}
 			}
 		}
@@ -416,12 +466,16 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} word
-	 * @param {OptionsAudio} options
-	 * @param {WordAnalyse} analysis
+	 * @param {{
+	 *     word: string,
+	 *     options: OptionsAudio,
+	 *     analysis: WordAnalyse,
+	 *     tabId: number,
+	 *     origin: "menuItem" | "action" | "other",
+	 * }}
 	 * @returns {Promise<HTMLAudioElement | null>}
 	 */
-	async fetchAudio(word, options, analysis) {
+	async fetchAudio({ word, options, analysis, tabId, origin }) {
 		if (!options.enabled) {
 			console.log("Play audio is disabled");
 			return null;
@@ -438,12 +492,14 @@ export default class Addon {
 		 */
 		let base64 = await this.audioTable.getValue(word);
 		if (!base64) {
-			const { blob, save } = await this.fetchAudioExternally(
-				word,
+			const { blob, save } = await this.fetchAudioExternally({
+				input: word,
 				options,
-				false,
 				analysis,
-			);
+				toText: false,
+				tabId,
+				origin,
+			});
 			if (!blob) {
 				return null;
 			}
@@ -464,12 +520,16 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} cacheKey
-	 * @param {string} input
-	 * @param {OptionsAudio} options
+	 * @param {{
+	 *     cacheKey: string,
+	 *     input: string,
+	 *     options: OptionsAudio,
+	 *     tabId: number,
+	 *     origin: "menuItem" | "action" | "other",
+	 * }}
 	 * @returns {Promise<HTMLAudioElement | null>}
 	 */
-	async fetchAudioText(cacheKey, input, options) {
+	async fetchAudioText({ cacheKey, input, options, tabId, origin}) {
 		if (!options.text.enabled) {
 			console.log("Play audio is disabled to text");
 			return null;
@@ -486,11 +546,10 @@ export default class Addon {
 		 */
 		let base64 = await this.audioTextTable.getValue(cacheKey);
 		if (!base64) {
-			const { blob, save } = await this.fetchAudioExternally(
+			const { blob, save } = await this.fetchAudioExternally({
 				input,
 				options,
-				true,
-				{
+				analysis: {
 					root: "",
 					confidence: 1,
 					type: "Text",
@@ -499,7 +558,10 @@ export default class Addon {
 					isValid: true,
 					isText: true,
 				},
-			);
+				toText: true,
+				tabId,
+				origin,
+			});
 			if (!blob) {
 				return null;
 			}
@@ -526,13 +588,24 @@ export default class Addon {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {OptionsAudio} options
-	 * @param {boolean} toText
+	 * @param {{
+	 *     input: string,
+	 *     options: OptionsAudio,
+	 *     analysis: WordAnalyse,
+	 *     toText: boolean,
+	 *     tabId: number,
+	 *     origin: "menuItem" | "action" | "other",
+	 * }}
 	 * @returns {Promise<{ blob: Blob | null, save: boolean }>
-	 * @param {WordAnalyse} analysis
 	 */
-	async fetchAudioExternally(input, options, toText, analysis) {
+	async fetchAudioExternally({
+		input,
+		options,
+		analysis,
+		toText,
+		tabId,
+		origin,
+	}) {
 		/**
 		 * @param {string} source
 		 * @returns {?PronunciationSourceLastError}
@@ -572,19 +645,27 @@ export default class Addon {
 				if (f.saveError) {
 					await this.saveError(`${f.name}: ${input}`, error);
 				}
-				if (error?.status) {
+				if (error?.status && error.status !== 404) {
 					/**
 					 * @type {PronunciationSourceLastError}
 					 */
 					const lastError = {
 						source: f.name,
 						datetime,
-						status: error?.status,
+						status: error.status,
 						timestamp,
-						message: error?.message,
+						message: error.message,
+						messageContentType: error.messageContentType,
 						error: removeMethods(error?.error ?? {}),
 					};
 					await this.sourceLastErrorTable.set(f.name, lastError);
+					if (options.showSourceLastError) {
+						await this.showInfo({
+							info: `${lastError.source}: ${lastError.status}`,
+							tabId,
+							origin,
+						});
+					}
 				}
 			}
 		}
@@ -792,6 +873,36 @@ export default class Addon {
 			await browser.storage.local.clear();
 		}
 		await this.initialSetup();
+	}
+
+	/**
+	 * @param {{
+	 *     info: string,
+	 *     closeTimeout: number,
+	 *     tabId: number,
+	 *     origin: "menuItem" | "action" | "other",
+	 * }}
+	 * @returns {Promise<void>}
+	 */
+	async showInfo({ info, closeTimeout=5000, tabId, origin }) {
+		/**
+		 * @type {BackgroundMessage}
+		 */
+		const message = {
+			type: "showPopup",
+			origin,
+			showPopup: {
+				text: info,
+				position: {
+					centerHorizontally: true,
+					top: 100,
+				},
+				close: {
+					timeout: closeTimeout,
+				},
+			},
+		};
+		await browser.tabs.sendMessage(tabId, message);
 	}
 
 	/**

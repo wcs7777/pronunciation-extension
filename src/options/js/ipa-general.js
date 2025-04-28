@@ -5,12 +5,14 @@ import { getAllOptions, saveOptions, showInfo } from "./utils.js";
  * @type {{
  *     enabled: HTMLInputElement,
  *     enabledToText: HTMLInputElement,
+ *     showSourceLastError: HTMLInputElement,
  *     save: HTMLButtonElement,
  * }}
  */
 const el = {
 	enabled: byId("enabled"),
 	enabledToText: byId("enabledToText"),
+	showSourceLastError: byId("showSourceLastError"),
 	save: byId("save"),
 };
 
@@ -31,6 +33,7 @@ el.save.addEventListener("click", async () => {
 			ipa: {
 				enabled: el.enabled.checked,
 				text: { enabled: el.enabledToText.checked },
+				showSourceLastError: el.showSourceLastError.checked,
 			},
 		};
 		await saveOptions(options);
@@ -51,4 +54,5 @@ async function setFieldsValues() {
 	const opt = await getAllOptions();
 	el.enabled.checked = opt.ipa.enabled;
 	el.enabledToText.checked = opt.ipa.text.enabled;
+	el.showSourceLastError.checked = opt.ipa.showSourceLastError;
 }

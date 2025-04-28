@@ -16,11 +16,16 @@ export async function url2document(url, credentials="omit") {
 		const status = response.status;
 		if (status !== 200) {
 			const message = await response.text();
-			throw {
+			/**
+			 * @type {PronunciationSourceLastError}
+			 */
+			const le = {
 				status,
 				message,
+				messageContentType: response.headers.get("Content-Type"),
 				error: new Error(response.statusText),
 			};
+			throw le;
 		}
 		const text = await response.text();
 		document = new DOMParser().parseFromString(text, "text/html");
@@ -38,11 +43,16 @@ export async function url2blob(url, credentials="omit") {
 	const status = response.status;
 	if (status !== 200) {
 		const message = await response.text();
-		throw {
+		/**
+		 * @type {PronunciationSourceLastError}
+		 */
+		const le = {
 			status,
 			message,
+			messageContentType: response.headers.get("Content-Type"),
 			error: new Error(response.statusText),
 		};
+		throw le;
 	}
 	const blob = await response.blob();
 	return blob;

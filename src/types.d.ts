@@ -32,9 +32,10 @@ declare global {
 	type PronunciationSourceLastError = {
 		source: string,
 		datetime: Date,
-		status?: number,
+		status: number,
 		timestamp: number,
-		message?: string,
+		message: string,
+		messageContentType: string,
 		error: Error,
 	};
 
@@ -76,6 +77,7 @@ declare global {
 		text: {
 			enabled: boolean,
 		},
+		showSourceLastError: boolean,
 		style: {
 			font: {
 				family: string,
@@ -118,6 +120,7 @@ declare global {
 			shortcutsEnabled: boolean,
 			shortcuts: OptAudioShortcuts,
 		},
+		showSourceLastError: boolean,
 		volume: number,
 		playbackRate: number,
 		sources: {
@@ -237,7 +240,7 @@ declare global {
 	};
 
 	type BackgroundMessage = {
-		type: "showIpa" | "getSelectedText" | "playAudio",
+		type: "showIpa" | "getSelectedText" | "playAudio" | "showPopup",
 		origin: "menuItem" | "action" | "other",
 		showIpa?: {
 			ipa: string,
@@ -249,6 +252,7 @@ declare global {
 			shortcutsEnabled: boolean,
 			shortcuts: OptAudioShortcuts,
 		},
+		showPopup?: OptionsPopup,
 	};
 
 	type OptionsPopup = {

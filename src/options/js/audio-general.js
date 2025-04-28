@@ -5,6 +5,7 @@ import { getAllOptions, numOr, saveOptions, showInfo } from "./utils.js";
 /**
  * @type {{
  *     enabled: HTMLInputElement,
+ *     showSourceLastError: HTMLInputElement,
  *     volume: HTMLInputElement,
  *     playbackRate: HTMLInputElement,
  *     save: HTMLButtonElement,
@@ -12,6 +13,7 @@ import { getAllOptions, numOr, saveOptions, showInfo } from "./utils.js";
  */
 const el = {
 	enabled: byId("enabled"),
+	showSourceLastError: byId("showSourceLastError"),
 	volume: byId("volume"),
 	playbackRate: byId("playbackRate"),
 	save: byId("save"),
@@ -37,6 +39,7 @@ el.save.addEventListener("click", async () => {
 		const options = {
 			audio: {
 				enabled: el.enabled.checked,
+				showSourceLastError: el.showSourceLastError.checked,
 				volume: numOr(el.volume.value, defaultOptions.audio.volume, 0, 1),
 				playbackRate: numOr(el.playbackRate.value, defaultOptions.audio.playbackRate, 0.2, 2),
 			},
@@ -58,6 +61,7 @@ async function setFieldsValues() {
 	 */
 	const opt = await getAllOptions();
 	el.enabled.checked = opt.audio.enabled;
+	el.showSourceLastError.checked = opt.audio.showSourceLastError;
 	el.volume.value = opt.audio.volume.toString();
 	el.playbackRate.value = opt.audio.playbackRate.toString();
 }
