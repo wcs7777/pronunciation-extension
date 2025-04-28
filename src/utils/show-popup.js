@@ -97,12 +97,10 @@ export function showPopup(options) {
 	} else {
 		if (options.position.centerHorizontally) {
 			const half = (window.innerWidth - rect.width) / 2;
-			console.log({ halfWidth: half });
 			setProperty("--left", `${half}px`);
 		}
 		if (options.position.centerVertically) {
 			const half = (window.innerHeight - rect.height) / 2;
-			console.log({ halfHeight: half });
 			setProperty("--top", `${half}px`);
 		}
 	}

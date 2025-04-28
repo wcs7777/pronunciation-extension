@@ -1,4 +1,5 @@
 import IpaPopup from "../utils/ipa-popup.js";
+import { showPopup } from "../utils/show-popup.js";
 import {
 	addAudioSource,
 	setAudioControlShortcuts,
@@ -19,6 +20,7 @@ async function onMessage(message) {
 		"showIpa": showIpa,
 		"getSelectedText": getSelectedText,
 		"playAudio": playAudio,
+		"showPopup": showPopupFromBackground,
 	};
 	if (!message.type in actions) {
 		throw new Error(`Invalid message type: ${message.type}`);
@@ -77,4 +79,16 @@ async function playAudio(message) {
 		await toggleAudioPlayer({ forceDisable: true });
 		console.error(error);
 	}
+}
+
+/**
+ * @param {BackgroundMessage} message
+ * @returns {Promise<void>}
+ */
+async function showPopupFromBackground(message) {
+	const options = message.showPopup;
+	if (!options) {
+		throw new Error("Should pass showPopup options in message");
+	}
+	showPopup(options);
 }

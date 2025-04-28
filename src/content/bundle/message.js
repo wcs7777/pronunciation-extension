@@ -155,12 +155,10 @@
 		} else {
 			if (options.position.centerHorizontally) {
 				const half = (window.innerWidth - rect.width) / 2;
-				console.log({ halfWidth: half });
 				setProperty("--left", `${half}px`);
 			}
 			if (options.position.centerVertically) {
 				const half = (window.innerHeight - rect.height) / 2;
-				console.log({ halfHeight: half });
 				setProperty("--top", `${half}px`);
 			}
 		}
@@ -1466,6 +1464,7 @@ button {
 			"showIpa": showIpa,
 			"getSelectedText": getSelectedText,
 			"playAudio": playAudio,
+			"showPopup": showPopupFromBackground,
 		};
 		if (!message.type in actions) {
 			throw new Error(`Invalid message type: ${message.type}`);
@@ -1524,6 +1523,18 @@ button {
 			await toggleAudioPlayer({ forceDisable: true });
 			console.error(error);
 		}
+	}
+
+	/**
+	 * @param {BackgroundMessage} message
+	 * @returns {Promise<void>}
+	 */
+	async function showPopupFromBackground(message) {
+		const options = message.showPopup;
+		if (!options) {
+			throw new Error("Should pass showPopup options in message");
+		}
+		showPopup(options);
 	}
 
 })();

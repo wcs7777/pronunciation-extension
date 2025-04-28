@@ -191,12 +191,10 @@
 		} else {
 			if (options.position.centerHorizontally) {
 				const half = (window.innerWidth - rect.width) / 2;
-				console.log({ halfWidth: half });
 				setProperty("--left", `${half}px`);
 			}
 			if (options.position.centerVertically) {
 				const half = (window.innerHeight - rect.height) / 2;
-				console.log({ halfHeight: half });
 				setProperty("--top", `${half}px`);
 			}
 		}
@@ -332,11 +330,16 @@
 		const status = response.status;
 		if (status !== 200) {
 			const message = await response.text();
-			throw {
+			/**
+			 * @type {PronunciationSourceLastError}
+			 */
+			const le = {
 				status,
 				message,
+				messageContentType: response.headers.get("Content-Type"),
 				error: new Error(response.statusText),
 			};
+			throw le;
 		}
 		const blob = await response.blob();
 		return blob;
