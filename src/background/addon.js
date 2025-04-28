@@ -873,6 +873,9 @@ export default class Addon {
 			}
 		}
 		await this.initialSetup();
+		await browser.tabs.create({
+			url: browser.runtime.getURL("src/options/pages/general.html"),
+		});
 	}
 
 	/**
