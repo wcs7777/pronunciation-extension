@@ -127,8 +127,8 @@ audio.addEventListener("canplay", async () => {
 
 audio.addEventListener("ended", async () => {
 	await togglePlayAudio({ forcePause: true });
-	el.progressbar.value = audio.duration;
-	el.totalTime.textContent = formatSeconds(audio.duration);
+	el.progressbar.value = audio.dataset.validDuration;
+	el.totalTime.textContent = formatSeconds(audio.dataset.validDuration);
 	el.progressbar.style.background = "var(--range-color)";
 });
 
@@ -140,9 +140,9 @@ el.volumeControl.addEventListener("input", () => {
 	audio.volume = parseFloat(el.volumeControl.value);
 });
 
-audio.addEventListener("timeupdate", () => {
-	el.totalTime.textContent = formatSeconds(audio.duration);
-	el.progressbar.max = audio.duration;
+audio.addEventListener("timeupdate", async () => {
+	el.totalTime.textContent = formatSeconds(audio.dataset.validDuration);
+	el.progressbar.max = await audioDuration(audio);
 	el.currentTime.textContent = formatSeconds(audio.currentTime);
 	el.progressbar.value = audio.currentTime;
 	el.progressbar.style.background = "var(--range-background)";
@@ -152,7 +152,7 @@ el.togglePlayButton.addEventListener("click", async () => togglePlayAudio());
 el.toggleMuteButton.addEventListener("click", () => toggleMuteAudio());
 el.rewind.addEventListener("click", () => rewindAudio());
 el.backward.addEventListener("click", () => backwardAudio(2.3));
-el.forward.addEventListener("click", () => forwardAudio(2));
+el.forward.addEventListener("click", async () => forwardAudio(2));
 el.previous.addEventListener("click", async () => previousAudio());
 el.next.addEventListener("click", async () => nextAudio());
 
@@ -497,12 +497,12 @@ async function rewindAudio({
  * }}
  * @returns {void}
  */
-function forwardAudio(seconds, {
+async function forwardAudio(seconds, {
 	audio=el.audio,
 }={}) {
 	audio.currentTime = Math.min(
 		audio.currentTime + seconds,
-		audio.duration,
+		await audioDuration(audio),
 	);
 }
 
@@ -538,6 +538,7 @@ async function changeAudioSource(sourceIndex, {
 }={}) {
 	const paused = audio.paused;
 	const s = sources[sourceIndex];
+	audio.dataset.validDuration = -1;
 	audio.dataset.currentId = s.id;
 	audio.dataset.currentSource = sourceIndex;
 	audio.src = s.url;
@@ -594,7 +595,7 @@ async function nextAudio({
 	if (newIndex < sources.length) {
 		await changeAudioSource(newIndex, { audio, mainTitle, sources });
 	} else {
-		audio.currentTime = audio.duration;
+		audio.currentTime = await audioDuration(audio);
 	}
 }
 
@@ -653,18 +654,22 @@ function changeAudioSpeed(speed, {
  * @returns {Promise<number>}
  */
 async function audioDuration(audio) {
-	if (validAudioDuration(audio)) {
-		return audio.duration;
+	if (audio.dataset.validDuration < 0) {
+		if (validAudioDuration(audio)) {
+			audio.dataset.validDuration = audio.duration;
+		} else {
+			console.log("pron addon: audio duration from AudioContext");
+			const response = await fetch(audio.src);
+			if (response.status !== 200) {
+				throw new Error(`Status: ${response.status}`);
+			}
+			const arrayBuffer = await response.arrayBuffer();
+			const audioContext = new AudioContext();
+			const decoded = await audioContext.decodeAudioData(arrayBuffer);
+			audio.dataset.validDuration = decoded.duration;
+		}
 	}
-	console.log("pron addon: getting audio duration from AudioContext");
-	const response = await fetch(audio.src);
-	if (response.status !== 200) {
-		throw new Error(`Status: ${response.status}`);
-	}
-	const arrayBuffer = await response.arrayBuffer();
-	const audioContext = new AudioContext();
-	const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-	return audioBuffer.duration;
+	return audio.dataset.validDuration;
 }
 
 /**
