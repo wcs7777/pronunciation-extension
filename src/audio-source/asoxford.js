@@ -1,5 +1,5 @@
 import { splitWords } from "../utils/string.js";
-import { url2blob, url2document } from "../utils/element.js";
+import { url2blob, url2document } from "../utils/fetch.js";
 import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**

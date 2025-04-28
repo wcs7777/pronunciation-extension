@@ -1,4 +1,4 @@
-import { url2blob } from "../utils/element.js";
+import { url2blob } from "../utils/fetch.js";
 import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**

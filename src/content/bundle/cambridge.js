@@ -23,25 +23,6 @@
 	}
 
 	/**
-	 * @param {string} url
-	 * @returns {Promise<Blob>}
-	 */
-	async function url2blob(url, credentials="omit") {
-		const response = await fetch(url, { credentials });
-		const status = response.status;
-		if (status !== 200) {
-			const message = await response.text();
-			throw {
-				status,
-				message,
-				error: new Error(response.statusText),
-			};
-		}
-		const blob = await response.blob();
-		return blob;
-	}
-
-	/**
 	 * @param {Blob} blob
 	 * @returns {Promise<string>}
 	 */
@@ -340,6 +321,25 @@
 		template.id = "pronunciation-addon-popup-template";
 		template.innerHTML = html;
 		return template;
+	}
+
+	/**
+	 * @param {string} url
+	 * @returns {Promise<Blob>}
+	 */
+	async function url2blob(url, credentials="omit") {
+		const response = await fetch(url, { credentials });
+		const status = response.status;
+		if (status !== 200) {
+			const message = await response.text();
+			throw {
+				status,
+				message,
+				error: new Error(response.statusText),
+			};
+		}
+		const blob = await response.blob();
+		return blob;
 	}
 
 	/**

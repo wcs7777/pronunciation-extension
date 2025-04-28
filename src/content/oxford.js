@@ -1,6 +1,7 @@
-import { blob2base64, url2blob } from "../utils/element";
-import { showPopup } from "../utils/show-popup";
+import { blob2base64 } from "../utils/element.js";
+import { showPopup } from "../utils/show-popup.js";
 import { splitWords } from "../utils/string.js";
+import { url2blob } from "../utils/fetch.js";
 import {
     audioTable,
 	defaultIpaTable,
