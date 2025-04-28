@@ -862,15 +862,15 @@ export default class Addon {
 	 */
 	async onInstalled(details) {
 		console.clear();
+		if (details.temporary) {
+			console.log("Cleaning storage due to temporary installation");
+			await browser.storage.local.clear();
+		}
 		if (details.reason === "update") {
 			const previousVersion = parseInt(details.previousVersion);
 			if (previousVersion < 3) { // break change
 				await migrateToV3();
 			}
-		}
-		if (details.temporary) {
-			console.log("Cleaning storage due to temporary installation");
-			await browser.storage.local.clear();
 		}
 		await this.initialSetup();
 	}
