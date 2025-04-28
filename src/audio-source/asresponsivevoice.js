@@ -43,7 +43,7 @@ export default class ASResponsiveVoice {
 				input.length <= this.options.textMaxLength
 			);
 		}
-		return enabled && !waitRateLimit(lastError, 60, [200, 404]);
+		return enabled && !waitRateLimit(lastError, 1800, [200, 404]);
 	}
 
 	/**
