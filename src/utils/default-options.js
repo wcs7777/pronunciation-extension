@@ -9,7 +9,7 @@ const defaultOptions = {
 		text: {
 			enabled: true,
 		},
-		showSourceLastError: false,
+		showSourceLastError: true,
 		style: {
 			font: {
 				family: "'Lucida Sans Unicode', 'Segoe UI', serif",
@@ -92,7 +92,7 @@ const defaultOptions = {
 				resetSpeed: ";",
 			},
 		},
-		showSourceLastError: false,
+		showSourceLastError: true,
 		volume: 1.0,
 		playbackRate: 1.0,
 		sources: {
