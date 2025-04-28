@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		const defaultApi = defaultOptions.audio.sources.elevenLabs.api;
 		/**
@@ -60,7 +60,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "ElevenLabs settings saved");
+		showInfo("ElevenLabs settings saved");
 	} catch (error) {
 		console.error(error);
 	}

@@ -270,6 +270,8 @@ declare global {
 			buttonHoverColor: string,
 		},
 		position: {
+			centerHorizontally: boolean,
+			centerVertically: boolean,
 			top: number,
 			left: number,
 		},

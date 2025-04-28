@@ -64,7 +64,7 @@ const el = {
 				return;
 			}
 			await sourceLastErrorTable.remove(s.id);
-			showInfo(currentTarget, `${s.textContent} source last error storage cleared`);
+			showInfo(`${s.textContent} source last error storage cleared`);
 		} catch (error) {
 			console.error(error);
 		}
@@ -78,7 +78,7 @@ el.all.addEventListener("click", async () => {
 			return;
 		}
 		await sourceLastErrorTable.clear();
-		showInfo(currentTarget, "All last erro storage cleared");
+		showInfo("All last erro storage cleared");
 	} catch (error) {
 		console.error(error);
 	}

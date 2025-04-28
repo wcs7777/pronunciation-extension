@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		const defaultApi = defaultOptions.audio.sources.amazonPolly.api;
 		/**
@@ -66,7 +66,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "Amazon Polly settings saved");
+		showInfo("Amazon Polly settings saved");
 	} catch (error) {
 		console.error(error);
 	}

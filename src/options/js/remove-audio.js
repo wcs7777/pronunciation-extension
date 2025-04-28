@@ -22,22 +22,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.remove.addEventListener("click", async ({ currentTarget }) => {
+el.remove.addEventListener("click", async () => {
 	try {
 		const rawWord = el.word.value.trim().toLowerCase();
 		const words = splitWords(rawWord);
 		if (words.length === 0) {
-			showInfo(currentTarget, "No word was found in input");
+			showInfo("No word was found in input");
 			return;
 		}
 		const word = words[0];
 		if (word.length > 45) {
-			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
+			showInfo(`Word max length is 45, but this has ${word.length}`);
 			return;
 		}
 		await audioTable.remove(word);
 		await setFieldsValues();
-		showInfo(currentTarget, `${word} audio removed`);
+		showInfo(`${word} audio removed`);
 	} catch (error) {
 		console.error(error);
 	}

@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		const defaultStyle = defaultOptions.ipa.style;
 		/**
@@ -49,7 +49,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "IPA Style settings saved");
+		showInfo("IPA Style settings saved");
 	} catch (error) {
 		console.error(error);
 	}

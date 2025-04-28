@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		/**
 		 * @type {Options}
@@ -45,7 +45,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "IPA Sources Order settings saved");
+		showInfo("IPA Sources Order settings saved");
 	} catch (error) {
 		console.error(error);
 	}

@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		const defaultApi = defaultOptions.audio.sources.playHt.api;
 		/**
@@ -73,7 +73,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "PlayHT settings saved");
+		showInfo("PlayHT settings saved");
 	} catch (error) {
 		console.error(error);
 	}

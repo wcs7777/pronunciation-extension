@@ -30,17 +30,17 @@ el.update.addEventListener("click", async ({ currentTarget }) => {
 		} else {
 			const text = el.text.value.trim();
 			if (!text) {
-				showInfo(currentTarget, "File or text should be set");
+				showInfo("File or text should be set");
 				return;
 			}
 			values = JSON.parse(text);
 		}
 		await ipaTable.setMany(values);
 		setFieldsValues();
-		showInfo(currentTarget, "IPA storage updated");
+		showInfo("IPA storage updated");
 	} catch (error) {
 		if (error instanceof SyntaxError) {
-			showInfo(currentTarget, "Invalid JSON");
+			showInfo("Invalid JSON");
 		}
 		console.error(error);
 	}

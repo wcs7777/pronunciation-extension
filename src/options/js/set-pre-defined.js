@@ -14,7 +14,7 @@ const el = {
 	ipaLong: byId("ipaLong"),
 };
 
-el.ipaShort.addEventListener("click", async ({ currentTarget }) => {
+el.ipaShort.addEventListener("click", async () => {
 	try {
 		const msg = "Are you sure to set short pre-defined IPA definitions (some definitions may be overrode and may take some time)?";
 		if (!window.confirm(msg)) {
@@ -32,13 +32,13 @@ el.ipaShort.addEventListener("click", async ({ currentTarget }) => {
 			ipaTable.setMany(values),
 			defaultIpaTable.setMany(values),
 		]);
-		showInfo(currentTarget, "Complete short pre-defined IPA definitions set");
+		showInfo("Complete short pre-defined IPA definitions set");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.ipaLong.addEventListener("click", async ({ currentTarget }) => {
+el.ipaLong.addEventListener("click", async () => {
 	try {
 		const msg = "Are you sure to set long pre-defined IPA definitions (some definitions may be overrode and may take some time)?";
 		if (!window.confirm(msg)) {
@@ -56,7 +56,7 @@ el.ipaLong.addEventListener("click", async ({ currentTarget }) => {
 			ipaTable.setMany(values),
 			defaultIpaTable.setMany(values),
 		]);
-		showInfo(currentTarget, "Complete long pre-defined IPA definitions set");
+		showInfo("Complete long pre-defined IPA definitions set");
 	} catch (error) {
 		console.error(error);
 	}

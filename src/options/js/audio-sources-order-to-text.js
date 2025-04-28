@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		/**
 		 * @type {Options}
@@ -101,7 +101,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "Audio Sources Order to Text settings saved");
+		showInfo("Audio Sources Order to Text settings saved");
 	} catch (error) {
 		console.error(error);
 	}

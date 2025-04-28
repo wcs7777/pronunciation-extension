@@ -24,28 +24,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		const rawWord = el.word.value.trim().toLowerCase();
 		const words = splitWords(rawWord);
 		if (words.length === 0) {
-			showInfo(currentTarget, "No word was found in input");
+			showInfo("No word was found in input");
 			return;
 		}
 		const word = words[0];
 		if (word.length > 45) {
-			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
+			showInfo(`Word max length is 45, but this has ${word.length}`);
 			return;
 		}
 		const file = el.file.files?.[0];
 		if (!file) {
-			showInfo(currentTarget, "No file was found in input");
+			showInfo("No file was found in input");
 			return;
 		}
 		const kb = file.size / 1000;
 		const maxSize = 200;
 		if (kb > maxSize) {
-			showInfo(currentTarget, `File max size is ${maxSize}KB, but this has ${kb}KB`);
+			showInfo(`File max size is ${maxSize}KB, but this has ${kb}KB`);
 			return;
 		}
 		try {
@@ -56,9 +56,9 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 			audio.pause();
 			await audioTable.set(word, base64);
 			await setFieldsValues();
-			showInfo(currentTarget, `${word} audio saved`);
+			showInfo(`${word} audio saved`);
 		} catch (error) {
-			showInfo(currentTarget, `Error with the file: ${error}`);
+			showInfo(`Error with the file: ${error}`);
 			console.error(error);
 		}
 	} catch (error) {

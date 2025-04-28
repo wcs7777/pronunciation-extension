@@ -1,21 +1,23 @@
-import { byId } from "../../utils/element.js";
-import { getAllOptions, saveOptions, showInfo } from "./utils.js";
+import defaultOptions from "../../utils/default-options.js";
+import { byId, onlyShorcut } from "../../utils/element.js";
+import { getAllOptions, saveOptions, strOr, showInfo } from "./utils.js";
 
 /**
  * @type {{
- *     enabled: HTMLInputElement,
- *     enabledToText: HTMLInputElement,
+ *     accessKey: HTMLInputElement,
+ *     allowText: HTMLInputElement,
  *     save: HTMLButtonElement,
  * }}
  */
 const el = {
-	enabled: byId("enabled"),
-	enabledToText: byId("enabledToText"),
+	accessKey: byId("accessKey"),
+	allowText: byId("allowText"),
 	save: byId("save"),
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
+		onlyShorcut(el.accessKey);
 		await setFieldsValues();
 	} catch (error) {
 		console.error(error);
@@ -28,14 +30,12 @@ el.save.addEventListener("click", async () => {
 		 * @type {Options}
 		 */
 		const options = {
-			ipa: {
-				enabled: el.enabled.checked,
-				text: { enabled: el.enabledToText.checked },
-			},
+			accessKey: strOr(el.accessKey.value, defaultOptions.accessKey),
+			allowText: el.allowText.checked,
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo("IPA General settings saved");
+		showInfo("General settings saved");
 	} catch (error) {
 		console.error(error);
 	}
@@ -49,6 +49,6 @@ async function setFieldsValues() {
 	 * @type {Options}
 	 */
 	const opt = await getAllOptions();
-	el.enabled.checked = opt.ipa.enabled;
-	el.enabledToText.checked = opt.ipa.text.enabled;
+	el.accessKey.value = opt.accessKey;
+	el.allowText.checked = opt.allowText;
 }

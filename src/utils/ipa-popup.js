@@ -69,7 +69,7 @@ export default class IpaPopup {
 	}
 
 	/**
-	 * @returns {{ top: number, left: number }}
+	 * @returns {OptionsPopup}
 	 */
 	position() {
 		const s = this.selection;
@@ -91,13 +91,19 @@ export default class IpaPopup {
 				shiftTimes = 2.5;
 			}
 			return {
-				top: top + this.options.style.font.size * shiftTimes,
-				left,
+				position: {
+					centerHorizontally: false,
+					centerVertically: false,
+					top: top + this.options.style.font.size * shiftTimes,
+					left,
+				},
 			};
 		} else {
 			return {
-				top: 100,
-				left: 250,
+				position: {
+					centerHorizontally: true,
+					top: 100,
+				},
 			};
 		}
 	}
@@ -120,7 +126,7 @@ export default class IpaPopup {
 				backgroundColor: style.backgroundColor,
 			},
 			close: this.options.close,
-			position: this.position(),
+			position: this.position().position,
 		};
 		return options;
 	}

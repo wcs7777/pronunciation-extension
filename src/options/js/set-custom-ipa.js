@@ -24,31 +24,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		const rawWord = el.word.value.trim().toLowerCase();
 		const words = splitWords(rawWord);
 		if (words.length === 0) {
-			showInfo(currentTarget, "No word was found in input");
+			showInfo("No word was found in input");
 			return;
 		}
 		const word = words[0];
 		if (word.length > 45) {
-			showInfo(currentTarget, `Word max length is 45, but this has ${word.length}`);
+			showInfo(`Word max length is 45, but this has ${word.length}`);
 			return;
 		}
 		const ipa = el.ipa.value.trim();
 		if (ipa.length === 0) {
-			showInfo(currentTarget, "No IPA was found in input");
+			showInfo("No IPA was found in input");
 			return;
 		}
 		if (ipa.length > 60) {
-			showInfo(currentTarget, `IPA max length is 60, but this has ${ipa.length}`);
+			showInfo(`IPA max length is 60, but this has ${ipa.length}`);
 			return;
 		}
 		await ipaTable.set(word, ipa);
 		await setFieldsValues();
-		showInfo(currentTarget, `${word} = ${ipa}`);
+		showInfo(`${word} = ${ipa}`);
 	} catch (error) {
 		console.error(error);
 	}

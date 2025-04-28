@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		/**
 		 * @type {Options}
@@ -91,13 +91,13 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "Audio Text settings saved");
+		showInfo("Audio Text settings saved");
 	} catch (error) {
 		console.error(error);
 	}
 });
 
-el.shortcuts.save.addEventListener("click", async ({ currentTarget }) => {
+el.shortcuts.save.addEventListener("click", async () => {
 	try {
 		const defaultShortcuts = defaultOptions.audio.text.shortcuts;
 		/**
@@ -146,7 +146,7 @@ el.shortcuts.save.addEventListener("click", async ({ currentTarget }) => {
 		}
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "Audio Shortcuts to Text settings saved");
+		showInfo("Audio Shortcuts to Text settings saved");
 	} catch (error) {
 		console.error(error);
 	}

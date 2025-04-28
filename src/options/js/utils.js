@@ -54,18 +54,16 @@ export function numOr(value, defaultValue, min=0, max=Number.MAX_VALUE) {
 }
 
 /**
- * @param {HTMLElement} element
  * @param {string} info
  * @param {closeTimeout} number
  * @returns {void}
  */
-export function showInfo(element, info, closeTimeout=5000) {
-	const { top, left } = element.getBoundingClientRect();
+export function showInfo(info, closeTimeout=2000) {
 	showPopup({
 		text: info,
 		position: {
-			top: top + element.offsetHeight * -1,
-			left,
+			centerHorizontally: true,
+			top: 200,
 		},
 		close: {
 			timeout: closeTimeout,

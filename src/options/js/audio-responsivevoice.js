@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		const defaultApi = defaultOptions.audio.sources.responsiveVoice.api;
 		/**
@@ -43,7 +43,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "ResponsiveVoice settings saved");
+		showInfo("ResponsiveVoice settings saved");
 	} catch (error) {
 		console.error(error);
 	}

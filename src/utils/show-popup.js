@@ -1,3 +1,5 @@
+import { deepMerge }  from "./object.js";
+
 const template = createTemplate();
 document.body.appendChild(template);
 
@@ -22,6 +24,8 @@ export const defaultOptionsPopup = {
 		buttonHoverColor: "#010101",
 	},
 	position: {
+		centerHorizontally: true,
+		centerVertically: false,
 		top: 100,
 		left: 250,
 	},
@@ -36,7 +40,7 @@ export function showPopup(options) {
 	/**
 	 * @type {OptionsPopup}
 	 */
-	const opt = { ...defaultOptionsPopup, ...options };
+	const opt = deepMerge(defaultOptionsPopup, options);
 	const host = document.createElement("span");
 	host.dataset.role = "pronunciation-addon-popup-host";
 	host.style.display = "inline";
@@ -82,9 +86,25 @@ export function showPopup(options) {
 	popup.style.visibility = "hidden";
 	document.body.appendChild(host);
 	const rect = popup.getBoundingClientRect();
-	const rightMargin = window.innerWidth - rect.right;
-	if (rightMargin <= 0) {
-		popup.style.right = "5px";
+	if (
+		!options.position.centerHorizontally &&
+		!options.position.centerVertically
+	) {
+		const rightMargin = window.innerWidth - rect.right;
+		if (rightMargin <= 0) {
+			popup.style.right = "5px";
+		}
+	} else {
+		if (options.position.centerHorizontally) {
+			const half = (window.innerWidth - rect.width) / 2;
+			console.log({ halfWidth: half });
+			setProperty("--left", `${half}px`);
+		}
+		if (options.position.centerVertically) {
+			const half = (window.innerHeight - rect.height) / 2;
+			console.log({ halfHeight: half });
+			setProperty("--top", `${half}px`);
+		}
 	}
 	popup.style.visibility = "visible";
 

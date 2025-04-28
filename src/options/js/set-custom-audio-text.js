@@ -24,23 +24,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		const rawText = el.text.value.trim();
 		if (rawText.length === 0) {
-			showInfo(currentTarget, "No text was found in input");
+			showInfo("No text was found in input");
 			return;
 		}
 		const key = await generateSha1(removeExtraSpaces(rawText));
 		const file = el.file.files?.[0];
 		if (!file) {
-			showInfo(currentTarget, "No file was found in input");
+			showInfo("No file was found in input");
 			return;
 		}
 		const mb = file.size / 1000 / 1000;
 		const maxSize = 500;
 		if (mb > maxSize) {
-			showInfo(currentTarget, `File max size is ${maxSize}MB, but this has ${mb}MB`);
+			showInfo(`File max size is ${maxSize}MB, but this has ${mb}MB`);
 			return;
 		}
 		try {
@@ -51,9 +51,9 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 			audio.pause();
 			await audioTextTable.set(key, base64);
 			await setFieldsValues();
-			showInfo(currentTarget, `${key} audio text saved`);
+			showInfo(`${key} audio text saved`);
 		} catch (error) {
-			showInfo(currentTarget, `Error with the file: ${error}`);
+			showInfo(`Error with the file: ${error}`);
 			console.error(error);
 		}
 	} catch (error) {

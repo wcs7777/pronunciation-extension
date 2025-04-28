@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		/**
 		 * @type {Options}
@@ -47,7 +47,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "Pronunciation By Sites (Cambridge, Oxford) settings saved");
+		showInfo("Pronunciation By Sites (Cambridge, Oxford) settings saved");
 	} catch (error) {
 		console.error(error);
 	}

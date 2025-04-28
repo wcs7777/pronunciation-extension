@@ -26,6 +26,38 @@
 		}
 	}
 
+	/**
+	 * @param {any} target
+	 * @param {any} source
+	 * @param {boolean} prioritizeTargetObj
+	 * @return {any}
+	 */
+	function deepMerge(target, source, prioritizeTargetObj=false) {
+		const tgt = structuredClone(target);
+		const src = structuredClone(source);
+		const tgtIsArr = Array.isArray(tgt);
+		const srcIsArr = Array.isArray(src);
+		const tgtIsObj = !tgtIsArr && tgt instanceof Object;
+		const srcIsObj = !srcIsArr && src instanceof Object;
+		if (tgtIsArr && srcIsArr) {
+			return [
+				...tgt,
+				...src,
+			];
+		}
+		if (tgtIsObj && srcIsObj) {
+			for (const key in src) {
+				tgt[key] = deepMerge(tgt[key], src?.[key], prioritizeTargetObj);
+			}
+			return tgt;
+		}
+		if (prioritizeTargetObj && (tgtIsObj || tgtIsArr)) {
+			return tgt;
+		} else {
+			return src;
+		}
+	}
+
 	const template = createTemplate();
 	document.body.appendChild(template);
 
@@ -50,6 +82,8 @@
 			buttonHoverColor: "#010101",
 		},
 		position: {
+			centerHorizontally: true,
+			centerVertically: false,
 			top: 100,
 			left: 250,
 		},
@@ -64,7 +98,7 @@
 		/**
 		 * @type {OptionsPopup}
 		 */
-		const opt = { ...defaultOptionsPopup, ...options };
+		const opt = deepMerge(defaultOptionsPopup, options);
 		const host = document.createElement("span");
 		host.dataset.role = "pronunciation-addon-popup-host";
 		host.style.display = "inline";
@@ -110,9 +144,25 @@
 		popup.style.visibility = "hidden";
 		document.body.appendChild(host);
 		const rect = popup.getBoundingClientRect();
-		const rightMargin = window.innerWidth - rect.right;
-		if (rightMargin <= 0) {
-			popup.style.right = "5px";
+		if (
+			!options.position.centerHorizontally &&
+			!options.position.centerVertically
+		) {
+			const rightMargin = window.innerWidth - rect.right;
+			if (rightMargin <= 0) {
+				popup.style.right = "5px";
+			}
+		} else {
+			if (options.position.centerHorizontally) {
+				const half = (window.innerWidth - rect.width) / 2;
+				console.log({ halfWidth: half });
+				setProperty("--left", `${half}px`);
+			}
+			if (options.position.centerVertically) {
+				const half = (window.innerHeight - rect.height) / 2;
+				console.log({ halfHeight: half });
+				setProperty("--top", `${half}px`);
+			}
 		}
 		popup.style.visibility = "visible";
 
@@ -305,7 +355,7 @@
 		}
 
 		/**
-		 * @returns {{ top: number, left: number }}
+		 * @returns {OptionsPopup}
 		 */
 		position() {
 			const s = this.selection;
@@ -327,13 +377,19 @@
 					shiftTimes = 2.5;
 				}
 				return {
-					top: top + this.options.style.font.size * shiftTimes,
-					left,
+					position: {
+						centerHorizontally: false,
+						centerVertically: false,
+						top: top + this.options.style.font.size * shiftTimes,
+						left,
+					},
 				};
 			} else {
 				return {
-					top: 100,
-					left: 250,
+					position: {
+						centerHorizontally: true,
+						top: 100,
+					},
 				};
 			}
 		}
@@ -356,7 +412,7 @@
 					backgroundColor: style.backgroundColor,
 				},
 				close: this.options.close,
-				position: this.position(),
+				position: this.position().position,
 			};
 			return options;
 		}

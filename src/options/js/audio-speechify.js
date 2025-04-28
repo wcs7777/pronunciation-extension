@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	}
 });
 
-el.save.addEventListener("click", async ({ currentTarget }) => {
+el.save.addEventListener("click", async () => {
 	try {
 		const defaultApi = defaultOptions.audio.sources.speechify.api;
 		/**
@@ -51,7 +51,7 @@ el.save.addEventListener("click", async ({ currentTarget }) => {
 		};
 		await saveOptions(options);
 		await setFieldsValues();
-		showInfo(currentTarget, "Speechify settings saved");
+		showInfo("Speechify settings saved");
 	} catch (error) {
 		console.error(error);
 	}
