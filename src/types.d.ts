@@ -281,7 +281,7 @@ declare global {
 		},
 	};
 
-	type AudioSource = {
+	type PlayerAudioSource = {
 		id: string,
 		title: string,
 		url: string,

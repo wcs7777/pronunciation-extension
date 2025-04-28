@@ -417,6 +417,46 @@
 
 	}
 
+	/**
+	 * @param {Blob} blob
+	 * @returns {Promise<string>}
+	 */
+	async function blob2base64(blob) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.addEventListener("load", onLoad);
+			reader.addEventListener("error", onError);
+			reader.readAsDataURL(blob);
+
+			/**
+			 * @param {ProgressEvent<FileReader>} event
+			 * @returns {void}
+			 */
+			function onLoad(event) {
+				removeListeners();
+				return resolve(event.target.result);
+			}
+
+			/**
+			 * @param {ErrorEvent} error
+			 * @returns {void}
+			 */
+			function onError(error) {
+				removeListeners();
+				return reject(error);
+			}
+
+			/**
+			 * @returns {void}
+			 */
+			function removeListeners() {
+				reader.removeEventListener("load", onLoad);
+				reader.removeEventListener("error", onError);
+			}
+
+		});
+	}
+
 	const host = document.createElement("span");
 	host.dataset.role = "pronunciation-addon-audio-player-host";
 	host.style.display = "inline";
@@ -449,7 +489,7 @@
 	const byId = (id) => shadow.getElementById(id);
 
 	/**
-	 * @type {AudioSource[]}
+	 * @type {PlayerAudioSource[]}
 	 */
 	let sources = [];
 
@@ -475,6 +515,10 @@
 		mainTitle: byId("audio-player-main-title"),
 		showSpeedsButton: byId("audio-player-show-speeds"),
 		speedsList: byId("audio-player-speeds"),
+		download: byId("audio-player-download"),
+		linkDownload: byId("audio-player-link-download"),
+		upload: byId("audio-player-upload"),
+		inputUpload: byId("audio-player-input-upload"),
 		close: byId("audio-player-close"),
 	};
 
@@ -579,6 +623,49 @@
 		}
 	});
 
+	el.download.addEventListener("click", () => {
+		if (!audio.src) {
+			showInfo("There is no current audio");
+			return;
+		}
+		el.linkDownload.href = audio.src;
+		el.linkDownload.download = audio.dataset.currentId;
+		el.linkDownload.click();
+		el.linkDownload.href = "";
+		el.linkDownload.download = "";
+	});
+
+	el.upload.addEventListener("click", () => {
+		el.inputUpload.click();
+	});
+
+	el.inputUpload.addEventListener("change", async () => {
+		const file = el.inputUpload.files?.[0];
+		if (!file) {
+			showInfo("No file was found in input");
+			return;
+		}
+		try {
+			const base64 = await blob2base64(file);
+			const testAudio = new Audio(base64);
+			testAudio.volume = 0;
+			await testAudio.play();
+			testAudio.pause();
+			/**
+			 * @type {PlayerAudioSource}
+			 */
+			const source = {
+				id: file.name,
+				title: file.name,
+				url: testAudio.src,
+			};
+			await addAudioSource(source, { play: true });
+		} catch (error) {
+			showInfo(`Error with the file: ${error}`);
+			console.error(error);
+		}
+	});
+
 	document.addEventListener("keydown", async (e) => {
 		if (!shortcutsEnabled || sources.length === 0) {
 			return;
@@ -667,17 +754,17 @@
 	}
 
 	/**
-	 * @param {AudioSource} source
+	 * @param {PlayerAudioSource} source
 	 * @param {{
 	 *     audio: HTMLAudioElement,
 	 *     mainTitle: HTMLElement,
-	 *     sources: AudioSource[],
+	 *     sources: PlayerAudioSource[],
 	 *     togglePlayButton: HTMLElement,
 	 *     playIcon: HTMLElement,
 	 *     pauseIcon: HTMLElement,
 	 *     play: boolean,
 	 * }}
-	 * @returns {Promise<AudioSource[]>}
+	 * @returns {Promise<PlayerAudioSource[]>}
 	 */
 	async function addAudioSource(source, {
 		audio=el.audio,
@@ -839,7 +926,7 @@
 	 * @param {{
 	 *     audio: HTMLAudioElement,
 	 *     mainTitle: HTMLElement,
-	 *     sources: AudioSource[],
+	 *     sources: PlayerAudioSource[],
 	 * }}
 	 * @returns {Promise<void>}
 	 */
@@ -850,6 +937,7 @@
 	}={}) {
 		const paused = audio.paused;
 		const s = sources[sourceIndex];
+		audio.dataset.currentId = s.id;
 		audio.dataset.currentSource = sourceIndex;
 		audio.src = s.url;
 		audio.load();
@@ -863,7 +951,7 @@
 	 * @param {{
 	 *    audio: HTMLAudioElement,
 	 *    mainTitle: HTMLElement,
-	 *    sources: AudioSource[],
+	 *    sources: PlayerAudioSource[],
 	 * }}
 	 * @returns {Promise<void>}
 	 */
@@ -888,7 +976,7 @@
 	 * @param {{
 	 *    audio: HTMLAudioElement,
 	 *    mainTitle: HTMLElement,
-	 *    sources: AudioSource[],
+	 *    sources: PlayerAudioSource[],
 	 * }}
 	 * @returns {Promise<void>}
 	 */
@@ -1021,6 +1109,24 @@
 			Math.floor(a / b),
 			a % b,
 		];
+	}
+
+	/**
+	 * @param {string} info
+	 * @param {closeTimeout} number
+	 * @returns {void}
+	 */
+	function showInfo(info, closeTimeout=3000) {
+		showPopup({
+			text: info,
+			position: {
+				centerHorizontally: true,
+				top: 200,
+			},
+			close: {
+				timeout: closeTimeout,
+			},
+		});
 	}
 
 	/**
@@ -1330,6 +1436,18 @@ button {
         </div>
         <div class="audio-player-center">
             <div class="audio-player-controls">
+                <button id="audio-player-download" class="audio-player-btn" title="Download audio">
+                    <svg width="16" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 29.978 29.978" xml:space="preserve">
+                        <g>
+                            <path
+                                d="M25.462,19.105v6.848H4.515v-6.848H0.489v8.861c0,1.111,0.9,2.012,2.016,2.012h24.967c1.115,0,2.016-0.9,2.016-2.012 v-8.861H25.462z" />
+                            <path
+                                d="M14.62,18.426l-5.764-6.965c0,0-0.877-0.828,0.074-0.828s3.248,0,3.248,0s0-0.557,0-1.416c0-2.449,0-6.906,0-8.723 c0,0-0.129-0.494,0.615-0.494c0.75,0,4.035,0,4.572,0c0.536,0,0.524,0.416,0.524,0.416c0,1.762,0,6.373,0,8.742 c0,0.768,0,1.266,0,1.266s1.842,0,2.998,0c1.154,0,0.285,0.867,0.285,0.867s-4.904,6.51-5.588,7.193 C15.092,18.979,14.62,18.426,14.62,18.426z" />
+                        </g>
+                    </svg>
+                </button>
+                <a id="audio-player-link-download" class="invisible"></a>
                 <button id="audio-player-rewind" class="audio-player-btn" title="Rewind audio">
                     <svg width="16" version="1.1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 20.465 20.465"
@@ -1414,6 +1532,18 @@ button {
                         <li data-speed="2.0" class="audio-player-speed-option">2x</li>
                     </ul>
                 </div>
+                <button id="audio-player-upload" class="audio-player-btn" title="Upload audio">
+                    <svg width="16" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 374.116 374.116" xml:space="preserve">
+                        <g>
+                            <path
+                                d="M344.058,207.506c-16.568,0-30,13.432-30,30v76.609h-254v-76.609c0-16.568-13.432-30-30-30c-16.568,0-30,13.432-30,30 v106.609c0,16.568,13.432,30,30,30h314c16.568,0,30-13.432,30-30V237.506C374.058,220.938,360.626,207.506,344.058,207.506z" />
+                            <path
+                                d="M123.57,135.915l33.488-33.488v111.775c0,16.568,13.432,30,30,30c16.568,0,30-13.432,30-30V102.426l33.488,33.488 c5.857,5.858,13.535,8.787,21.213,8.787c7.678,0,15.355-2.929,21.213-8.787c11.716-11.716,11.716-30.71,0-42.426L208.271,8.788 c-11.715-11.717-30.711-11.717-42.426,0L81.144,93.489c-11.716,11.716-11.716,30.71,0,42.426 C92.859,147.631,111.855,147.631,123.57,135.915z" />
+                        </g>
+                    </svg>
+                </button>
+                <input id="audio-player-input-upload" class="invisible" type="file" accept="audio/*">
             </div>
             <div class="audio-player-time">
                 <span id="audio-player-current-time">0:00</span>
