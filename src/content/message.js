@@ -2,6 +2,7 @@ import IpaPopup from "../utils/ipa-popup.js";
 import { showPopup } from "../utils/show-popup.js";
 import {
 	addAudioSource,
+	changeSkipSeconds,
 	setAudioControlShortcuts,
 	toggleAudioControlShortcuts,
 	toggleAudioPlayer,
@@ -65,6 +66,7 @@ async function playAudio(message) {
 			forceEnable: options.shortcutsEnabled,
 			forceDisable: !options.shortcutsEnabled,
 		});
+		changeSkipSeconds(options.skipSeconds);
 		if (options.source) {
 			await addAudioSource(options.source, { play: true });
 			await toggleAudioPlayer({

@@ -84,6 +84,7 @@ const defaultOptions = {
 			save: false,
 			playerEnabled: true,
 			shortcutsEnabled: false,
+			skipSeconds: 3,
 			shortcuts: {
 				togglePlayer: "T",
 				togglePlay: "K",

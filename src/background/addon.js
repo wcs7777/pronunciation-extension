@@ -267,6 +267,7 @@ export default class Addon {
 						},
 						playerEnabled: options.text.playerEnabled,
 						shortcutsEnabled: options.text.shortcutsEnabled,
+						skipSeconds: options.text.skipSeconds,
 						shortcuts: options.text.shortcutsEnabled,
 					},
 				};

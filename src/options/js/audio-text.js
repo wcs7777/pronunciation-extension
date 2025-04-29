@@ -1,6 +1,6 @@
 import defaultOptions from "../../utils/default-options.js";
-import { byId, onlyShorcut } from "../../utils/element.js";
-import { getAllOptions, strOr, saveOptions, showInfo } from "./utils.js";
+import { byId, onlyShorcut, onlyNumber } from "../../utils/element.js";
+import { getAllOptions, numOr, strOr, saveOptions, showInfo } from "./utils.js";
 
 /**
  * @type {{
@@ -8,6 +8,7 @@ import { getAllOptions, strOr, saveOptions, showInfo } from "./utils.js";
  *     saveAudio: HTMLInputElement,
  *     playerEnabled: HTMLInputElement,
  *     shortcutsEnabled: HTMLInputElement,
+ *     skipSeconds: HTMLInputElement,
  *     save: HTMLButtonElement,
  *     shortcuts: {
  *         togglePlayer: HTMLInputElement,
@@ -32,6 +33,7 @@ const el = {
 	saveAudio: byId("saveAudio"),
 	playerEnabled: byId("playerEnabled"),
 	shortcutsEnabled: byId("shortcutsEnabled"),
+	skipSeconds: byId("skipSeconds"),
 	save: byId("save"),
 	shortcuts:{
 		togglePlayer: byId("shortcutTogglePlayer"),
@@ -53,6 +55,7 @@ const el = {
 
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
+		onlyNumber(el.skipSeconds, true);
 		[
 			el.shortcuts.togglePlayer,
 			el.shortcuts.togglePlay,
@@ -86,6 +89,7 @@ el.save.addEventListener("click", async () => {
 					save: el.saveAudio.checked,
 					playerEnabled: el.playerEnabled.checked,
 					shortcutsEnabled: el.shortcutsEnabled.checked,
+					skipSeconds: numOr(el.skipSeconds.value, defaultOptions.audio.text.skipSeconds, 0, 300),
 				},
 			},
 		};
@@ -164,6 +168,7 @@ async function setFieldsValues() {
 	el.saveAudio.checked = opt.audio.text.save;
 	el.playerEnabled.checked = opt.audio.text.playerEnabled;
 	el.shortcutsEnabled.checked = opt.audio.text.shortcutsEnabled;
+	el.skipSeconds.value = opt.audio.text.skipSeconds.toString();
 	el.shortcuts.togglePlayer.value = opt.audio.text.shortcuts.togglePlayer;
 	el.shortcuts.togglePlay.value = opt.audio.text.shortcuts.togglePlay;
 	el.shortcuts.toggleMute.value = opt.audio.text.shortcuts.toggleMute;

@@ -524,6 +524,7 @@
 
 	let playerEnabled = false;
 	let shortcutsEnabled = true;
+	let skipSeconds = 3;
 	let action2shortcut = {};
 	let shortcut2action = {};
 	/**
@@ -551,8 +552,8 @@
 		previous: async () => previousAudio(),
 		next: async () => nextAudio(),
 		rewind: async () => rewindAudio(),
-		backward: async () => backwardAudio(2.3),
-		forward: async () => forwardAudio(2),
+		backward: async () => backwardAudio(skipSeconds),
+		forward: async () => forwardAudio(skipSeconds),
 		decreaseVolume: async () => changeAudioVolume(audio.volume - 0.05),
 		increaseVolume: async () => changeAudioVolume(audio.volume + 0.05),
 		decreaseSpeed: async () => changeAudioSpeed(audio.playbackRate - 0.1),
@@ -607,8 +608,8 @@
 	el.togglePlayButton.addEventListener("click", async () => togglePlayAudio());
 	el.toggleMuteButton.addEventListener("click", () => toggleMuteAudio());
 	el.rewind.addEventListener("click", () => rewindAudio());
-	el.backward.addEventListener("click", () => backwardAudio(2.3));
-	el.forward.addEventListener("click", async () => forwardAudio(2));
+	el.backward.addEventListener("click", () => backwardAudio(skipSeconds));
+	el.forward.addEventListener("click", async () => forwardAudio(skipSeconds));
 	el.previous.addEventListener("click", async () => previousAudio());
 	el.next.addEventListener("click", async () => nextAudio());
 
@@ -751,6 +752,14 @@
 			!shortcutsEnabled :
 			forceEnable
 		);
+	}
+
+	/**
+	 * @param {number} seconds
+	 * @returns {void}
+	 */
+	function changeSkipSeconds(seconds) {
+		skipSeconds = seconds;
 	}
 
 	/**
@@ -1471,9 +1480,6 @@ button {
                         <path
                             d="M2.464 4.5h1.473a.75.75 0 0 1 0 1.5H0V2.063a.75.75 0 0 1 1.5 0v1.27a8.25 8.25 0 1 1 10.539 12.554.75.75 0 0 1-.828-1.25A6.75 6.75 0 1 0 2.464 4.5Z">
                         </path>
-                        <path
-                            d="M0,14.981c0.433,-0.344,0.06,-0.66,0.176,-0.946a2.15,2.15,0,0,1,0.517,-0.748c0.216,-0.2,0.474,-0.368,0.77,-0.506c0.315,-0.138,0.647,-0.26,0.99,-0.363c0.388,-0.118,0.737,-0.23,1.045,-0.33c0.315,-0.106,0.58,-0.222,0.792,-0.352c0.22,-0.137,0.39,-0.302,0.506,-0.495c0.125,-0.2,0.187,-0.437,0.187,-0.715c0,-0.228,-0.05,-0.426,-0.154,-0.594a1.02,1.02,0,0,0,-0.44,-0.363c-0.198,-0.087,-0.44,-0.13,-0.726,-0.13c-0.416,0,-0.75,0.11,-1,0.33c-0.243,0.212,-0.38,0.49,-0.407,0.836h-2.266c0.03,-0.548,0.186,-1.02,0.473,-1.419c0.293,-0.406,0.7,-0.726,1.22,-0.957c0.525,-0.237,1.13,-0.357,1.815,-0.357c0.583,0,1.095,0.074,1.54,0.22c0.45,0.14,0.83,0.336,1.144,0.583c0.312,0.247,0.55,0.537,0.715,0.869c0.166,0.326,0.248,0.685,0.248,1.078c0,0.507,-0.12,0.943,-0.363,1.309a2.16,2.16,0,0,1,-0.968,0.814a7.3,7.3,0,0,1,-1.045,0.374c-0.38,0.103,-0.715,0.207,-1.003,0.308c-0.272,0.094,-0.502,0.198,-0.693,0.308c-0.176,0.103,-0.307,0.22,-0.396,0.352c-0.081,0.126,-0.126,0.275,-0.132,0.451h5.074v1.155h-7.619v-0.712z">
-                        </path>
                     </svg>
                 </button>
                 <button id="audio-player-previous" class="audio-player-btn" title="Previous">
@@ -1505,9 +1511,6 @@ button {
                     <svg viewBox="0 0 16 16">
                         <path
                             d="M13.536 4.488h-1.473a.75.75 0 1 0 0 1.5H16V2.051a.75.75 0 0 0-1.5 0v1.27A8.25 8.25 0 1 0 3.962 15.876a.75.75 0 0 0 .826-1.252 6.75 6.75 0 1 1 8.747-10.136Z">
-                        </path>
-                        <path
-                            d="M8.21,14.981c0.433,-0.344,0.06,-0.66,0.176,-0.946a2.15,2.15,0,0,1,0.517,-0.748c0.216,-0.2,0.474,-0.368,0.77,-0.506c0.315,-0.138,0.647,-0.26,0.99,-0.363c0.388,-0.118,0.737,-0.23,1.045,-0.33c0.315,-0.106,0.58,-0.222,0.792,-0.352c0.22,-0.137,0.39,-0.302,0.506,-0.495c0.125,-0.2,0.187,-0.437,0.187,-0.715c0,-0.228,-0.05,-0.426,-0.154,-0.594a1.02,1.02,0,0,0,-0.44,-0.363c-0.198,-0.087,-0.44,-0.13,-0.726,-0.13c-0.416,0,-0.75,0.11,-1,0.33c-0.243,0.212,-0.38,0.49,-0.407,0.836h-2.266c0.03,-0.548,0.186,-1.02,0.473,-1.419c0.293,-0.406,0.7,-0.726,1.22,-0.957c0.525,-0.237,1.13,-0.357,1.815,-0.357c0.583,0,1.095,0.074,1.54,0.22c0.45,0.14,0.83,0.336,1.144,0.583c0.312,0.247,0.55,0.537,0.715,0.869c0.166,0.326,0.248,0.685,0.248,1.078c0,0.507,-0.12,0.943,-0.363,1.309a2.16,2.16,0,0,1,-0.968,0.814a7.3,7.3,0,0,1,-1.045,0.374c-0.38,0.103,-0.715,0.207,-1.003,0.308c-0.272,0.094,-0.502,0.198,-0.693,0.308c-0.176,0.103,-0.307,0.22,-0.396,0.352c-0.081,0.126,-0.126,0.275,-0.132,0.451h5.074v1.155h-7.619v-0.712z">
                         </path>
                     </svg>
                 </button>
@@ -1644,6 +1647,7 @@ button {
 				forceEnable: options.shortcutsEnabled,
 				forceDisable: !options.shortcutsEnabled,
 			});
+			changeSkipSeconds(options.skipSeconds);
 			if (options.source) {
 				await addAudioSource(options.source, { play: true });
 				await toggleAudioPlayer({
