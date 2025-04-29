@@ -1,15 +1,16 @@
+import AudioSource from "./audiosource.js";
 import { fetchAws } from "../utils/aws-sign-v4.js";
-import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
  * @implements {AudioSource}
  */
-export default class ASAmazonPolly {
+export default class ASAmazonPolly extends AudioSource {
 
 	/**
 	 * @param {OptAudioAmazonPolly} options
 	 */
 	constructor(options) {
+		super(options);
 		this.options = options;
 	}
 
@@ -40,38 +41,7 @@ export default class ASAmazonPolly {
 		) {
 			return false;
 		}
-		let enabled = false;
-		if (!toText) {
-			enabled = this.options.enabled;
-		} else {
-			enabled = (
-				this.options.enabledToText &&
-				input.length <= this.options.textMaxLength
-			);
-		}
-		return enabled && !waitRateLimit(lastError, 30, [200, 404]);
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {number}
-	 */
-	order(toText) {
-		return !toText ? this.options.order : this.options.orderToText;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get save() {
-		return this.options.save;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get saveError() {
-		return this.options.saveError;
+		return super.enabled(input, toText, lastError);
 	}
 
 	/**

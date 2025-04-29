@@ -1,14 +1,15 @@
-import { waitRateLimit } from "../utils/pronunciation-source.js";
+import IpaSource from "./ipasource.js";
 
 /**
  * @implements {IpaSource}
  */
-export default class ISAntvaset {
+export default class ISAntvaset extends IpaSource {
 
 	/**
 	 * @param {OptIpaAntvaset} options
 	 */
 	constructor(options) {
+		super(options);
 		this.options = options;
 	}
 
@@ -24,47 +25,6 @@ export default class ISAntvaset {
 	 */
 	get name() {
 		return ISAntvaset.name;
-	}
-
-	/**
-	 * @param {string} input
-	 * @param {boolean} toText
-	 * @param {?PronunciationSourceLastError} lastError
-	 * @returns {boolean}
-	 */
-	enabled(input, toText, lastError) {
-		let enabled = false;
-		if (!toText) {
-			enabled = this.options.enabled;
-		} else {
-			enabled = (
-				this.options.enabledToText &&
-				input.length <= this.options.textMaxLength
-			);
-		}
-		return enabled && !waitRateLimit(lastError, 10, [200, 404]);
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {number}
-	 */
-	order(toText) {
-		return !toText ? this.options.order : this.options.orderToText;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get save() {
-		return this.options.save;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get saveError() {
-		return this.options.saveError;
 	}
 
 	/**

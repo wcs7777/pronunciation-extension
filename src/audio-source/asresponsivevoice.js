@@ -1,15 +1,16 @@
+import AudioSource from "./audiosource.js";
 import { url2blob } from "../utils/fetch.js";
-import { waitRateLimit } from "../utils/pronunciation-source.js";
 
 /**
  * @implements {AudioSource}
  */
-export default class ASResponsiveVoice {
+export default class ASResponsiveVoice extends AudioSource {
 
 	/**
 	 * @param {OptAudioResponsiveVoice} options
 	 */
 	constructor(options) {
+		super(options);
 		this.options = options;
 	 }
 
@@ -34,38 +35,10 @@ export default class ASResponsiveVoice {
 	 * @returns {boolean}
 	 */
 	enabled(input, toText, lastError) {
-		let enabled = false;
-		if (!toText) {
-			enabled = this.options.enabled;
-		} else {
-			enabled = (
-				this.options.enabledToText &&
-				input.length <= this.options.textMaxLength
-			);
+		if (!this.options.api.key) {
+			return false;
 		}
-		return enabled && !waitRateLimit(lastError, 1800, [200, 404]);
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {number}
-	 */
-	order(toText) {
-		return !toText ? this.options.order : this.options.orderToText;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get save() {
-		return this.options.save;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get saveError() {
-		return this.options.saveError;
+		return super.enabled(input, toText, lastError);
 	}
 
 	/**

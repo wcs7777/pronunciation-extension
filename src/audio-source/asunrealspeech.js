@@ -1,14 +1,15 @@
-import { waitRateLimit } from "../utils/pronunciation-source.js";
+import AudioSource from "./audiosource.js";
 
 /**
  * @implements {AudioSource}
  */
-export default class ASUnrealSpeech {
+export default class ASUnrealSpeech extends AudioSource {
 
 	/**
 	 * @param {OptAudioUnrealSpeech} options
 	 */
 	constructor(options) {
+		super(options);
 		this.options = options;
 	}
 
@@ -36,38 +37,7 @@ export default class ASUnrealSpeech {
 		if (!this.options.api.token) {
 			return false;
 		}
-		let enabled = false;
-		if (!toText) {
-			enabled = this.options.enabled;
-		} else {
-			enabled = (
-				this.options.enabledToText &&
-				input.length <= this.options.textMaxLength
-			);
-		}
-		return enabled && !waitRateLimit(lastError, 60 * 2, [200, 404]);
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {number}
-	 */
-	order(toText) {
-		return !toText ? this.options.order : this.options.orderToText;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get save() {
-		return this.options.save;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get saveError() {
-		return this.options.saveError;
+		return super.enabled(input, toText, lastError);
 	}
 
 	/**

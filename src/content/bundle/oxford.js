@@ -181,19 +181,19 @@
 		document.body.appendChild(host);
 		const rect = popup.getBoundingClientRect();
 		if (
-			!options.position.centerHorizontally &&
-			!options.position.centerVertically
+			!opt.position.centerHorizontally &&
+			!opt.position.centerVertically
 		) {
 			const rightMargin = window.innerWidth - rect.right;
 			if (rightMargin <= 0) {
 				popup.style.right = "5px";
 			}
 		} else {
-			if (options.position.centerHorizontally) {
+			if (opt.position.centerHorizontally) {
 				const half = (window.innerWidth - rect.width) / 2;
 				setProperty("--left", `${half}px`);
 			}
-			if (options.position.centerVertically) {
+			if (opt.position.centerVertically) {
 				const half = (window.innerHeight - rect.height) / 2;
 				setProperty("--top", `${half}px`);
 			}

@@ -1,16 +1,17 @@
+import IpaSource from "./ipasource.js";
 import { url2document } from "../utils/fetch.js";
-import { waitRateLimit } from "../utils/pronunciation-source.js";
 import { splitWords } from "../utils/string.js";
 
 /**
  * @implements {IpaSource}
  */
-export default class ISOxford {
+export default class ISOxford extends IpaSource {
 
 	/**
 	 * @param {OptIpaOxford} options
 	 */
 	constructor(options) {
+		super(options);
 		this.options = options;
 	}
 
@@ -26,47 +27,6 @@ export default class ISOxford {
 	 */
 	get name() {
 		return ISOxford.name;
-	}
-
-	/**
-	 * @param {string} input
-	 * @param {boolean} toText
-	 * @param {?PronunciationSourceLastError} lastError
-	 * @returns {boolean}
-	 */
-	enabled(input, toText, lastError) {
-		let enabled = false;
-		if (!toText) {
-			enabled = this.options.enabled;
-		} else {
-			enabled = (
-				this.options.enabledToText &&
-				input.length <= this.options.textMaxLength
-			);
-		}
-		return enabled && !waitRateLimit(lastError, 10, [200, 404]);
-	}
-
-	/**
-	 * @param {boolean} toText
-	 * @returns {number}
-	 */
-	order(toText) {
-		return !toText ? this.options.order : this.options.orderToText;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get save() {
-		return this.options.save;
-	}
-
-	/**
-	 * @returns {boolean}
-	 */
-	get saveError() {
-		return this.options.saveError;
 	}
 
 	/**
