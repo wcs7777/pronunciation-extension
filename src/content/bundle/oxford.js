@@ -701,14 +701,14 @@
 						console.log("Pronunciation shortcut", { ipa });
 						const oldIpa = await ipaTable.getValue(word);
 						await ipaTable.set(word, ipa);
-						showPopup({ text: `${oldIpa} -> ${ipa}` });
+						showInfo(`${oldIpa} -> ${ipa}`);
 					},
 					[options.audioShortcut]: async () => {
 						const word = getWord(lastAudioPlayed);
 						console.log("Pronunciation shortcut", { word });
 						const src = lastAudioPlayed.dataset?.srcOgg;
 						if (!src) {
-							showPopup({ text: `Audio not found for ${word}` });
+							showInfo(`Audio not found for ${word}`);
 							return;
 						}
 						const url = (
@@ -720,7 +720,7 @@
 						const blob = await url2blob(url);
 						const base64 = await blob2base64(blob);
 						await audioTable.set(word, base64);
-						showPopup({ text: `Audio saved for ${word}`});
+						showInfo(`Audio saved for ${word}`);
 					},
 					[options.restoreDefaultIpaShortcut]: async () => {
 						const word = getWord(lastAudioPlayed);
@@ -733,13 +733,9 @@
 						);
 						if (defaultIpa) {
 							await ipaTable.set(word, defaultIpa);
-							showPopup({
-								text: `${currentIpa} -> ${defaultIpa}`,
-							});
+							showInfo(`${currentIpa} -> ${defaultIpa}`);
 						} else {
-							showPopup({
-								text: `There is no default IPA of ${word}`,
-							});
+							showInfo(`There is no default IPA of ${word}`);
 						}
 					},
 				};
@@ -757,6 +753,24 @@
 	function getWord(lastAudioPlayed) {
 		const words = splitWords(lastAudioPlayed.title.trim().toLowerCase());
 		return words[0].toLowerCase();
+	}
+
+	/**
+	 * @param {string} info
+	 * @param {closeTimeout} number
+	 * @returns {void}
+	 */
+	function showInfo(info, closeTimeout=2000) {
+		showPopup({
+			text: info,
+			position: {
+				centerHorizontally: true,
+				top: 200,
+			},
+			close: {
+				timeout: closeTimeout,
+			},
+		});
 	}
 
 	(async () => main())().catch(console.error);
