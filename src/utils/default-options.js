@@ -104,6 +104,7 @@ const defaultOptions = {
 		showSourceLastError: true,
 		volume: 1.0,
 		playbackRate: 1.0,
+		limitLoudness: false,
 		sources: {
 			cambridge: {
 				enabled: true,

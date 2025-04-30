@@ -1,5 +1,6 @@
 import * as as from "../audio-source/sources.js";
 import * as is from "../ipa-source/sources.js";
+import { addLoudnessLimiter } from "../utils/audio.js";
 import { blob2base64 } from "../utils/element.js";
 import { cachedAnalyseWord } from "../utils/analyse-word.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
@@ -82,7 +83,7 @@ export default class Addon {
 		let isText = false;
 		let sourceAudioId = null;
 		let sourceAudioTitle = null;
-		console.log({ input, length: input.length, words });
+		console.log({ input, words });
 		if (words.length === 0) {
 			console.log("No word was found in input");
 			return;
@@ -125,7 +126,7 @@ export default class Addon {
 		} else if (options.allowText) {
 			const text = removeExtraSpaces(input);
 			const key = await generateSha1(text);
-			console.log({ textKey: key });
+			console.log({ textKey: key, textLength: text.length });
 			isText = true;
 			sourceAudioId = key;
 			sourceAudioTitle = text;
@@ -265,6 +266,7 @@ export default class Addon {
 							title: sourceTitle,
 							url: audio.src,
 						},
+						limitLoudness: options.text.limitLoudness,
 						playerEnabled: options.text.playerEnabled,
 						shortcutsEnabled: options.text.shortcutsEnabled,
 						skipSeconds: options.text.skipSeconds,
@@ -279,7 +281,11 @@ export default class Addon {
 				}
 			}
 			if (playInBackground) {
-				await audio.play();
+				if (options.limitLoudness) {
+					await addLoudnessLimiter(audio).play();
+				} else {
+					await audio.play();
+				}
 			}
 		} catch (error) {
 			await this.saveError("playAudio", error);

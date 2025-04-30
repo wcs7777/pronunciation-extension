@@ -126,6 +126,7 @@ declare global {
 		showSourceLastError: boolean,
 		volume: number,
 		playbackRate: number,
+		limitLoudness: boolean,
 		sources: {
 			cambridge: OptAudioCambridge,
 			linguee: OptAudioLinguee,

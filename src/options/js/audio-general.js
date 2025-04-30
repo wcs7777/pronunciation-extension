@@ -8,6 +8,7 @@ import { getAllOptions, numOr, saveOptions, showInfo } from "./utils.js";
  *     showSourceLastError: HTMLInputElement,
  *     volume: HTMLInputElement,
  *     playbackRate: HTMLInputElement,
+ *     limitLoudness: HTMLInputElement,
  *     save: HTMLButtonElement,
  * }}
  */
@@ -16,6 +17,7 @@ const el = {
 	showSourceLastError: byId("showSourceLastError"),
 	volume: byId("volume"),
 	playbackRate: byId("playbackRate"),
+	limitLoudness: byId("limitLoudness"),
 	save: byId("save"),
 };
 
@@ -42,6 +44,7 @@ el.save.addEventListener("click", async () => {
 				showSourceLastError: el.showSourceLastError.checked,
 				volume: numOr(el.volume.value, defaultOptions.audio.volume, 0, 1),
 				playbackRate: numOr(el.playbackRate.value, defaultOptions.audio.playbackRate, 0.2, 2),
+				limitLoudness: el.limitLoudness.checked,
 			},
 		};
 		await saveOptions(options);
@@ -64,4 +67,5 @@ async function setFieldsValues() {
 	el.showSourceLastError.checked = opt.audio.showSourceLastError;
 	el.volume.value = opt.audio.volume.toString();
 	el.playbackRate.value = opt.audio.playbackRate.toString();
+	el.limitLoudness.checked = opt.audio.limitLoudness;
 }
