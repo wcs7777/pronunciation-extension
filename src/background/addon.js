@@ -430,24 +430,24 @@ export default class Addon {
 			 .map(S => new S(options.sources[S.name]))
 			.filter(s => s.enabled(input, toText, le(s.name)))
 			.sort((l, r) => l.order(toText) - r.order(toText));
-		for (const f of sources) {
-			console.log(`Searching IPA in ${f.name}`);
+		for (const s of sources) {
+			console.log(`Searching IPA in ${s.name}`);
 			try {
-				const ipa = await f.fetch(input, analysis);
+				const ipa = await s.fetch(input, analysis);
 				if (ipa) {
-					return { ipa, save: f.save };
+					return { ipa, save: s.save };
 				}
 			} catch (error) {
 				console.log({ error });
-				if (f.saveError) {
-					await this.saveError(`${f.name}: ${input}`, error);
+				if (s.saveError) {
+					await this.saveError(`${s.name}: ${input}`, error);
 				}
 				if (error?.status && error.status !== 404) {
 					/**
 					 * @type {PronunciationSourceLastError}
 					 */
 					const lastError = {
-						source: f.name,
+						source: s.name,
 						datetime,
 						status: error.status,
 						timestamp,
@@ -455,7 +455,7 @@ export default class Addon {
 						messageContentType: error.messageContentType,
 						error: removeMethods(error?.error ?? {}),
 					};
-					await this.sourceLastErrorTable.set(f.name, lastError);
+					await this.sourceLastErrorTable.set(s.name, lastError);
 					if (options.showSourceLastError) {
 						await this.showInfo({
 							info: `${lastError.source}: ${lastError.status}`,
@@ -641,23 +641,23 @@ export default class Addon {
 			.map(S => new S(options.sources[S.name]))
 			.filter(s => s.enabled(input, toText, le(s.name)))
 			.sort((l, r) => l.order(toText) - r.order(toText));
-		for (const f of sources) {
-			console.log(`Searching audio in ${f.name}`);
+		for (const s of sources) {
+			console.log(`Searching audio in ${s.name}`);
 			try {
-				const blob = await f.fetch(input, analysis);
+				const blob = await s.fetch(input, analysis);
 				if (blob) {
-					return { blob, save: f.save };
+					return { blob, save: s.save };
 				}
 			} catch (error) {
-				if (f.saveError) {
-					await this.saveError(`${f.name}: ${input}`, error);
+				if (s.saveError) {
+					await this.saveError(`${s.name}: ${input}`, error);
 				}
 				if (error?.status && error.status !== 404) {
 					/**
 					 * @type {PronunciationSourceLastError}
 					 */
 					const lastError = {
-						source: f.name,
+						source: s.name,
 						datetime,
 						status: error.status,
 						timestamp,
@@ -665,7 +665,7 @@ export default class Addon {
 						messageContentType: error.messageContentType,
 						error: removeMethods(error?.error ?? {}),
 					};
-					await this.sourceLastErrorTable.set(f.name, lastError);
+					await this.sourceLastErrorTable.set(s.name, lastError);
 					if (options.showSourceLastError) {
 						await this.showInfo({
 							info: `${lastError.source}: ${lastError.status}`,
