@@ -1,5 +1,5 @@
-import defaultOptions from "./default-options.js";
 import { blob2base64 } from "./element.js";
+import { optionsTable } from "./storage-tables.js";
 import { showPopup } from "./show-popup.js";
 
 const host = document.createElement("span");
@@ -67,12 +67,11 @@ const el = {
 	close: byId("audio-player-close"),
 };
 
-const defaultShortcuts = defaultOptions.audio.text.shortcuts;
 const opt = {
 	playerEnabled: true,
 	shortcutsEnabled: true,
 	skipSeconds: 3,
-	shortcuts: { ...defaultShortcuts },
+	shortcuts: {},
 	action2shortcut: {},
 	shortcut2action: {},
 };
@@ -93,7 +92,16 @@ const action2function = {
 	resetSpeed: async () => changeAudioSpeed(1),
 };
 
-setAudioControlShortcuts(defaultShortcuts);
+(async () => {
+	/**
+	 * @type {OptionsAudio}
+	 */
+	const audioOpt = await optionsTable.getValue("audio");
+	opt.playerEnabled = audioOpt.text.playerEnabled;
+	opt.shortcutsEnabled = audioOpt.text.shortcutsEnabled;
+	opt.skipSeconds = audioOpt.text.skipSeconds;
+	setAudioControlShortcuts(audioOpt.text.shortcuts);
+})().catch(console.error);
 
 el.currentTime.textContent = formatSeconds(0);
 el.totalTime.textContent = formatSeconds(0);
@@ -403,7 +411,7 @@ export async function removeAudioSource(id, {
  */
 export function setAudioControlShortcuts(shortcuts={}) {
 	opt.action2shortcut = Object
-		.entries({ ...defaultShortcuts, ...shortcuts })
+		.entries(shortcuts)
 		.reduce((obj, [key, value]) => {
 			obj[key] = value.trim().toUpperCase();
 			return obj;

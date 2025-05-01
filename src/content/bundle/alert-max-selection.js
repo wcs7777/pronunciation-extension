@@ -2,11 +2,144 @@
 	'use strict';
 
 	/**
-	 * @type {Options}
+	 * @implements {Table}
 	 */
-	const defaultOptions = {
-		alertMaxSelectionEnabled: false,
-		alertMaxSelectionLength: 1800};
+	class TableByKeyPrefix {
+
+		/**
+		 * @param {browser.storage.StorageArea} storage
+		 * @param {string} parentkey
+		 */
+		constructor(storage, parentkey) {
+			this.storage = storage;
+			this.parentKey = parentkey;
+		}
+
+		get name() {
+			return this.parentKey;
+		}
+
+		/**
+		  * @param {string} key
+		  * @param {any} key
+		  * @returns {Promise<void>}
+		  */
+		async set(key, value) {
+			const results = await this.getAll();
+			results[key] = value;
+			return this.storage.set({ [this.parentKey]: results });
+		}
+
+		/**
+		  * @param {{ [key: string]: any }} values
+		  * @returns {Promise<void>}
+		  */
+		async setMany(values) {
+			const results = await this.getAll();
+			return this.storage.set({
+				[this.parentKey]: {...results, ...values },
+			});
+		}
+
+		/**
+		  * @param {string | string[] | null} keys
+		  * @returns {Promise<{ [key: string]: any }>}
+		  */
+		async get(keys) {
+			const results = await this.getAll();
+			if (keys !== null && keys !== undefined) {
+				const keysArray = Array.isArray(keys) ? keys : [keys];
+				return keysArray.reduce((filtered, key) => {
+					if (key in results) {
+						filtered[key] = results[key];
+					}
+					return filtered;
+				}, {});
+		 	} else {
+				return results;
+			}
+		}
+
+		/**
+		  * @param {string} key
+		  * @returns {Promise<any>}
+		  */
+		async getValue(key) {
+			const result = await this.get(key);
+			return result[key];
+		}
+
+		/**
+		  * @param {string | string[] | null} keys
+		  * @returns {Promise<any[]>}
+		  */
+		async getValues(keys) {
+			return Object.values(await this.get(keys));
+		}
+
+		/**
+		  * @returns {Promise<{ [key: string]: any }>}
+		  */
+		async getAll() {
+			const results = await this.storage.get(this.parentKey);
+			return this.parentKey in results ? results[this.parentKey] : {};
+		}
+
+		/**
+		  * @returns {Promise<string[]>}
+		  */
+		async getKeys() {
+			return Object.keys(await this.getAll());
+		}
+
+		/**
+		  * @returns {Promise<number>}
+		  */
+		async size() {
+			const keys = await this.getKeys();
+			return keys.length;
+		}
+
+		/**
+		  * @param {string | string[]} keys
+		  * @returns {Promise<void>}
+		  */
+		async remove(keys) {
+			const results = await this.getAll();
+			const keysArray = Array.isArray(keys) ? keys : [keys];
+			const values = Object.entries(results)
+				.reduce((filtered, [key, value]) => {
+					if (!keysArray.includes(key)) {
+						filtered[key] = value;
+					}
+					return filtered;
+				}, {});
+			return this.storage.set({ [this.parentKey]: values });
+		}
+
+		/**
+		  * @returns {Promise<void>}
+		  */
+		async clear() {
+			return this.storage.remove(this.parentKey);
+		}
+
+	}
+
+	const addonStorage = browser.storage.local;
+	const optionsTable = new TableByKeyPrefix(addonStorage, "options");
+
+	/*
+	a
+	control
+	defaultIpa
+	defaultOptions
+	errorsTable
+	i
+	options
+	sourceLastError
+	ta
+	*/
 
 	/**
 	 * @param {any} target
@@ -76,9 +209,11 @@
 
 	/**
 	 * @param {OptionsPopup} options
-	 * @returns {void}
+	 * @param {() => string} textFn
+	 * @param {() => boolean} closeConditionFn
+	 * @returns {HTMLElement} popup host
 	 */
-	function showPopup(options) {
+	function showPopup(options, textFn=null, closeConditionFn=null) {
 
 		/**
 		 * @type {OptionsPopup}
@@ -104,7 +239,8 @@
 		 */
 		const byRole = (role) => shadow.querySelector(`[data-role="${role}"]`);
 
-		byRole("text").textContent = opt.text;
+		const textElement = byRole("text");
+		textElement.textContent = opt.text;
 		console.log({ pronuciationPopupText: opt.text });
 
 		const popup = byRole("popup");
@@ -162,6 +298,21 @@
 		popup.style.visibility = "visible";
 
 		const timeoutId = setTimeout(closePopup, opt.close.timeout);
+		let intervalId = null;
+
+		if (textFn || closeConditionFn) {
+			intervalId = setInterval(() => {
+				if (textFn) {
+					textElement.textContent = textFn();
+				}
+				if (closeConditionFn) {
+					if (closeConditionFn()) {
+						closePopup();
+					}
+				}
+			}, 300);
+		}
+
 		popup.addEventListener("mousedown", disableTimeout);
 		close.addEventListener("click", closePopup);
 		document.addEventListener("keydown", onKeyDown);
@@ -186,6 +337,9 @@
 
 		function disableTimeout() {
 			clearTimeout(timeoutId);
+			if (intervalId) {
+				clearInterval(intervalId);
+			}
 			popup.removeEventListener("mousedown", disableTimeout);
 			document.removeEventListener("scroll", onScroll);
 		}
@@ -197,6 +351,7 @@
 			host.remove();
 		}
 
+		return host;
 	}
 
 	/**
@@ -283,10 +438,10 @@
 	}
 
 	const opt = {
-		enabled: defaultOptions.alertMaxSelectionEnabled,
-		maxLength: defaultOptions.alertMaxSelectionLength,
+		enabled: false,
+		maxLength: 10000000000,
 	};
-	let alertSent = false;
+	let alertPopupHost = null;
 
 	if (!browser.runtime.onMessage.hasListener(onMessage)) {
 		browser.runtime.onMessage.addListener(onMessage);
@@ -302,7 +457,16 @@
 		}
 	}
 
-	changeOptions(opt);
+	(async () => {
+		/**
+		 * @type {Options}
+		 */
+		const options = await optionsTable.getAll();
+		changeOptions({
+			enabled: options.alertMaxSelectionEnabled,
+			maxLength: options.alertMaxSelectionLength,
+		});
+	})().catch(console.error);
 
 	/**
 	 * @returns {void}
@@ -318,20 +482,26 @@
 	 * @returns {void}
 	 */
 	function alertMaxSelection(maxLength) {
-		if (selectedLength() < opt.maxLength) {
-			alertSent = false;
-		} else if (!alertSent) {
-			alertSent = true;
-			showPopup({
-				text: `${selectedLength()}/${maxLength} characters selected`,
+		if (
+			selectedLength() >= maxLength &&
+			(!alertPopupHost || !document.body.contains(alertPopupHost))
+		) {
+			const textFn = () => {
+				return `${selectedLength()}/${maxLength} characters selected`;
+			};
+			const closeConditionFn = () => {
+				return selectedLength() < maxLength;
+			};
+			alertPopupHost = showPopup({
+				text: textFn(),
 				close: {
-					timeout: 3000,
+					timeout: 600000,
 				},
 				position: {
 					centerHorizontally: true,
 					top: 100,
 				},
-			});
+			}, textFn, closeConditionFn);
 		}
 	}
 

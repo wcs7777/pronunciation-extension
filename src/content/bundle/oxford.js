@@ -130,9 +130,11 @@
 
 	/**
 	 * @param {OptionsPopup} options
-	 * @returns {void}
+	 * @param {() => string} textFn
+	 * @param {() => boolean} closeConditionFn
+	 * @returns {HTMLElement} popup host
 	 */
-	function showPopup(options) {
+	function showPopup(options, textFn=null, closeConditionFn=null) {
 
 		/**
 		 * @type {OptionsPopup}
@@ -158,7 +160,8 @@
 		 */
 		const byRole = (role) => shadow.querySelector(`[data-role="${role}"]`);
 
-		byRole("text").textContent = opt.text;
+		const textElement = byRole("text");
+		textElement.textContent = opt.text;
 		console.log({ pronuciationPopupText: opt.text });
 
 		const popup = byRole("popup");
@@ -216,6 +219,21 @@
 		popup.style.visibility = "visible";
 
 		const timeoutId = setTimeout(closePopup, opt.close.timeout);
+		let intervalId = null;
+
+		if (textFn || closeConditionFn) {
+			intervalId = setInterval(() => {
+				if (textFn) {
+					textElement.textContent = textFn();
+				}
+				if (closeConditionFn) {
+					if (closeConditionFn()) {
+						closePopup();
+					}
+				}
+			}, 300);
+		}
+
 		popup.addEventListener("mousedown", disableTimeout);
 		close.addEventListener("click", closePopup);
 		document.addEventListener("keydown", onKeyDown);
@@ -240,6 +258,9 @@
 
 		function disableTimeout() {
 			clearTimeout(timeoutId);
+			if (intervalId) {
+				clearInterval(intervalId);
+			}
 			popup.removeEventListener("mousedown", disableTimeout);
 			document.removeEventListener("scroll", onScroll);
 		}
@@ -251,6 +272,7 @@
 			host.remove();
 		}
 
+		return host;
 	}
 
 	/**

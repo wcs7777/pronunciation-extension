@@ -1,11 +1,11 @@
-import defaultOptions from "../utils/default-options.js";
+import { optionsTable } from "../utils/storage-tables.js";
 import { showPopup } from "../utils/show-popup.js";
 
 const opt = {
-	enabled: defaultOptions.alertMaxSelectionEnabled,
-	maxLength: defaultOptions.alertMaxSelectionLength,
+	enabled: false,
+	maxLength: 10000000000,
 };
-let alertSent = false;
+let alertPopupHost = null;
 
 if (!browser.runtime.onMessage.hasListener(onMessage)) {
 	browser.runtime.onMessage.addListener(onMessage);
@@ -21,7 +21,16 @@ async function onMessage(message) {
 	}
 }
 
-changeOptions(opt);
+(async () => {
+	/**
+	 * @type {Options}
+	 */
+	const options = await optionsTable.getAll();
+	changeOptions({
+		enabled: options.alertMaxSelectionEnabled,
+		maxLength: options.alertMaxSelectionLength,
+	});
+})().catch(console.error);
 
 /**
  * @returns {void}
@@ -37,20 +46,26 @@ function onSelectionChange() {
  * @returns {void}
  */
 function alertMaxSelection(maxLength) {
-	if (selectedLength() < opt.maxLength) {
-		alertSent = false;
-	} else if (!alertSent) {
-		alertSent = true;
-		showPopup({
-			text: `${selectedLength()}/${maxLength} characters selected`,
+	if (
+		selectedLength() >= maxLength &&
+		(!alertPopupHost || !document.body.contains(alertPopupHost))
+	) {
+		const textFn = () => {
+			return `${selectedLength()}/${maxLength} characters selected`;
+		};
+		const closeConditionFn = () => {
+			return selectedLength() < maxLength;
+		}
+		alertPopupHost = showPopup({
+			text: textFn(),
 			close: {
-				timeout: 3000,
+				timeout: 600000,
 			},
 			position: {
 				centerHorizontally: true,
 				top: 100,
 			},
-		});
+		}, textFn, closeConditionFn);
 	}
 }
 
