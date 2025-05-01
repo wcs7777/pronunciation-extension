@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			el.shortcuts.increaseSpeed,
 			el.shortcuts.resetSpeed,
 		].forEach(e => onlyShorcut(e, true));
-		await setFieldsValues();
+		await setFieldsValues(false);
 	} catch (error) {
 		console.error(error);
 	}
@@ -157,29 +157,51 @@ el.shortcuts.save.addEventListener("click", async () => {
 });
 
 /**
+ * @param {boolean} shouldSendMessage
  * @returns {Promise<void>}
  */
-async function setFieldsValues() {
+async function setFieldsValues(shouldSendMessage=true) {
 	/**
 	 * @type {Options}
 	 */
-	const opt = await getAllOptions();
-	el.enabled.checked = opt.audio.text.enabled;
-	el.saveAudio.checked = opt.audio.text.save;
-	el.playerEnabled.checked = opt.audio.text.playerEnabled;
-	el.shortcutsEnabled.checked = opt.audio.text.shortcutsEnabled;
-	el.skipSeconds.value = opt.audio.text.skipSeconds.toString();
-	el.shortcuts.togglePlayer.value = opt.audio.text.shortcuts.togglePlayer;
-	el.shortcuts.togglePlay.value = opt.audio.text.shortcuts.togglePlay;
-	el.shortcuts.toggleMute.value = opt.audio.text.shortcuts.toggleMute;
-	el.shortcuts.rewind.value = opt.audio.text.shortcuts.rewind;
-	el.shortcuts.previous.value = opt.audio.text.shortcuts.previous;
-	el.shortcuts.next.value = opt.audio.text.shortcuts.next;
-	el.shortcuts.backward.value = opt.audio.text.shortcuts.backward;
-	el.shortcuts.forward.value = opt.audio.text.shortcuts.forward;
-	el.shortcuts.decreaseVolume.value = opt.audio.text.shortcuts.decreaseVolume;
-	el.shortcuts.increaseVolume.value = opt.audio.text.shortcuts.increaseVolume;
-	el.shortcuts.decreaseSpeed.value = opt.audio.text.shortcuts.decreaseSpeed;
-	el.shortcuts.increaseSpeed.value = opt.audio.text.shortcuts.increaseSpeed;
-	el.shortcuts.resetSpeed.value = opt.audio.text.shortcuts.resetSpeed;
+	const allOptions = await getAllOptions();
+	const opt = allOptions.audio.text;
+	el.enabled.checked = opt.enabled;
+	el.saveAudio.checked = opt.save;
+	el.playerEnabled.checked = opt.playerEnabled;
+	el.shortcutsEnabled.checked = opt.shortcutsEnabled;
+	el.skipSeconds.value = opt.skipSeconds.toString();
+	el.shortcuts.togglePlayer.value = opt.shortcuts.togglePlayer;
+	el.shortcuts.togglePlay.value = opt.shortcuts.togglePlay;
+	el.shortcuts.toggleMute.value = opt.shortcuts.toggleMute;
+	el.shortcuts.rewind.value = opt.shortcuts.rewind;
+	el.shortcuts.previous.value = opt.shortcuts.previous;
+	el.shortcuts.next.value = opt.shortcuts.next;
+	el.shortcuts.backward.value = opt.shortcuts.backward;
+	el.shortcuts.forward.value = opt.shortcuts.forward;
+	el.shortcuts.decreaseVolume.value = opt.shortcuts.decreaseVolume;
+	el.shortcuts.increaseVolume.value = opt.shortcuts.increaseVolume;
+	el.shortcuts.decreaseSpeed.value = opt.shortcuts.decreaseSpeed;
+	el.shortcuts.increaseSpeed.value = opt.shortcuts.increaseSpeed;
+	el.shortcuts.resetSpeed.value = opt.shortcuts.resetSpeed;
+	if (shouldSendMessage) {
+		/**
+		 * @type {BackgroundMessage}
+		 */
+		const message = {
+			type: "playAudio",
+			origin: "other",
+			playAudio: {
+				limitLoudness: allOptions.audio.limitLoudness,
+				playerEnabled: opt.playerEnabled,
+				shortcutsEnabled: opt.shortcutsEnabled,
+				skipSeconds: opt.skipSeconds,
+				shortcuts: opt.shortcuts,
+			},
+		};
+		const tabs = await browser.tabs.query({});
+		await Promise.allSettled(
+			tabs.map(t => browser.tabs.sendMessage(t.id, message)),
+		);
+	}
 }

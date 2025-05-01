@@ -433,6 +433,29 @@
 	}
 
 	/**
+	 * @type {Options}
+	 */
+	const defaultOptions = {
+		audio: {
+			text: {
+				shortcuts: {
+					togglePlayer: "T",
+					togglePlay: "K",
+					toggleMute: "M",
+					rewind: "HOME",
+					previous: "P",
+					next: "N",
+					backward: "ARROWLEFT",
+					forward: "ARROWRIGHT",
+					decreaseVolume: "I",
+					increaseVolume: "O",
+					decreaseSpeed: "<",
+					increaseSpeed: ">",
+					resetSpeed: ";",
+				},
+			}}};
+
+	/**
 	 * @param {Blob} blob
 	 * @returns {Promise<string>}
 	 */
@@ -537,29 +560,16 @@
 		close: byId("audio-player-close"),
 	};
 
-	let playerEnabled = false;
-	let shortcutsEnabled = true;
-	let skipSeconds = 3;
-	let action2shortcut = {};
-	let shortcut2action = {};
-	/**
-	 * @type {OptAudioShortcuts}
-	 */
-	let defaultShortcuts = {
-		togglePlayer: "t",
-		togglePlay: "k",
-		toggleMute: "m",
-		previous: "p",
-		next: "n",
-		rewind: "Home",
-		backward: "ArrowLeft",
-		forward: "ArrowRight",
-		decreaseVolume: "i",
-		increaseVolume: "o",
-		decreaseSpeed: "<",
-		increaseSpeed: ">",
-		resetSpeed: ";",
+	const defaultShortcuts = defaultOptions.audio.text.shortcuts;
+	const opt = {
+		playerEnabled: true,
+		shortcutsEnabled: true,
+		skipSeconds: 3,
+		shortcuts: { ...defaultShortcuts },
+		action2shortcut: {},
+		shortcut2action: {},
 	};
+
 	const action2function = {
 		togglePlayer: async () => toggleAudioPlayer(),
 		togglePlay: async () => togglePlayAudio(),
@@ -567,8 +577,8 @@
 		previous: async () => previousAudio(),
 		next: async () => nextAudio(),
 		rewind: async () => rewindAudio(),
-		backward: async () => backwardAudio(skipSeconds),
-		forward: async () => forwardAudio(skipSeconds),
+		backward: async () => backwardAudio(opt.skipSeconds),
+		forward: async () => forwardAudio(opt.skipSeconds),
 		decreaseVolume: async () => changeAudioVolume(audio.volume - 0.05),
 		increaseVolume: async () => changeAudioVolume(audio.volume + 0.05),
 		decreaseSpeed: async () => changeAudioSpeed(audio.playbackRate - 0.1),
@@ -623,8 +633,12 @@
 	el.togglePlayButton.addEventListener("click", async () => togglePlayAudio());
 	el.toggleMuteButton.addEventListener("click", () => toggleMuteAudio());
 	el.rewind.addEventListener("click", () => rewindAudio());
-	el.backward.addEventListener("click", () => backwardAudio(skipSeconds));
-	el.forward.addEventListener("click", async () => forwardAudio(skipSeconds));
+	el.backward.addEventListener("click", () => {
+		backwardAudio(opt.skipSeconds);
+	});
+	el.forward.addEventListener("click", async () => {
+		forwardAudio(opt.skipSeconds);
+	});
 	el.previous.addEventListener("click", async () => previousAudio());
 	el.next.addEventListener("click", async () => nextAudio());
 
@@ -683,18 +697,18 @@
 	});
 
 	document.addEventListener("keydown", async (e) => {
-		if (!shortcutsEnabled || sources.length === 0) {
+		if (!opt.shortcutsEnabled || sources.length === 0) {
 			return;
 		}
 		const key = e.key.toUpperCase();
 		if (
-			!(key in shortcut2action) ||
+			!(key in opt.shortcut2action) ||
 			[e.altKey, e.ctrlKey, e.metaKey].some(v => v)
 		) {
 			return;
 		}
 		e.preventDefault();
-		const action = shortcut2action[key];
+		const action = opt.shortcut2action[key];
 		try {
 			await action2function[action]();
 		} catch (error) {
@@ -731,7 +745,7 @@
 	}={}) {
 		const enable = (
 			!forceEnable && !forceDisable ?
-			!playerEnabled :
+			!opt.playerEnabled :
 			forceEnable
 		);
 		if (enable) {
@@ -748,7 +762,7 @@
 			}
 			player.classList.add("invisible");
 		}
-		playerEnabled = enable;
+		opt.playerEnabled = enable;
 	}
 
 	/**
@@ -762,9 +776,9 @@
 		forceEnable=false,
 		forceDisable=false,
 	}={}) {
-		shortcutsEnabled = (
+		opt.shortcutsEnabled = (
 			!forceEnable && !forceDisable ?
-			!shortcutsEnabled :
+			!opt.shortcutsEnabled :
 			forceEnable
 		);
 	}
@@ -774,7 +788,7 @@
 	 * @returns {void}
 	 */
 	function changeSkipSeconds(seconds) {
-		skipSeconds = seconds;
+		opt.skipSeconds = seconds;
 	}
 
 	/**
@@ -824,14 +838,14 @@
 	 * @returns {void}
 	 */
 	function setAudioControlShortcuts(shortcuts={}) {
-		action2shortcut = Object
+		opt.action2shortcut = Object
 			.entries({ ...defaultShortcuts, ...shortcuts })
 			.reduce((obj, [key, value]) => {
 				obj[key] = value.trim().toUpperCase();
 				return obj;
 			}, {});
-		shortcut2action = Object
-			.entries(action2shortcut)
+		opt.shortcut2action = Object
+			.entries(opt.action2shortcut)
 			.reduce((obj, [key, value]) => {
 				obj[value] = key;
 				return obj;
@@ -1081,7 +1095,7 @@
 			if (validAudioDuration(audio)) {
 				audio.dataset.validDuration = audio.duration;
 			} else {
-				console.log("pron addon: audio duration from AudioContext");
+				console.log({ pronAddon: "audio duration from AudioContext" });
 				const response = await fetch(audio.src);
 				if (response.status !== 200) {
 					throw new Error(`Status: ${response.status}`);
