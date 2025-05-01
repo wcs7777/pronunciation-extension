@@ -881,7 +881,7 @@ export default class Addon {
 			if (major < 3) { // break change
 				await migrateToV3();
 			}
-			if (major === 3 && minor == 2 && bug === 0) {
+			if (major === 3 && minor < 2) {
 				await migrateToV3_2_0();
 			}
 		}
