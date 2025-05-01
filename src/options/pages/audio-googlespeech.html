@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How2Say Settings</title>
+	<link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+	<input id="mainPage" type="hidden" value="./audio-general.html">
+	<input id="subPage" type="hidden" value="./audio-googlespeech.html">
+	<div class="container">
+		<header class="header"></header>
+		<main>
+
+			<div class="settings-section">
+
+				<h2>Google Speech</h2>
+
+				<div class="checkbox-group">
+					<input type="checkbox" id="saveAudio" checked>
+					<label for="saveAudio">Save audio</label>
+				</div>
+
+				<div class="center">
+					<button class="btn btn-primary" id="save">Save</button>
+				</div>
+
+			</div>
+
+		</main>
+	</div>
+    <script type="module" src="../js/create-nav.js"></script>
+    <script type="module" src="../js/audio-googlespeech.js"></script>
+</body>
+</html>

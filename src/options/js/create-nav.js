@@ -61,6 +61,9 @@ export function createNav(mainPage, subPage=null) {
 				"./audio-sources-order-to-text.html": {
 					label: "Sources Order to Text",
 				},
+				"./audio-googlespeech.html": {
+					label: "Google Speech",
+				},
 				"./audio-responsivevoice.html": {
 					label: "ResponsiveVoice",
 				},
