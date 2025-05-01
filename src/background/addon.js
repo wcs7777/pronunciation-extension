@@ -5,7 +5,7 @@ import { blob2base64 } from "../utils/element.js";
 import { cachedAnalyseWord } from "../utils/analyse-word.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
 import { goString } from "../utils/promise.js";
-import { migrateToV3 } from "./migrations.js";
+import { migrateToV3, migrateToV3_2_0 } from "./migrations.js";
 import { threshold } from "../utils/number.js";
 import {
 	generateSha1,
@@ -874,9 +874,15 @@ export default class Addon {
 			await browser.storage.local.clear();
 		}
 		if (details.reason === "update") {
-			const previousVersion = parseInt(details.previousVersion);
-			if (previousVersion < 3) { // break change
+			const [major, minor, bug] = details
+				.previousVersion
+				.split(".")
+				.map(parseInt);
+			if (major < 3) { // break change
 				await migrateToV3();
+			}
+			if (major === 3 && minor == 2 && bug === 0) {
+				await migrateToV3_2_0();
 			}
 		}
 		await this.initialSetup();

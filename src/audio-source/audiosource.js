@@ -28,7 +28,7 @@ export default class AudioSource {
 		const shouldWait = waitRateLimit(
 			lastError,
 			this.options.waitRateLimitTimeout,
-			this.options.waitStatuses,
+			this.options.okStatus,
 		);
 		return enabled && !shouldWait;
 	}

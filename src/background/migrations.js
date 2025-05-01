@@ -1,3 +1,23 @@
+export async function migrateToV3_2_0() {
+	console.log("migrating options to v3.2.0");
+	const result = await browser.storage.local.get("options");
+	if (!("options" in result)) {
+		console.log("options not in storage");
+		return;
+	}
+	/**
+	* @type {Options}
+	*/
+	const options = result["options"];
+	for (const source of Object.keys(options.ipa.sources)) {
+		delete options.ipa.sources[source]["waitStatuses"];
+	}
+	for (const source of Object.keys(options.audio.sources)) {
+		delete options.audio.sources[source]["waitStatuses"];
+	}
+	await browser.storage.local.set({ options });
+}
+
 export async function migrateToV3() {
 	console.log("migrating options to v3");
 	const result = await browser.storage.local.get("options");

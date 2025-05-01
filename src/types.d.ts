@@ -20,7 +20,7 @@ declare global {
 		saveError: boolean,
 		textMaxLength: number,
 		waitRateLimitTimeout: number,
-		waitStatuses: number[],
+		okStatus: number[],
 	};
 
 	type IpaSource = PronunciationSource & {

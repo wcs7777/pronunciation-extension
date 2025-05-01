@@ -12,10 +12,13 @@ export function deepMerge(target, source, prioritizeTargetObj=false) {
 	const tgtIsObj = !tgtIsArr && tgt instanceof Object;
 	const srcIsObj = !srcIsArr && src instanceof Object;
 	if (tgtIsArr && srcIsArr) {
-		return [
-			...tgt,
-			...src,
-		];
+		const mergedArr = prioritizeTargetObj ? [...tgt] : [...src];
+		for (const item of prioritizeTargetObj ? src : tgt) {
+			if (!mergedArr.includes(item)) {
+				mergedArr.push(item);
+			}
+		}
+		return mergedArr;
 	}
 	if (tgtIsObj && srcIsObj) {
 		for (const key in src) {

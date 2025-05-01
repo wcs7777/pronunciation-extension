@@ -40,7 +40,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 0,
 				waitRateLimitTimeout: 10,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 			},
 			oxford: {
 				enabled: true,
@@ -51,7 +51,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 0,
 				waitRateLimitTimeout: 10,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 			},
 			antvaset: {
 				enabled: true,
@@ -62,7 +62,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 0,
 				waitRateLimitTimeout: 10,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 			},
 			unalengua: {
 				enabled: true,
@@ -73,7 +73,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 1500,
 				waitRateLimitTimeout: 10,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 			},
 		},
 	},
@@ -115,7 +115,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 0,
 				waitRateLimitTimeout: 10,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 			},
 			linguee: {
 				enabled: true,
@@ -126,7 +126,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 0,
 				waitRateLimitTimeout: 30,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 			},
 			oxford: {
 				enabled: true,
@@ -137,7 +137,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 0,
 				waitRateLimitTimeout: 10,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 			},
 			gstatic: {
 				enabled: true,
@@ -148,7 +148,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 0,
 				waitRateLimitTimeout: 0,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 			},
 			googleSpeech: {
 				enabled: true,
@@ -159,7 +159,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 50000,
 				waitRateLimitTimeout: 5,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 			},
 			responsiveVoice: {
 				enabled: true,
@@ -170,7 +170,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 2000,
 				waitRateLimitTimeout: 40,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 				api: {
 					name: "rjs",
 					key: "O8Ic880z",
@@ -186,7 +186,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 3000, // stream=1000, speech=3000
 				waitRateLimitTimeout: 70,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 				api: {
 					token: null,
 					voiceId: "Scarlett",
@@ -205,7 +205,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 2000, // speech=2000
 				waitRateLimitTimeout: 70,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 				api: {
 					token: null,
 					voiceId: "henry",
@@ -220,7 +220,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 2000,
 				waitRateLimitTimeout: 70,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 				api: {
 					userId: null,
 					key: null,
@@ -241,7 +241,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 2000,
 				waitRateLimitTimeout: 70,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 				api: {
 					key: null,
 					voiceId: "FGY2WhTYpPnrIDTdsKH5",
@@ -259,7 +259,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 3000,
 				waitRateLimitTimeout: 70,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 				api: {
 					accessKeyId: null,
 					secretAccessKey: null,
@@ -279,7 +279,7 @@ const defaultOptions = {
 				saveError: true,
 				textMaxLength: 4000,
 				waitRateLimitTimeout: 70,
-				waitStatuses: [200, 404],
+				okStatus: [200, 404],
 				api: {
 					key: null,
 					model: "tts-1",
