@@ -58,7 +58,7 @@ function alertMaxSelection(maxLength) {
  * @returns {number}
  */
 function selectedLength() {
-	return document.getSelection().toString().trim();
+	return document.getSelection().toString().trim().length;
 }
 
 /**
