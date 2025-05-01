@@ -87,12 +87,7 @@ export function showPopup(options) {
 	const minMarge = 5;
 	let popupWidth = rect.width;
 	let popupHeight = rect.height;
-	console.log({
-		popupWidth: popupWidth,
-		windowInnerWidth: window.innerWidth - minMarge,
-	});
 	if (popupWidth >= window.innerWidth - minMarge * 2) {
-		console.log({ pronInfo: "popup width exceeds window width" });
 		popupWidth = window.innerWidth - minMarge * 2;
 		popup.style.width = `${popupWidth}px`;
 		opt.position.centerHorizontally = true;
