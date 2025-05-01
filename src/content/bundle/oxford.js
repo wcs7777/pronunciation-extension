@@ -76,10 +76,13 @@
 		const tgtIsObj = !tgtIsArr && tgt instanceof Object;
 		const srcIsObj = !srcIsArr && src instanceof Object;
 		if (tgtIsArr && srcIsArr) {
-			return [
-				...tgt,
-				...src,
-			];
+			const mergedArr = prioritizeTargetObj ? [...tgt] : [...src];
+			for (const item of prioritizeTargetObj ? src : tgt) {
+				if (!mergedArr.includes(item)) {
+					mergedArr.push(item);
+				}
+			}
+			return mergedArr;
 		}
 		if (tgtIsObj && srcIsObj) {
 			for (const key in src) {
@@ -168,8 +171,6 @@
 		 */
 		const setProperty = (prop, val) => popup.style.setProperty(prop, val);
 
-		setProperty("--top", `${opt.position.top}px`);
-		setProperty("--left", `${opt.position.left}px`);
 		setProperty("--background-color", opt.style.backgroundColor);
 		setProperty("--font-family", opt.style.font.family);
 		setProperty("--font-size", `${opt.style.font.size}px`);
@@ -180,24 +181,43 @@
 		popup.style.visibility = "hidden";
 		document.body.appendChild(host);
 		const rect = popup.getBoundingClientRect();
-		if (
-			!opt.position.centerHorizontally &&
-			!opt.position.centerVertically
-		) {
-			const rightMargin = window.innerWidth - rect.right;
-			if (rightMargin <= 0) {
-				popup.style.right = "5px";
-			}
-		} else {
-			if (opt.position.centerHorizontally) {
-				const half = (window.innerWidth - rect.width) / 2;
-				setProperty("--left", `${half}px`);
-			}
-			if (opt.position.centerVertically) {
-				const half = (window.innerHeight - rect.height) / 2;
-				setProperty("--top", `${half}px`);
-			}
+		const minMarge = 5;
+		let popupWidth = rect.width;
+		let popupHeight = rect.height;
+		console.log({
+			popupWidth: popupWidth,
+			windowInnerWidth: window.innerWidth - minMarge,
+		});
+		if (popupWidth >= window.innerWidth - minMarge * 2) {
+			console.log({ pronInfo: "popup width exceeds window width" });
+			popupWidth = window.innerWidth - minMarge * 2;
+			popup.style.width = `${popupWidth}px`;
+			opt.position.centerHorizontally = true;
 		}
+		let left = opt.position.left;
+		let top = opt.position.top;
+		const widthDiff = (
+			(window.innerWidth - minMarge) -
+			(opt.position.left + popupWidth)
+		);
+		const heightDiff = (
+			(window.innerHeight - minMarge) -
+			(opt.position.top + popupHeight)
+		);
+		if (widthDiff < 0) {
+			left += widthDiff;
+		}
+		if (heightDiff < 0) {
+			top += heightDiff;
+		}
+		if (opt.position.centerHorizontally) {
+			left = (window.innerWidth - popupWidth) / 2;
+		}
+		if (opt.position.centerVertically) {
+			top = (window.innerHeight - popupHeight) / 2;
+		}
+		setProperty("--top", `${top}px`);
+		setProperty("--left", `${left}px`);
 		popup.style.visibility = "visible";
 
 		const timeoutId = setTimeout(closePopup, opt.close.timeout);
@@ -256,8 +276,8 @@
 }
 
 .popup {
-	--top: 20px;
-	--left: 20px;
+	--top: 0px;
+	--left: 0px;
 	--background-color: #FFFFFF;
 	--font-family: Arial, serif;
 	--font-size: 20px;
