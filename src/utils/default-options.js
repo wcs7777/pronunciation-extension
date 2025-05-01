@@ -4,6 +4,8 @@
 const defaultOptions = {
 	accessKey: "P",
 	allowText: true,
+	alertMaxSelectionEnabled: false,
+	alertMaxSelectionLength: 1800,
 	ipa: {
 		enabled: true,
 		text: {

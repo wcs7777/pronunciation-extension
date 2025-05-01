@@ -10,6 +10,7 @@ const configs = [
 	"message",
 	"cambridge",
 	"oxford",
+	"alert-max-selection",
 ].map(createConfig);
 
 export default configs;

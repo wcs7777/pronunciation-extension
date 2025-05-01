@@ -22,6 +22,7 @@ async function onMessage(message) {
 		"getSelectedText": getSelectedText,
 		"playAudio": playAudio,
 		"showPopup": showPopupFromBackground,
+		"changeAlertMaxSelectionOptions": async () => {},
 	};
 	if (!message.type in actions) {
 		throw new Error(`Invalid message type: ${message.type}`);
@@ -48,7 +49,7 @@ async function showIpa(message) {
  * @returns {Promise<string>}
  */
 async function getSelectedText(message) {
-	return window.getSelection().toString();
+	return document.getSelection().toString();
 }
 
 /**

@@ -128,26 +128,6 @@ el.shortcuts.save.addEventListener("click", async () => {
 				},
 			},
 		};
-		try {
-			/**
-			 * @type {BackgroundMessage}
-			 */
-			const message = {
-				type: "playAudio",
-				origin,
-				playAudio: {
-					playerEnabled: options.audio.playerEnabledToText,
-					shortcutsEnabled: options.audio.shortcutsEnabledToText,
-					shortcuts: options.audio.shortcuts,
-				},
-			};
-			const tabs = await browser.tabs.query({});
-			await Promise.allSettled(
-				tabs.map(t => browser.tabs.sendMessage(t.id, message)),
-			);
-		} catch (error) {
-			console.error(error);
-		}
 		await saveOptions(options);
 		await setFieldsValues();
 		showInfo("Audio Shortcuts to Text settings saved");

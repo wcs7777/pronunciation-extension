@@ -9,7 +9,10 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["src/content/bundle/message.js"]
+			"js": [
+				"src/content/bundle/message.js",
+				"src/content/bundle/alert-max-selection.js"
+			]
 		},
 		{
 			"matches": ["https://dictionary.cambridge.org/us/dictionary/english/*"],

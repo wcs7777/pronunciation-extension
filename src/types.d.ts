@@ -69,6 +69,8 @@ declare global {
 	type Options = {
 		accessKey: string,
 		allowText: boolean,
+		alertMaxSelectionEnabled: boolean,
+		alertMaxSelectionLength: number,
 		ipa: OptionsIpa,
 		audio: OptionsAudio,
 		setPronuncationByShortcut: OptionsSetPronuncationByShortcut,
@@ -244,7 +246,7 @@ declare global {
 	};
 
 	type BackgroundMessage = {
-		type: "showIpa" | "getSelectedText" | "playAudio" | "showPopup",
+		type: "showIpa" | "getSelectedText" | "playAudio" | "showPopup" | "changeAlertMaxSelectionOptions",
 		origin: "menuItem" | "action" | "other",
 		showIpa?: {
 			ipa: string,
@@ -258,6 +260,10 @@ declare global {
 			shortcuts: OptAudioShortcuts,
 		},
 		showPopup?: OptionsPopup,
+		changeAlertMaxSelectionOptions?: {
+			enabled: boolean,
+			maxLength: number,
+		},
 	};
 
 	type OptionsPopup = {
