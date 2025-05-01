@@ -37,13 +37,12 @@ function onSelectionChange() {
  * @returns {void}
  */
 function alertMaxSelection(maxLength) {
-	const text = document.getSelection().toString().trim();
-	if (text.length < opt.maxLength) {
+	if (selectedLength() < opt.maxLength) {
 		alertSent = false;
 	} else if (!alertSent) {
 		alertSent = true;
 		showPopup({
-			text: `${text.length}/${maxLength} characters selected`,
+			text: `${selectedLength()}/${maxLength} characters selected`,
 			close: {
 				timeout: 3000,
 			},
@@ -53,6 +52,13 @@ function alertMaxSelection(maxLength) {
 			},
 		});
 	}
+}
+
+/**
+ * @returns {number}
+ */
+function selectedLength() {
+	return document.getSelection().toString().trim();
 }
 
 /**
