@@ -20,6 +20,8 @@ import { createSortableOrder, sortSortableOrder } from "./utils-sortable.js";
  *     amazonPollyEnabled: HTMLInputElement,
  *     openAi: HTMLElement,
  *     openAiEnabled: HTMLInputElement,
+ *     deepSeek: HTMLElement,
+ *     deepSeekEnabled: HTMLInputElement,
  * }}
  */
 const el = {
@@ -39,6 +41,8 @@ const el = {
 	amazonPollyEnabled: byId("amazonPollyEnabled"),
 	openAi: byId("openAiOrder"),
 	openAiEnabled: byId("openAiEnabled"),
+	deepSeek: byId("deepSeekOrder"),
+	deepSeekEnabled: byId("deepSeekEnabled"),
 	save: byId("save"),
 };
 
@@ -96,6 +100,10 @@ el.save.addEventListener("click", async () => {
 						enabledToText: el.openAiEnabled.checked,
 						orderToText: parseInt(el.openAi.dataset.orderToText),
 					},
+					deepSeek: {
+						enabledToText: el.deepSeekEnabled.checked,
+						orderToText: parseInt(el.deepSeek.dataset.orderToText),
+					},
 				},
 			},
 		};
@@ -123,5 +131,6 @@ async function setFieldsValues() {
 	el.elevenLabsEnabled.checked = opt.audio.sources.elevenLabs.enabledToText;
 	el.amazonPollyEnabled.checked = opt.audio.sources.amazonPolly.enabledToText;
 	el.openAiEnabled.checked = opt.audio.sources.openAi.enabledToText;
+	el.deepSeekEnabled.checked = opt.audio.sources.deepSeek.enabledToText;
 	sortSortableOrder(sortable, el, opt.audio.sources, "order-to-text");
 }

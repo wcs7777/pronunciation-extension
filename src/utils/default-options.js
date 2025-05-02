@@ -289,6 +289,23 @@ const defaultOptions = {
 					responseFormat: "mp3",
 				},
 			},
+			deepSeek: {
+				enabled: true,
+				order: 13,
+				enabledToText: true,
+				orderToText: 9,
+				save: true,
+				saveError: true,
+				textMaxLength: 4000,
+				waitRateLimitTimeout: 70,
+				okStatus: [200, 404],
+				api: {
+					key: null,
+					model: "hexgrad/Kokoro-82M",
+					voice: "af_alloy",
+					responseFormat: "mp3",
+				},
+			},
 		},
 	},
 	setPronuncationByShortcut: {

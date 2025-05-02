@@ -635,6 +635,7 @@ export default class Addon {
 			as.ASElevenLabs,
 			as.ASAmazonPolly,
 			as.ASOpenAi,
+			as.ASDeepSeek,
 		]
 			.map(S => new S(options.sources[S.name]))
 			.filter(s => s.enabled(input, toText, le[s.name]))

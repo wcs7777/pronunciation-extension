@@ -142,6 +142,7 @@ declare global {
 			elevenLabs: OptAudioElevenLabs,
 			amazonPolly: OptAudioAmazonPolly,
 			openAi: OptAudioOpenAi,
+			deepSeek: OptAudioDeepSeek,
 		},
 	};
 
@@ -230,6 +231,15 @@ declare global {
 	};
 
 	type OptAudioOpenAi = PronunciationSourceOptions & {
+		api: {
+			key?: string,
+			model: string,
+			voice: string,
+			responseFormat: string,
+		},
+	};
+
+	type OptAudioDeepSeek = PronunciationSourceOptions & {
 		api: {
 			key?: string,
 			model: string,

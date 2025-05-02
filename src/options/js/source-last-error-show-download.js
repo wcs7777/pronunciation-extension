@@ -15,6 +15,7 @@ import { sourceLastErrorTable } from "../../utils/storage-tables.js";
  *     elevenLabs: HTMLInputElement,
  *     amazonPolly: HTMLInputElement,
  *     openAi: HTMLInputElement,
+ *     deepSeek: HTMLInputElement,
  *     antvaset: HTMLInputElement,
  *     unalengua: HTMLInputElement,
  *     all: HTMLInputElement,
@@ -35,6 +36,7 @@ const el = {
 	elevenLabs: byId("elevenLabs"),
 	amazonPolly: byId("amazonPolly"),
 	openAi: byId("openAi"),
+	deepSeek: byId("deepSeek"),
 	antvaset: byId("antvaset"),
 	unalengua: byId("unalengua"),
 	all: byId("all"),
@@ -59,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	el.elevenLabs,
 	el.amazonPolly,
 	el.openAi,
+	el.deepSeek,
 	el.antvaset,
 	el.unalengua,
 ].forEach(s => {

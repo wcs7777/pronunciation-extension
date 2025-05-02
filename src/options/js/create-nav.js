@@ -85,6 +85,9 @@ export function createNav(mainPage, subPage=null) {
 				"./audio-openai.html": {
 					label: "OpenAI",
 				},
+				"./audio-deepseek.html": {
+					label: "DeepSeek",
+				},
 			},
 		},
 		"./pron-by-sites.html": {
