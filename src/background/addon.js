@@ -411,10 +411,9 @@ export default class Addon {
 		origin,
 	}) {
 		/**
-		 * @param {string} source
-		 * @returns {?PronunciationSourceLastError}
+		 * @type {{ [key: string]: PronunciationSourceLastError }}
 		 */
-		const le = source => this.sourceLastErrorTable.getValue(source);
+		const le = await this.sourceLastErrorTable.getAll();
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
@@ -428,7 +427,7 @@ export default class Addon {
 			is.ISUnalengua,
 		]
 			 .map(S => new S(options.sources[S.name]))
-			.filter(s => s.enabled(input, toText, le(s.name)))
+			.filter(s => s.enabled(input, toText, le[s.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const s of sources) {
 			console.log(`Searching IPA in ${s.name}`);
@@ -614,10 +613,9 @@ export default class Addon {
 		origin,
 	}) {
 		/**
-		 * @param {string} source
-		 * @returns {?PronunciationSourceLastError}
+		 * @type {{ [key: string]: PronunciationSourceLastError }}
 		 */
-		const le = source => this.sourceLastErrorTable.getValue(source);
+		const le = await this.sourceLastErrorTable.getAll();
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
@@ -639,7 +637,7 @@ export default class Addon {
 			as.ASOpenAi,
 		]
 			.map(S => new S(options.sources[S.name]))
-			.filter(s => s.enabled(input, toText, le(s.name)))
+			.filter(s => s.enabled(input, toText, le[s.name]))
 			.sort((l, r) => l.order(toText) - r.order(toText));
 		for (const s of sources) {
 			console.log(`Searching audio in ${s.name}`);
