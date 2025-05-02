@@ -31,10 +31,11 @@ By now, the addon supports these API's, which all of them offer a free limit per
 - [ResponsiveVoice](https://app.responsivevoice.org/login) (the only with a key by default)  
 - [Unreal Speech](https://unrealspeech.com/)  
 - [Speechify](https://console.sws.speechify.com/login)  
-- [PlayHT](https://play.ht/signup/?attribution=%2F)  
+- [PlayHT](https://play.ht/signup/?attribution=%2F) (there is no free tier)
 - [ElevenLabs](https://elevenlabs.io/app/sign-up)  
 - [AmazonPolly](https://aws.amazon.com/polly/) (1 year of free tier)  
 - [OpenAI](https://platform.openai.com/docs/overview) (there is no free tier)  
+- [DeepSeek](https://deepinfra.com/login?from=%2Fdash#) (there is no free tier)  
 
 Tip: if you have a good internet speed, decrease the Real voice fetch timeout (ms) to around 1200.  
 
