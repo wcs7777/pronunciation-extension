@@ -423,7 +423,7 @@
 				return {
 					position: {
 						centerHorizontally: true,
-						top: 100,
+						centerVertically: true,
 					},
 				};
 			}
