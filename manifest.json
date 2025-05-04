@@ -1,10 +1,15 @@
 {
 	"manifest_version": 3,
 	"name": "How2Say",
-	"version": "3.3.0",
+	"version": "3.4.0",
 	"description": "Pronunciation for American English words with phonetic IPA and audio",
 	"icons": {
 		"48": "icons/icon.png"
+	},
+	"browser_specific_settings": {
+		"gecko": {
+			"id": " {73c59290-7ab7-41a3-aa76-2c9fca8009da}"
+		}
 	},
 	"content_scripts": [
 		{

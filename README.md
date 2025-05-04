@@ -1,11 +1,11 @@
 # How2Say
-## Firefox extension
+## Browser addon
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/5458ba78-f2f7-47e1-9185-db1b6166da95" width="250" />
 </p>
 
-[How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/) is a Firefox extension to help you to know how to pronounce a word showing its IPA and playing its audio.  
+[How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/) is a browser addon to help you to know how to pronounce a word showing its IPA and playing its audio.  
 Formerly [How2Pronounce](https://addons.mozilla.org/en-US/firefox/addon/how2pronounce/), but I lost the access to the account.  
 
 - Select a word or text  
