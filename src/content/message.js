@@ -1,5 +1,9 @@
 import IpaPopup from "../utils/ipa-popup.js";
+import { optionsTable } from "../utils/storage-tables.js";
 import { showPopup } from "../utils/show-popup.js";
+import {
+	changeOptions as changeAlertMaxSelectionOptions,
+} from "../utils/alert-max-selection.js";
 import {
 	addAudioSource,
 	changeSkipSeconds,
@@ -22,7 +26,7 @@ async function onMessage(message) {
 		"getSelectedText": getSelectedText,
 		"playAudio": playAudio,
 		"showPopup": showPopupFromBackground,
-		"changeAlertMaxSelectionOptions": async () => {},
+		"changeAlertMaxSelectionOptions": changeAlertMaxSelectionOptionsCB,
 	};
 	if (!message.type in actions) {
 		throw new Error(`Invalid message type: ${message.type}`);
@@ -59,7 +63,7 @@ async function getSelectedText(message) {
 async function playAudio(message) {
 	const options = message.playAudio;
 	if (!options) {
-		throw new Error("Should pass playAudio options in message");
+		throw new Error("Should pass options in message");
 	}
 	try {
 		setAudioControlShortcuts(options.shortcuts);
@@ -91,7 +95,30 @@ async function playAudio(message) {
 async function showPopupFromBackground(message) {
 	const options = message.showPopup;
 	if (!options) {
-		throw new Error("Should pass showPopup options in message");
+		throw new Error("Should pass options in message");
 	}
 	showPopup(options);
 }
+
+/**
+ * @param {BackgroundMessage} message
+ * @returns {Promise<void>}
+ */
+async function changeAlertMaxSelectionOptionsCB(message) {
+	const options = message.changeAlertMaxSelectionOptions;
+	if (!options) {
+		throw new Error("Should pass options in message");
+	}
+	changeAlertMaxSelectionOptions(options);
+}
+
+(async () => {
+	/**
+	 * @type {Options}
+	 */
+	const options = await optionsTable.getAll();
+	changeAlertMaxSelectionOptions({
+		enabled: options.alertMaxSelectionEnabled,
+		maxLength: options.alertMaxSelectionLength,
+	});
+})().catch(console.error);

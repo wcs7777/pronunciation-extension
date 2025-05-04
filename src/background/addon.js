@@ -75,10 +75,7 @@ export default class Addon {
 	 * @returns {Promise<void>}
 	 */
 	async pronounce(input, tabId, origin) {
-		/**
-		  * @type {Options}
-		  */
-		const options = this.optionsCache.getAll();
+		const options = await this.getOptions();
 		const words = splitWords(input.toLowerCase());
 		let isText = false;
 		let sourceAudioId = null;
@@ -710,18 +707,18 @@ export default class Addon {
 			const menuId = "I";
 			const message = "Wait init setup (~40s)";
 			browser?.menus?.create({ id: menuId, title: message });
-			const actionTitle = await browser.browserAction.getTitle({});
-			const actionBadge = await browser.browserAction.getBadgeText({});
-			await browser.browserAction.setTitle({ title: message });
-			await browser.browserAction.setBadgeText({ text: message });
+			const actionTitle = await browser.action.getTitle({});
+			const actionBadge = await browser.action.getBadgeText({});
+			await browser.action.setTitle({ title: message });
+			await browser.action.setBadgeText({ text: message });
 			console.log("Setup begin");
 			console.log("Populating options");
 			await this.populateOptions();
 			console.log("Setting menuItem and action");
 			console.log("Setup end");
 			await browser?.menus?.remove(menuId);
-			await browser.browserAction.setTitle({ title: actionTitle });
-			await browser.browserAction.setBadgeText({ text: actionBadge });
+			await browser.action.setTitle({ title: actionTitle });
+			await browser.action.setBadgeText({ text: actionBadge });
 			await this.startup();
 		} catch (error) {
 			await this.saveError("initialSetup", error);
@@ -888,6 +885,21 @@ export default class Addon {
 		await browser.tabs.create({
 			url: browser.runtime.getURL("src/options/pages/general.html"),
 		});
+	}
+
+	/**
+	 * @returns {Promise<Options>}
+	 */
+	async getOptions() {
+		/**
+		 * @type {Options}
+		 */
+		let opt = this.optionsCache.getAll();
+		if (!opt.ipa || !opt.audio) {
+			opt = await this.optionsTable.getAll();
+			this.optionsCache.setMany(opt);
+		}
+		return opt;
 	}
 
 	/**

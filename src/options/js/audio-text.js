@@ -179,7 +179,9 @@ async function setFieldsValues(shouldSendMessage=true) {
 				shortcuts: opt.shortcuts,
 			},
 		};
-		const tabs = await browser.tabs.query({});
+		const tabs = await browser.tabs.query({
+			url: ["https://*/*", "http://*/*"],
+		});
 		await Promise.allSettled(
 			tabs.map(t => browser.tabs.sendMessage(t.id, message)),
 		);

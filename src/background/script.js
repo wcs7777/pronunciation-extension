@@ -34,8 +34,8 @@ async function main() {
 	if (!browser?.menus?.onClicked.hasListener(menuOnClickedCB)) {
 		browser?.menus?.onClicked.addListener(menuOnClickedCB);
 	}
-	if (!browser.browserAction.onClicked.hasListener(actionOnClickedCB)) {
-		browser.browserAction.onClicked.addListener(actionOnClickedCB);
+	if (!browser.action.onClicked.hasListener(actionOnClickedCB)) {
+		browser.action.onClicked.addListener(actionOnClickedCB);
 	}
 	if (!browser.storage.onChanged.hasListener(storageOnChangedCB)) {
 		browser.storage.onChanged.addListener(storageOnChangedCB);

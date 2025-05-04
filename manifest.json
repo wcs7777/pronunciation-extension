@@ -1,18 +1,15 @@
 {
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "How2Say",
-	"version": "3.2.0",
+	"version": "3.3.0",
 	"description": "Pronunciation for American English words with phonetic IPA and audio",
 	"icons": {
 		"48": "icons/icon.png"
 	},
 	"content_scripts": [
 		{
-			"matches": ["<all_urls>"],
-			"js": [
-				"src/content/bundle/message.js",
-				"src/content/bundle/alert-max-selection.js"
-			]
+			"matches": ["https://*/*", "http://*/*"],
+			"js": ["src/content/bundle/message.js"]
 		},
 		{
 			"matches": ["https://dictionary.cambridge.org/us/dictionary/english/*"],
@@ -24,13 +21,13 @@
 		}
 	],
 	"background": {
-		"page": "src/background/index.html",
-		"persistent": true
+		"scripts": ["src/background/script.js"],
+		"type": "module"
 	},
 	"options_ui": {
 		"page": "src/options/entry-point.html"
 	},
-	"browser_action": {
+	"action": {
 		"default_icon": {
 			"19": "icons/icon-19.png",
 			"38": "icons/icon-38.png"
@@ -38,6 +35,14 @@
 		"default_title": "How2Say"
 	},
 	"permissions": [
+		"alarms",
+		"downloads",
+		"menus",
+		"storage",
+		"tabs",
+		"unlimitedStorage"
+	],
+	"host_permissions": [
 		"https://api.datamuse.com/*",
 		"https://api.elevenlabs.io/v1/text-to-speech/*",
 		"https://api.openai.com/v1/audio/speech/",
@@ -72,12 +77,6 @@
 		"https://www.antvaset.com/api",
 		"https://www.google.com/speech-api/v1/*",
 		"https://www.linguee.com/*",
-		"https://www.oxfordlearnersdictionaries.com/*",
-		"activeTab",
-		"alarms",
-		"downloads",
-		"menus",
-		"storage",
-		"unlimitedStorage"
+		"https://www.oxfordlearnersdictionaries.com/*"
 	]
 }

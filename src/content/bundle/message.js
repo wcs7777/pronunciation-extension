@@ -455,46 +455,6 @@
 	}
 
 	/**
-	 * @param {Blob} blob
-	 * @returns {Promise<string>}
-	 */
-	async function blob2base64(blob) {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.addEventListener("load", onLoad);
-			reader.addEventListener("error", onError);
-			reader.readAsDataURL(blob);
-
-			/**
-			 * @param {ProgressEvent<FileReader>} event
-			 * @returns {void}
-			 */
-			function onLoad(event) {
-				removeListeners();
-				return resolve(event.target.result);
-			}
-
-			/**
-			 * @param {ErrorEvent} error
-			 * @returns {void}
-			 */
-			function onError(error) {
-				removeListeners();
-				return reject(error);
-			}
-
-			/**
-			 * @returns {void}
-			 */
-			function removeListeners() {
-				reader.removeEventListener("load", onLoad);
-				reader.removeEventListener("error", onError);
-			}
-
-		});
-	}
-
-	/**
 	 * @implements {Table}
 	 */
 	class TableByKeyPrefix {
@@ -633,6 +593,110 @@
 	sourceLastError
 	ta
 	*/
+
+	const opt$1 = {
+		enabled: false,
+		maxLength: 10000000000,
+	};
+	let alertPopupHost = null;
+
+	/**
+	 * @param {{ enabled: boolean, maxLength: number }} options
+	 * @returns {void}
+	 */
+	function changeOptions(options) {
+		opt$1.enabled = options.enabled;
+		opt$1.maxLength = options.maxLength;
+		if (opt$1.enabled) {
+			document.addEventListener("selectionchange", onSelectionChange);
+		} else {
+			document.removeEventListener("selectionchange", onSelectionChange);
+		}
+	}
+
+	/**
+	 * @returns {void}
+	 */
+	function onSelectionChange() {
+		if (opt$1.enabled) {
+			alertMaxSelection(opt$1.maxLength);
+		}
+	}
+
+	/**
+	 * @param {number} maxLength
+	 * @returns {void}
+	 */
+	function alertMaxSelection(maxLength) {
+		if (
+			selectedLength() >= maxLength &&
+			(!alertPopupHost || !document.body.contains(alertPopupHost))
+		) {
+			const textFn = () => {
+				return `${selectedLength()}/${maxLength} characters selected`;
+			};
+			const closeConditionFn = () => {
+				return selectedLength() < maxLength;
+			};
+			alertPopupHost = showPopup({
+				text: textFn(),
+				close: {
+					timeout: 600000,
+				},
+				position: {
+					centerHorizontally: true,
+					top: 100,
+				},
+			}, textFn, closeConditionFn);
+		}
+	}
+
+	/**
+	 * @returns {number}
+	 */
+	function selectedLength() {
+		return document.getSelection().toString().trim().length;
+	}
+
+	/**
+	 * @param {Blob} blob
+	 * @returns {Promise<string>}
+	 */
+	async function blob2base64(blob) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.addEventListener("load", onLoad);
+			reader.addEventListener("error", onError);
+			reader.readAsDataURL(blob);
+
+			/**
+			 * @param {ProgressEvent<FileReader>} event
+			 * @returns {void}
+			 */
+			function onLoad(event) {
+				removeListeners();
+				return resolve(event.target.result);
+			}
+
+			/**
+			 * @param {ErrorEvent} error
+			 * @returns {void}
+			 */
+			function onError(error) {
+				removeListeners();
+				return reject(error);
+			}
+
+			/**
+			 * @returns {void}
+			 */
+			function removeListeners() {
+				reader.removeEventListener("load", onLoad);
+				reader.removeEventListener("error", onError);
+			}
+
+		});
+	}
 
 	const host = document.createElement("span");
 	host.dataset.role = "pronunciation-addon-audio-player-host";
@@ -1778,7 +1842,7 @@ button {
 			"getSelectedText": getSelectedText,
 			"playAudio": playAudio,
 			"showPopup": showPopupFromBackground,
-			"changeAlertMaxSelectionOptions": async () => {},
+			"changeAlertMaxSelectionOptions": changeAlertMaxSelectionOptionsCB,
 		};
 		if (!message.type in actions) {
 			throw new Error(`Invalid message type: ${message.type}`);
@@ -1815,7 +1879,7 @@ button {
 	async function playAudio(message) {
 		const options = message.playAudio;
 		if (!options) {
-			throw new Error("Should pass playAudio options in message");
+			throw new Error("Should pass options in message");
 		}
 		try {
 			setAudioControlShortcuts(options.shortcuts);
@@ -1847,9 +1911,32 @@ button {
 	async function showPopupFromBackground(message) {
 		const options = message.showPopup;
 		if (!options) {
-			throw new Error("Should pass showPopup options in message");
+			throw new Error("Should pass options in message");
 		}
 		showPopup(options);
 	}
+
+	/**
+	 * @param {BackgroundMessage} message
+	 * @returns {Promise<void>}
+	 */
+	async function changeAlertMaxSelectionOptionsCB(message) {
+		const options = message.changeAlertMaxSelectionOptions;
+		if (!options) {
+			throw new Error("Should pass options in message");
+		}
+		changeOptions(options);
+	}
+
+	(async () => {
+		/**
+		 * @type {Options}
+		 */
+		const options = await optionsTable.getAll();
+		changeOptions({
+			enabled: options.alertMaxSelectionEnabled,
+			maxLength: options.alertMaxSelectionLength,
+		});
+	})().catch(console.error);
 
 })();
