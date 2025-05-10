@@ -6,7 +6,6 @@
 </p>
 
 [How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/) is a browser addon to help you to know how to pronounce a word showing its IPA and playing its audio.  
-Formerly [How2Pronounce](https://addons.mozilla.org/en-US/firefox/addon/how2pronounce/), but I lost the access to the account.  
 
 - Select a word or text  
 - Right click to open the context menu and click the extension item  
@@ -36,8 +35,6 @@ By now, the addon supports these API's, which all of them offer a free limit per
 - [AmazonPolly](https://aws.amazon.com/polly/) (1 year of free tier)  
 - [OpenAI](https://platform.openai.com/docs/overview) (there is no free tier)  
 - [DeepSeek](https://deepinfra.com/login?from=%2Fdash#) (there is no free tier)  
-
-Tip: if you have a good internet speed, decrease the Real voice fetch timeout (ms) to around 1200.  
 
 Install here [How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/)   
 
