@@ -821,7 +821,7 @@
 		await togglePlayAudio({ forcePause: true });
 		el.progressbar.value = audio.dataset.validDuration;
 		el.totalTime.textContent = formatSeconds(audio.dataset.validDuration);
-		el.progressbar.style.background = "var(--range-color)";
+		el.progressbar.style.background = "var(--range-progress-color)";
 	});
 
 	el.progressbar.addEventListener("input", () => {
@@ -837,7 +837,7 @@
 		el.progressbar.max = await audioDuration(audio);
 		el.currentTime.textContent = formatSeconds(audio.currentTime);
 		el.progressbar.value = audio.currentTime;
-		el.progressbar.style.background = "var(--range-background)";
+		el.progressbar.style.background = "var(--range-background-color)";
 	});
 
 	el.togglePlayButton.addEventListener("click", async () => togglePlayAudio());
@@ -1592,37 +1592,33 @@ button {
 
 .input-range {
 	--range-height: 6px;
-	--range-background: #616161;
-	--range-color: var(--foreground-color-2);
-	--range-color-shadow-color-1: rgba(46, 138, 168, 0.1);
-	--range-color-shadow-color-2: rgba(46, 138, 168, 0.2);
-	--range-color-shadow-size-1: 9px;
-	--range-color-shadow-size-2: 12px;
-	--range-pointer-size: 0px;
+	--range-background-color: #616161;
+	--range-progress-color: var(--foreground-color-2);
+	--range-thumb-size: 0px;
 	appearance: none;
 	width: 100%;
 	cursor: pointer;
 	outline: none;
 	border-radius: 15px;
 	height: 5px;
-	background: var(--range-background);
+	background: var(--range-background-color);
 	transition: .1s linear;
 }
 
 .input-range:hover {
-	--range-color: rgb(159, 212, 230);
-	--range-pointer-size: 12px;
+	--range-progress-color: rgb(159, 212, 230);
+	--range-thumb-size: 12px;
 }
 
 .input-range::-moz-range-progress {
-	background-color: var(--range-color);
+	background-color: var(--range-progress-color);
 }
 
 .input-range::-moz-range-thumb {
 	appearance: none;
-	height: var(--range-pointer-size);
-	width: var(--range-pointer-size);
-	background-color: var(--range-color);
+	height: var(--range-thumb-size);
+	width: var(--range-thumb-size);
+	background-color: var(--range-progress-color);
 	border-radius: 50%;
 	border: none;
 	transition: .1s linear;
