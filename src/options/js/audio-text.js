@@ -166,9 +166,10 @@ async function setFieldsValues(shouldSendMessage=true) {
 	el.shortcuts.resetSpeed.value = opt.shortcuts.resetSpeed;
 	if (shouldSendMessage) {
 		/**
-		 * @type {BackgroundMessage}
+		 * @type {ClientMessage}
 		 */
 		const message = {
+			target: "client",
 			type: "playAudio",
 			origin: "other",
 			playAudio: {

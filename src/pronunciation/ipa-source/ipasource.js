@@ -1,32 +1,33 @@
-import { waitRateLimit } from "../utils/pronunciation-source.js";
+import { waitRateLimit } from "../utils/wait-rate-limit.js";
 
 export default class IpaSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {PronunciationSourceOptions} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
+	constructor(pi, options, lastError) {
+		this.pi = pi;
 		this.options = options;
+		this.lastError = lastError;
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {boolean} toText
-	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText, lastError) {
+	get enabled() {
 		let enabled = false;
-		if (!toText) {
+		if (!this.pi.isText) {
 			enabled = this.options.enabled;
 		} else {
 			enabled = (
 				this.options.enabledToText &&
-				input.length <= this.options.textMaxLength
+				this.pi.input.length <= this.options.textMaxLength
 			);
 		}
 		const shouldWait = waitRateLimit(
-			lastError,
+			this.lastError,
 			this.options.waitRateLimitTimeout,
 			this.options.okStatus,
 		);
@@ -34,11 +35,14 @@ export default class IpaSource {
 	}
 
 	/**
-	 * @param {boolean} toText
 	 * @returns {number}
 	 */
-	order(toText) {
-		return !toText ? this.options.order : this.options.orderToText;
+	get order() {
+		return (
+			!this.pi.isText ?
+			this.options.order :
+			this.options.orderToText
+		);
 	}
 
 	/**

@@ -6,10 +6,12 @@ import AudioSource from "./audiosource.js";
 export default class ASUnrealSpeech extends AudioSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptAudioUnrealSpeech} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -28,24 +30,20 @@ export default class ASUnrealSpeech extends AudioSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {boolean} toText
-	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText, lastError) {
+	get enabled() {
 		if (!this.options.api.token) {
 			return false;
 		}
-		return super.enabled(input, toText, lastError);
+		return super.enabled;
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const input = this.pi.input;
 		const base = "https://api.v7.unrealspeech.com";
 		let endpoint = "";
 		let body = {

@@ -1,17 +1,9 @@
-import * as as from "../audio-source/sources.js";
-import * as is from "../ipa-source/sources.js";
-import { addLoudnessLimiter } from "../utils/audio.js";
-import { blob2base64 } from "../utils/element.js";
-import { cachedAnalyseWord } from "../utils/analyse-word.js";
+import * as as from "../pronunciation/audio-source/sources.js";
+import * as is from "../pronunciation/ipa-source/sources.js";
+import Pronunciation from "../pronunciation/pronunciation.js";
+import PronunciationInput from "../pronunciation/pronunciation-input.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
-import { goString } from "../utils/promise.js";
 import { migrateToV3, migrateToV3_2_0 } from "./migrations.js";
-import { threshold } from "../utils/number.js";
-import {
-	generateSha1,
-	removeExtraSpaces,
-	splitWords,
-} from "../utils/string.js";
 
 export default class Addon {
 
@@ -66,6 +58,33 @@ export default class Addon {
 		this.audioTextTable = audioTextTable;
 		this.audioTextCache = audioTextCache;
 		this.ipaTextCache = ipaTextCache;
+		/**
+		 * @type{IpaSource[]}
+		 */
+		this.ipaSources = [
+			is.ISAntvaset,
+			is.ISCambridge,
+			is.ISOxford,
+			is.ISUnalengua,
+		];
+		/**
+		 * @type{AudioSource[]}
+		 */
+		this.audioSources = [
+			as.ASAmazonPolly,
+			as.ASCambridge,
+			as.ASDeepSeek,
+			as.ASElevenLabs,
+			as.ASGoogleSpeech,
+			as.ASGstatic,
+			as.ASLinguee,
+			as.ASOpenAi,
+			as.ASOxford,
+			as.ASPlayHt,
+			as.ASResponsiveVoice,
+			as.ASSpeechify,
+			as.ASUnrealSpeech,
+		];
 	}
 
 	/**
@@ -76,606 +95,28 @@ export default class Addon {
 	 */
 	async pronounce(input, tabId, origin) {
 		const options = await this.getOptions();
-		const words = splitWords(input.toLowerCase());
-		let isText = false;
-		let sourceAudioId = null;
-		let sourceAudioTitle = null;
-		console.log({ input, words });
-		if (words.length === 0) {
-			console.log("No word was found in input");
-			return;
-		}
-		/**
-		  * @type {Promise<string | null> | null}
-		  */
-		let ipaPromise = null;
-		/**
-		  * @type {Promise<HTMLAudioElement | null> | null}
-		  */
-		let audioPromise = null;
-		if (words.length === 1 || !options.allowText) {
-			const word = words[0];
-			const maxCharacters = 60;
-			if (word.length <= maxCharacters) {
-				const analysis = await cachedAnalyseWord(word);
-				console.log({ analysis });
-				ipaPromise = this.fetchIpa({
-					word,
-					options: options.ipa,
-					analysis,
-					tabId,
-					origin,
-				});
-				audioPromise = this.fetchAudio({
-					word,
-					options: options.audio,
-					analysis,
-					tabId,
-					origin,
-				});
-			} else {
-				const message = (
-					`Exceeded ${maxCharacters} characters allowed for words`
-				);
-				console.error(message);
-				ipaPromise = Promise.resolve(message);
-			}
-		} else if (options.allowText) {
-			const text = removeExtraSpaces(input);
-			const key = await generateSha1(text);
-			console.log({ textKey: key, textLength: text.length });
-			isText = true;
-			sourceAudioId = key;
-			sourceAudioTitle = text;
-			if (sourceAudioTitle.length > 80) {
-				const begin = text.slice(0, 60);
-				const end = text.slice(-17);
-				sourceAudioTitle = `${begin}...${end}`;
-			}
-			ipaPromise = this.fetchIpaText({
-				cacheKey: key,
-				input: text,
-				options: options.ipa,
-				totalWords: words.length,
-				tabId,
-				origin,
-			});
-			audioPromise = this.fetchAudioText({
-				cacheKey: key,
-				input: text,
-				options: options.audio,
-				tabId,
-				origin,
-			});
-		}
-		await Promise.all([
-			this.showIpa({
-				ipaPromise,
-				options: options.ipa,
-				tabId,
-				origin,
-			}),
-			this.playAudio({
-				audioPromise,
-				options: options.audio,
-				tabId,
-				origin,
-				isText,
-				sourceId: sourceAudioId,
-				sourceTitle: sourceAudioTitle,
-			}),
-		]);
-		console.log("Pronunciation end");
-	}
-
-	/**
-	 * @param {{
-	 *     ipaPromise: Promise<string | null> | null,
-	 *     options: OptionsIpa,
-	 *     tabId: number,
-	 *     origin: "menuItem" | "action" | "other",
-	 * }}
-	 * @returns {Promise<void>}
-	 */
-	async showIpa({ ipaPromise, options, tabId, origin }) {
+		const pi = new PronunciationInput(input, options.allowText);
+		const pronunciation = new Pronunciation({
+			pi,
+			ipaSources: this.ipaSources,
+			audioSources: this.audioSources,
+			options,
+			audioTable: this.audioTable,
+			audioCache: this.audioCache,
+			ipaTable: this.ipaTable,
+			ipaCache: this.ipaCache,
+			audioTextTable: this.audioTextTable,
+			audioTextCache: this.audioTextCache,
+			ipaTextCache: this.ipaTextCache,
+			sourceLastErrorTable: this.sourceLastErrorTable,
+			tabId,
+			origin,
+		});
 		try {
-			const ipa = ipaPromise !== null ? await ipaPromise : null;
-			if (!ipa) {
-				console.log("No IPA was found or show IPA is disabled");
-				return;
-			}
-			console.log({ ipa, tabId });
-			/**
-			 * @type {BackgroundMessage}
-			 */
-			const message = {
-				type: "showIpa",
-				origin,
-				showIpa: { ipa, options },
-			};
-			await browser.tabs.sendMessage(tabId, message);
+			await pronunciation.pronounce();
 		} catch (error) {
-			await this.saveError("showIpa", error);
+			this.saveError("pronunciation", error);
 		}
-	}
-
-	/**
-	 * @param {{
-	 *     audioPromise: Promise<HTMLAudioElement | null> | null,
-	 *     options: OptionsAudio,
-	 *     tabId: number,
-	 *     origin: "menuItem" | "action" | "other",
-	 *     isText: boolean,
-	 *     sourceId?: string,
-	 *     sourceTitle?: string,
-	 * }}
-	 * @returns {Promise<void>}
-	 */
-	async playAudio({
-		audioPromise,
-		options,
-		tabId,
-		origin,
-		isText,
-		sourceId,
-		sourceTitle,
-	}) {
-		try {
-			const audio = audioPromise !== null ? await audioPromise : null;
-			const tab = await browser.tabs.get(tabId);
-			const muted = tab?.mutedInfo?.muted;
-			if (!audio || muted) {
-				const msg = (
-					!muted ?
-					"No audio was found or play audio is disabled" :
-					`Tab ${tabId} is muted`
-				);
-				console.log(msg);
-				return;
-			}
-			audio.volume = threshold(
-				0,
-				1,
-				options.volume,
-			);
-			audio.playbackRate = threshold(
-				0.2,
-				2.0,
-				options.playbackRate,
-			);
-			let playInBackground = (
-				!isText ||
-				(
-					!options.text.playerEnabled &&
-					!options.text.shortcutsEnabled
-				)
-			);
-			if (!playInBackground) {
-				/**
-				 * @type {BackgroundMessage}
-				 */
-				const message = {
-					type: "playAudio",
-					origin,
-					playAudio: {
-						source: {
-							id: sourceId,
-							title: sourceTitle,
-							url: audio.src,
-						},
-						limitLoudness: options.text.limitLoudness,
-						playerEnabled: options.text.playerEnabled,
-						shortcutsEnabled: options.text.shortcutsEnabled,
-						skipSeconds: options.text.skipSeconds,
-						shortcuts: options.text.shortcuts,
-					},
-				};
-				try {
-					await browser.tabs.sendMessage(tabId, message);
-				} catch (error) {
-					console.error(error);
-					playInBackground = true;
-				}
-			}
-			if (playInBackground) {
-				if (options.limitLoudness) {
-					await addLoudnessLimiter(audio).play();
-				} else {
-					await audio.play();
-				}
-			}
-		} catch (error) {
-			await this.saveError("playAudio", error);
-		}
-	}
-
-	/**
-	 * @param {{
-	 *     word: string,
-	 *     options: OptionsIpa,
-	 *     analysis: WordAnalyse,
-	 *     tabId: number,
-	 *     origin: "menuItem" | "action" | "other",
-	 * }}
-	 * @returns {Promise<string | null>}
-	 */
-	async fetchIpa({ word, options, analysis, tabId, origin }) {
-		if (!options.enabled) {
-			console.log("Show IPA is disabled");
-			return null;
-		}
-		/**
-		  * @type {string | null}
-		  */
-		let ipa = this.ipaTextCache.get(word) ?? null;
-		if (ipa) {
-			return ipa;
-		}
-		ipa = await this.ipaTable.getValue(word);
-		if (!ipa) {
-			const { ipa: ipaValue, save } = await this.fetchIpaExternally({
-				input: word,
-				options,
-				analysis,
-				toText: false,
-				tabId,
-				origin,
-			});
-			ipa = ipaValue;
-			if (!ipa) {
-				return null;
-			}
-			if (save) {
-				console.log(`Adding ${word} to ipa storage`);
-				await this.ipaTable.set(word, ipa);
-			}
-		}
-		this.ipaCache.set(word, ipa);
-		return ipa;
-	}
-
-	/**
-	 * @param {{
-	 *     cacheKey: string,
-	 *     input: string,
-	 *     options: OptionsIpa,
-	 *     totalWords: number,
-	 *     tabId: number,
-	 *     origin: "menuItem" | "action" | "other",
-	 * }}
-	 * @returns {Promise<string | null>}
-	 */
-	async fetchIpaText({
-		cacheKey,
-		input,
-		options,
-		totalWords,
-		tabId,
-		origin,
-	}) {
-		if (!options.text.enabled) {
-			console.log("Show IPA is disabled to text");
-			return null;
-		}
-		options.close.timeout = threshold(
-			options.close.timeout,
-			Math.max(300000, options.close.timeout),
-			options.close.timeout / 2.5 * totalWords,
-		);
-		options.close.onScroll = false;
-		if (!this.ipaTextCache.hasKey(cacheKey)) {
-			const { ipa } = await this.fetchIpaExternally({
-				input,
-				options,
-				analysis: {
-					root: "",
-					confidence: 1,
-					type: "Text",
-					isNoun: false,
-					isVerb: false,
-					isValid: true,
-					isText: true,
-				},
-				toText: true,
-				tabId,
-				origin,
-			});
-			if (!ipa) {
-				return null;
-			}
-			this.ipaTextCache.set(cacheKey, ipa);
-		}
-		return this.ipaTextCache.get(cacheKey);
-	}
-
-	/**
-	 * @param {{
-	 *     input: string,
-	 *     options: OptionsIpa,
-	 *     analysis: WordAnalyse,
-	 *     toText: boolean,
-	 *     tabId: number,
-	 *     origin: "menuItem" | "action" | "other",
-	 * }}
-	 * @returns {Promise<{ ipa: string | null, save: boolean }>
-	 */
-	async fetchIpaExternally({
-		input,
-		options,
-		analysis,
-		toText,
-		tabId,
-		origin,
-	}) {
-		/**
-		 * @type {{ [key: string]: PronunciationSourceLastError }}
-		 */
-		const le = await this.sourceLastErrorTable.getAll();
-		const now = new Date();
-		const datetime = now.toISOString();
-		const timestamp = now.getTime();
-		/**
-		 * @type {IpaSource[]}
-		 */
-		const sources = [
-			is.ISCambridge,
-			is.ISOxford,
-			is.ISAntvaset,
-			is.ISUnalengua,
-		]
-			 .map(S => new S(options.sources[S.name]))
-			.filter(s => s.enabled(input, toText, le[s.name]))
-			.sort((l, r) => l.order(toText) - r.order(toText));
-		for (const s of sources) {
-			console.log(`Searching IPA in ${s.name}`);
-			try {
-				const ipa = await s.fetch(input, analysis);
-				if (ipa) {
-					return { ipa, save: s.save };
-				}
-			} catch (error) {
-				console.log({ error });
-				if (s.saveError) {
-					await this.saveError(`${s.name}: ${input}`, error);
-				}
-				if (error?.status && error.status !== 404) {
-					/**
-					 * @type {PronunciationSourceLastError}
-					 */
-					const lastError = {
-						source: s.name,
-						datetime,
-						status: error.status,
-						timestamp,
-						message: error.message,
-						messageContentType: error.messageContentType,
-						error: removeMethods(error?.error ?? {}),
-					};
-					await this.sourceLastErrorTable.set(s.name, lastError);
-					if (options.showSourceLastError) {
-						await this.showInfo({
-							info: `${lastError.source}: ${lastError.status}`,
-							tabId,
-							origin,
-						});
-					}
-				}
-			}
-		}
-		return {
-			ipa: null,
-			save: false,
-		};
-	}
-
-	/**
-	 * @param {{
-	 *     word: string,
-	 *     options: OptionsAudio,
-	 *     analysis: WordAnalyse,
-	 *     tabId: number,
-	 *     origin: "menuItem" | "action" | "other",
-	 * }}
-	 * @returns {Promise<HTMLAudioElement | null>}
-	 */
-	async fetchAudio({ word, options, analysis, tabId, origin }) {
-		if (!options.enabled) {
-			console.log("Play audio is disabled");
-			return null;
-		}
-		/**
-		  * @type {HTMLAudioElement | null}
-		  */
-		let audio = this.audioCache.get(word) ?? null;
-		if (audio) {
-			return audio;
-		}
-		/**
-		 * @type {string | null}
-		 */
-		let base64 = await this.audioTable.getValue(word);
-		if (!base64) {
-			const { blob, save } = await this.fetchAudioExternally({
-				input: word,
-				options,
-				analysis,
-				toText: false,
-				tabId,
-				origin,
-			});
-			if (!blob) {
-				return null;
-			}
-			const { error, value } = await goString(blob2base64(blob));
-			base64 = value;
-			if (error) {
-				await this.saveError(`blob2base64: ${word}`, error);
-				return null;
-			}
-			if (save) {
-				console.log(`Adding ${word} to audio storage`);
-				await this.audioTable.set(word, base64);
-			}
-		}
-		audio = new Audio(base64);
-		this.audioCache.set(word, audio);
-		return audio;
-	}
-
-	/**
-	 * @param {{
-	 *     cacheKey: string,
-	 *     input: string,
-	 *     options: OptionsAudio,
-	 *     tabId: number,
-	 *     origin: "menuItem" | "action" | "other",
-	 * }}
-	 * @returns {Promise<HTMLAudioElement | null>}
-	 */
-	async fetchAudioText({ cacheKey, input, options, tabId, origin}) {
-		if (!options.text.enabled) {
-			console.log("Play audio is disabled to text");
-			return null;
-		}
-		/**
-		 * @type {HTMLAudioElement | null}
-		 */
-		let audio = this.audioCache.get(cacheKey) ?? null;
-		if (audio) {
-			return audio;
-		}
-		/**
-		 * @type {string | null}
-		 */
-		let base64 = await this.audioTextTable.getValue(cacheKey);
-		if (!base64) {
-			const { blob, save } = await this.fetchAudioExternally({
-				input,
-				options,
-				analysis: {
-					root: "",
-					confidence: 1,
-					type: "Text",
-					isNoun: false,
-					isVerb: false,
-					isValid: true,
-					isText: true,
-				},
-				toText: true,
-				tabId,
-				origin,
-			});
-			if (!blob) {
-				return null;
-			}
-			const { error, value } = await goString(blob2base64(blob));
-			base64 = value;
-			if (error) {
-				await this.saveError(`blob2base64: ${word}`, error);
-				return null;
-			}
-			if (save && options.text.save) {
-				let short = input;
-				if (short.length > 15) {
-					const begin = input.slice(0, 7);
-					const end = input.slice(-5);
-					short = `${begin}...${end}`;
-				}
-				console.log(`Adding [${short}] to audioText storage`);
-				await this.audioTextTable.set(cacheKey, base64);
-			}
-		}
-		audio = new Audio(base64);
-		this.audioTextCache.set(cacheKey, audio);
-		return audio;
-	}
-
-	/**
-	 * @param {{
-	 *     input: string,
-	 *     options: OptionsAudio,
-	 *     analysis: WordAnalyse,
-	 *     toText: boolean,
-	 *     tabId: number,
-	 *     origin: "menuItem" | "action" | "other",
-	 * }}
-	 * @returns {Promise<{ blob: Blob | null, save: boolean }>
-	 */
-	async fetchAudioExternally({
-		input,
-		options,
-		analysis,
-		toText,
-		tabId,
-		origin,
-	}) {
-		/**
-		 * @type {{ [key: string]: PronunciationSourceLastError }}
-		 */
-		const le = await this.sourceLastErrorTable.getAll();
-		const now = new Date();
-		const datetime = now.toISOString();
-		const timestamp = now.getTime();
-		/**
-		 * @type {AudioSource[]}
-		 */
-		const sources = [
-			as.ASCambridge,
-			as.ASLinguee,
-			as.ASOxford,
-			as.ASGstatic,
-			as.ASGoogleSpeech,
-			as.ASResponsiveVoice,
-			as.ASUnrealSpeech,
-			as.ASSpeechify,
-			as.ASPlayHt,
-			as.ASElevenLabs,
-			as.ASAmazonPolly,
-			as.ASOpenAi,
-			as.ASDeepSeek,
-		]
-			.map(S => new S(options.sources[S.name]))
-			.filter(s => s.enabled(input, toText, le[s.name]))
-			.sort((l, r) => l.order(toText) - r.order(toText));
-		for (const s of sources) {
-			console.log(`Searching audio in ${s.name}`);
-			try {
-				const blob = await s.fetch(input, analysis);
-				if (blob) {
-					return { blob, save: s.save };
-				}
-			} catch (error) {
-				if (s.saveError) {
-					await this.saveError(`${s.name}: ${input}`, error);
-				}
-				if (error?.status && error.status !== 404) {
-					/**
-					 * @type {PronunciationSourceLastError}
-					 */
-					const lastError = {
-						source: s.name,
-						datetime,
-						status: error.status,
-						timestamp,
-						message: error.message,
-						messageContentType: error.messageContentType,
-						error: removeMethods(error?.error ?? {}),
-					};
-					await this.sourceLastErrorTable.set(s.name, lastError);
-					if (options.showSourceLastError) {
-						await this.showInfo({
-							info: `${lastError.source}: ${lastError.status}`,
-							tabId,
-							origin,
-						});
-					}
-				}
-			}
-		}
-		return {
-			blob: null,
-			save: false,
-		};
 	}
 
 	/**
@@ -753,7 +194,14 @@ export default class Addon {
 		} catch (error) {
 			console.error(error);
 		}
-		browser?.menus?.create({ id, title });
+		browser?.menus?.create({
+			id,
+			title,
+			contexts: ["selection"],
+			enabled: true,
+			type: "normal",
+			visible: true,
+		});
 	}
 
 	/**
@@ -781,9 +229,13 @@ export default class Addon {
 	async actionOnClicked(tab) {
 		try {
 			/**
-			 * @type {BackgroundMessage}
+			 * @type {ClientMessage}
 			 */
-			const message = { type: "getSelectedText", origin: "action" };
+			const message = {
+				target: "client",
+				type: "getSelectedText",
+				origin: "action",
+			};
 			/**
 			 * @type {string | null}
 			 */
@@ -913,9 +365,10 @@ export default class Addon {
 	 */
 	async showInfo({ info, closeTimeout=5000, tabId, origin }) {
 		/**
-		 * @type {BackgroundMessage}
+		 * @type {ClientMessage}
 		 */
 		const message = {
+			target: "client",
 			type: "showPopup",
 			origin,
 			showPopup: {

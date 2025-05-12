@@ -6,10 +6,12 @@ import AudioSource from "./audiosource.js";
 export default class ASPlayHt extends AudioSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptAudioPlayHt} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -28,24 +30,20 @@ export default class ASPlayHt extends AudioSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {boolean} toText
-	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText, lastError) {
+	get enabled() {
 		if (!this.options.api.userId || !this.options.api.key) {
 			return false;
 		}
-		return super.enabled(input, toText, lastError);
+		return super.enabled;
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const input = this.pi.input;
 		const endpoint = "https://api.play.ht/api/v2/tts/stream";
 		const response = await fetch(endpoint, {
 			method: "POST",

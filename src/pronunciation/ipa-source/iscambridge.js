@@ -1,5 +1,5 @@
 import IpaSource from "./ipasource.js";
-import { url2document } from "../utils/fetch.js";
+import { url2document } from "../../utils/fetch.js";
 
 /**
  * @implements {IpaSource}
@@ -7,10 +7,12 @@ import { url2document } from "../utils/fetch.js";
 export default class ISCambridge extends IpaSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptIpaCambridge} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -29,19 +31,19 @@ export default class ISCambridge extends IpaSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const input = this.pi.input;
+		const analysis = await this.pi.analysis();
 		if (
 			!analysis.isValid ||
 			(analysis.isVerb && analysis.root !== input)
 		) {
 			throw new Error(`${input} is not in root form`);
 		}
-		const base = "https://dictionary.cambridge.org/us/dictionary/english/";
-		const document = await url2document(`${base}${input}`);
+		const endpoint = "https://dictionary.cambridge.org/us/dictionary/english/";
+		const document = await url2document(`${endpoint}${input}`);
 		const entry = document.querySelector(".entry:has(.ipa)");
 		if (!entry) {
 			throw new Error(`Entry not found for ${input}`);

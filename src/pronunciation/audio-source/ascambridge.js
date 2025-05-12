@@ -1,6 +1,6 @@
 import AudioSource from "./audiosource.js";
-import { splitWords } from "../utils/string.js";
-import { url2blob, url2document } from "../utils/fetch.js";
+import { splitWords } from "../../utils/string.js";
+import { url2blob, url2document } from "../../utils/fetch.js";
 
 /**
  * @implements {AudioSource}
@@ -8,10 +8,12 @@ import { url2blob, url2document } from "../utils/fetch.js";
 export default class ASCambridge extends AudioSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptAudioCambridge} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -30,11 +32,11 @@ export default class ASCambridge extends AudioSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const analysis = await this.pi.analysis();
+		const input = this.pi.input;
 		if (
 			!analysis.isValid ||
 			(analysis.isVerb && analysis.root !== input)
@@ -42,7 +44,7 @@ export default class ASCambridge extends AudioSource {
 			throw new Error(`${input} is not in root form`);
 		}
 		const endpoint = "https://dictionary.cambridge.org/us/dictionary/english/";
-		const document = await url2document(`${endpoint}/${input}`);
+		const document = await url2document(`${endpoint}${input}`);
 		const entry = document.querySelector(".entry:has(.ipa)");
 		if (!entry) {
 			throw new Error(`Entry not found for ${input}`);

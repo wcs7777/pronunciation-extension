@@ -6,10 +6,12 @@ import IpaSource from "./ipasource.js";
 export default class ISAntvaset extends IpaSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptIpaAntvaset} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -28,11 +30,10 @@ export default class ISAntvaset extends IpaSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const input = this.pi.input;
 		const endpoint = "https://www.antvaset.com/api";
 		const response = await fetch(endpoint, {
 			method: "POST",

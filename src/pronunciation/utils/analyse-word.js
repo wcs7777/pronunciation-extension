@@ -1,7 +1,7 @@
-import "../utils/compromise.js";
-import MemoryCache from "./memory-cache.js";
+import "./compromise.js";
+import MemoryCache from "../../utils/memory-cache.js";
 
-const analysisCache = new MemoryCache("fetchDatamuseCache", 10000);
+const analysisCache = new MemoryCache("analysisCache", 10000);
 const datamuseCache = new MemoryCache("fetchDatamuseCache", 10000);
 
 /**

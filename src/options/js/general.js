@@ -63,9 +63,10 @@ async function setFieldsValues(shouldSendMessage=true) {
 	el.alertMaxSelectionLength.value = opt.alertMaxSelectionLength.toString();
 	if (shouldSendMessage) {
 		/**
-		 * @type {BackgroundMessage}
+		 * @type {ClientMessage}
 		 */
 		const message = {
+			target: "client",
 			type: "changeAlertMaxSelectionOptions",
 			origin: "other",
 			changeAlertMaxSelectionOptions: {

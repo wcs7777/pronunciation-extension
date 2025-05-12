@@ -6,10 +6,12 @@ import IpaSource from "./ipasource.js";
 export default class ISUnalengua extends IpaSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptIpaUnalengua} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -28,11 +30,10 @@ export default class ISUnalengua extends IpaSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const input = this.pi.input;
 		const response = await fetch("https://api2.unalengua.com/ipav3", {
 			method: "POST",
 			credentials: "omit",

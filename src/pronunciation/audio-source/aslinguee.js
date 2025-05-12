@@ -1,6 +1,6 @@
 import AudioSource from "./audiosource.js";
-import { splitWords } from "../utils/string.js";
-import { url2blob, url2document } from "../utils/fetch.js";
+import { splitWords } from "../../utils/string.js";
+import { url2blob, url2document } from "../../utils/fetch.js";
 
 const urlPattern = /(https:\/\/assets\.linguee\.com\/static\/[\w-]+\/mp3\/EN_US\/\w+\/[\w-]+.*?)"/;
 
@@ -10,10 +10,12 @@ const urlPattern = /(https:\/\/assets\.linguee\.com\/static\/[\w-]+\/mp3\/EN_US\
 export default class ASLinguee extends AudioSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptAudioLinguee} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -32,11 +34,11 @@ export default class ASLinguee extends AudioSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const input = this.pi.input;
+		const analysis = await this.pi.analysis();
 		if (!analysis.isValid) {
 			throw new Error(`${input} probably is not a valid word`);
 		}

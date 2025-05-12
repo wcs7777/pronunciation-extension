@@ -1829,7 +1829,7 @@ button {
 	}
 
 	/**
-	 * @param {BackgroundMessage} message
+	 * @param {ClientMessage} message
 	 * @returns {Promise<string | void>}
 	 */
 	async function onMessage(message) {
@@ -1848,7 +1848,7 @@ button {
 	}
 
 	/**
-	 * @param {BackgroundMessage} message
+	 * @param {ClientMessage} message
 	 * @returns {Promise<void>}
 	 */
 	async function showIpa(message) {
@@ -1861,7 +1861,7 @@ button {
 	}
 
 	/**
-	 * @param {BackgroundMessage} message
+	 * @param {ClientMessage} message
 	 * @returns {Promise<string>}
 	 */
 	async function getSelectedText(message) {
@@ -1869,7 +1869,7 @@ button {
 	}
 
 	/**
-	 * @param {BackgroundMessage} message
+	 * @param {ClientMessage} message
 	 * @returns {Promise<void>}
 	 */
 	async function playAudio(message) {
@@ -1901,7 +1901,7 @@ button {
 	}
 
 	/**
-	 * @param {BackgroundMessage} message
+	 * @param {ClientMessage} message
 	 * @returns {Promise<void>}
 	 */
 	async function showPopupFromBackground(message) {
@@ -1913,7 +1913,7 @@ button {
 	}
 
 	/**
-	 * @param {BackgroundMessage} message
+	 * @param {ClientMessage} message
 	 * @returns {Promise<void>}
 	 */
 	async function changeAlertMaxSelectionOptionsCB(message) {

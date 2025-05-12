@@ -3,13 +3,15 @@ import AudioSource from "./audiosource.js";
 /**
  * @implements {AudioSource}
  */
-export default class ASOpenAi extends AudioSource {
+export default class ASDeepSeek extends AudioSource {
 
 	/**
-	 * @param {OptAudioOpenAi} options
+	 * @param {PronunciationInput} pi
+	 * @param {OptAudioDeepSeek} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -17,36 +19,32 @@ export default class ASOpenAi extends AudioSource {
 	 * @returns {string}
 	 */
 	static get name() {
-		return "openAi";
+		return "deepSeek";
 	}
 
 	/**
 	 * @returns {string}
 	 */
 	get name() {
-		return ASOpenAi.name;
+		return ASDeepSeek.name;
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {boolean} toText
-	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText, lastError) {
+	get enabled() {
 		if (!this.options.api.key) {
 			return false;
 		}
-		return super.enabled(input, toText, lastError);
+		return super.enabled;
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input, analysis) {
-		const endpoint = "https://api.openai.com/v1/audio/speech";
+	async fetch() {
+		const input = this.pi.input;
+		const endpoint = "https://api.deepinfra.com/v1/openai/audio/speech";
 		const response = await fetch(endpoint, {
 			method: "POST",
 			credentials: "omit",

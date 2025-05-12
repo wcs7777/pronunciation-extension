@@ -5,10 +5,20 @@ declare global {
 	type PronunciationSource = {
 		static name: string,
 		name: string,
-		enabled: (input: string, toText: boolean, lastError?: PronunciationSourceLastError) => boolean,
-		order: (toText: boolean) => number,
+		enabled: boolean,
+		order: number,
 		save: boolean,
 		saveError: boolean,
+	};
+
+	type IpaSource = PronunciationSource & {
+		constructor: (pi: PronunciationInput, options: PronunciationSourceOptions, lastError?: PronunciationSourceLastError) => IpaSource;
+		fetch: () => Promise<string>,
+	};
+
+	type AudioSource = PronunciationSource & {
+		constructor: (pi: PronunciationInput, options: PronunciationSourceOptions, lastError?: PronunciationSourceLastError) => AudioSource;
+		fetch: () => Promise<Blob>,
 	};
 
 	type PronunciationSourceOptions = {
@@ -23,36 +33,42 @@ declare global {
 		okStatus: number[],
 	};
 
-	type IpaSource = PronunciationSource & {
-		fetch: (input: string, analysis: WordAnalyse) => Promise<string>,
-	};
-
-	type AudioSource = PronunciationSource & {
-		fetch: (input: string, analysis: WordAnalyse) => Promise<Blob>,
+	type PronunciationInput = {
+		input: string,
+		firstWord: string,
+		text: string,
+		words: string[],
+		length: number,
+		totalWords: number,
+		hasWords: boolean,
+		isText: boolean,
+		analysis: () => Promise<WordAnalyse>,
+		key: () => Promise<string>,
+		raw: string,
 	};
 
 	type PronunciationSourceLastError = {
 		source: string,
 		datetime: Date,
-		status: number,
+		status?: number,
 		timestamp: number,
-		message: string,
-		messageContentType: string,
+		message?: string,
+		messageContentType?: string,
 		error: Error,
 	};
 
 	type Table = {
 		name: string,
-		async set(key: string, value: any): Promise<void>,
-		async setMany(values: { [key: string]: any }): Promise<void>,
-		async get(keys: string | string[] | null): Promise<{[key: string]: any}>,
-		async getValue(key: string): Promise<any>,
-		async getValues(keys: string | string[] | null): Promise<any[]>,
-		async getAll(): Promise<{ [key: string]: any }>,
-		async getKeys(): Promise<string[]>,
-		async size(): Promise<number>,
-		async remove(keys: string | string[]): Promise<void>,
-		async clear(): Promise<void>,
+		set: (key: string, value: any) => Promise<void>,
+		setMany: (values: { [key: string]: any }) => Promise<void>,
+		get: (keys: string | string[] | null) => Promise<{[key: string]: any}>,
+		getValue: (key: string) => Promise<any>,
+		getValues: (keys: string | string[] | null) => Promise<any[]>,
+		getAll: () => Promise<{ [key: string]: any }>,
+		getKeys: () => Promise<string[]>,
+		size: () => Promise<number>,
+		remove: (keys: string | string[]) => Promise<void>,
+		clear: () => Promise<void>,
 	};
 
 	type MemoryCache = {
@@ -255,7 +271,8 @@ declare global {
 		restoreDefaultIpaShortcut: string,
 	};
 
-	type BackgroundMessage = {
+	type ClientMessage = {
+		target: "client",
 		type: "showIpa" | "getSelectedText" | "playAudio" | "showPopup" | "changeAlertMaxSelectionOptions",
 		origin: "menuItem" | "action" | "other",
 		showIpa?: {

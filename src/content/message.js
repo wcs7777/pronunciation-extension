@@ -17,7 +17,7 @@ if (!browser.runtime.onMessage.hasListener(onMessage)) {
 }
 
 /**
- * @param {BackgroundMessage} message
+ * @param {ClientMessage} message
  * @returns {Promise<string | void>}
  */
 async function onMessage(message) {
@@ -36,7 +36,7 @@ async function onMessage(message) {
 }
 
 /**
- * @param {BackgroundMessage} message
+ * @param {ClientMessage} message
  * @returns {Promise<void>}
  */
 async function showIpa(message) {
@@ -49,7 +49,7 @@ async function showIpa(message) {
 }
 
 /**
- * @param {BackgroundMessage} message
+ * @param {ClientMessage} message
  * @returns {Promise<string>}
  */
 async function getSelectedText(message) {
@@ -57,7 +57,7 @@ async function getSelectedText(message) {
 }
 
 /**
- * @param {BackgroundMessage} message
+ * @param {ClientMessage} message
  * @returns {Promise<void>}
  */
 async function playAudio(message) {
@@ -89,7 +89,7 @@ async function playAudio(message) {
 }
 
 /**
- * @param {BackgroundMessage} message
+ * @param {ClientMessage} message
  * @returns {Promise<void>}
  */
 async function showPopupFromBackground(message) {
@@ -101,7 +101,7 @@ async function showPopupFromBackground(message) {
 }
 
 /**
- * @param {BackgroundMessage} message
+ * @param {ClientMessage} message
  * @returns {Promise<void>}
  */
 async function changeAlertMaxSelectionOptionsCB(message) {

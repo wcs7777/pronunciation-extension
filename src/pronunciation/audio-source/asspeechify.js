@@ -1,5 +1,5 @@
 import AudioSource from "./audiosource.js";
-import { base64ToBlob } from "../utils/element.js";
+import { base64ToBlob } from "../../utils/element.js";
 
 /**
  * @implements {AudioSource}
@@ -7,10 +7,12 @@ import { base64ToBlob } from "../utils/element.js";
 export default class ASSpeechify extends AudioSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptAudioSpeechify} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -29,24 +31,20 @@ export default class ASSpeechify extends AudioSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {boolean} toText
-	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText, lastError) {
+	get enabled() {
 		if (!this.options.api.token) {
 			return false;
 		}
-		return super.enabled(input, toText, lastError);
+		return super.enabled;
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const input = this.pi.input;
 		const endpoint = "https://api.sws.speechify.com/v1/audio/speech";
 		const response = await fetch(endpoint, {
 			method: "POST",

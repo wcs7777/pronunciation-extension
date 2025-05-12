@@ -1,5 +1,5 @@
 import AudioSource from "./audiosource.js";
-import { fetchAws } from "../utils/aws-sign-v4.js";
+import { fetchAws } from "../../utils/aws-sign-v4.js";
 
 /**
  * @implements {AudioSource}
@@ -7,10 +7,12 @@ import { fetchAws } from "../utils/aws-sign-v4.js";
 export default class ASAmazonPolly extends AudioSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptAudioAmazonPolly} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -29,27 +31,23 @@ export default class ASAmazonPolly extends AudioSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {boolean} toText
-	 * @param {?PronunciationSourceLastError} lastError
 	 * @returns {boolean}
 	 */
-	enabled(input, toText, lastError) {
+	get enabled() {
 		if (
 			!this.options.api.accessKeyId ||
 			!this.options.api.secretAccessKey
 		) {
 			return false;
 		}
-		return super.enabled(input, toText, lastError);
+		return super.enabled;
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const input = this.pi.input;
 		const url = `https://${this.options.api.endpoint}/v1/speech`;
 		const response = await fetchAws(url,
 			{

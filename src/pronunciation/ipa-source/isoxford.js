@@ -1,6 +1,6 @@
 import IpaSource from "./ipasource.js";
-import { url2document } from "../utils/fetch.js";
-import { splitWords } from "../utils/string.js";
+import { url2document } from "../../utils/fetch.js";
+import { splitWords } from "../../utils/string.js";
 
 /**
  * @implements {IpaSource}
@@ -8,10 +8,12 @@ import { splitWords } from "../utils/string.js";
 export default class ISOxford extends IpaSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptIpaOxford} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -30,11 +32,11 @@ export default class ISOxford extends IpaSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<string>}
 	 */
-	async fetch(input, analysis) {
+	async fetch() {
+		const input = this.pi.input;
+		const analysis = await this.pi.analysis();
 		if (!analysis.isValid) {
 			throw new Error(`${input} probably is not a valid word`);
 		}

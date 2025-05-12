@@ -1,5 +1,5 @@
 import AudioSource from "./audiosource.js";
-import { url2blob } from "../utils/fetch.js";
+import { url2blob } from "../../utils/fetch.js";
 
 /**
  * @implements {AudioSource}
@@ -7,10 +7,12 @@ import { url2blob } from "../utils/fetch.js";
 export default class ASGoogleSpeech extends AudioSource {
 
 	/**
+	 * @param {PronunciationInput} pi
 	 * @param {OptAudioGoogleSpeech} options
+	 * @param {?PronunciationSourceLastError} lastError
 	 */
-	constructor(options) {
-		super(options);
+	constructor(pi, options, lastError) {
+		super(pi, options, lastError);
 		this.options = options;
 	}
 
@@ -29,11 +31,10 @@ export default class ASGoogleSpeech extends AudioSource {
 	}
 
 	/**
-	 * @param {string} input
-	 * @param {WordAnalyse} analysis
 	 * @returns {Promise<Blob>}
 	 */
-	fetch(input, analysis) {
+	fetch() {
+		const input = this.pi.input;
 		const endpoint = "https://www.google.com/speech-api/v1/synthesize?";
 		const params = new URLSearchParams({
 			text: input,
