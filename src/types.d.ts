@@ -8,7 +8,6 @@ declare global {
 		enabled: boolean,
 		order: number,
 		save: boolean,
-		saveError: boolean,
 	};
 
 	type IpaSource = PronunciationSource & {
@@ -27,7 +26,6 @@ declare global {
 		enabledToText: boolean,
 		orderToText: number,
 		save: boolean,
-		saveError: boolean,
 		textMaxLength: number,
 		waitRateLimitTimeout: number,
 		okStatus: number[],

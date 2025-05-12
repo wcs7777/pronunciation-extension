@@ -52,11 +52,4 @@ export default class AudioSource {
 		return this.options.save;
 	}
 
-	/**
-	 * @returns {boolean}
-	 */
-	get saveError() {
-		return this.options.saveError;
-	}
-
 }
