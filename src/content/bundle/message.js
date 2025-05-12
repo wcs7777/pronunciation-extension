@@ -1830,9 +1830,14 @@ button {
 
 	/**
 	 * @param {ClientMessage} message
-	 * @returns {Promise<string | void>}
+	 * @param {chrome.runtime.MessageSender} sender
+	 * @param {(any) => void} sendResponse
+	 * @returns {boolean}
 	 */
-	async function onMessage(message) {
+	function onMessage(message, sender, sendResponse) {
+		if (message.target !== "client") {
+			return false;
+		}
 		const actions = {
 			"showIpa": showIpa,
 			"getSelectedText": getSelectedText,
@@ -1843,8 +1848,10 @@ button {
 		if (!message.type in actions) {
 			throw new Error(`Invalid message type: ${message.type}`);
 		}
-		const value = await actions[message.type](message);
-		return value;
+		actions[message.type](message)
+			.then(sendResponse)
+			.catch(console.error);
+		return true;
 	}
 
 	/**
