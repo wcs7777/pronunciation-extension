@@ -677,7 +677,6 @@
 
 	/*
 	a
-	control
 	defaultIpa
 	defaultOptions
 	errorsTable

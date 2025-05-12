@@ -11,7 +11,6 @@ export const defaultIpaTable = new TableByParentKey(addonStorage, "defaultIpa");
 export const optionsTable = new TableByParentKey(addonStorage, "options");
 export const optionsCache = new MemoryCache("optionsCache", 100);
 export const defaultOptionsTable = new TableByParentKey(addonStorage, "defaultOptions");
-export const controlTable = new TableByParentKey(addonStorage, "control");
 export const errorsTable = new TableByParentKey(addonStorage, "errorsTable");
 export const sourceLastErrorTable = new TableByParentKey(addonStorage, "sourceLastErrorTable");
 export const audioTextTable = new TableByKeyPrefix(addonStorage, "ta");
@@ -20,7 +19,6 @@ export const ipaTextCache = new MemoryCache("ipaTextCache", 100); // no storage
 
 /*
 a
-control
 defaultIpa
 defaultOptions
 errorsTable
