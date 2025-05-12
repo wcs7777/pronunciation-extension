@@ -8,6 +8,7 @@ import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
 import { migrateToV3, migrateToV3_2_0 } from "./migrations.js";
 
 const isTemporary = true;
+let startupPromise = startup();
 
 if (!browser.runtime.onInstalled.hasListener(installedCB)) {
 	browser.runtime.onInstalled.addListener(installedCB);
@@ -23,8 +24,17 @@ if (browser.menus) {
 		browser.menus.onClicked.addListener(menuOnClickedCB);
 	}
 }
-
-startup().catch(console.error);
+if (browser.alarms) {
+	browser.alarms.create(
+		"awaitStartupPromise",
+		{
+			when: Date.now() + 5000,
+		},
+	)?.catch(console.error);
+	if (!browser.alarms.onAlarm.hasListener(alarmCB)) {
+		browser.alarms.onAlarm.addListener(alarmCB);
+	}
+}
 
 /**
  * @type{IpaSource[]}
@@ -85,7 +95,6 @@ async function startup() {
 			const path = "src/options/pages/general.html";
 			await browser.tabs.create({ url: browser.runtime.getURL(path) });
 		}
-		console.log({ mergedOptions });
 		console.log("Startup end");
 	} catch (error) {
 		await saveError("startup", error);
@@ -133,6 +142,10 @@ async function setMenuItem(accessKey) {
 		console.log("browser.menus api not available");
 		return;
 	}
+	if (!accessKey) {
+		console.log(`Invalid accessKey: ${accessKey}`);
+		return;
+	}
 	const id = "P";
 	try {
 		await browser.menus.remove(id);
@@ -162,6 +175,7 @@ async function ensureOptions() {
 		st.optionsCache.setMany(options);
 	}
 	if (!options.ipa || !options.audio) {
+		await startupPromise;
 		await startup();
 		options = st.optionsCache.getAll();
 	}
@@ -190,6 +204,7 @@ async function saveError(context, error) {
  * @returns {Promise<void>}
  */
 async function installedCB(details) {
+	await startupPromise;
 	if (details.reason === "update") {
 		const [major, minor, bug] = details
 			.previousVersion
@@ -288,27 +303,36 @@ async function storageOnChangedCB(changes, areaName) {
 			st.optionsCache.setMany(await st.optionsTable.getAll());
 			// only works if TableByParentKey
 			const optionsChange = changes[optionsKeys];
-			if (optionsChange.oldValue) {
-				const oldAccessKey = optionsChange?.oldValue?.accessKey;
-				const newAccessKey = optionsChange?.newValue?.accessKey;
-				if (oldAccessKey !== newAccessKey) {
-					await setMenuItem(newAccessKey);
-				}
-				const oldIpa = optionsChange?.oldValue?.ipa;
-				const newIpa = optionsChange?.newValue?.ipa;
-				if (!deepEquals(oldIpa, newIpa)) {
-					console.log(`Cleaning ${st.ipaTextCache.name} cache`);
-					st.ipaTextCache.clear();
-				}
-				const oldAudio = optionsChange?.oldValue?.audio;
-				const newAudio = optionsChange?.newValue?.audio;
-				if (!deepEquals(oldAudio, newAudio)) {
-					console.log(`Cleaning ${st.audioTextCache.name} cache`);
-					st.audioTextCache.clear();
-				}
+			const oldAccessKey = optionsChange?.oldValue?.accessKey;
+			const newAccessKey = optionsChange?.newValue?.accessKey;
+			if (oldAccessKey !== newAccessKey) {
+				await setMenuItem(newAccessKey);
+			}
+			const oldIpa = optionsChange?.oldValue?.ipa;
+			const newIpa = optionsChange?.newValue?.ipa;
+			if (!deepEquals(oldIpa, newIpa)) {
+				console.log(`Cleaning ${st.ipaTextCache.name} cache`);
+				st.ipaTextCache.clear();
+			}
+			const oldAudio = optionsChange?.oldValue?.audio;
+			const newAudio = optionsChange?.newValue?.audio;
+			if (!deepEquals(oldAudio, newAudio)) {
+				console.log(`Cleaning ${st.audioTextCache.name} cache`);
+				st.audioTextCache.clear();
 			}
 		}
 	} catch (error) {
 		await saveError("storageOnChanged", error);
+	}
+}
+
+/**
+ * @param {browser.alarms.Alarm} alarm
+ * @returns {Promise<void>}
+ */
+async function alarmCB(alarm) {
+	console.log({ alarm });
+	if (alarm.name === "awaitStartupPromise") {
+		await startupPromise;
 	}
 }
