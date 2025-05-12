@@ -1830,7 +1830,7 @@ button {
 
 	/**
 	 * @param {ClientMessage} message
-	 * @param {chrome.runtime.MessageSender} sender
+	 * @param {browser.runtime.MessageSender} sender
 	 * @param {(any) => void} sendResponse
 	 * @returns {boolean}
 	 */
