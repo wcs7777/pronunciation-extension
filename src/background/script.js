@@ -5,16 +5,17 @@ import defaultOptions from "../utils/default-options.js";
 import Pronunciation from "../pronunciation/pronunciation.js";
 import PronunciationInput from "../pronunciation/pronunciation-input.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
-import { migrateToV3, migrateToV3_2_0 } from "./migrations.js";
-
-const isTemporary = true;
-let startupPromise = startup();
+import {
+	migrateToV3,
+	migrateToV3_2_0,
+	migrateToV3_5_0,
+} from "./migrations.js";
 
 if (!browser.runtime.onInstalled.hasListener(installedCB)) {
 	browser.runtime.onInstalled.addListener(installedCB);
 }
-if (!browser.action.onClicked.hasListener(actionOnClickedCB)) {
-	browser.action.onClicked.addListener(actionOnClickedCB);
+if (!browser.browserAction.onClicked.hasListener(actionOnClickedCB)) {
+	browser.browserAction.onClicked.addListener(actionOnClickedCB);
 }
 if (!browser.storage.onChanged.hasListener(storageOnChangedCB)) {
 	browser.storage.onChanged.addListener(storageOnChangedCB);
@@ -23,17 +24,14 @@ if (browser.menus) {
 	if (!browser.menus.onClicked.hasListener(menuOnClickedCB)) {
 		browser.menus.onClicked.addListener(menuOnClickedCB);
 	}
-}
-if (browser.alarms) {
-	browser.alarms.create(
-		"awaitStartupPromise",
-		{
-			when: Date.now() + 5000,
-		},
-	)?.catch(console.error);
-	if (!browser.alarms.onAlarm.hasListener(alarmCB)) {
-		browser.alarms.onAlarm.addListener(alarmCB);
-	}
+	browser.menus.create({
+		id: "A",
+		title: `How2Say - Show audio player`,
+		contexts: ["tab"],
+		enabled: true,
+		type: "normal",
+		visible: true,
+	});
 }
 
 /**
@@ -63,43 +61,6 @@ const audioSources = [
 	as.ASSpeechify,
 	as.ASUnrealSpeech,
 ];
-
-/**
- * @returns {Promise<void>}
- */
-async function startup() {
-	try {
-		if (isTemporary) {
-			console.clear();
-			console.log("Cleaning storage due to temporary installation");
-			await browser.storage.local.clear();
-		}
-		console.log("Startup begin");
-		/**
-		 * @type {Options}
-		 */
-		const currentOptions = await st.optionsTable.getAll();
-		// allow new options settings without break change
-		/**
-		 * @type {Options}
-		 */
-		const mergedOptions = deepMerge(
-			defaultOptions,
-			currentOptions,
-			true,
-		);
-		await st.optionsTable.setMany(mergedOptions);
-		st.optionsCache.setMany(mergedOptions);
-		await setMenuItem(mergedOptions.accessKey);
-		if (!currentOptions.ipa || !currentOptions.audio) {
-			const path = "src/options/pages/general.html";
-			await browser.tabs.create({ url: browser.runtime.getURL(path) });
-		}
-		console.log("Startup end");
-	} catch (error) {
-		await saveError("startup", error);
-	}
-}
 
 /**
  * @param {string} input
@@ -134,6 +95,29 @@ async function pronounce(input, tabId, origin) {
 }
 
 /**
+ * @returns {Promise<Options>}
+ */
+async function storeOptions() {
+	try {
+		// allow new options settings without break change
+		/**
+		 * @type {Options}
+		 */
+		const mergedOptions = deepMerge(
+			defaultOptions,
+			await st.optionsTable.getAll(),
+			true,
+		);
+		await st.optionsTable.setMany(mergedOptions);
+		st.optionsCache.setMany(mergedOptions);
+		await setMenuItem(mergedOptions.accessKey);
+		return mergedOptions;
+	} catch (error) {
+		await saveError("storeOptions", error);
+	}
+}
+
+/**
  * @param {string} accessKey
  * @returns {Promise<void>}
  */
@@ -147,19 +131,18 @@ async function setMenuItem(accessKey) {
 		return;
 	}
 	const id = "P";
-	try {
-		await browser.menus.remove(id);
-	} catch {
-	} finally {
-		browser.menus.create({
-			id,
-			title: `&${accessKey} - How2Say`,
-			contexts: ["selection"],
-			enabled: true,
-			type: "normal",
-			visible: true,
+	return browser.menus.remove(id)
+		.catch(() => {})
+		.finally(() => {
+			browser.menus.create({
+				id,
+				title: `&${accessKey} - How2Say`,
+				contexts: ["selection"],
+				enabled: true,
+				type: "normal",
+				visible: true,
+			});
 		});
-	}
 }
 
 /**
@@ -175,9 +158,7 @@ async function ensureOptions() {
 		st.optionsCache.setMany(options);
 	}
 	if (!options.ipa || !options.audio) {
-		await startupPromise;
-		await startup();
-		options = st.optionsCache.getAll();
+		options = await storeOptions();
 	}
 	return options;
 }
@@ -198,14 +179,22 @@ async function saveError(context, error) {
 		error: errorObj,
 	});
 }
-	
+
 /**
  * @param {browser.runtime._OnInstalledDetails} details
  * @returns {Promise<void>}
  */
 async function installedCB(details) {
-	await startupPromise;
-	if (details.reason === "update") {
+	if (details.temporary) {
+		console.clear();
+		console.log("Cleaning storage due to temporary installation");
+	}
+	console.log("Startup begin");
+	await storeOptions();
+	if (details.reason === "install") {
+		const path = "src/options/pages/general.html";
+		await browser.tabs.create({ url: browser.runtime.getURL(path) });
+	} else if (details.reason === "update") {
 		const [major, minor, bug] = details
 			.previousVersion
 			.split(".")
@@ -213,8 +202,13 @@ async function installedCB(details) {
 		if (major < 3) { // break change
 			await migrateToV3();
 		}
-		if (major === 3 && minor < 2) {
-			await migrateToV3_2_0();
+		if (major === 3) {
+			if (minor < 2) {
+				await migrateToV3_2_0();
+			}
+			if (minor < 5) {
+				await migrateToV3_5_0();
+			}
 		}
 	}
 }
@@ -226,12 +220,16 @@ async function installedCB(details) {
  */
 async function menuOnClickedCB(info, tab) {
 	try {
-		const selectedText = (info.selectionText ?? "").trim();
-		if (selectedText.length == 0) {
-			console.log("Nothing was selected");
-			return;
+		if (info.menuItemId === "P") {
+			const selectedText = (info.selectionText ?? "").trim();
+			if (selectedText.length == 0) {
+				console.log("Nothing was selected");
+				return;
+			}
+			await pronounce(selectedText, tab.id, "menuItem");
+		} else if (info.menuItemId === "A") {
+			console.log("Show audio player");
 		}
-		await pronounce(selectedText, tab.id, "menuItem");
 	} catch (error) {
 		await saveError("menuOnClicked", error);
 	}
@@ -258,7 +256,7 @@ async function actionOnClickedCB(tab) {
 			tab.id,
 			message,
 		);
-		if (selectedText?.length == 0) {
+		if (selectedText?.length === 0) {
 			console.log("Nothing was selected");
 			return;
 		}
@@ -323,16 +321,5 @@ async function storageOnChangedCB(changes, areaName) {
 		}
 	} catch (error) {
 		await saveError("storageOnChanged", error);
-	}
-}
-
-/**
- * @param {browser.alarms.Alarm} alarm
- * @returns {Promise<void>}
- */
-async function alarmCB(alarm) {
-	console.log({ alarm });
-	if (alarm.name === "awaitStartupPromise") {
-		await startupPromise;
 	}
 }
