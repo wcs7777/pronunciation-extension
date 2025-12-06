@@ -30,9 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 el.save.addEventListener("click", async () => {
 	try {
 		const defaultApi = defaultOptions.audio.sources.openAi.api;
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			audio: {
 				sources: {
@@ -59,9 +57,7 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	const optApi = opt.audio.sources.openAi.api;
 	el.key.value = optApi.key ?? "";

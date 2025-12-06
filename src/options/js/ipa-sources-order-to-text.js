@@ -14,9 +14,7 @@ const el = {
 	save: byId("save"),
 };
 
-/**
- * @type {SortableJS}
- */
+/** @type {SortableJS} */
 let sortable = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -30,9 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async () => {
 	try {
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			ipa: {
 				sources: {
@@ -55,9 +51,7 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	el.unalenguaEnabled.checked = opt.ipa.sources.unalengua.enabledToText;
 	sortSortableOrder(sortable, el, opt.ipa.sources, "order-to-text");

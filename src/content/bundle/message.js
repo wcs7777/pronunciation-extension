@@ -64,9 +64,7 @@
 	const template = createTemplate();
 	document.body.appendChild(template);
 
-	/**
-	 * @type {OptionsPopup}
-	 */
+	/** @type {OptionsPopup} */
 	const defaultOptionsPopup = {
 		text: "Default text",
 		style: {
@@ -100,9 +98,7 @@
 	 */
 	function showPopup(options, textFn=null, closeConditionFn=null) {
 
-		/**
-		 * @type {OptionsPopup}
-		 */
+		/** @type {OptionsPopup} */
 		const opt = deepMerge(defaultOptionsPopup, options);
 		const host = document.createElement("span");
 		host.dataset.role = "pronunciation-addon-popup-host";
@@ -389,9 +385,7 @@
 		 */
 		popupOptions() {
 			const style = this.style();
-			/**
-			 * @type {OptionsPopup}
-			 */
+			/** @type {OptionsPopup} */
 			const options = {
 				text: this.ipa,
 				style: {
@@ -683,9 +677,7 @@
 	 */
 	const byId = (id) => shadow.getElementById(id);
 
-	/**
-	 * @type {PlayerAudioSource[]}
-	 */
+	/** @type {PlayerAudioSource[]} */
 	let sources = [];
 
 	const el = {
@@ -742,9 +734,7 @@
 	};
 
 	(async () => {
-		/**
-		 * @type {OptionsAudio}
-		 */
+		/** @type {OptionsAudio} */
 		const audioOpt = await optionsTable.getValue("audio");
 		opt.playerEnabled = audioOpt.text.playerEnabled;
 		opt.shortcutsEnabled = audioOpt.text.shortcutsEnabled;
@@ -845,9 +835,7 @@
 			testAudio.volume = 0;
 			await testAudio.play();
 			testAudio.pause();
-			/**
-			 * @type {PlayerAudioSource}
-			 */
+			/** @type {PlayerAudioSource} */
 			const source = {
 				id: file.name,
 				title: file.name,
@@ -1923,15 +1911,15 @@ button {
 	async function changeAlertMaxSelectionOptionsCB(message) {
 		const options = message.changeAlertMaxSelectionOptions;
 		if (!options) {
-			throw new Error("Should pass changeAlertMaxSelectionOptionsoptions in message");
+			throw new Error(
+				"Should pass changeAlertMaxSelectionOptionsoptions in message"
+			);
 		}
 		changeOptions(options);
 	}
 
 	(async () => {
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = await optionsTable.getAll();
 		changeOptions({
 			enabled: options.alertMaxSelectionEnabled,

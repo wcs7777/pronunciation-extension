@@ -100,9 +100,7 @@
 	const template = createTemplate();
 	document.body.appendChild(template);
 
-	/**
-	 * @type {OptionsPopup}
-	 */
+	/** @type {OptionsPopup} */
 	const defaultOptionsPopup = {
 		text: "Default text",
 		style: {
@@ -136,9 +134,7 @@
 	 */
 	function showPopup(options, textFn=null, closeConditionFn=null) {
 
-		/**
-		 * @type {OptionsPopup}
-		 */
+		/** @type {OptionsPopup} */
 		const opt = deepMerge(defaultOptionsPopup, options);
 		const host = document.createElement("span");
 		host.dataset.role = "pronunciation-addon-popup-host";
@@ -367,9 +363,7 @@
 		const status = response.status;
 		if (status !== 200) {
 			const message = await response.text();
-			/**
-			 * @type {PronunciationSourceLastError}
-			 */
+			/** @type {PronunciationSourceLastError} */
 			const le = {
 				status,
 				message,
@@ -475,9 +469,7 @@
 		  * @returns {Promise<{ [key: string]: any }>}
 		  */
 		async getAll(removePrefix=true) {
-			/**
-			 * @type {{ [key: string]: any }}
-			 */
+			/** @type {{ [key: string]: any }} */
 			const stored = await this.storage.get();
 			return Object
 				.entries(stored)
@@ -690,9 +682,7 @@
 	 * @returns {Promise<void>}
 	 */
 	async function main() {
-		/**
-		 * @type {OptionsSetPronuncationByShortcut}
-		 */
+		/** @type {OptionsSetPronuncationByShortcut} */
 		const options = await optionsTable.getValue("setPronuncationByShortcut");
 		if (!options.enabled) {
 			return;
@@ -701,9 +691,7 @@
 		const audioElements = Array.from(
 			document.querySelectorAll("div.sound.audio_play_button"),
 		);
-		/**
-		 * @type {HTMLElement}
-		 */
+		/** @type {HTMLElement} */
 		let lastAudioPlayed = document.querySelector(
 			"div.sound.audio_play_button.pron-us",
 		);

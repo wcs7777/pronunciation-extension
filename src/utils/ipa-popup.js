@@ -68,9 +68,7 @@ export default class IpaPopup {
 	 */
 	popupOptions() {
 		const style = this.style();
-		/**
-		 * @type {OptionsPopup}
-		 */
+		/** @type {OptionsPopup} */
 		const options = {
 			text: this.ipa,
 			style: {

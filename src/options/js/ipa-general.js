@@ -26,9 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async () => {
 	try {
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			ipa: {
 				enabled: el.enabled.checked,
@@ -48,9 +46,7 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	el.enabled.checked = opt.ipa.enabled;
 	el.enabledToText.checked = opt.ipa.text.enabled;

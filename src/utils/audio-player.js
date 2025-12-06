@@ -33,9 +33,7 @@ document.addEventListener("securitypolicyviolation", (e) => {
  */
 const byId = (id) => shadow.getElementById(id);
 
-/**
- * @type {PlayerAudioSource[]}
- */
+/** @type {PlayerAudioSource[]} */
 let sources = [];
 
 const el = {
@@ -93,9 +91,7 @@ const action2function = {
 };
 
 (async () => {
-	/**
-	 * @type {OptionsAudio}
-	 */
+	/** @type {OptionsAudio} */
 	const audioOpt = await optionsTable.getValue("audio");
 	opt.playerEnabled = audioOpt.text.playerEnabled;
 	opt.shortcutsEnabled = audioOpt.text.shortcutsEnabled;
@@ -196,9 +192,7 @@ el.inputUpload.addEventListener("change", async () => {
 		testAudio.volume = 0;
 		await testAudio.play();
 		testAudio.pause();
-		/**
-		 * @type {PlayerAudioSource}
-		 */
+		/** @type {PlayerAudioSource} */
 		const source = {
 			id: file.name,
 			title: file.name,

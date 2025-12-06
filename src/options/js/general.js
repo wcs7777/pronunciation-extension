@@ -31,9 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async () => {
 	try {
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			accessKey: strOr(el.accessKey.value, defaultOptions.accessKey),
 			allowText: el.allowText.checked,
@@ -53,18 +51,14 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues(shouldSendMessage=true) {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	el.accessKey.value = opt.accessKey;
 	el.allowText.checked = opt.allowText;
 	el.alertMaxSelectionEnabled.checked = opt.alertMaxSelectionEnabled;
 	el.alertMaxSelectionLength.value = opt.alertMaxSelectionLength.toString();
 	if (shouldSendMessage) {
-		/**
-		 * @type {ClientMessage}
-		 */
+		/** @type {ClientMessage} */
 		const message = {
 			target: "client",
 			type: "changeAlertMaxSelectionOptions",

@@ -7,18 +7,14 @@ const documentCache = new MemoryCache("fetchDocumentCache", 6);
  * @returns {Promise<Document>}
  */
 export async function url2document(url, credentials="omit") {
-	/**
-	 * @type {Document | null}
-	 */
+	/** @type {Document | null} */
 	let document = documentCache.get(url);
 	if (!document) {
 		const response = await fetch(url, { credentials });
 		const status = response.status;
 		if (status !== 200) {
 			const message = await response.text();
-			/**
-			 * @type {PronunciationSourceLastError}
-			 */
+			/** @type {PronunciationSourceLastError} */
 			const le = {
 				status,
 				message,
@@ -43,9 +39,7 @@ export async function url2blob(url, credentials="omit") {
 	const status = response.status;
 	if (status !== 200) {
 		const message = await response.text();
-		/**
-		 * @type {PronunciationSourceLastError}
-		 */
+		/** @type {PronunciationSourceLastError} */
 		const le = {
 			status,
 			message,

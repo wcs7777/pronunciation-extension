@@ -1,6 +1,4 @@
-/**
- * @type {Options}
- */
+/** @type {Options} */
 const defaultOptions = {
 	accessKey: "P",
 	allowText: true,

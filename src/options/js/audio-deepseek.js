@@ -132,9 +132,7 @@ el.model.addEventListener("change", () => {
 el.save.addEventListener("click", async () => {
 	try {
 		const defaultApi = defaultOptions.audio.sources.deepSeek.api;
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			audio: {
 				sources: {
@@ -174,9 +172,7 @@ el.save.addEventListener("click", async () => {
  * @returns {void}
  */
 function setVoices(model) {
-	/**
-	 * @type {string[]}
-	 */
+	/** @type {string[]} */
 	const options = model in model2voices ? model2voices[model] : ["random"];
 	for (const opt of el.voice.querySelectorAll("option")) {
 		opt.remove();
@@ -193,9 +189,7 @@ function setVoices(model) {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	const optApi = opt.audio.sources.deepSeek.api;
 	setVoices(optApi.model);

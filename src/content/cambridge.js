@@ -13,9 +13,7 @@ import {
  * @returns {Promise<void>}
  */
 async function main() {
-	/**
-	 * @type {OptionsSetPronuncationByShortcut}
-	 */
+	/** @type {OptionsSetPronuncationByShortcut} */
 	const options = await optionsTable.getValue("setPronuncationByShortcut");
 	if (!options.enabled) {
 		return;

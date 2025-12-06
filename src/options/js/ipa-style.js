@@ -33,9 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 el.save.addEventListener("click", async () => {
 	try {
 		const defaultStyle = defaultOptions.ipa.style;
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			ipa: {
 				font: {
@@ -59,9 +57,7 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	el.fontFamily.value = opt.ipa.style.font.family;
 	el.fontSize.value = opt.ipa.style.font.size.toString();

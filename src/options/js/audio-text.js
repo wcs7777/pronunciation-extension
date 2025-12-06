@@ -79,9 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async () => {
 	try {
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			audio: {
 				text: {
@@ -104,9 +102,7 @@ el.save.addEventListener("click", async () => {
 el.shortcuts.save.addEventListener("click", async () => {
 	try {
 		const defaultShortcuts = defaultOptions.audio.text.shortcuts;
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			audio: {
 				text: {
@@ -141,9 +137,7 @@ el.shortcuts.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues(shouldSendMessage=true) {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const allOptions = await getAllOptions();
 	const opt = allOptions.audio.text;
 	el.enabled.checked = opt.enabled;
@@ -165,9 +159,7 @@ async function setFieldsValues(shouldSendMessage=true) {
 	el.shortcuts.increaseSpeed.value = opt.shortcuts.increaseSpeed;
 	el.shortcuts.resetSpeed.value = opt.shortcuts.resetSpeed;
 	if (shouldSendMessage) {
-		/**
-		 * @type {ClientMessage}
-		 */
+		/** @type {ClientMessage} */
 		const message = {
 			target: "client",
 			type: "playAudio",

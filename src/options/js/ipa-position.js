@@ -24,9 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async () => {
 	try {
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			ipa: {
 				position: {
@@ -47,9 +45,7 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	el.menuTriggered.value = opt.ipa.position.menuTriggered;
 	el.actionTriggered.value = opt.ipa.position.actionTriggered;

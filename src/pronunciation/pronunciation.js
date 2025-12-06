@@ -190,9 +190,7 @@ export default class Pronunciation {
 			options.text.shortcutsEnabled
 		);
 		if (!playInBackground) {
-			/**
-			 * @type {ClientMessage}
-			 */
+			/** @type {ClientMessage} */
 			const message = {
 				target: "client",
 				type: "playAudio",
@@ -232,9 +230,7 @@ export default class Pronunciation {
 			return null;
 		}
 		const input = this.pi.input;
-		/**
-		  * @type {string | null}
-		  */
+		/** @type {string | null} */
 		let ipa = this.ipaTextCache.get(input) ?? null;
 		if (ipa) {
 			return ipa;
@@ -267,9 +263,7 @@ export default class Pronunciation {
 			return null;
 		}
 		const input = this.pi.input;
-		/**
-		  * @type {string | null}
-		  */
+		/** @type {string | null} */
 		let url = this.audioCache.get(input) ?? null;
 		if (url) {
 			return url;
@@ -322,9 +316,7 @@ export default class Pronunciation {
 			return null;
 		}
 		const key = await this.pi.key();
-		/**
-		  * @type {string | null}
-		  */
+		/** @type {string | null} */
 		let url = this.audioTextCache.get(key) ?? null;
 		if (url) {
 			return url;
@@ -365,9 +357,7 @@ export default class Pronunciation {
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
-		/**
-		 * @type {IpaSource[]}
-		 */
+		/** @type {IpaSource[]} */
 		const sources = this.ipaSources
 			.map(S => new S(this.pi, options.sources[S.name], le[S.name]))
 			.filter(s => s.enabled)
@@ -382,9 +372,7 @@ export default class Pronunciation {
 				}
 			} catch (error) {
 				console.error(error);
-				/**
-				 * @type {PronunciationSourceLastError}
-				 */
+				/** @type {PronunciationSourceLastError} */
 				const lastError = {
 					source: s.name,
 					datetime,
@@ -419,9 +407,7 @@ export default class Pronunciation {
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
-		/**
-		 * @type {AudioSource[]}
-		 */
+		/** @type {AudioSource[]} */
 		const sources = this.audioSources
 			.map(S => new S(this.pi, options.sources[S.name], le[S.name]))
 			.filter(s => s.enabled)
@@ -436,9 +422,7 @@ export default class Pronunciation {
 				}
 			} catch (error) {
 				console.error(error);
-				/**
-				 * @type {PronunciationSourceLastError}
-				 */
+				/** @type {PronunciationSourceLastError} */
 				const lastError = {
 					source: s.name,
 					datetime,
@@ -475,9 +459,7 @@ export default class Pronunciation {
 	 * @returns {Promise<void>}
 	 */
 	async showInfo(info, closeTimeout=5000) {
-		/**
-		 * @type {ClientMessage}
-		 */
+		/** @type {ClientMessage} */
 		const message = {
 			target: "client",
 			type: "showPopup",

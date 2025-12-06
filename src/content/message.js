@@ -157,15 +157,15 @@ async function showPopupFromBackground(message) {
 async function changeAlertMaxSelectionOptionsCB(message) {
 	const options = message.changeAlertMaxSelectionOptions;
 	if (!options) {
-		throw new Error("Should pass changeAlertMaxSelectionOptionsoptions in message");
+		throw new Error(
+			"Should pass changeAlertMaxSelectionOptionsoptions in message"
+		);
 	}
 	changeAlertMaxSelectionOptions(options);
 }
 
 (async () => {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const options = await optionsTable.getAll();
 	changeAlertMaxSelectionOptions({
 		enabled: options.alertMaxSelectionEnabled,

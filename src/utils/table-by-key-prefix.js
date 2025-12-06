@@ -91,9 +91,7 @@ export default class TableByKeyPrefix {
 	  * @returns {Promise<{ [key: string]: any }>}
 	  */
 	async getAll(removePrefix=true) {
-		/**
-		 * @type {{ [key: string]: any }}
-		 */
+		/** @type {{ [key: string]: any }} */
 		const stored = await this.storage.get();
 		return Object
 			.entries(stored)

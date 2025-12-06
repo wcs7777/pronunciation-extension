@@ -3,9 +3,7 @@ import { audioTable } from "../../utils/storage-tables.js";
 import { showInfo } from "./utils.js";
 import { splitWords } from "../../utils/string.js";
 
-/**
- * @type {{
- *     word: HTMLInputElement,
+/** @type {{ word: HTMLInputElement,
  *     file: HTMLInputElement,
  *     save: HTMLButtonElement,
  * }}

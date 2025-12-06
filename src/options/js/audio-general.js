@@ -35,9 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async () => {
 	try {
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			audio: {
 				enabled: el.enabled.checked,
@@ -59,9 +57,7 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	el.enabled.checked = opt.audio.enabled;
 	el.showSourceLastError.checked = opt.audio.showSourceLastError;

@@ -28,9 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 el.save.addEventListener("click", async () => {
 	try {
 		const defaultApi = defaultOptions.audio.sources.speechify.api;
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			audio: {
 				sources: {
@@ -61,9 +59,7 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	const optApi = opt.audio.sources.speechify.api;
 	el.token.value = optApi.token ?? "";

@@ -5,9 +5,7 @@ export async function migrateToV3_5_0() {
 		console.log("options not in storage");
 		return;
 	}
-	/**
-	* @type {Options}
-	*/
+	/** @type {Options} */
 	const options = result["options"];
 	for (const source of Object.keys(options.ipa.sources)) {
 		delete options.ipa.sources[source]["saveError"];
@@ -25,9 +23,7 @@ export async function migrateToV3_2_0() {
 		console.log("options not in storage");
 		return;
 	}
-	/**
-	* @type {Options}
-	*/
+	/** @type {Options} */
 	const options = result["options"];
 	for (const source of Object.keys(options.ipa.sources)) {
 		delete options.ipa.sources[source]["waitStatuses"];
@@ -46,9 +42,7 @@ export async function migrateToV3() {
 		return;
 	}
 	const old = result["options"];
-	/**
-	* @type {Options}
-	*/
+	/** @type {Options} */
 	const options = {
 		accessKey: old.accessKey,
 		allowText: old.allowText,

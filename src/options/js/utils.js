@@ -18,9 +18,7 @@ export async function getAllOptions() {
 export async function saveOptions(options, currentOptions) {
 	let currOpt = currentOptions;
 	if (!currOpt) {
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const tblOpt = await optionsTable.getAll();
 		currOpt = tblOpt;
 	}

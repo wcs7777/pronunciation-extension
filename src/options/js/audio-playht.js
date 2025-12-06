@@ -44,9 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 el.save.addEventListener("click", async () => {
 	try {
 		const defaultApi = defaultOptions.audio.sources.playHt.api;
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			audio: {
 				sources: {
@@ -83,9 +81,7 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	const optApi = opt.audio.sources.playHt.api;
 	el.userId.value = optApi.userId ?? "";

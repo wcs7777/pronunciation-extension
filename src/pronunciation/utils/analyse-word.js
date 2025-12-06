@@ -9,9 +9,7 @@ const scrabbleCache = new MemoryCache("fetchScrabbleCache", 10000);
  * @returns {Promise<WordAnalyse>}
  */
 export async function cachedAnalyseWord(word) {
-	/**
-	 * @type {WordAnalyse}
-	 */
+	/** @type {WordAnalyse} */
 	let analysis = analysisCache.get(word);
 	if (!analysis) {
 		analysis = await analyseWord(word);
@@ -39,9 +37,7 @@ export async function analyseWord(word) {
 	let root = output[0]?.terms?.[0]?.root ?? word;
 	let confidence = output[0]?.confidence ?? 0;
 	if (confidence < 1) {
-		/**
-		 * @type {number}
-		 */
+		/** @type {number} */
 		let status = scrabbleCache.get(word);
 		if (!status) {
 			const endpoint = "https://s3-us-west-2.amazonaws.com/words.alexmeub.com/nwl2023/"

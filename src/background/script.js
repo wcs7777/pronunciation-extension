@@ -116,9 +116,7 @@ async function pronounce(input, tabId, origin) {
 async function storeOptions() {
 	try {
 		// allow new options settings without break change
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const mergedOptions = deepMerge(
 			defaultOptions,
 			await st.optionsTable.getAll(),
@@ -165,9 +163,7 @@ async function setMenuItem(accessKey) {
  * @returns {Promise<Options>}
  */
 async function ensureOptions() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	let options = st.optionsCache.getAll();
 	if (!options.ipa || !options.audio) {
 		options = await st.optionsTable.getAll();
@@ -257,17 +253,13 @@ async function menuOnClickedCB(info, tab) {
  */
 async function actionOnClickedCB(tab) {
 	try {
-		/**
-		 * @type {ClientMessage}
-		 */
+		/** @type {ClientMessage} */
 		const message = {
 			target: "client",
 			type: "getSelectedText",
 			origin: "action",
 		};
-		/**
-		 * @type {string | null}
-		 */
+		/** @type {string | null} */
 		const selectedText = await browser.tabs.sendMessage(
 			tab.id,
 			message,

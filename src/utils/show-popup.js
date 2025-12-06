@@ -3,9 +3,7 @@ import { deepMerge }  from "./object.js";
 const template = createTemplate();
 document.body.appendChild(template);
 
-/**
- * @type {OptionsPopup}
- */
+/** @type {OptionsPopup} */
 export const defaultOptionsPopup = {
 	text: "Default text",
 	style: {
@@ -39,9 +37,7 @@ export const defaultOptionsPopup = {
  */
 export function showPopup(options, textFn=null, closeConditionFn=null) {
 
-	/**
-	 * @type {OptionsPopup}
-	 */
+	/** @type {OptionsPopup} */
 	const opt = deepMerge(defaultOptionsPopup, options);
 	const host = document.createElement("span");
 	host.dataset.role = "pronunciation-addon-popup-host";

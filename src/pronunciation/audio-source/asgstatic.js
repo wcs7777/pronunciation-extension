@@ -41,9 +41,7 @@ export default class ASGstatic extends AudioSource {
 		}
 		const base = "https://ssl.gstatic.com/dictionary/static/sounds";
 		const fileBegin = input.replaceAll("'", "_");
-		/**
-		 * @type {string[]}
-		 */
+		/** @type {string[]} */
 		let candidates = [];
 		for (const date of ["20200429", "20220808"]) {
 			const candidatesDate = [

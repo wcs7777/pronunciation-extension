@@ -34,9 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 el.save.addEventListener("click", async () => {
 	try {
-		/**
-		 * @type {Options}
-		 */
+		/** @type {Options} */
 		const options = {
 			setPronuncationByShortcut: {
 				enabled: el.enabled.checked,
@@ -57,9 +55,7 @@ el.save.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	/**
-	 * @type {Options}
-	 */
+	/** @type {Options} */
 	const opt = await getAllOptions();
 	el.enabled.checked = opt.setPronuncationByShortcut.enabled;
 	el.ipaShortcut.value = opt.setPronuncationByShortcut.ipaShortcut;

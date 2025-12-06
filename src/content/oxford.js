@@ -13,9 +13,7 @@ import {
  * @returns {Promise<void>}
  */
 async function main() {
-	/**
-	 * @type {OptionsSetPronuncationByShortcut}
-	 */
+	/** @type {OptionsSetPronuncationByShortcut} */
 	const options = await optionsTable.getValue("setPronuncationByShortcut");
 	if (!options.enabled) {
 		return;
@@ -24,9 +22,7 @@ async function main() {
 	const audioElements = Array.from(
 		document.querySelectorAll("div.sound.audio_play_button"),
 	);
-	/**
-	 * @type {HTMLElement}
-	 */
+	/** @type {HTMLElement} */
 	let lastAudioPlayed = document.querySelector(
 		"div.sound.audio_play_button.pron-us",
 	)
