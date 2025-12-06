@@ -2,7 +2,7 @@ import "./compromise.js";
 import MemoryCache from "../../utils/memory-cache.js";
 
 const analysisCache = new MemoryCache("analysisCache", 10000);
-const datamuseCache = new MemoryCache("fetchDatamuseCache", 10000);
+const scrabbleCache = new MemoryCache("fetchScrabbleCache", 10000);
 
 /**
  * @param {string} word
@@ -14,9 +14,10 @@ export async function cachedAnalyseWord(word) {
 	 */
 	let analysis = analysisCache.get(word);
 	if (!analysis) {
-		analysis = analyseWord(word);
+		analysis = await analyseWord(word);
 		analysisCache.set(word, analysis);
 	}
+	console.log({ word, analysis });
 	return analysis;
 }
 
@@ -36,44 +37,22 @@ export async function analyseWord(word) {
 	});
 	const type = output[0]?.terms?.[0]?.chunk ?? "Noun";
 	let root = output[0]?.terms?.[0]?.root ?? word;
-	let confidence = output[0]?.confidence;
+	let confidence = output[0]?.confidence ?? 0;
 	if (confidence < 1) {
 		/**
-		 * @type {{word: string, score: number}}
+		 * @type {number}
 		 */
-		const entry = { word: "", score: 0 };
-		/**
-		 * @type {{word: string, score: number}}
-		 */
-		const cached = datamuseCache.get(word);
-		if (cached) {
-			entry.word = cached.word;
-			entry.score = cached.score;
-		} else {
-			const endpoint = "https://api.datamuse.com/words?";
-			const params = new URLSearchParams({
-				sp: word,
-				max: 1,
-			}).toString();
-			const response = await fetch(`${endpoint}${params}`, {
-				method: "GET",
+		let status = scrabbleCache.get(word);
+		if (!status) {
+			const endpoint = "https://s3-us-west-2.amazonaws.com/words.alexmeub.com/nwl2023/"
+			const response = await fetch(`${endpoint}${word}.json`, {
+				method: "HEAD",
 				credentials: "omit",
 			});
-			if (response.status === 200) {
-				/**
-				 * @type {{word: string, score: number}[]}
-				 */
-				const jsonResponse = await response.json();
-				entry.word = jsonResponse?.[0]?.word;
-				entry.score = jsonResponse?.[0]?.score;
-				if (entry.word === word && entry.score > 1000) {
-					confidence = 1;
-				}
-				datamuseCache.set(word, entry);
-			} else {
-				console.error(`datamuse ${response.status}`);
-			}
+			status = response.status;
 		}
+		confidence = status === 200 ? 1 : 0;
+		scrabbleCache.set(word, status);
 	} else if (
 		word !== root &&
 		(word.includes("'") || word.includes("-"))

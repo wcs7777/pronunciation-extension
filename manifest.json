@@ -77,6 +77,7 @@
 		"https://polly.us-east-2.api.aws/v1/speech",
 		"https://polly.us-west-1.api.aws/v1/speech",
 		"https://polly.us-west-2.api.aws/v1/speech",
+		"https://s3-us-west-2.amazonaws.com/words.alexmeub.com/*",
 		"https://ssl.gstatic.com/dictionary/static/sounds/*",
 		"https://texttospeech.responsivevoice.org/v1/*",
 		"https://www.antvaset.com/api",

@@ -67,7 +67,6 @@ export default class Pronunciation {
 		console.log({
 			input: this.pi.input,
 			length: this.pi.length,
-			analysis: await this.pi.analysis(),
 			tabId: this.tabId,
 			origin: this.origin,
 		});
