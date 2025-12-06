@@ -8,6 +8,7 @@ export default class Pronunciation {
 	/**
 	 * @param {{
 	 *     pi: PronunciationInput,
+	 *     position: PronunciationInput,
 	 *     ipaSources: IpaSource[],
 	 *     audioSources: AudioSource[],
 	 *     options: Options,
@@ -25,6 +26,7 @@ export default class Pronunciation {
 	 */
 	constructor({
 		pi,
+		position,
 		ipaSources,
 		audioSources,
 		options,
@@ -40,6 +42,7 @@ export default class Pronunciation {
 		origin,
 	}) {
 		this.pi = pi;
+		this.position = position;
 		this.ipaSources = ipaSources;
 		this.audioSources = audioSources;
 		this.options = options;
@@ -124,14 +127,16 @@ export default class Pronunciation {
 			return;
 		}
 		console.log({ ipa, tabId: this.tabId });
-		/**
-		 * @type {ClientMessage}
-		 */
+		/** @type {ClientMessage} */
 		const message = {
 			target: "client",
 			type: "showIpa",
 			origin: this.origin,
-			showIpa: { ipa, options },
+			showIpa: {
+				ipa,
+				position: this.position,
+				options
+			},
 		};
 		await this.sendMessage(message);
 	}

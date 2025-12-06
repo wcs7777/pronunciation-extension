@@ -71,8 +71,24 @@ const audioSources = [
 async function pronounce(input, tabId, origin) {
 	const options = await ensureOptions();
 	const pi = new PronunciationInput(input, options.allowText);
+	/** @type {ClientMessage} */
+	const message = {
+		target: "client",
+		type: "getIpaPosition",
+		origin,
+		getIpaPosition: {
+			fontSize: options.ipa.style.font.size,
+			optionPosition: options.ipa.position,
+		},
+	};
+	/** @type {PopupPosition} */
+	const position = await browser.tabs.sendMessage(
+		tabId,
+		message,
+	)
 	const pronunciation = new Pronunciation({
 		pi,
+		position,
 		ipaSources,
 		audioSources,
 		options,

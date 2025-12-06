@@ -326,18 +326,13 @@
 
 		/**
 		 * @param {string} ipa
+		 * @param {PopupPosition} position
 		 * @param {OptionsIpa} options
-		 * @param {"menuItem" | "action" | "other"} origin
 		 */
-		constructor(ipa, options, origin) {
+		constructor(ipa, position, options) {
 			this.ipa = ipa;
+			this.position = position;
 			this.options = options;
-			this.origin = origin;
-			this.selection = window.getSelection();
-			/**
-			 * @type {HTMLElement | Node}
-			 */
-			this._target = null;
 		}
 
 		/**
@@ -351,7 +346,7 @@
 		 * @returns {Node | HTMLElement}
 		 */
 		target() {
-			const s = this.selection;
+			const s = this.window.getSelection();
 			if (s.rangeCount > 0) {
 				return (
 					s.focusNode.nodeType === Node.ELEMENT_NODE ?
@@ -392,46 +387,6 @@
 		/**
 		 * @returns {OptionsPopup}
 		 */
-		position() {
-			const s = this.selection;
-			if (s.rangeCount > 0) {
-				const { top, left } = s
-					.getRangeAt(0)
-					.getBoundingClientRect();
-				let shiftTimes = -1.9;
-				if (
-					(
-						(this.origin === "menuItem") &&
-						(this.options.position.menuTriggered === "below")
-					) ||
-					(
-						(this.origin === "action") &&
-						(this.options.position.actionTriggered === "below")
-					)
-				) {
-					shiftTimes = 2.5;
-				}
-				return {
-					position: {
-						centerHorizontally: false,
-						centerVertically: false,
-						top: top + this.options.style.font.size * shiftTimes,
-						left,
-					},
-				};
-			} else {
-				return {
-					position: {
-						centerHorizontally: true,
-						centerVertically: true,
-					},
-				};
-			}
-		}
-
-		/**
-		 * @returns {OptionsPopup}
-		 */
 		popupOptions() {
 			const style = this.style();
 			/**
@@ -447,7 +402,7 @@
 					backgroundColor: style.backgroundColor,
 				},
 				close: this.options.close,
-				position: this.position().position,
+				position: this.position,
 			};
 			return options;
 		}
@@ -1840,6 +1795,7 @@ button {
 		const actions = {
 			"showIpa": showIpa,
 			"getSelectedText": getSelectedText,
+			"getIpaPosition": getIpaPosition,
 			"playAudio": playAudio,
 			"showPopup": showPopupFromBackground,
 			"changeAlertMaxSelectionOptions": changeAlertMaxSelectionOptionsCB,
@@ -1858,10 +1814,14 @@ button {
 	 * @returns {Promise<void>}
 	 */
 	async function showIpa(message) {
+		const options = message.showIpa;
+		if (!options) {
+			throw new Error("Should pass showIpa options in message");
+		}
 		const popup = new IpaPopup(
-			message.showIpa.ipa,
-			message.showIpa.options,
-			message.origin,
+			options.ipa,
+			options.position,
+			options.options,
 		);
 		return popup.show();
 	}
@@ -1876,12 +1836,50 @@ button {
 
 	/**
 	 * @param {ClientMessage} message
+	 * @returns {Promise<PopupPosition>}
+	 */
+	async function getIpaPosition(message) {
+		const options = message.getIpaPosition;
+		if (!options) {
+			throw new Error("Should pass getIpaPosition options in message");
+		}
+		const s = window.getSelection();
+		if (s.rangeCount === 0) {
+			return {
+				centerHorizontally: true,
+				centerVertically: true,
+			};
+		}
+		const { top, left } = s.getRangeAt(0).getBoundingClientRect();
+		let shiftTimes = -1.9;
+		if (
+			(
+				(message.origin === "menuItem") &&
+				(options.menuTriggered === "below")
+			) ||
+			(
+				(message.origin === "action") &&
+				(options.actionTriggered === "below")
+			)
+		) {
+			shiftTimes = 2.5;
+		}
+		return {
+			centerHorizontally: false,
+			centerVertically: false,
+			top: top + options.fontSize * shiftTimes,
+			left,
+		};
+	}
+
+	/**
+	 * @param {ClientMessage} message
 	 * @returns {Promise<void>}
 	 */
 	async function playAudio(message) {
 		const options = message.playAudio;
 		if (!options) {
-			throw new Error("Should pass options in message");
+			throw new Error("Should pass playAudio options in message");
 		}
 		try {
 			setAudioControlShortcuts(options.shortcuts);
@@ -1913,7 +1911,7 @@ button {
 	async function showPopupFromBackground(message) {
 		const options = message.showPopup;
 		if (!options) {
-			throw new Error("Should pass options in message");
+			throw new Error("Should pass showPopup options in message");
 		}
 		showPopup(options);
 	}
@@ -1925,7 +1923,7 @@ button {
 	async function changeAlertMaxSelectionOptionsCB(message) {
 		const options = message.changeAlertMaxSelectionOptions;
 		if (!options) {
-			throw new Error("Should pass options in message");
+			throw new Error("Should pass changeAlertMaxSelectionOptionsoptions in message");
 		}
 		changeOptions(options);
 	}

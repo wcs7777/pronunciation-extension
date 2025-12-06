@@ -1,7 +1,7 @@
 export {};
 
 declare global {
-	
+
 	type PronunciationSource = {
 		static name: string,
 		name: string,
@@ -112,10 +112,7 @@ declare global {
 			buttonColor: string,
 			buttonHoverColor: string,
 		},
-		position: {
-			menuTriggered: "above" | "below",
-			actionTriggered: "above" | "below",
-		},
+		position: IpaPosition,
 		sources: {
 			cambridge: OptIpaCambridge,
 			oxford: OptIpaOxford,
@@ -123,6 +120,11 @@ declare global {
 			unalengua: OptIpaUnalengua,
 		},
 	};
+
+	type IpaPosition = {
+		menuTriggered: "above" | "below",
+		actionTriggered: "above" | "below",
+	}
 
 	type OptIpaCambridge = PronunciationSourceOptions;
 	type OptIpaOxford = PronunciationSourceOptions;
@@ -271,10 +273,15 @@ declare global {
 
 	type ClientMessage = {
 		target: "client",
-		type: "showIpa" | "getSelectedText" | "playAudio" | "showPopup" | "changeAlertMaxSelectionOptions",
+		type: "showIpa" | "getSelectedText" | "getIpaPosition" | "playAudio" | "showPopup" | "changeAlertMaxSelectionOptions",
 		origin: "menuItem" | "action" | "other",
+		getIpaPosition?: {
+			fontSize: number,
+			optionPosition: IpaPosition,
+		},
 		showIpa?: {
 			ipa: string,
+			position: IpaPosition,
 			options: OptionsIpa,
 		},
 		playAudio?: {
@@ -309,13 +316,16 @@ declare global {
 			buttonColor: string,
 			buttonHoverColor: string,
 		},
-		position: {
-			centerHorizontally: boolean,
-			centerVertically: boolean,
-			top: number,
-			left: number,
-		},
+		position: PopupPosition,
 	};
+
+
+	type PopupPosition = {
+		centerHorizontally: boolean,
+		centerVertically: boolean,
+		top: number,
+		left: number,
+	}
 
 	type PlayerAudioSource = {
 		id: string,

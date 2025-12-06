@@ -5,14 +5,13 @@ export default class IpaPopup {
 
 	/**
 	 * @param {string} ipa
+	 * @param {PopupPosition} position
 	 * @param {OptionsIpa} options
-	 * @param {"menuItem" | "action" | "other"} origin
 	 */
-	constructor(ipa, options, origin) {
+	constructor(ipa, position, options) {
 		this.ipa = ipa;
+		this.position = position;
 		this.options = options;
-		this.origin = origin;
-		this.selection = window.getSelection();
 	}
 
 	/**
@@ -26,7 +25,7 @@ export default class IpaPopup {
 	 * @returns {Node | HTMLElement}
 	 */
 	target() {
-		const s = this.selection;
+		const s = this.window.getSelection();
 		if (s.rangeCount > 0) {
 			return (
 				s.focusNode.nodeType === Node.ELEMENT_NODE ?
@@ -67,46 +66,6 @@ export default class IpaPopup {
 	/**
 	 * @returns {OptionsPopup}
 	 */
-	position() {
-		const s = this.selection;
-		if (s.rangeCount > 0) {
-			const { top, left } = s
-				.getRangeAt(0)
-				.getBoundingClientRect();
-			let shiftTimes = -1.9;
-			if (
-				(
-					(this.origin === "menuItem") &&
-					(this.options.position.menuTriggered === "below")
-				) ||
-				(
-					(this.origin === "action") &&
-					(this.options.position.actionTriggered === "below")
-				)
-			) {
-				shiftTimes = 2.5;
-			}
-			return {
-				position: {
-					centerHorizontally: false,
-					centerVertically: false,
-					top: top + this.options.style.font.size * shiftTimes,
-					left,
-				},
-			};
-		} else {
-			return {
-				position: {
-					centerHorizontally: true,
-					centerVertically: true,
-				},
-			};
-		}
-	}
-
-	/**
-	 * @returns {OptionsPopup}
-	 */
 	popupOptions() {
 		const style = this.style();
 		/**
@@ -122,7 +81,7 @@ export default class IpaPopup {
 				backgroundColor: style.backgroundColor,
 			},
 			close: this.options.close,
-			position: this.position().position,
+			position: this.position,
 		};
 		return options;
 	}

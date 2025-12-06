@@ -29,6 +29,7 @@ function onMessage(message, sender, sendResponse) {
 	const actions = {
 		"showIpa": showIpa,
 		"getSelectedText": getSelectedText,
+		"getIpaPosition": getIpaPosition,
 		"playAudio": playAudio,
 		"showPopup": showPopupFromBackground,
 		"changeAlertMaxSelectionOptions": changeAlertMaxSelectionOptionsCB,
@@ -47,10 +48,14 @@ function onMessage(message, sender, sendResponse) {
  * @returns {Promise<void>}
  */
 async function showIpa(message) {
+	const options = message.showIpa;
+	if (!options) {
+		throw new Error("Should pass showIpa options in message");
+	}
 	const popup = new IpaPopup(
-		message.showIpa.ipa,
-		message.showIpa.options,
-		message.origin,
+		options.ipa,
+		options.position,
+		options.options,
 	);
 	return popup.show();
 }
@@ -65,12 +70,50 @@ async function getSelectedText(message) {
 
 /**
  * @param {ClientMessage} message
+ * @returns {Promise<PopupPosition>}
+ */
+async function getIpaPosition(message) {
+	const options = message.getIpaPosition;
+	if (!options) {
+		throw new Error("Should pass getIpaPosition options in message");
+	}
+	const s = window.getSelection();
+	if (s.rangeCount === 0) {
+		return {
+			centerHorizontally: true,
+			centerVertically: true,
+		};
+	}
+	const { top, left } = s.getRangeAt(0).getBoundingClientRect();
+	let shiftTimes = -1.9;
+	if (
+		(
+			(message.origin === "menuItem") &&
+			(options.menuTriggered === "below")
+		) ||
+		(
+			(message.origin === "action") &&
+			(options.actionTriggered === "below")
+		)
+	) {
+		shiftTimes = 2.5;
+	}
+	return {
+		centerHorizontally: false,
+		centerVertically: false,
+		top: top + options.fontSize * shiftTimes,
+		left,
+	};
+}
+
+/**
+ * @param {ClientMessage} message
  * @returns {Promise<void>}
  */
 async function playAudio(message) {
 	const options = message.playAudio;
 	if (!options) {
-		throw new Error("Should pass options in message");
+		throw new Error("Should pass playAudio options in message");
 	}
 	try {
 		setAudioControlShortcuts(options.shortcuts);
@@ -102,7 +145,7 @@ async function playAudio(message) {
 async function showPopupFromBackground(message) {
 	const options = message.showPopup;
 	if (!options) {
-		throw new Error("Should pass options in message");
+		throw new Error("Should pass showPopup options in message");
 	}
 	showPopup(options);
 }
@@ -114,7 +157,7 @@ async function showPopupFromBackground(message) {
 async function changeAlertMaxSelectionOptionsCB(message) {
 	const options = message.changeAlertMaxSelectionOptions;
 	if (!options) {
-		throw new Error("Should pass options in message");
+		throw new Error("Should pass changeAlertMaxSelectionOptionsoptions in message");
 	}
 	changeAlertMaxSelectionOptions(options);
 }
