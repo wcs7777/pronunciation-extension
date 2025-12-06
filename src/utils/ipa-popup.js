@@ -13,10 +13,6 @@ export default class IpaPopup {
 		this.options = options;
 		this.origin = origin;
 		this.selection = window.getSelection();
-		/**
-		 * @type {HTMLElement | Node}
-		 */
-		this._target = null;
 	}
 
 	/**
