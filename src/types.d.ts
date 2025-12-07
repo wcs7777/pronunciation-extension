@@ -118,7 +118,7 @@ declare global {
 		sources: {
 			cambridge: OptIpaCambridge,
 			oxford: OptIpaOxford,
-			antvaset: OptIpaAntvaset,
+			translatorMind: OptIpatranslatorMind,
 			unalengua: OptIpaUnalengua,
 		},
 	};
@@ -130,7 +130,7 @@ declare global {
 
 	type OptIpaCambridge = PronunciationSourceOptions;
 	type OptIpaOxford = PronunciationSourceOptions;
-	type OptIpaAntvaset = PronunciationSourceOptions;
+	type OptIpatranslatorMind = PronunciationSourceOptions;
 	type OptIpaUnalengua = PronunciationSourceOptions;
 
 	type OptionsAudio = {

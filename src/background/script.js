@@ -40,6 +40,7 @@ if (browser.menus) {
 const ipaSources = [
 	is.ISCambridge,
 	is.ISOxford,
+	is.ISTranslatorMind,
 	is.ISUnalengua,
 ];
 /**
@@ -199,10 +200,11 @@ async function installedCB(details) {
 	if (details.temporary) {
 		console.clear();
 		console.log("Cleaning storage due to temporary installation");
+		await browser.storage.local.clear();
 	}
 	console.log("Startup begin");
 	await storeOptions();
-	if (details.reason === "install") {
+	if (details.reason === "install" || details.temporary) {
 		const path = "src/options/pages/general.html";
 		await browser.tabs.create({ url: browser.runtime.getURL(path) });
 	} else if (details.reason === "update") {

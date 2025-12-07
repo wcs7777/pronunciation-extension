@@ -51,13 +51,13 @@ const defaultOptions = {
 				waitRateLimitTimeout: 10,
 				okStatus: [200, 404],
 			},
-			antvaset: {
+			translatorMind: {
 				enabled: true,
 				order: 3,
-				enabledToText: false,
-				orderToText: 0,
+				enabledToText: true,
+				orderToText: 2,
 				save: true,
-				textMaxLength: 0,
+				textMaxLength: 2500,
 				waitRateLimitTimeout: 10,
 				okStatus: [200, 404],
 			},

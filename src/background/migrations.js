@@ -90,14 +90,14 @@ export async function migrateToV3() {
 					saveError: old.ipa.oxford.saveError,
 					textMaxLength: old.ipa.oxford.textMaxLength,
 				},
-				antvaset: {
-					enabled: old.ipa.antvaset.enabled,
-					order: old.ipa.antvaset.order,
-					enabledToText: old.ipa.antvaset.enabledToText,
-					orderToText: old.ipa.antvaset.orderToText,
-					save: old.ipa.antvaset.save,
-					saveError: old.ipa.antvaset.saveError,
-					textMaxLength: old.ipa.antvaset.textMaxLength,
+				translatorMind: {
+					enabled: old.ipa.translatorMind.enabled,
+					order: old.ipa.translatorMind.order,
+					enabledToText: old.ipa.translatorMind.enabledToText,
+					orderToText: old.ipa.translatorMind.orderToText,
+					save: old.ipa.translatorMind.save,
+					saveError: old.ipa.translatorMind.saveError,
+					textMaxLength: old.ipa.translatorMind.textMaxLength,
 				},
 				unalengua: {
 					enabled: old.ipa.unalengua.enabled,
