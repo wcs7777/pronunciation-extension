@@ -70,11 +70,14 @@ export default class ISTranslatorMind extends IpaSource {
 				error: new Error(`Not found ${input}`),
 			};
 		}
-		return (
-			jsonResponse.data.startsWith('/') ?
-			jsonResponse.data :
-			`/${jsonResponse.data}/`
-		);
+		let ipa = jsonResponse.data;
+		if (
+			(ipa.startsWith('/') && ipa.endsWith('/')) ||
+			(ipa.startsWith('[') && ipa.endsWith(']'))
+		) {
+			ipa = ipa.slice(1, -1);
+		}
+		return `/${ipa}/`;
 	}
 
 }
