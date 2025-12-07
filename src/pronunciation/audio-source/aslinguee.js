@@ -34,14 +34,17 @@ export default class ASLinguee extends AudioSource {
 	}
 
 	/**
+	 * @returns {boolean} Fetch only valid words
+	 */
+	get onlyValid() {
+		return true;
+	}
+
+	/**
 	 * @returns {Promise<Blob>}
 	 */
 	async fetch() {
 		const input = this.pi.input;
-		const analysis = await this.pi.analysis();
-		if (!analysis.isValid) {
-			throw new Error(`${input} probably is not a valid word`);
-		}
 		const endpoint = "https://www.linguee.com/english-spanish/search";
 		const params = new URLSearchParams({
 			source: "english",

@@ -16,6 +16,13 @@ export async function cachedAnalyseWord(word) {
 		analysisCache.set(word, analysis);
 	}
 	console.log({ word, analysis });
+	if (!analysis.isText) {
+		if (!analysis.isValid) {
+			console.log(`${word} probably is not a valid word`);
+		} else if (analysis.isVerb && analysis.root !== word) {
+			console.log(`${word} is not in root form`);
+		}
+	}
 	return analysis;
 }
 

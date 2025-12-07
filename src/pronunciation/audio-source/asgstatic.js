@@ -31,14 +31,17 @@ export default class ASGstatic extends AudioSource {
 	}
 
 	/**
+	 * @returns {boolean} Fetch only valid words
+	 */
+	get onlyValid() {
+		return true;
+	}
+
+	/**
 	 * @returns {Promise<Blob>}
 	 */
 	async fetch() {
 		const input = this.pi.input;
-		const analysis = await this.pi.analysis();
-		if (!analysis.isValid) {
-			throw new Error(`${input} probably is not a valid word`);
-		}
 		const base = "https://ssl.gstatic.com/dictionary/static/sounds";
 		const fileBegin = input.replaceAll("'", "_");
 		/** @type {string[]} */

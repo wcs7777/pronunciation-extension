@@ -31,17 +31,24 @@ export default class ISCambridge extends IpaSource {
 	}
 
 	/**
+	 * @returns {boolean} Fetch only valid words
+	 */
+	get onlyValid() {
+		return true;
+	}
+
+	/**
+	 * @returns {boolean} Fetch only words in root form
+	 */
+	get onlyRoot() {
+		return true;
+	}
+
+	/**
 	 * @returns {Promise<string>}
 	 */
 	async fetch() {
 		const input = this.pi.input;
-		const analysis = await this.pi.analysis();
-		if (
-			!analysis.isValid ||
-			(analysis.isVerb && analysis.root !== input)
-		) {
-			throw new Error(`${input} is not in root form`);
-		}
 		const endpoint = "https://dictionary.cambridge.org/us/dictionary/english/";
 		const document = await url2document(`${endpoint}${input}`);
 		const entry = document.querySelector(".entry:has(.ipa)");

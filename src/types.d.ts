@@ -6,6 +6,8 @@ declare global {
 		static name: string,
 		name: string,
 		enabled: boolean,
+		onlyValid: boolean,
+		onlyRoot: boolean,
 		order: number,
 		save: boolean,
 	};

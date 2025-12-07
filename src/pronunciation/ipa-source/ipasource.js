@@ -35,6 +35,20 @@ export default class IpaSource {
 	}
 
 	/**
+	 * @returns {boolean} Fetch only valid words
+	 */
+	get onlyValid() {
+		return false;
+	}
+
+	/**
+	 * @returns {boolean} Fetch only words in root form
+	 */
+	get onlyRoot() {
+		return false;
+	}
+
+	/**
 	 * @returns {number}
 	 */
 	get order() {

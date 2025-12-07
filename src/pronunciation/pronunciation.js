@@ -357,10 +357,19 @@ export default class Pronunciation {
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
+		const analysis = await this.pi.analysis();
+		const isValid = analysis.isValid;
+		const isRoot = analysis.root === this.pi.firstWord;
 		/** @type {IpaSource[]} */
 		const sources = this.ipaSources
 			.map(S => new S(this.pi, options.sources[S.name], le[S.name]))
-			.filter(s => s.enabled)
+			.filter(s => {
+				return (
+					s.enabled &&
+					(isValid || !s.onlyValid) &&
+					(isRoot || !s.onlyRoot)
+				);
+			})
 			.sort((l, r) => l.order - r.order);
 		for (const s of sources) {
 			try {
@@ -407,10 +416,19 @@ export default class Pronunciation {
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
+		const analysis = await this.pi.analysis();
+		const isValid = analysis.isValid;
+		const isRoot = analysis.root === this.pi.firstWord;
 		/** @type {AudioSource[]} */
 		const sources = this.audioSources
 			.map(S => new S(this.pi, options.sources[S.name], le[S.name]))
-			.filter(s => s.enabled)
+			.filter(s => {
+				return (
+					s.enabled &&
+					(isValid || !s.onlyValid) &&
+					(isRoot || !s.onlyRoot)
+				);
+			})
 			.sort((l, r) => l.order - r.order);
 		for (const s of sources) {
 			try {

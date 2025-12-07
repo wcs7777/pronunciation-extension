@@ -32,14 +32,18 @@ export default class ISOxford extends IpaSource {
 	}
 
 	/**
+	 * @returns {boolean} Fetch only valid words
+	 */
+	get onlyValid() {
+		return true;
+	}
+
+	/**
 	 * @returns {Promise<string>}
 	 */
 	async fetch() {
 		const input = this.pi.input;
 		const analysis = await this.pi.analysis();
-		if (!analysis.isValid) {
-			throw new Error(`${input} probably is not a valid word`);
-		}
 		const word = analysis.isVerb ? analysis.root : input;
 		const base = "https://www.oxfordlearnersdictionaries.com/us/definition/english/";
 		const document = await url2document(`${base}${word}`);
