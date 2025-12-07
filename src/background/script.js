@@ -11,6 +11,16 @@ import {
 	migrateToV3_5_0,
 } from "./migrations.js";
 
+
+let showPlayerMenuItem = {
+	id: "A",
+	title: `How2Say - Player`,
+	contexts: ["tab"],
+	enabled: false,
+	type: "normal",
+	visible: false,
+};
+
 if (!browser.runtime.onInstalled.hasListener(installedCB)) {
 	browser.runtime.onInstalled.addListener(installedCB);
 }
@@ -24,14 +34,7 @@ if (browser.menus) {
 	if (!browser.menus.onClicked.hasListener(menuOnClickedCB)) {
 		browser.menus.onClicked.addListener(menuOnClickedCB);
 	}
-	browser.menus.create({
-		id: "A",
-		title: `How2Say - Show audio player`,
-		contexts: ["tab"],
-		enabled: true,
-		type: "normal",
-		visible: true,
-	});
+	browser.menus.create(showPlayerMenuItem);
 }
 
 /**
@@ -160,6 +163,29 @@ async function setMenuItem(accessKey) {
 }
 
 /**
+ * @param {boolean} show
+ * @returns {Promise<void>}
+ */
+async function setShowPlayerMenuItem(show) {
+	if (!browser.menus) {
+		console.log("browser.menus api not available");
+		return;
+	}
+	showPlayerMenuItem.enabled = show;
+	showPlayerMenuItem.visible = show;
+	return browser.menus.update(
+		showPlayerMenuItem.id,
+		{
+			title: showPlayerMenuItem.title,
+			contexts: showPlayerMenuItem.contexts,
+			enabled: showPlayerMenuItem.enabled,
+			type: showPlayerMenuItem.type,
+			visible: showPlayerMenuItem.visible,
+		}
+	);
+}
+
+/**
  * @returns {Promise<Options>}
  */
 async function ensureOptions() {
@@ -241,7 +267,17 @@ async function menuOnClickedCB(info, tab) {
 			}
 			await pronounce(selectedText, tab.id, "menuItem");
 		} else if (info.menuItemId === "A") {
-			console.log("Show audio player");
+			const options = await ensureOptions();
+			/** @type {ClientMessage} */
+			const message = {
+				target: "client",
+				type: "showPlayer",
+				origin,
+			};
+			await browser.tabs.sendMessage(
+				tab.id,
+				message,
+			);
 		}
 	} catch (error) {
 		await saveError("menuOnClicked", error);
@@ -326,6 +362,14 @@ async function storageOnChangedCB(changes, areaName) {
 			if (!deepEquals(oldAudio, newAudio)) {
 				console.log(`Cleaning ${st.audioTextCache.name} cache`);
 				st.audioTextCache.clear();
+				if (
+					oldAudio?.text?.tabMenuItemShowPlayer !==
+					newAudio?.text?.tabMenuItemShowPlayer
+				) {
+					await setShowPlayerMenuItem(
+						newAudio?.text?.tabMenuItemShowPlayer ?? false
+					);
+				}
 			}
 		}
 	} catch (error) {

@@ -80,6 +80,7 @@ const defaultOptions = {
 			save: false,
 			playerEnabled: true,
 			shortcutsEnabled: false,
+			tabMenuItemShowPlayer: false,
 			skipSeconds: 3,
 			shortcuts: {
 				togglePlayer: "T",

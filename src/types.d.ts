@@ -140,6 +140,7 @@ declare global {
 			save: boolean,
 			playerEnabled: boolean,
 			shortcutsEnabled: boolean,
+			tabMenuItemShowPlayer: boolean,
 			skipSeconds: number,
 			shortcuts: OptAudioShortcuts,
 		},
@@ -275,7 +276,7 @@ declare global {
 
 	type ClientMessage = {
 		target: "client",
-		type: "showIpa" | "getSelectedText" | "getIpaPosition" | "playAudio" | "showPopup" | "changeAlertMaxSelectionOptions",
+		type: "showIpa" | "getSelectedText" | "getIpaPosition" | "playAudio" | "showPlayer"| "showPopup" | "changeAlertMaxSelectionOptions",
 		origin: "menuItem" | "action" | "other",
 		getIpaPosition?: {
 			fontSize: number,
