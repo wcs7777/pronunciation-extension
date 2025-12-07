@@ -1844,11 +1844,11 @@ button {
 		if (
 			(
 				(message.origin === "menuItem") &&
-				(options.menuTriggered === "below")
+				(options.optionPosition.menuTriggered === "below")
 			) ||
 			(
 				(message.origin === "action") &&
-				(options.actionTriggered === "below")
+				(options.optionPosition.actionTriggered === "below")
 			)
 		) {
 			shiftTimes = 2.5;
