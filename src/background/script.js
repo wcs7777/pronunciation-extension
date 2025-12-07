@@ -38,7 +38,6 @@ if (browser.menus) {
  * @type{IpaSource[]}
  */
 const ipaSources = [
-	is.ISAntvaset,
 	is.ISCambridge,
 	is.ISOxford,
 	is.ISUnalengua,
