@@ -41,8 +41,6 @@
 		"default_title": "How2Say"
 	},
 	"permissions": [
-		"alarms",
-		"downloads",
 		"menus",
 		"storage",
 		"tabs",
@@ -78,9 +76,13 @@
 		"https://s3-us-west-2.amazonaws.com/words.alexmeub.com/*",
 		"https://ssl.gstatic.com/dictionary/static/sounds/*",
 		"https://texttospeech.responsivevoice.org/v1/*",
+		"https://translatormind.com/translator-tool/ipa-phonetic-transcription-translator/",
 		"https://translatormind.com/wp-admin/admin-ajax.php",
 		"https://www.google.com/speech-api/v1/*",
 		"https://www.linguee.com/*",
 		"https://www.oxfordlearnersdictionaries.com/*"
+	],
+	"optional_permissions": [
+		"downloads"
 	]
 }

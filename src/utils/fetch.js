@@ -4,11 +4,13 @@ const documentCache = new MemoryCache("fetchDocumentCache", 6);
 
 /**
  * @param {string} url
+ * @param {string} credentials
+ * @param {boolean} force
  * @returns {Promise<Document>}
  */
-export async function url2document(url, credentials="omit") {
+export async function url2document(url, credentials="omit", force=false) {
 	/** @type {Document | null} */
-	let document = documentCache.get(url);
+	let document = !force ? documentCache.get(url) : null;
 	if (!document) {
 		const response = await fetch(url, { credentials });
 		const status = response.status;

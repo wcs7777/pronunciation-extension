@@ -53,13 +53,14 @@ const defaultOptions = {
 			},
 			translatorMind: {
 				enabled: true,
-				order: 3,
+				order: 0,
 				enabledToText: true,
 				orderToText: 2,
 				save: true,
 				textMaxLength: 2500,
 				waitRateLimitTimeout: 10,
 				okStatus: [200, 404],
+				nonce: '',
 			},
 			unalengua: {
 				enabled: true,

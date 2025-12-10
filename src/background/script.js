@@ -267,7 +267,6 @@ async function menuOnClickedCB(info, tab) {
 			}
 			await pronounce(selectedText, tab.id, "menuItem");
 		} else if (info.menuItemId === "A") {
-			const options = await ensureOptions();
 			/** @type {ClientMessage} */
 			const message = {
 				target: "client",
@@ -317,10 +316,19 @@ async function actionOnClickedCB(tab) {
  * @returns {Promise<void>}
  */
 async function storageOnChangedCB(changes, areaName) {
+	if (areaName === "local") {
+		await localStorageOnChangedCB(changes);
+	} else if (areaName === "session") {
+		await sessionStorageOnChangedCB(changes);
+	}
+}
+
+/**
+ * @param {{ [key: string]: browser.storage.StorageChange }} changes
+ * @returns {Promise<void>}
+ */
+async function localStorageOnChangedCB(changes) {
 	try {
-		if (areaName !== "local") {
-			return;
-		}
 		const changesKeys = Object.keys(changes);
 		const ipaKeys = changesKeys.filter(
 			k => k.startsWith(st.ipaTable.name),
@@ -374,5 +382,22 @@ async function storageOnChangedCB(changes, areaName) {
 		}
 	} catch (error) {
 		await saveError("storageOnChanged", error);
+	}
+}
+
+/**
+ * @param {{ [key: string]: browser.storage.StorageChange }} changes
+ * @returns {Promise<void>}
+ */
+async function sessionStorageOnChangedCB(changes) {
+	if (is.ISTranslatorMind.name in changes) {
+		const translatorMind = changes[is.ISTranslatorMind.name];
+		/** @type {string | undefined} */
+		const nonce = translatorMind?.newValue?.nonce;
+		if (translatorMind?.oldValue?.nonce !== nonce) {
+			const options = await ensureOptions();
+			options.ipa.sources.translatorMind.nonce = nonce;
+			await st.optionsTable.setMany(options);
+		}
 	}
 }
