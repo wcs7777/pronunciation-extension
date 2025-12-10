@@ -53,7 +53,7 @@ const defaultOptions = {
 			},
 			translatorMind: {
 				enabled: true,
-				order: 0,
+				order: 3,
 				enabledToText: true,
 				orderToText: 2,
 				save: true,
