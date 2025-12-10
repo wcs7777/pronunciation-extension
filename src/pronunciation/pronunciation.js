@@ -96,8 +96,8 @@ export default class Pronunciation {
 			console.log({ textKey: key });
 			let audioTitle = this.pi.text;
 			if (audioTitle.length > 80) {
-				const begin = text.slice(0, 60);
-				const end = text.slice(-17);
+				const begin = this.pi.text.slice(0, 60);
+				const end = this.pi.text.slice(-17);
 				audioTitle = `${begin}...${end}`;
 			}
 			await Promise.all([
@@ -185,7 +185,7 @@ export default class Pronunciation {
 			console.log(`Tab ${this.tabId} is muted`);
 			return;
 		}
-		let playInBackground = (
+		let playInBackground = !(
 			options.text.playerEnabled ||
 			options.text.shortcutsEnabled
 		);
