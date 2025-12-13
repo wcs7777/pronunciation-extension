@@ -759,21 +759,25 @@
 		el.totalTime.textContent = formatSeconds(duration);
 		changeAudioVolume(audio.volume);
 		changeAudioSpeed(audio.playbackRate);
+		updateInputRangeProgress(el.progressbar);
+		updateInputRangeProgress(el.volumeControl);
 	});
 
 	audio.addEventListener("ended", async () => {
 		await togglePlayAudio({ forcePause: true });
 		el.progressbar.value = audio.dataset.validDuration;
 		el.totalTime.textContent = formatSeconds(audio.dataset.validDuration);
-		el.progressbar.style.background = "var(--range-progress-color)";
+		updateInputRangeProgress(el.progressbar);
 	});
 
 	el.progressbar.addEventListener("input", () => {
 		audio.currentTime = parseFloat(el.progressbar.value);
+		updateInputRangeProgress(el.progressbar);
 	});
 
 	el.volumeControl.addEventListener("input", () => {
 		audio.volume = parseFloat(el.volumeControl.value);
+		updateInputRangeProgress(el.volumeControl);
 	});
 
 	audio.addEventListener("timeupdate", async () => {
@@ -781,7 +785,7 @@
 		el.progressbar.max = await audioDuration(audio);
 		el.currentTime.textContent = formatSeconds(audio.currentTime);
 		el.progressbar.value = audio.currentTime;
-		el.progressbar.style.background = "var(--range-background-color)";
+		updateInputRangeProgress(el.progressbar);
 	});
 
 	el.togglePlayButton.addEventListener("click", async () => togglePlayAudio());
@@ -1270,6 +1274,17 @@
 	}
 
 	/**
+	 * @param {HTMLInputElement} input
+	 * @returns {void}
+	 */
+	function updateInputRangeProgress(input) {
+		const value = parseFloat(input.value);
+		const max = parseFloat(input.max);
+		const percent = (value / max * 100).toPrecision(5);
+		input.style.setProperty('--range-progress', `${percent}%`);
+	}
+
+	/**
 	 * @param {number} seconds
 	 * @returns {string}
 	 */
@@ -1533,37 +1548,37 @@ button {
 }
 
 .input-range {
-	--range-height: 6px;
 	--range-background-color: #616161;
 	--range-progress-color: var(--foreground-color-2);
+	--range-height: 6px;
 	--range-thumb-size: 0px;
-	appearance: none;
+    --range-progress: 80%;
+	-webkit-appearance: none;
+    appearance: none;
+    height: var(--range-height);
 	width: 100%;
 	cursor: pointer;
 	outline: none;
-	border-radius: 15px;
-	height: 5px;
-	background: var(--range-background-color);
-	transition: .1s linear;
+    border-radius: calc(var(--range-height) * 2.1);
+	background: linear-gradient(
+        90deg,
+        var(--range-progress-color) var(--range-progress),
+        var(--range-background-color) var(--range-progress)
+    );
 }
 
 .input-range:hover {
-	--range-progress-color: rgb(159, 212, 230);
 	--range-thumb-size: 12px;
+	--range-progress-color: rgb(159, 212, 230);
 }
 
-.input-range::-moz-range-progress {
-	background-color: var(--range-progress-color);
-}
-
-.input-range::-moz-range-thumb {
+.input-range::-webkit-slider-thumb {
+	-webkit-appearance: none;
 	appearance: none;
-	height: var(--range-thumb-size);
-	width: var(--range-thumb-size);
-	background-color: var(--range-progress-color);
-	border-radius: 50%;
-	border: none;
-	transition: .1s linear;
+    width: var(--range-thumb-size);
+    height: var(--range-thumb-size);
+    border-radius: 50%;
+    background: var(--range-progress-color);
 }
 
 .invisible {
