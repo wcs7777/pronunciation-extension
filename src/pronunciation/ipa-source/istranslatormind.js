@@ -65,8 +65,15 @@ export default class ISTranslatorMind extends IpaSource {
 				true,
 			);
 			const nonce = document.getElementById("translator_nonce").value;
-			console.log({ nonce });
-			await chrome.storage.session.set({ [this.name]: { nonce }});
+			/** @type {BackgroundMessage} */
+			const message = {
+				target: "background",
+				type: "updateTranslatorMindNonce",
+				updateTranslatorMindNonce: {
+					nonce,
+				},
+			};
+			await chrome.runtime.sendMessage(message);
 			this.options.nonce = nonce;
 			this.#attempts++;
 			return this.fetch();

@@ -1,7 +1,5 @@
-import { addLoudnessLimiter } from "../utils/audio.js";
 import { blob2base64 } from "../utils/element.js";
-import { removeMethods } from "../utils/object.js";
-import { threshold } from "../utils/number.js";
+import { sleep } from "../utils/promise.js";
 
 export default class Pronunciation {
 
@@ -9,8 +7,6 @@ export default class Pronunciation {
 	 * @param {{
 	 *     pi: PronunciationInput,
 	 *     position: PronunciationInput,
-	 *     ipaSources: IpaSource[],
-	 *     audioSources: AudioSource[],
 	 *     options: Options,
 	 *     audioTable: Table,
 	 *     audioCache: MemoryCache,
@@ -27,8 +23,6 @@ export default class Pronunciation {
 	constructor({
 		pi,
 		position,
-		ipaSources,
-		audioSources,
 		options,
 		audioTable,
 		audioCache,
@@ -43,8 +37,6 @@ export default class Pronunciation {
 	}) {
 		this.pi = pi;
 		this.position = position;
-		this.ipaSources = ipaSources;
-		this.audioSources = audioSources;
 		this.options = options;
 		this.audioTable = audioTable;
 		this.audioCache = audioCache;
@@ -157,14 +149,17 @@ export default class Pronunciation {
 			console.log(`Tab ${this.tabId} is muted`);
 			return;
 		}
-		const audio = new Audio(url);
-		audio.volume = threshold(0, 1, options.volume);
-		audio.playbackRate = threshold(0.2, 2.0, options.playbackRate);
-		if (options.limitLoudness) {
-			await addLoudnessLimiter(audio).play();
-		} else {
-			await audio.play();
-		}
+		/** @type {OffscreenMessage} */
+		const message = {
+			target: "offscreen",
+			type: "playAudio",
+			origin: this.origin,
+			playAudio: {
+				url,
+				options,
+			},
+		};
+		await chrome.runtime.sendMessage(message);
 	}
 
 	/**
@@ -237,13 +232,13 @@ export default class Pronunciation {
 		}
 		ipa = await this.ipaTable.getValue(input);
 		if (!ipa) {
-			const { ipa: ipaValue, save } = await this.fetchIpaExternally(
+			const { value, save } = await this.fetchIpaExternally(
 				options,
 			);
-			if (!ipaValue) {
+			if (!value) {
 				return null;
 			}
-			ipa = ipaValue;
+			ipa = value;
 			if (save) {
 				console.log(`Adding ${input} to ipa storage`);
 				await this.ipaTable.set(input, ipa);
@@ -270,13 +265,13 @@ export default class Pronunciation {
 		}
 		url = await this.audioTable.getValue(input);
 		if (!url) {
-			const { audio, save } = await this.fetchAudioExternally(
+			const { value, save } = await this.fetchAudioExternally(
 				options,
 			);
-			if (!audio) {
+			if (!value) {
 				return null;
 			}
-			url = await blob2base64(audio);
+			url = value;
 			if (save) {
 				console.log(`Adding ${input} to audio storage`);
 				await this.audioTable.set(input, url);
@@ -347,120 +342,76 @@ export default class Pronunciation {
 
 	/**
 	 * @param {OptionsIpa} options
-	 * @returns {Promise<{ ipa: string | null, save: boolean }>}
+	 * @returns {Promise<{ value: string | null, save: boolean }>}
 	 */
 	async fetchIpaExternally(options) {
-		/**
-		 * @type {{ [key: string]: PronunciationSourceLastError }}
-		 */
-		const le = await this.sourceLastErrorTable.getAll();
-		const now = new Date();
-		const datetime = now.toISOString();
-		const timestamp = now.getTime();
-		const analysis = await this.pi.analysis();
-		const isValid = analysis.isValid;
-		const isRoot = analysis.root === this.pi.firstWord;
-		/** @type {IpaSource[]} */
-		const sources = this.ipaSources
-			.map(S => new S(this.pi, options.sources[S.name], le[S.name]))
-			.filter(s => {
-				return (
-					s.enabled &&
-					(isValid || !s.onlyValid) &&
-					(isRoot || !s.onlyRoot)
-				);
-			})
-			.sort((l, r) => l.order - r.order);
-		for (const s of sources) {
-			try {
-				console.log(`Searching IPA in ${s.name}`);
-				const ipa = await s.fetch();
-				if (ipa) {
-					console.log(`IPA found in ${s.name}`);
-					return { ipa, save: s.save };
-				}
-			} catch (error) {
-				console.error(error);
-				/** @type {PronunciationSourceLastError} */
-				const lastError = {
-					source: s.name,
-					datetime,
-					status: error?.status,
-					timestamp,
-					message: error?.message,
-					messageContentType: error?.messageContentType,
-					error: removeMethods(error?.error ?? error),
-				};
-				await this.sourceLastErrorTable.set(s.name, lastError);
-				if (
-					options.showSourceLastError &&
-					error?.status &&
-					error.status !== 404
-				) {
-					await this.showInfo(`${s.name}: ${error.status}`);
-				}
-			}
+		/** @type {OffscreenMessage} */
+		const message = {
+			target: "offscreen",
+			type: "fetchIpaExternally",
+			origin: this.origin,
+			fetchIpaExternally: {
+				options,
+				rawInput: this.pi.raw,
+				allowText: this.pi.allowText,
+				sourcesLastError: await this.sourceLastErrorTable.getAll(),
+			},
+		};
+		/** @type {fetchExternallyReturn} */
+		const returned = await chrome.runtime.sendMessage(message);
+		const {
+			value,
+			save,
+			le,
+			showLe,
+		} = returned;
+		await this.sourceLastErrorTable.setMany(le);
+		for (const lastError of showLe) {
+			const closeTimeout = 5000;
+			await this.showInfo(lastError, closeTimeout);
+			await sleep(closeTimeout + 1000);
 		}
-		return { ipa: null, save: false };
+		return {
+			value,
+			save,
+		};
 	}
 
 	/**
 	 * @param {OptionsAudio} options
-	 * @returns {Promise<{ audio: Blob | null, save: boolean }>}
+	 * @returns {Promise<{ value: string | null, save: boolean }>}
 	 */
 	async fetchAudioExternally(options) {
-		/**
-		 * @type {{ [key: string]: PronunciationSourceLastError }}
-		 */
-		const le = await this.sourceLastErrorTable.getAll();
-		const now = new Date();
-		const datetime = now.toISOString();
-		const timestamp = now.getTime();
-		const analysis = await this.pi.analysis();
-		const isValid = analysis.isValid;
-		const isRoot = analysis.root === this.pi.firstWord;
-		/** @type {AudioSource[]} */
-		const sources = this.audioSources
-			.map(S => new S(this.pi, options.sources[S.name], le[S.name]))
-			.filter(s => {
-				return (
-					s.enabled &&
-					(isValid || !s.onlyValid) &&
-					(isRoot || !s.onlyRoot)
-				);
-			})
-			.sort((l, r) => l.order - r.order);
-		for (const s of sources) {
-			try {
-				console.log(`Searching audio in ${s.name}`);
-				const audio = await s.fetch();
-				if (audio) {
-					console.log(`Audio found in ${s.name}`);
-					return { audio, save: s.save };
-				}
-			} catch (error) {
-				console.error(error);
-				/** @type {PronunciationSourceLastError} */
-				const lastError = {
-					source: s.name,
-					datetime,
-					status: error?.status,
-					timestamp,
-					message: error?.message,
-					messageContentType: error?.messageContentType,
-					error: removeMethods(error?.error ?? error),
-				};
-				await this.sourceLastErrorTable.set(s.name, lastError);
-				if (
-					options.showSourceLastError &&
-					error?.status &&
-					error.status !== 404
-				) {
-					await this.showInfo(`${s.name}: ${error.status}`);
-				}
-			}
+		/** @type {OffscreenMessage} */
+		const message = {
+			target: "offscreen",
+			type: "fetchAudioExternally",
+			origin: this.origin,
+			fetchAudioExternally: {
+				options,
+				rawInput: this.pi.raw,
+				allowText: this.pi.allowText,
+				sourcesLastError: await this.sourceLastErrorTable.getAll(),
+			},
+		};
+		/** @type {fetchExternallyReturn} */
+		const returned = await chrome.runtime.sendMessage(message);
+		const {
+			value,
+			save,
+			le,
+			showLe,
+		} = returned;
+		await this.sourceLastErrorTable.setMany(le);
+		for (const lastError of showLe) {
+			const closeTimeout = 5000;
+			await this.showInfo(lastError, closeTimeout);
+			await sleep(closeTimeout + 1000);
 		}
-		return { audio: null, save: false };
+		return {
+			value,
+			save,
+		};
 	}
 
 	/**

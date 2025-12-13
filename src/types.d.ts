@@ -45,6 +45,7 @@ declare global {
 		analysis: () => Promise<WordAnalyse>,
 		key: () => Promise<string>,
 		raw: string,
+		allowText: boolean,
 	};
 
 	type PronunciationSourceLastError = {
@@ -299,6 +300,43 @@ declare global {
 			enabled: boolean,
 			maxLength: number,
 		},
+	};
+
+	type BackgroundMessage = {
+		target: "background",
+		type: "updateTranslatorMindNonce";
+		updateTranslatorMindNonce?: {
+			nonce: string,
+		},
+	};
+
+	type OffscreenMessage = {
+		target: "offscreen",
+		type: "fetchIpaExternally" | "fetchAudioExternally" | "playAudio";
+		origin: "menuItem" | "action" | "other",
+		fetchIpaExternally?: {
+			options: OptionsIpa,
+			rawInput: string,
+			allowText: boolean,
+			sourcesLastError: { [key: string]: PronunciationSourceLastError },
+		},
+		fetchAudioExternally?: {
+			options: OptionsAudio,
+			rawInput: string,
+			allowText: boolean,
+			sourcesLastError: { [key: string]: PronunciationSourceLastError },
+		},
+		playAudio?: {
+			url: string,
+			options: OptionsAudio,
+		},
+	};
+
+	type fetchExternallyReturn = {
+		value: string | null,
+		save: boolean,
+		le: { [key: string]: PronunciationSourceLastError },
+		showLe: { [key: string]: PronunciationSourceLastError },
 	};
 
 	type OptionsPopup = {

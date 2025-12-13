@@ -1,10 +1,9 @@
-import * as as from "../pronunciation/audio-source/sources.js";
-import * as is from "../pronunciation/ipa-source/sources.js";
 import * as st from "../utils/storage-tables.js";
 import defaultOptions from "../utils/default-options.js";
 import Pronunciation from "../pronunciation/pronunciation.js";
 import PronunciationInput from "../pronunciation/pronunciation-input.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
+import setupOffscreenDocument from "./setup-offscreen-document.js";
 
 if (!chrome.runtime.onInstalled.hasListener(installedCB)) {
 	chrome.runtime.onInstalled.addListener(installedCB);
@@ -20,34 +19,9 @@ if (chrome.contextMenus) {
 		chrome.contextMenus.onClicked.addListener(menuOnClickedCB);
 	}
 }
-
-/**
- * @type{IpaSource[]}
- */
-const ipaSources = [
-	is.ISCambridge,
-	is.ISOxford,
-	is.ISTranslatorMind,
-	is.ISUnalengua,
-];
-/**
- * @type{AudioSource[]}
- */
-const audioSources = [
-	as.ASAmazonPolly,
-	as.ASCambridge,
-	as.ASDeepSeek,
-	as.ASElevenLabs,
-	as.ASGoogleSpeech,
-	as.ASGstatic,
-	as.ASLinguee,
-	as.ASOpenAi,
-	as.ASOxford,
-	as.ASPlayHt,
-	as.ASResponsiveVoice,
-	as.ASSpeechify,
-	as.ASUnrealSpeech,
-];
+if (!chrome.runtime.onMessage.hasListener(onMessage)) {
+	chrome.runtime.onMessage.addListener(onMessage);
+}
 
 /**
  * @param {string} input
@@ -76,8 +50,6 @@ async function pronounce(input, tabId, origin) {
 	const pronunciation = new Pronunciation({
 		pi,
 		position,
-		ipaSources,
-		audioSources,
 		options,
 		audioTable: st.audioTable,
 		audioCache: st.audioCache,
@@ -135,7 +107,7 @@ async function setMenuItem(accessKey) {
 		return;
 	}
 	const id = "P";
-	setMenuItemPromise = browser.menus.remove(id)
+	setMenuItemPromise = chrome.contextMenus.remove(id)
 		.catch(() => {})
 		.finally(() => {
 			chrome.contextMenus.create({
@@ -202,17 +174,6 @@ async function installedCB(details) {
 			.previousVersion
 			.split(".")
 			.map(parseInt);
-		if (major < 3) { // break change
-			await migrateToV3();
-		}
-		if (major === 3) {
-			if (minor < 2) {
-				await migrateToV3_2_0();
-			}
-			if (minor < 5) {
-				await migrateToV3_5_0();
-			}
-		}
 	}
 }
 
@@ -282,8 +243,6 @@ async function actionOnClickedCB(tab) {
 async function storageOnChangedCB(changes, areaName) {
 	if (areaName === "local") {
 		await localStorageOnChangedCB(changes);
-	} else if (areaName === "session") {
-		await sessionStorageOnChangedCB(changes);
 	}
 }
 
@@ -342,18 +301,45 @@ async function localStorageOnChangedCB(changes) {
 }
 
 /**
- * @param {{ [key: string]: chrome.storage.StorageChange }} changes
+ * @param {BackgroundMessage} message
+ * @param {chrome.runtime.MessageSender} sender
+ * @param {(any) => void} sendResponse
+ * @returns {boolean}
+ */
+function onMessage(message, sender, sendResponse) {
+	if (message.target !== "background") {
+		return false;
+	}
+	const actions = {
+		"updateTranslatorMindNonce": updateTranslatorMindNonce,
+	};
+	if (!message.type in actions) {
+		throw new Error(`Invalid message type: ${message.type}`);
+	}
+	actions[message.type](message)
+		.then(sendResponse)
+		.catch(console.error);
+	return true;
+}
+
+/**
+ * @param {BackgroundMessage} message
  * @returns {Promise<void>}
  */
-async function sessionStorageOnChangedCB(changes) {
-	if (is.ISTranslatorMind.name in changes) {
-		const translatorMind = changes[is.ISTranslatorMind.name];
-		/** @type {string | undefined} */
-		const nonce = translatorMind?.newValue?.nonce;
-		if (translatorMind?.oldValue?.nonce !== nonce) {
-			const options = await ensureOptions();
-			options.ipa.sources.translatorMind.nonce = nonce;
-			await st.optionsTable.setMany(options);
-		}
+async function updateTranslatorMindNonce(message) {
+	if (!message.updateTranslatorMindNonce) {
+		throw new Error("Should pass updateTranslatorMindNonce options in message");
 	}
+	const nonce = message.updateTranslatorMindNonce.nonce;
+	const options = await ensureOptions();
+	options.ipa.sources.translatorMind.nonce = nonce;
+	await st.optionsTable.setMany(options);
 }
+
+(async () => {
+	try {
+		await setupOffscreenDocument();
+	} catch (error) {
+		console.error(error);
+	}
+})();

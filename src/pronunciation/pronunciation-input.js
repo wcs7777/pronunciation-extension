@@ -32,6 +32,20 @@ export default class PronunciationInput {
 	/**
 	 * @returns {string}
 	 */
+	get raw() {
+		return this.#raw;
+	}
+
+	/**
+	 * @returns {boolean}
+	 */
+	get allowText() {
+		return this.#allowText;
+	}
+
+	/**
+	 * @returns {string}
+	 */
 	get input() {
 		return !this.isText ? this.firstWord : this.text;
 	}

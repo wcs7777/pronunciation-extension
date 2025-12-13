@@ -1785,7 +1785,6 @@ button {
 			"getSelectedText": getSelectedText,
 			"getIpaPosition": getIpaPosition,
 			"playAudio": playAudio,
-			"showPlayer": showPlayer,
 			"showPopup": showPopupFromBackground,
 			"changeAlertMaxSelectionOptions": changeAlertMaxSelectionOptionsCB,
 		};
@@ -1886,20 +1885,6 @@ button {
 			} else if (!options.playerEnabled) {
 				await toggleAudioPlayer({ forceDisable: true });
 			}
-		} catch (error) {
-			toggleAudioControlShortcuts({ forceDisable: true });
-			await toggleAudioPlayer({ forceDisable: true });
-			console.error(error);
-		}
-	}
-
-	/**
-	 * @param {ClientMessage} message
-	 * @returns {Promise<void>}
-	 */
-	async function showPlayer(message) {
-		try {
-			await toggleAudioPlayer({ forceEnable: true });
 		} catch (error) {
 			toggleAudioControlShortcuts({ forceDisable: true });
 			await toggleAudioPlayer({ forceDisable: true });
