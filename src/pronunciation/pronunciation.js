@@ -292,11 +292,11 @@ export default class Pronunciation {
 		}
 		const key = await this.pi.key();
 		if (!this.ipaTextCache.hasKey(key)) {
-			const { ipa } = await this.fetchIpaExternally(options);
-			if (!ipa) {
+			const { value } = await this.fetchIpaExternally(options);
+			if (!value) {
 				return null;
 			}
-			this.ipaTextCache.set(key, ipa);
+			this.ipaTextCache.set(key, value);
 		}
 		return this.ipaTextCache.get(key);
 	}
@@ -318,13 +318,13 @@ export default class Pronunciation {
 		}
 		url = await this.audioTextTable.getValue(key);
 		if (!url) {
-			const { audio, save } = await this.fetchAudioExternally(
+			const { value, save } = await this.fetchAudioExternally(
 				options,
 			);
-			if (!audio) {
+			if (!value) {
 				return null;
 			}
-			url = await blob2base64(audio);
+			url = value;
 			if (save && options.text.save) {
 				let short = this.pi.input;
 				if (short.length > 15) {
