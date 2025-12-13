@@ -5,11 +5,6 @@ import defaultOptions from "../utils/default-options.js";
 import Pronunciation from "../pronunciation/pronunciation.js";
 import PronunciationInput from "../pronunciation/pronunciation-input.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
-import {
-	migrateToV3,
-	migrateToV3_2_0,
-	migrateToV3_5_0,
-} from "./migrations.js";
 
 
 let showPlayerMenuItem = {
