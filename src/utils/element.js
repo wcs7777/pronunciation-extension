@@ -152,11 +152,11 @@ export async function downloadObjectMock(obj, filename) {
 export function download(url, filename) {
 	return new Promise(async (resolve, reject) => {
 		try {
-			const id = await browser.downloads.download({ url, filename });
-			browser.downloads.onChanged.addListener(cb);
+			const id = await chrome.downloads.download({ url, filename });
+			chrome.downloads.onChanged.addListener(cb);
 
 			/**
-			 * @param {browser.downloads._OnChangedDownloadDelta} delta
+			 * @param {chrome.downloads._OnChangedDownloadDelta} delta
 			 * @returns {void}
 			 */
 			function cb(delta) {
@@ -164,11 +164,11 @@ export function download(url, filename) {
 					return;
 				}
 				if (delta.state?.current === "complete") {
-					browser.downloads.onChanged.removeListener(cb);
+					chrome.downloads.onChanged.removeListener(cb);
 					return resolve();
 				}
 				if (delta?.error?.current) {
-					browser.downloads.onChanged.removeListener(cb);
+					chrome.downloads.onChanged.removeListener(cb);
 					reject(new Error(delta.error.current));
 				}
 			}

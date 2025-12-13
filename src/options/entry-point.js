@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", async () => await main());
  */
 async function main() {
 	try {
-		const url = browser.runtime.getURL("src/options/pages/general.html");
-		await browser.tabs.create({
+		const url = chrome.runtime.getURL("src/options/pages/general.html");
+		await chrome.tabs.create({
 			url,
 			active: true,
 		});

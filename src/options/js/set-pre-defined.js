@@ -21,7 +21,7 @@ el.ipaShort.addEventListener("click", async () => {
 			return;
 		}
 		console.log("Setting short pre-defined IPA definitions");
-		const url = browser.runtime.getURL("resources/ipa-short.json.gz");
+		const url = chrome.runtime.getURL("resources/ipa-short.json.gz");
 		const response = await fetch(url);
 		const gzipBuffer = new Uint8Array(await response.arrayBuffer());
 		const ipaBuffer = fflate.decompressSync(gzipBuffer);
@@ -45,7 +45,7 @@ el.ipaLong.addEventListener("click", async () => {
 			return;
 		}
 		console.log("Setting long pre-defined IPA definitions");
-		const url = browser.runtime.getURL("resources/ipa-long.json.gz");
+		const url = chrome.runtime.getURL("resources/ipa-long.json.gz");
 		const response = await fetch(url);
 		const gzipBuffer = new Uint8Array(await response.arrayBuffer());
 		const ipaBuffer = fflate.decompressSync(gzipBuffer);

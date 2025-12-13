@@ -409,7 +409,7 @@
 	class TableByKeyPrefix {
 
 		/**
-		 * @param {browser.storage.StorageArea} storage
+		 * @param {chrome.storage.StorageArea} storage
 		 * @param {string} parentkey
 		 */
 		constructor(storage, parentkey) {
@@ -528,7 +528,7 @@
 
 	}
 
-	const addonStorage = browser.storage.local;
+	const addonStorage = chrome.storage.local;
 	const optionsTable = new TableByKeyPrefix(addonStorage, "options");
 
 	/*
@@ -1766,13 +1766,13 @@ button {
 		return Array.from(template.content.children);
 	}
 
-	if (!browser.runtime.onMessage.hasListener(onMessage)) {
-		browser.runtime.onMessage.addListener(onMessage);
+	if (!chrome.runtime.onMessage.hasListener(onMessage)) {
+		chrome.runtime.onMessage.addListener(onMessage);
 	}
 
 	/**
 	 * @param {ClientMessage} message
-	 * @param {browser.runtime.MessageSender} sender
+	 * @param {chrome.runtime.MessageSender} sender
 	 * @param {(any) => void} sendResponse
 	 * @returns {boolean}
 	 */

@@ -2,7 +2,7 @@ import MemoryCache from "./memory-cache.js";
 import TableByKeyPrefix from "./table-by-key-prefix.js";
 import TableByParentKey from "./table-by-parent-key.js";
 
-export const addonStorage = browser.storage.local;
+export const addonStorage = chrome.storage.local;
 export const audioTable = new TableByKeyPrefix(addonStorage, "a");
 export const audioCache = new MemoryCache("audioCache", 100);
 export const ipaTable = new TableByKeyPrefix(addonStorage, "i");

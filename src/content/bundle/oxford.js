@@ -382,7 +382,7 @@
 	let TableByKeyPrefix$1 = class TableByKeyPrefix {
 
 		/**
-		 * @param {browser.storage.StorageArea} storage
+		 * @param {chrome.storage.StorageArea} storage
 		 * @param {string} keyPrefix
 		 */
 		constructor(storage, keyPrefix) {
@@ -542,7 +542,7 @@
 	class TableByKeyPrefix {
 
 		/**
-		 * @param {browser.storage.StorageArea} storage
+		 * @param {chrome.storage.StorageArea} storage
 		 * @param {string} parentkey
 		 */
 		constructor(storage, parentkey) {
@@ -661,7 +661,7 @@
 
 	}
 
-	const addonStorage = browser.storage.local;
+	const addonStorage = chrome.storage.local;
 	const audioTable = new TableByKeyPrefix$1(addonStorage, "a");
 	const ipaTable = new TableByKeyPrefix$1(addonStorage, "i");
 	const defaultIpaTable = new TableByKeyPrefix(addonStorage, "defaultIpa");

@@ -1,15 +1,10 @@
 {
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "How2Say",
 	"version": "3.6.4",
 	"description": "Pronunciation for American English words with phonetic IPA and audio",
 	"icons": {
 		"48": "icons/icon.png"
-	},
-	"browser_specific_settings": {
-		"gecko": {
-			"id": "{73c59290-7ab7-41a3-aa76-2c9fca8009da}"
-		}
 	},
 	"content_scripts": [
 		{
@@ -26,14 +21,13 @@
 		}
 	],
 	"background": {
-		"scripts": ["src/background/script.js"],
-		"type": "module",
-		"persistent": false
+		"service_worker": "src/background/script.js",
+		"type": "module"
 	},
 	"options_ui": {
 		"page": "src/options/entry-point.html"
 	},
-	"browser_action": {
+	"action": {
 		"default_icon": {
 			"19": "icons/icon-19.png",
 			"38": "icons/icon-38.png"
@@ -42,10 +36,12 @@
 	},
 	"permissions": [
 		"downloads",
-		"menus",
+		"contextMenus",
 		"storage",
 		"tabs",
-		"unlimitedStorage",
+		"unlimitedStorage"
+	],
+	"host_permissions": [
 		"https://api.elevenlabs.io/v1/text-to-speech/*",
 		"https://api.openai.com/v1/audio/speech/",
 		"https://api.play.ht/api/v2/tts/stream",

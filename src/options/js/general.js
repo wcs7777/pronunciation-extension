@@ -68,11 +68,11 @@ async function setFieldsValues(shouldSendMessage=true) {
 				maxLength: opt.alertMaxSelectionLength,
 			},
 		};
-		const tabs = await browser.tabs.query({
+		const tabs = await chrome.tabs.query({
 			url: ["https://*/*", "http://*/*"],
 		});
 		await Promise.allSettled(
-			tabs.map(t => browser.tabs.sendMessage(t.id, message)),
+			tabs.map(t => chrome.tabs.sendMessage(t.id, message)),
 		);
 	}
 }

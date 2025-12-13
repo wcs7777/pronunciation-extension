@@ -6,30 +6,19 @@ import Pronunciation from "../pronunciation/pronunciation.js";
 import PronunciationInput from "../pronunciation/pronunciation-input.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
 
-
-let showPlayerMenuItem = {
-	id: "A",
-	title: `How2Say - Player`,
-	contexts: ["tab"],
-	enabled: false,
-	type: "normal",
-	visible: false,
-};
-
-if (!browser.runtime.onInstalled.hasListener(installedCB)) {
-	browser.runtime.onInstalled.addListener(installedCB);
+if (!chrome.runtime.onInstalled.hasListener(installedCB)) {
+	chrome.runtime.onInstalled.addListener(installedCB);
 }
-if (!browser.browserAction.onClicked.hasListener(actionOnClickedCB)) {
-	browser.browserAction.onClicked.addListener(actionOnClickedCB);
+if (!chrome.action.onClicked.hasListener(actionOnClickedCB)) {
+	chrome.action.onClicked.addListener(actionOnClickedCB);
 }
-if (!browser.storage.onChanged.hasListener(storageOnChangedCB)) {
-	browser.storage.onChanged.addListener(storageOnChangedCB);
+if (!chrome.storage.onChanged.hasListener(storageOnChangedCB)) {
+	chrome.storage.onChanged.addListener(storageOnChangedCB);
 }
-if (browser.menus) {
-	if (!browser.menus.onClicked.hasListener(menuOnClickedCB)) {
-		browser.menus.onClicked.addListener(menuOnClickedCB);
+if (chrome.contextMenus) {
+	if (!chrome.contextMenus.onClicked.hasListener(menuOnClickedCB)) {
+		chrome.contextMenus.onClicked.addListener(menuOnClickedCB);
 	}
-	browser.menus.create(showPlayerMenuItem);
 }
 
 /**
@@ -80,7 +69,7 @@ async function pronounce(input, tabId, origin) {
 		},
 	};
 	/** @type {PopupPosition} */
-	const position = await browser.tabs.sendMessage(
+	const position = await chrome.tabs.sendMessage(
 		tabId,
 		message,
 	)
@@ -129,13 +118,16 @@ async function storeOptions() {
 	}
 }
 
+let setMenuItemPromise = Promise.resolve();
+
 /**
  * @param {string} accessKey
  * @returns {Promise<void>}
  */
 async function setMenuItem(accessKey) {
-	if (!browser.menus) {
-		console.log("browser.menus api not available");
+	await setMenuItemPromise;
+	if (!chrome.contextMenus) {
+		console.log("chrome.contextMenus api not available");
 		return;
 	}
 	if (!accessKey) {
@@ -143,10 +135,10 @@ async function setMenuItem(accessKey) {
 		return;
 	}
 	const id = "P";
-	return browser.menus.remove(id)
+	setMenuItemPromise = browser.menus.remove(id)
 		.catch(() => {})
 		.finally(() => {
-			browser.menus.create({
+			chrome.contextMenus.create({
 				id,
 				title: `&${accessKey} - How2Say`,
 				contexts: ["selection"],
@@ -155,29 +147,6 @@ async function setMenuItem(accessKey) {
 				visible: true,
 			});
 		});
-}
-
-/**
- * @param {boolean} show
- * @returns {Promise<void>}
- */
-async function setShowPlayerMenuItem(show) {
-	if (!browser.menus) {
-		console.log("browser.menus api not available");
-		return;
-	}
-	showPlayerMenuItem.enabled = show;
-	showPlayerMenuItem.visible = show;
-	return browser.menus.update(
-		showPlayerMenuItem.id,
-		{
-			title: showPlayerMenuItem.title,
-			contexts: showPlayerMenuItem.contexts,
-			enabled: showPlayerMenuItem.enabled,
-			type: showPlayerMenuItem.type,
-			visible: showPlayerMenuItem.visible,
-		}
-	);
 }
 
 /**
@@ -214,20 +183,20 @@ async function saveError(context, error) {
 }
 
 /**
- * @param {browser.runtime._OnInstalledDetails} details
+ * @param {chrome.runtime._OnInstalledDetails} details
  * @returns {Promise<void>}
  */
 async function installedCB(details) {
 	if (details.temporary) {
 		console.clear();
 		console.log("Cleaning storage due to temporary installation");
-		await browser.storage.local.clear();
+		await chrome.storage.local.clear();
 	}
 	console.log("Startup begin");
 	await storeOptions();
 	if (details.reason === "install" || details.temporary) {
 		const path = "src/options/pages/general.html";
-		await browser.tabs.create({ url: browser.runtime.getURL(path) });
+		await chrome.tabs.create({ url: chrome.runtime.getURL(path) });
 	} else if (details.reason === "update") {
 		const [major, minor, bug] = details
 			.previousVersion
@@ -248,8 +217,8 @@ async function installedCB(details) {
 }
 
 /**
- * @param {browser.menus.OnClickData} info
- * @param {browser.tabs.Tab} tab
+ * @param {chrome.contextMenus.OnClickData} info
+ * @param {chrome.tabs.Tab} tab
  * @returns {Promise<void>}
  */
 async function menuOnClickedCB(info, tab) {
@@ -268,7 +237,7 @@ async function menuOnClickedCB(info, tab) {
 				type: "showPlayer",
 				origin,
 			};
-			await browser.tabs.sendMessage(
+			await chrome.tabs.sendMessage(
 				tab.id,
 				message,
 			);
@@ -279,7 +248,7 @@ async function menuOnClickedCB(info, tab) {
 }
 
 /**
- * @param {browser.tabs.Tab} tab
+ * @param {chrome.tabs.Tab} tab
  * @returns {Promise<void>}
  */
 async function actionOnClickedCB(tab) {
@@ -291,7 +260,7 @@ async function actionOnClickedCB(tab) {
 			origin: "action",
 		};
 		/** @type {string | null} */
-		const selectedText = await browser.tabs.sendMessage(
+		const selectedText = await chrome.tabs.sendMessage(
 			tab.id,
 			message,
 		);
@@ -306,7 +275,7 @@ async function actionOnClickedCB(tab) {
 }
 
 /**
- * @param {{ [key: string]: browser.storage.StorageChange }} changes
+ * @param {{ [key: string]: chrome.storage.StorageChange }} changes
  * @param {string} areaName
  * @returns {Promise<void>}
  */
@@ -319,7 +288,7 @@ async function storageOnChangedCB(changes, areaName) {
 }
 
 /**
- * @param {{ [key: string]: browser.storage.StorageChange }} changes
+ * @param {{ [key: string]: chrome.storage.StorageChange }} changes
  * @returns {Promise<void>}
  */
 async function localStorageOnChangedCB(changes) {
@@ -365,14 +334,6 @@ async function localStorageOnChangedCB(changes) {
 			if (!deepEquals(oldAudio, newAudio)) {
 				console.log(`Cleaning ${st.audioTextCache.name} cache`);
 				st.audioTextCache.clear();
-				if (
-					oldAudio?.text?.tabMenuItemShowPlayer !==
-					newAudio?.text?.tabMenuItemShowPlayer
-				) {
-					await setShowPlayerMenuItem(
-						newAudio?.text?.tabMenuItemShowPlayer ?? false
-					);
-				}
 			}
 		}
 	} catch (error) {
@@ -381,7 +342,7 @@ async function localStorageOnChangedCB(changes) {
 }
 
 /**
- * @param {{ [key: string]: browser.storage.StorageChange }} changes
+ * @param {{ [key: string]: chrome.storage.StorageChange }} changes
  * @returns {Promise<void>}
  */
 async function sessionStorageOnChangedCB(changes) {

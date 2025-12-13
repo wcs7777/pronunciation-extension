@@ -1,5 +1,5 @@
 /**
- * @implements {browser.storage.StorageArea}
+ * @implements {chrome.storage.StorageArea}
  */
 export default class MockStorage {
 	

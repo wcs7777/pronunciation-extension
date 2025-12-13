@@ -66,7 +66,7 @@ export default class ISTranslatorMind extends IpaSource {
 			);
 			const nonce = document.getElementById("translator_nonce").value;
 			console.log({ nonce });
-			await browser.storage.session.set({ [this.name]: { nonce }});
+			await chrome.storage.session.set({ [this.name]: { nonce }});
 			this.options.nonce = nonce;
 			this.#attempts++;
 			return this.fetch();

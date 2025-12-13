@@ -9,7 +9,6 @@ import { getAllOptions, numOr, strOr, saveOptions, showInfo } from "./utils.js";
  *     playerEnabled: HTMLInputElement,
  *     shortcutsEnabled: HTMLInputElement,
  *     skipSeconds: HTMLInputElement,
- *     tabMenuItemShowPlayer: HTMLInputElement,
  *     save: HTMLButtonElement,
  *     shortcuts: {
  *         togglePlayer: HTMLInputElement,
@@ -35,7 +34,6 @@ const el = {
 	playerEnabled: byId("playerEnabled"),
 	shortcutsEnabled: byId("shortcutsEnabled"),
 	skipSeconds: byId("skipSeconds"),
-	tabMenuItemShowPlayer: byId("tabMenuItemShowPlayer"),
 	save: byId("save"),
 	shortcuts:{
 		togglePlayer: byId("shortcutTogglePlayer"),
@@ -89,7 +87,6 @@ el.save.addEventListener("click", async () => {
 					save: el.saveAudio.checked,
 					playerEnabled: el.playerEnabled.checked,
 					shortcutsEnabled: el.shortcutsEnabled.checked,
-					tabMenuItemShowPlayer: el.tabMenuItemShowPlayer.checked,
 					skipSeconds: numOr(el.skipSeconds.value, defaultOptions.audio.text.skipSeconds, 0, 300),
 				},
 			},
@@ -147,7 +144,6 @@ async function setFieldsValues(shouldSendMessage=true) {
 	el.saveAudio.checked = opt.save;
 	el.playerEnabled.checked = opt.playerEnabled;
 	el.shortcutsEnabled.checked = opt.shortcutsEnabled;
-	el.tabMenuItemShowPlayer.checked = opt.tabMenuItemShowPlayer;
 	el.skipSeconds.value = opt.skipSeconds.toString();
 	el.shortcuts.togglePlayer.value = opt.shortcuts.togglePlayer;
 	el.shortcuts.togglePlay.value = opt.shortcuts.togglePlay;
@@ -172,16 +168,15 @@ async function setFieldsValues(shouldSendMessage=true) {
 				limitLoudness: allOptions.audio.limitLoudness,
 				playerEnabled: opt.playerEnabled,
 				shortcutsEnabled: opt.shortcutsEnabled,
-				tabMenuItemShowPlayer: opt.tabMenuItemShowPlayer,
 				skipSeconds: opt.skipSeconds,
 				shortcuts: opt.shortcuts,
 			},
 		};
-		const tabs = await browser.tabs.query({
+		const tabs = await chrome.tabs.query({
 			url: ["https://*/*", "http://*/*"],
 		});
 		await Promise.allSettled(
-			tabs.map(t => browser.tabs.sendMessage(t.id, message)),
+			tabs.map(t => chrome.tabs.sendMessage(t.id, message)),
 		);
 	}
 }

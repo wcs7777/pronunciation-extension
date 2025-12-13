@@ -152,7 +152,7 @@ export default class Pronunciation {
 			console.log("No audio was found or play audio is disabled");
 			return;
 		}
-		const tab = await browser.tabs.get(this.tabId);
+		const tab = await chrome.tabs.get(this.tabId);
 		if (tab?.mutedInfo?.muted) {
 			console.log(`Tab ${this.tabId} is muted`);
 			return;
@@ -180,7 +180,7 @@ export default class Pronunciation {
 			console.log("No audio was found or play audio is disabled");
 			return;
 		}
-		const tab = await browser.tabs.get(this.tabId);
+		const tab = await chrome.tabs.get(this.tabId);
 		if (tab?.mutedInfo?.muted) {
 			console.log(`Tab ${this.tabId} is muted`);
 			return;
@@ -468,7 +468,7 @@ export default class Pronunciation {
 	 * @returns {Promise<any>}
 	 */
 	async sendMessage(message) {
-		return browser.tabs.sendMessage(this.tabId, message);
+		return chrome.tabs.sendMessage(this.tabId, message);
 	}
 
 	/**

@@ -4,7 +4,7 @@
 export default class TableByKeyPrefix {
 
 	/**
-	 * @param {browser.storage.StorageArea} storage
+	 * @param {chrome.storage.StorageArea} storage
 	 * @param {string} parentkey
 	 */
 	constructor(storage, parentkey) {
