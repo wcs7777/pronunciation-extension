@@ -1,6 +1,6 @@
 /** @type {Options} */
 const defaultOptions = {
-	accessKey: "P",
+	accessKey: "H",
 	allowText: true,
 	alertMaxSelectionEnabled: false,
 	alertMaxSelectionLength: 1800,
