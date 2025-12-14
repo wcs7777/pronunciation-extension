@@ -366,11 +366,7 @@ export default class Pronunciation {
 			showLe,
 		} = returned;
 		await this.sourceLastErrorTable.setMany(le);
-		for (const lastError of showLe) {
-			const closeTimeout = 5000;
-			await this.showInfo(lastError, closeTimeout);
-			await sleep(closeTimeout + 1000);
-		}
+		this.showLastErrors(showLe, { top: 200 });
 		return {
 			value,
 			save,
@@ -403,11 +399,7 @@ export default class Pronunciation {
 			showLe,
 		} = returned;
 		await this.sourceLastErrorTable.setMany(le);
-		for (const lastError of showLe) {
-			const closeTimeout = 5000;
-			await this.showInfo(lastError, closeTimeout);
-			await sleep(closeTimeout + 1000);
-		}
+		this.showLastErrors(showLe);
 		return {
 			value,
 			save,
@@ -424,10 +416,19 @@ export default class Pronunciation {
 
 	/**
 	 * @param {string} info
-	 * @param {number} closeTimeout
+	 * @param {{
+	 *     top: number,
+	 *     closeTimeout: number,
+	 * }}
 	 * @returns {Promise<void>}
 	 */
-	async showInfo(info, closeTimeout=5000) {
+	async showInfo(
+		info,
+		{
+			top=100,
+			closeTimeout=5000,
+		}={},
+	) {
 		/** @type {ClientMessage} */
 		const message = {
 			target: "client",
@@ -437,7 +438,7 @@ export default class Pronunciation {
 				text: info,
 				position: {
 					centerHorizontally: true,
-					top: 100,
+					top,
 				},
 				close: {
 					timeout: closeTimeout,
@@ -445,6 +446,37 @@ export default class Pronunciation {
 			},
 		};
 		await this.sendMessage(message);
+	}
+
+	/**
+	 * @param {string[]} lastErrors
+	 * @param {{
+	 *     top: number,
+	 *     closeTimeout: number,
+	 * }}
+	 * @returns {Promise<void>}
+	 */
+	async showLastErrors(
+		lastErrors,
+		{
+			top=100,
+			closeTimeout=5000,
+		}={},
+	) {
+		try {
+			for (const le of lastErrors) {
+				await this.showInfo(
+					le,
+					{
+						top,
+						closeTimeout,
+					},
+				);
+				await sleep(closeTimeout + 500);
+			}
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 }
