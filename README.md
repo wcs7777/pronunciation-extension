@@ -38,7 +38,7 @@ By now, the addon supports these API's, which all of them offer a free limit per
 Install here [How2Say](https://addons.mozilla.org/en-US/firefox/addon/How2Say/)   
 
 ### For developers
-Source code can be found [here](https://github.com/wcs7777/pronunciation-extension)  
+Source code can be found [here](https://github.com/wcs7777/pronunciation-extension/tree/chrome)  
 The files in `./src/bundle/*.js` were generated with `npx rollup --config --bundleConfigAsCjs rollup.config.js` due module usage.  
 It was used fflate to decompress the gzip IPA file in the installation. The script was downloaded from here [https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js](https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js) and is in `./src/utils/fflate.js`.  
 It was used SortedJS in the options page. The script was downloaded from here [https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js](https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js) and is in `./src/utils/Sortable.min.js`.  
