@@ -366,7 +366,7 @@ export default class Pronunciation {
 			showLe,
 		} = returned;
 		await this.sourceLastErrorTable.setMany(le);
-		this.showLastErrors(showLe, { top: 200 });
+		this.showLastErrors(showLe, { top: 200 }).then().catch(console.error);
 		return {
 			value,
 			save,
@@ -399,7 +399,7 @@ export default class Pronunciation {
 			showLe,
 		} = returned;
 		await this.sourceLastErrorTable.setMany(le);
-		this.showLastErrors(showLe);
+		this.showLastErrors(showLe, { top: 100 }).then().catch(console.error);
 		return {
 			value,
 			save,
