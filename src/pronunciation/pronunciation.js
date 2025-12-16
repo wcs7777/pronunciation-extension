@@ -354,12 +354,17 @@ export default class Pronunciation {
 		 * @type {{ [key: string]: PronunciationSourceLastError }}
 		 */
 		const le = await this.sourceLastErrorTable.getAll();
+		/** @type {string[]} */
+		const showLe = [];
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
 		const analysis = await this.pi.analysis();
 		const isValid = analysis.isValid;
 		const isRoot = analysis.root === this.pi.firstWord;
+		/** @type {string | null} */
+		let ipa = null;
+		let save = false;
 		/** @type {IpaSource[]} */
 		const sources = this.ipaSources
 			.map(S => new S(this.pi, options.sources[S.name], le[S.name]))
@@ -374,10 +379,11 @@ export default class Pronunciation {
 		for (const s of sources) {
 			try {
 				console.log(`Searching IPA in ${s.name}`);
-				const ipa = await s.fetch();
+				ipa = await s.fetch();
 				if (ipa) {
 					console.log(`IPA found in ${s.name}`);
-					return { ipa, save: s.save };
+					save = s.save;
+					break;
 				}
 			} catch (error) {
 				console.error(error);
@@ -397,11 +403,12 @@ export default class Pronunciation {
 					error?.status &&
 					error.status !== 404
 				) {
-					await this.showInfo(`${s.name}: ${error.status}`);
+					showLe.push(`${s.name}: ${error.status}`);
 				}
 			}
 		}
-		return { ipa: null, save: false };
+		this.showLastErrors(showLe, { top: 200 }).then().catch(console.error);
+		return { ipa, save };
 	}
 
 	/**
@@ -413,12 +420,17 @@ export default class Pronunciation {
 		 * @type {{ [key: string]: PronunciationSourceLastError }}
 		 */
 		const le = await this.sourceLastErrorTable.getAll();
+		/** @type {string[]} */
+		const showLe = [];
 		const now = new Date();
 		const datetime = now.toISOString();
 		const timestamp = now.getTime();
 		const analysis = await this.pi.analysis();
 		const isValid = analysis.isValid;
 		const isRoot = analysis.root === this.pi.firstWord;
+		/** @type {Blob | null} */
+		let audio = null;
+		let save = false;
 		/** @type {AudioSource[]} */
 		const sources = this.audioSources
 			.map(S => new S(this.pi, options.sources[S.name], le[S.name]))
@@ -433,10 +445,11 @@ export default class Pronunciation {
 		for (const s of sources) {
 			try {
 				console.log(`Searching audio in ${s.name}`);
-				const audio = await s.fetch();
+				audio = await s.fetch();
 				if (audio) {
 					console.log(`Audio found in ${s.name}`);
-					return { audio, save: s.save };
+					save = s.save;
+					break;
 				}
 			} catch (error) {
 				console.error(error);
@@ -456,11 +469,12 @@ export default class Pronunciation {
 					error?.status &&
 					error.status !== 404
 				) {
-					await this.showInfo(`${s.name}: ${error.status}`);
+					showLe.push(`${s.name}: ${error.status}`);
 				}
 			}
 		}
-		return { audio: null, save: false };
+		this.showLastErrors(showLe, { top: 100 }).then().catch(console.error);
+		return { audio, save };
 	}
 
 	/**
@@ -473,10 +487,19 @@ export default class Pronunciation {
 
 	/**
 	 * @param {string} info
-	 * @param {number} closeTimeout
+	 * @param {{
+	 *     top: number,
+	 *     closeTimeout: number,
+	 * }}
 	 * @returns {Promise<void>}
 	 */
-	async showInfo(info, closeTimeout=5000) {
+	async showInfo(
+		info,
+		{
+			top=100,
+			closeTimeout=5000,
+		}={},
+	) {
 		/** @type {ClientMessage} */
 		const message = {
 			target: "client",
@@ -486,7 +509,7 @@ export default class Pronunciation {
 				text: info,
 				position: {
 					centerHorizontally: true,
-					top: 100,
+					top,
 				},
 				close: {
 					timeout: closeTimeout,
@@ -494,6 +517,37 @@ export default class Pronunciation {
 			},
 		};
 		await this.sendMessage(message);
+	}
+
+	/**
+	 * @param {string[]} lastErrors
+	 * @param {{
+	 *     top: number,
+	 *     closeTimeout: number,
+	 * }}
+	 * @returns {Promise<void>}
+	 */
+	async showLastErrors(
+		lastErrors,
+		{
+			top=100,
+			closeTimeout=5000,
+		}={},
+	) {
+		try {
+			for (const le of lastErrors) {
+				await this.showInfo(
+					le,
+					{
+						top,
+						closeTimeout,
+					},
+				);
+				await sleep(closeTimeout + 500);
+			}
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 }
