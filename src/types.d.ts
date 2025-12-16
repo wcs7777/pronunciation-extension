@@ -301,6 +301,14 @@ declare global {
 		},
 	};
 
+	type BackgroundMessage = {
+		target: "background",
+		type: "updateTranslatorMindNonce";
+		updateTranslatorMindNonce?: {
+			nonce: string,
+		},
+	};
+
 	type OptionsPopup = {
 		text: string,
 		style: {

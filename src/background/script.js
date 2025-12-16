@@ -11,7 +11,6 @@ import {
 	migrateToV3_5_0,
 } from "./migrations.js";
 
-
 let showPlayerMenuItem = {
 	id: "A",
 	title: `How2Say - Player`,
@@ -35,6 +34,9 @@ if (browser.menus) {
 		browser.menus.onClicked.addListener(menuOnClickedCB);
 	}
 	browser.menus.create(showPlayerMenuItem);
+}
+if (!browser.runtime.onMessage.hasListener(onMessage)) {
+	browser.runtime.onMessage.addListener(onMessage);
 }
 
 /**
@@ -134,11 +136,14 @@ async function storeOptions() {
 	}
 }
 
+let setMenuItemPromise = Promise.resolve();
+
 /**
  * @param {string} accessKey
  * @returns {Promise<void>}
  */
 async function setMenuItem(accessKey) {
+	await setMenuItemPromise;
 	if (!browser.menus) {
 		console.log("browser.menus api not available");
 		return;
@@ -148,7 +153,7 @@ async function setMenuItem(accessKey) {
 		return;
 	}
 	const id = "P";
-	return browser.menus.remove(id)
+	setMenuItemPromise = browser.menus.remove(id)
 		.catch(() => {})
 		.finally(() => {
 			browser.menus.create({
@@ -318,8 +323,6 @@ async function actionOnClickedCB(tab) {
 async function storageOnChangedCB(changes, areaName) {
 	if (areaName === "local") {
 		await localStorageOnChangedCB(changes);
-	} else if (areaName === "session") {
-		await sessionStorageOnChangedCB(changes);
 	}
 }
 
@@ -386,18 +389,37 @@ async function localStorageOnChangedCB(changes) {
 }
 
 /**
- * @param {{ [key: string]: browser.storage.StorageChange }} changes
+ * @param {BackgroundMessage} message
+ * @param {browser.runtime.MessageSender} sender
+ * @param {(any) => void} sendResponse
+ * @returns {boolean}
+ */
+function onMessage(message, sender, sendResponse) {
+	if (message.target !== "background") {
+		return false;
+	}
+	const actions = {
+		"updateTranslatorMindNonce": updateTranslatorMindNonce,
+	};
+	if (!message.type in actions) {
+		throw new Error(`Invalid message type: ${message.type}`);
+	}
+	actions[message.type](message)
+		.then(sendResponse)
+		.catch(console.error);
+	return true;
+}
+
+/**
+ * @param {BackgroundMessage} message
  * @returns {Promise<void>}
  */
-async function sessionStorageOnChangedCB(changes) {
-	if (is.ISTranslatorMind.name in changes) {
-		const translatorMind = changes[is.ISTranslatorMind.name];
-		/** @type {string | undefined} */
-		const nonce = translatorMind?.newValue?.nonce;
-		if (translatorMind?.oldValue?.nonce !== nonce) {
-			const options = await ensureOptions();
-			options.ipa.sources.translatorMind.nonce = nonce;
-			await st.optionsTable.setMany(options);
-		}
+async function updateTranslatorMindNonce(message) {
+	if (!message.updateTranslatorMindNonce) {
+		throw new Error("Should pass updateTranslatorMindNonce options in message");
 	}
+	const nonce = message.updateTranslatorMindNonce.nonce;
+	const options = await ensureOptions();
+	options.ipa.sources.translatorMind.nonce = nonce;
+	await st.optionsTable.setMany(options);
 }
