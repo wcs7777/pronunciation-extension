@@ -3,6 +3,8 @@ import { showPopup } from "./show-popup.js";
 
 export default class IpaPopup {
 
+	#target = null;
+
 	/**
 	 * @param {string} ipa
 	 * @param {PopupPosition} position
@@ -25,16 +27,19 @@ export default class IpaPopup {
 	 * @returns {Node | HTMLElement}
 	 */
 	target() {
-		const s = this.window.getSelection();
-		if (s.rangeCount > 0) {
-			return (
-				s.focusNode.nodeType === Node.ELEMENT_NODE ?
-				s.focusNode :
-				s.focusNode.parentElement
-			);
-		} else {
-			return document.body;
+		if (!this.#target) {
+			const s = window.getSelection();
+			if (s.rangeCount > 0) {
+				this.#target = (
+					s.focusNode.nodeType === Node.ELEMENT_NODE ?
+					s.focusNode :
+					s.focusNode.parentElement
+				);
+			} else {
+				this.#target = document.body;
+			}
 		}
+		return this.#target;
 	}
 
 	/**
