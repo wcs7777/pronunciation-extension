@@ -36,13 +36,15 @@ el.save.addEventListener("click", async () => {
 		/** @type {Options} */
 		const options = {
 			ipa: {
-				font: {
-					family: strOr(el.fontFamily.value, defaultStyle.font.family),
-					size: numOr(el.fontSize.value, defaultStyle.font.size, 2, 50),
-					color: strOr(el.fontColor.value, defaultStyle.font.color),
+				style: {
+					font: {
+						family: strOr(el.fontFamily.value, defaultStyle.font.family),
+						size: numOr(el.fontSize.value, defaultStyle.font.size, 2, 50),
+						color: strOr(el.fontColor.value, defaultStyle.font.color),
+					},
+					backgroundColor: strOr(el.backgroundColor.value, defaultStyle.backgroundColor),
+					useContextColors: el.useContextColors.checked,
 				},
-				backgroundColor: strOr(el.backgroundColor.value, defaultStyle.backgroundColor),
-				useContextColors: el.useContextColors.checked,
 			},
 		};
 		await saveOptions(options);
