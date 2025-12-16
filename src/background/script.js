@@ -191,17 +191,6 @@ async function menuOnClickedCB(info, tab) {
 				return;
 			}
 			await pronounce(selectedText, tab.id, "menuItem");
-		} else if (info.menuItemId === "A") {
-			/** @type {ClientMessage} */
-			const message = {
-				target: "client",
-				type: "showPlayer",
-				origin,
-			};
-			await chrome.tabs.sendMessage(
-				tab.id,
-				message,
-			);
 		}
 	} catch (error) {
 		await saveError("menuOnClicked", error);

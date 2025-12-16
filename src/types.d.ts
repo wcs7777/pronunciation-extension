@@ -141,7 +141,6 @@ declare global {
 			save: boolean,
 			playerEnabled: boolean,
 			shortcutsEnabled: boolean,
-			tabMenuItemShowPlayer: boolean,
 			skipSeconds: number,
 			shortcuts: OptAudioShortcuts,
 		},
