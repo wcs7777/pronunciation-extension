@@ -6,6 +6,7 @@ import { getAllOptions, numOr, saveOptions, strOr, showInfo } from "./utils.js";
  * @type {{
  *     accessKey: HTMLInputElement,
  *     allowText: HTMLInputElement,
+ *     triggerOnSelection: HTMLInputElement,
  *     alertMaxSelectionEnabled: HTMLInputElement,
  *     alertMaxSelectionLength: HTMLInputElement,
  *     save: HTMLButtonElement,
@@ -14,6 +15,7 @@ import { getAllOptions, numOr, saveOptions, strOr, showInfo } from "./utils.js";
 const el = {
 	accessKey: byId("accessKey"),
 	allowText: byId("allowText"),
+	triggerOnSelection: byId("triggerOnSelection"),
 	alertMaxSelectionEnabled: byId("alertMaxSelectionEnabled"),
 	alertMaxSelectionLength: byId("alertMaxSelectionLength"),
 	save: byId("save"),
@@ -35,6 +37,7 @@ el.save.addEventListener("click", async () => {
 		const options = {
 			accessKey: strOr(el.accessKey.value, defaultOptions.accessKey),
 			allowText: el.allowText.checked,
+			triggerOnSelection: el.triggerOnSelection.checked,
 			alertMaxSelectionEnabled: el.alertMaxSelectionEnabled.checked,
 			alertMaxSelectionLength: numOr(el.alertMaxSelectionLength.value, defaultOptions.alertMaxSelectionLength, 1, 1000000000),
 		};
@@ -55,11 +58,15 @@ async function setFieldsValues(shouldSendMessage=true) {
 	const opt = await getAllOptions();
 	el.accessKey.value = opt.accessKey;
 	el.allowText.checked = opt.allowText;
+	el.triggerOnSelection.checked = opt.triggerOnSelection;
 	el.alertMaxSelectionEnabled.checked = opt.alertMaxSelectionEnabled;
 	el.alertMaxSelectionLength.value = opt.alertMaxSelectionLength.toString();
 	if (shouldSendMessage) {
+		const tabs = await browser.tabs.query({
+			url: ["https://*/*", "http://*/*"],
+		});
 		/** @type {ClientMessage} */
-		const message = {
+		const changeAlertMaxSelectionOptionsMessage = {
 			target: "client",
 			type: "changeAlertMaxSelectionOptions",
 			origin: "other",
@@ -68,11 +75,30 @@ async function setFieldsValues(shouldSendMessage=true) {
 				maxLength: opt.alertMaxSelectionLength,
 			},
 		};
-		const tabs = await browser.tabs.query({
-			url: ["https://*/*", "http://*/*"],
-		});
 		await Promise.allSettled(
-			tabs.map(t => browser.tabs.sendMessage(t.id, message)),
+			tabs.map(
+				t => browser.tabs.sendMessage(
+					t.id,
+					changeAlertMaxSelectionOptionsMessage,
+				),
+			),
+		);
+		/** @type {ClientMessage} */
+		const setTriggerOnSelectionMessage = {
+			target: "client",
+			type: "setTriggerOnSelection",
+			origin: "other",
+			setTriggerOnSelection: {
+				enabled: opt.triggerOnSelection,
+			},
+		};
+		await Promise.allSettled(
+			tabs.map(
+				t => browser.tabs.sendMessage(
+					t.id,
+					setTriggerOnSelectionMessage,
+				),
+			),
 		);
 	}
 }

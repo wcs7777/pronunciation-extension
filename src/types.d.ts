@@ -85,6 +85,7 @@ declare global {
 	type Options = {
 		accessKey: string,
 		allowText: boolean,
+		triggerOnSelection: boolean,
 		alertMaxSelectionEnabled: boolean,
 		alertMaxSelectionLength: number,
 		ipa: OptionsIpa,
@@ -126,6 +127,7 @@ declare global {
 	type IpaPosition = {
 		menuTriggered: "above" | "below",
 		actionTriggered: "above" | "below",
+		selectionTriggered: "above" | "below",
 	}
 
 	type OptIpaCambridge = PronunciationSourceOptions;
@@ -276,8 +278,8 @@ declare global {
 
 	type ClientMessage = {
 		target: "client",
-		type: "showIpa" | "getSelectedText" | "getIpaPosition" | "playAudio" | "showPlayer"| "showPopup" | "changeAlertMaxSelectionOptions",
-		origin: "menuItem" | "action" | "other",
+		type: "showIpa" | "getSelectedText" | "getIpaPosition" | "playAudio" | "showPlayer"| "showPopup" | "changeAlertMaxSelectionOptions" | "setTriggerOnSelection",
+		origin: "menuItem" | "action" | "selection" | "other",
 		getIpaPosition?: {
 			fontSize: number,
 			optionPosition: IpaPosition,
@@ -299,14 +301,20 @@ declare global {
 			enabled: boolean,
 			maxLength: number,
 		},
+		setTriggerOnSelection:? {
+			enabled: boolean,
+		},
 	};
 
 	type BackgroundMessage = {
 		target: "background",
-		type: "updateTranslatorMindNonce";
+		type: "updateTranslatorMindNonce" | "pronounce";
 		updateTranslatorMindNonce?: {
 			nonce: string,
 		},
+		pronounce: {
+			text: string,
+		}
 	};
 
 	type OptionsPopup = {

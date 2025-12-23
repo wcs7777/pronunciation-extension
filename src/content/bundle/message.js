@@ -1,31 +1,6 @@
 (function () {
 	'use strict';
 
-	const digitPattern = /\d+/g;
-
-	/**
-	 * @param {string} text
-	 * @returns {string}
-	 */
-	function filterDigits(text) {
-		return text.match(digitPattern).join("");
-	}
-
-	/**
-	 * @param {string} rgba
-	 * @returns {string}
-	 */
-	function rgba2rgb(rgba) {
-		if (rgba.startsWith("rgba")) {
-			return rgba
-				.replace("a", "")
-				.slice(0, rgba.lastIndexOf(",") -1)
-				.concat(")");
-		} else {
-			return rgba;
-		}
-	}
-
 	/**
 	 * @param {any} target
 	 * @param {any} source
@@ -318,94 +293,133 @@
 		return template;
 	}
 
-	class IpaPopup {
+	const opt$1 = {
+		enabled: false,
+		maxLength: 10000000000,
+	};
+	let alertPopupHost = null;
 
-		#target = null;
-
-		/**
-		 * @param {string} ipa
-		 * @param {PopupPosition} position
-		 * @param {OptionsIpa} options
-		 */
-		constructor(ipa, position, options) {
-			this.ipa = ipa;
-			this.position = position;
-			this.options = options;
+	/**
+	 * @param {{ enabled: boolean, maxLength: number }} options
+	 * @returns {void}
+	 */
+	function changeOptions(options) {
+		opt$1.enabled = options.enabled;
+		opt$1.maxLength = options.maxLength;
+		if (opt$1.enabled) {
+			document.addEventListener("selectionchange", onSelectionChange);
+		} else {
+			document.removeEventListener("selectionchange", onSelectionChange);
 		}
+	}
 
-		/**
-		 * @returns {void}
-		 */
-		show() {
-			showPopup(this.popupOptions());
+	/**
+	 * @returns {void}
+	 */
+	function onSelectionChange() {
+		if (opt$1.enabled) {
+			alertMaxSelection(opt$1.maxLength);
 		}
+	}
 
-		/**
-		 * @returns {Node | HTMLElement}
-		 */
-		target() {
-			if (!this.#target) {
-				const s = window.getSelection();
-				if (s.rangeCount > 0) {
-					this.#target = (
-						s.focusNode.nodeType === Node.ELEMENT_NODE ?
-						s.focusNode :
-						s.focusNode.parentElement
-					);
-				} else {
-					this.#target = document.body;
-				}
-			}
-			return this.#target;
-		}
-
-		/**
-		 * @returns {{ font: { color: string }, backgroundColor: string }}
-		 */
-		style() {
-			let color = this.options.style.font.color;
-			let backgroundColor = this.options.style.backgroundColor;
-			if (this.options.style.useContextColors) {
-				const computed = window.getComputedStyle(this.target());
-				// not 100%, but ok
-				color = rgba2rgb(computed.color); // remove transparency
-				backgroundColor = rgba2rgb(computed.backgroundColor); // default
-				let element = this.target();
-				while (element.parentElement) {
-					const computed = window.getComputedStyle(element);
-					const nonZero = filterDigits(computed.backgroundColor)
-						.replaceAll("0", "");
-					if (nonZero.length > 0) {
-						backgroundColor = rgba2rgb(computed.backgroundColor);
-						break;
-					}
-					element = element.parentElement;
-				}
-			}
-			return { font: { color }, backgroundColor };
-		}
-
-		/**
-		 * @returns {OptionsPopup}
-		 */
-		popupOptions() {
-			const style = this.style();
-			/** @type {OptionsPopup} */
-			const options = {
-				text: this.ipa,
-				style: {
-					font: {
-						...this.options.style.font,
-						color: style.font.color,
-					},
-					backgroundColor: style.backgroundColor,
-				},
-				close: this.options.close,
-				position: this.position,
+	/**
+	 * @param {number} maxLength
+	 * @returns {void}
+	 */
+	function alertMaxSelection(maxLength) {
+		if (
+			selectedLength() >= maxLength &&
+			(!alertPopupHost || !document.body.contains(alertPopupHost))
+		) {
+			const textFn = () => {
+				return `${selectedLength()}/${maxLength} characters selected`;
 			};
-			return options;
+			const closeConditionFn = () => {
+				return selectedLength() < maxLength;
+			};
+			alertPopupHost = showPopup({
+				text: textFn(),
+				close: {
+					timeout: 600000,
+				},
+				position: {
+					centerHorizontally: true,
+					top: 100,
+				},
+			}, textFn, closeConditionFn);
 		}
+	}
 
+	/**
+	 * @returns {number}
+	 */
+	function selectedLength() {
+		return document.getSelection().toString().trim().length;
+	}
+
+	const digitPattern = /\d+/g;
+
+	/**
+	 * @param {string} text
+	 * @returns {string}
+	 */
+	function filterDigits(text) {
+		return text.match(digitPattern).join("");
+	}
+
+	/**
+	 * @param {string} rgba
+	 * @returns {string}
+	 */
+	function rgba2rgb(rgba) {
+		if (rgba.startsWith("rgba")) {
+			return rgba
+				.replace("a", "")
+				.slice(0, rgba.lastIndexOf(",") -1)
+				.concat(")");
+		} else {
+			return rgba;
+		}
+	}
+
+	/**
+	 * @param {Blob} blob
+	 * @returns {Promise<string>}
+	 */
+	async function blob2base64(blob) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.addEventListener("load", onLoad);
+			reader.addEventListener("error", onError);
+			reader.readAsDataURL(blob);
+
+			/**
+			 * @param {ProgressEvent<FileReader>} event
+			 * @returns {void}
+			 */
+			function onLoad(event) {
+				removeListeners();
+				return resolve(event.target.result);
+			}
+
+			/**
+			 * @param {ErrorEvent} error
+			 * @returns {void}
+			 */
+			function onError(error) {
+				removeListeners();
+				return reject(error);
+			}
+
+			/**
+			 * @returns {void}
+			 */
+			function removeListeners() {
+				reader.removeEventListener("load", onLoad);
+				reader.removeEventListener("error", onError);
+			}
+
+		});
 	}
 
 	/**
@@ -546,110 +560,6 @@
 	sourceLastError
 	ta
 	*/
-
-	const opt$1 = {
-		enabled: false,
-		maxLength: 10000000000,
-	};
-	let alertPopupHost = null;
-
-	/**
-	 * @param {{ enabled: boolean, maxLength: number }} options
-	 * @returns {void}
-	 */
-	function changeOptions(options) {
-		opt$1.enabled = options.enabled;
-		opt$1.maxLength = options.maxLength;
-		if (opt$1.enabled) {
-			document.addEventListener("selectionchange", onSelectionChange);
-		} else {
-			document.removeEventListener("selectionchange", onSelectionChange);
-		}
-	}
-
-	/**
-	 * @returns {void}
-	 */
-	function onSelectionChange() {
-		if (opt$1.enabled) {
-			alertMaxSelection(opt$1.maxLength);
-		}
-	}
-
-	/**
-	 * @param {number} maxLength
-	 * @returns {void}
-	 */
-	function alertMaxSelection(maxLength) {
-		if (
-			selectedLength() >= maxLength &&
-			(!alertPopupHost || !document.body.contains(alertPopupHost))
-		) {
-			const textFn = () => {
-				return `${selectedLength()}/${maxLength} characters selected`;
-			};
-			const closeConditionFn = () => {
-				return selectedLength() < maxLength;
-			};
-			alertPopupHost = showPopup({
-				text: textFn(),
-				close: {
-					timeout: 600000,
-				},
-				position: {
-					centerHorizontally: true,
-					top: 100,
-				},
-			}, textFn, closeConditionFn);
-		}
-	}
-
-	/**
-	 * @returns {number}
-	 */
-	function selectedLength() {
-		return document.getSelection().toString().trim().length;
-	}
-
-	/**
-	 * @param {Blob} blob
-	 * @returns {Promise<string>}
-	 */
-	async function blob2base64(blob) {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.addEventListener("load", onLoad);
-			reader.addEventListener("error", onError);
-			reader.readAsDataURL(blob);
-
-			/**
-			 * @param {ProgressEvent<FileReader>} event
-			 * @returns {void}
-			 */
-			function onLoad(event) {
-				removeListeners();
-				return resolve(event.target.result);
-			}
-
-			/**
-			 * @param {ErrorEvent} error
-			 * @returns {void}
-			 */
-			function onError(error) {
-				removeListeners();
-				return reject(error);
-			}
-
-			/**
-			 * @returns {void}
-			 */
-			function removeListeners() {
-				reader.removeEventListener("load", onLoad);
-				reader.removeEventListener("error", onError);
-			}
-
-		});
-	}
 
 	const host = document.createElement("span");
 	host.dataset.role = "pronunciation-addon-audio-player-host";
@@ -1771,6 +1681,98 @@ button {
 		return Array.from(template.content.children);
 	}
 
+	class IpaPopup {
+
+		#target = null;
+
+		/**
+		 * @param {string} ipa
+		 * @param {PopupPosition} position
+		 * @param {OptionsIpa} options
+		 */
+		constructor(ipa, position, options) {
+			this.ipa = ipa;
+			this.position = position;
+			this.options = options;
+		}
+
+		/**
+		 * @returns {void}
+		 */
+		show() {
+			showPopup(this.popupOptions());
+		}
+
+		/**
+		 * @returns {Node | HTMLElement}
+		 */
+		target() {
+			if (!this.#target) {
+				const s = window.getSelection();
+				if (s.rangeCount > 0) {
+					this.#target = (
+						s.focusNode.nodeType === Node.ELEMENT_NODE ?
+						s.focusNode :
+						s.focusNode.parentElement
+					);
+				} else {
+					this.#target = document.body;
+				}
+			}
+			return this.#target;
+		}
+
+		/**
+		 * @returns {{ font: { color: string }, backgroundColor: string }}
+		 */
+		style() {
+			let color = this.options.style.font.color;
+			let backgroundColor = this.options.style.backgroundColor;
+			if (this.options.style.useContextColors) {
+				const computed = window.getComputedStyle(this.target());
+				// not 100%, but ok
+				color = rgba2rgb(computed.color); // remove transparency
+				backgroundColor = rgba2rgb(computed.backgroundColor); // default
+				let element = this.target();
+				while (element.parentElement) {
+					const computed = window.getComputedStyle(element);
+					const nonZero = filterDigits(computed.backgroundColor)
+						.replaceAll("0", "");
+					if (nonZero.length > 0) {
+						backgroundColor = rgba2rgb(computed.backgroundColor);
+						break;
+					}
+					element = element.parentElement;
+				}
+			}
+			return { font: { color }, backgroundColor };
+		}
+
+		/**
+		 * @returns {OptionsPopup}
+		 */
+		popupOptions() {
+			const style = this.style();
+			/** @type {OptionsPopup} */
+			const options = {
+				text: this.ipa,
+				style: {
+					font: {
+						...this.options.style.font,
+						color: style.font.color,
+					},
+					backgroundColor: style.backgroundColor,
+				},
+				close: this.options.close,
+				position: this.position,
+			};
+			return options;
+		}
+
+	}
+
+	let selectionChangeListenerAdded = false;
+
 	if (!browser.runtime.onMessage.hasListener(onMessage)) {
 		browser.runtime.onMessage.addListener(onMessage);
 	}
@@ -1793,6 +1795,7 @@ button {
 			"showPlayer": showPlayer,
 			"showPopup": showPopupFromBackground,
 			"changeAlertMaxSelectionOptions": changeAlertMaxSelectionOptionsCB,
+			"setTriggerOnSelection": setTriggerOnSelection,
 		};
 		if (!message.type in actions) {
 			throw new Error(`Invalid message type: ${message.type}`);
@@ -1846,16 +1849,11 @@ button {
 		}
 		const { top, left } = s.getRangeAt(0).getBoundingClientRect();
 		let shiftTimes = -1.9;
-		if (
-			(
-				(message.origin === "menuItem") &&
-				(options.optionPosition.menuTriggered === "below")
-			) ||
-			(
-				(message.origin === "action") &&
-				(options.optionPosition.actionTriggered === "below")
-			)
-		) {
+		const origin = (
+			message.origin == "menuItem" ? "menu" :
+			message.origin == "action" ? "action" : "selection"
+		);
+		if (options.optionPosition[`${origin}Triggered`] === "below") {
 			shiftTimes = 2.5;
 		}
 		return {
@@ -1938,9 +1936,75 @@ button {
 		changeOptions(options);
 	}
 
+	/**
+	 * @param {ClientMessage} message
+	 * @returns {Promise<void>}
+	 */
+	async function setTriggerOnSelection(message) {
+		const options = message.setTriggerOnSelection;
+		if (!options) {
+			throw new Error(
+				"Should pass setTriggerOnSelection in message"
+			);
+		}
+		if (options.enabled && !selectionChangeListenerAdded) {
+			document.addEventListener(
+				"selectionchange",
+				selectionChangeListener,
+			);
+			selectionChangeListenerAdded = true;
+		} else if (!options.enabled && selectionChangeListenerAdded) {
+			document.removeEventListener(
+				"selectionchange",
+				selectionChangeListener,
+			);
+			selectionChangeListenerAdded = false;
+		}
+	}
+
+	let checkingSelectionChangeTextAfter = false;
+	function selectionChangeListener() {
+		if (
+			window.getSelection().isCollapsed ||
+			checkingSelectionChangeTextAfter
+		) {
+			return;
+		}
+		let textBefore = window.getSelection().toString();
+		checkingSelectionChangeTextAfter = true;
+		const intervalId = setInterval(async () => {
+			const selection = window.getSelection();
+			if (selection.isCollapsed) {
+				clearInterval(intervalId);
+				checkingSelectionChangeTextAfter = false;
+				return;
+			}
+			const textAfter = selection.toString();
+			if (textBefore !== textAfter) {
+				textBefore = textAfter;
+				return;
+			}
+			clearInterval(intervalId);
+			checkingSelectionChangeTextAfter = false;
+			/** @type {BackgroundMessage} */
+			const message = {
+				target: "background",
+				type: "pronounce",
+				pronounce: {
+					text: textAfter,
+				},
+			};
+			await browser.runtime.sendMessage(message);
+		}, 1000);
+	}
 	(async () => {
 		/** @type {Options} */
 		const options = await optionsTable.getAll();
+		await setTriggerOnSelection({
+			setTriggerOnSelection: {
+				enabled: options.triggerOnSelection,
+			},
+		});
 		changeOptions({
 			enabled: options.alertMaxSelectionEnabled,
 			maxLength: options.alertMaxSelectionLength,

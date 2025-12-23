@@ -5,12 +5,14 @@ import { getAllOptions, saveOptions, showInfo } from "./utils.js";
  * @type {{
  *     menuTriggered: HTMLSelectElement,
  *     actionTriggered: HTMLSelectElement,
+ *     selectionTriggered: HTMLSelectElement,
  *     save: HTMLButtonElement,
  * }}
  */
 const el = {
 	menuTriggered: byId("menuTriggered"),
 	actionTriggered: byId("actionTriggered"),
+	selectionTriggered: byId("selectionTriggered"),
 	save: byId("save"),
 };
 
@@ -30,6 +32,7 @@ el.save.addEventListener("click", async () => {
 				position: {
 					menuTriggered: el.menuTriggered.value,
 					actionTriggered: el.actionTriggered.value,
+					selectionTriggered: el.selectionTriggered.value,
 				},
 			},
 		};
@@ -49,4 +52,5 @@ async function setFieldsValues() {
 	const opt = await getAllOptions();
 	el.menuTriggered.value = opt.ipa.position.menuTriggered;
 	el.actionTriggered.value = opt.ipa.position.actionTriggered;
+	el.selectionTriggered.value = opt.ipa.position.selectionTriggered;
 }

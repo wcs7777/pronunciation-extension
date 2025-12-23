@@ -1,10 +1,10 @@
 import * as as from "../pronunciation/audio-source/sources.js";
 import * as is from "../pronunciation/ipa-source/sources.js";
-import * as st from "../utils/storage-tables.js";
-import defaultOptions from "../utils/default-options.js";
-import Pronunciation from "../pronunciation/pronunciation.js";
 import PronunciationInput from "../pronunciation/pronunciation-input.js";
+import Pronunciation from "../pronunciation/pronunciation.js";
+import defaultOptions from "../utils/default-options.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
+import * as st from "../utils/storage-tables.js";
 import {
 	migrateToV3,
 	migrateToV3_2_0,
@@ -70,7 +70,7 @@ const audioSources = [
 /**
  * @param {string} input
  * @param {number} tabId
- * @param {"menuItem" | "action" | "other"} origin
+ * @param {"menuItem" | "action" | "selection" | "other"} origin
  * @returns {Promise<void>}
  */
 async function pronounce(input, tabId, origin) {
@@ -400,11 +400,12 @@ function onMessage(message, sender, sendResponse) {
 	}
 	const actions = {
 		"updateTranslatorMindNonce": updateTranslatorMindNonce,
+		"pronounce": pronounceFromClient,
 	};
 	if (!message.type in actions) {
 		throw new Error(`Invalid message type: ${message.type}`);
 	}
-	actions[message.type](message)
+	actions[message.type](message, sender)
 		.then(sendResponse)
 		.catch(console.error);
 	return true;
@@ -412,9 +413,10 @@ function onMessage(message, sender, sendResponse) {
 
 /**
  * @param {BackgroundMessage} message
+ * @param {browser.runtime.MessageSender} _sender
  * @returns {Promise<void>}
  */
-async function updateTranslatorMindNonce(message) {
+async function updateTranslatorMindNonce(message, _sender) {
 	if (!message.updateTranslatorMindNonce) {
 		throw new Error("Should pass updateTranslatorMindNonce options in message");
 	}
@@ -422,4 +424,17 @@ async function updateTranslatorMindNonce(message) {
 	const options = await ensureOptions();
 	options.ipa.sources.translatorMind.nonce = nonce;
 	await st.optionsTable.setMany(options);
+}
+
+/**
+ * @param {BackgroundMessage} message
+ * @param {browser.runtime.MessageSender} sender
+ * @returns {Promise<void>}
+ */
+async function pronounceFromClient(message, sender) {
+	const options = message.pronounce;
+	if (!options) {
+		throw new Error("Should pass pronounce options in message");
+	}
+	await pronounce(options.text, sender.tab.id, "selection");
 }

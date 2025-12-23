@@ -1,6 +1,3 @@
-import IpaPopup from "../utils/ipa-popup.js";
-import { optionsTable } from "../utils/storage-tables.js";
-import { showPopup } from "../utils/show-popup.js";
 import {
 	changeOptions as changeAlertMaxSelectionOptions,
 } from "../utils/alert-max-selection.js";
@@ -11,6 +8,11 @@ import {
 	toggleAudioControlShortcuts,
 	toggleAudioPlayer,
 } from "../utils/audio-player.js";
+import IpaPopup from "../utils/ipa-popup.js";
+import { showPopup } from "../utils/show-popup.js";
+import { optionsTable } from "../utils/storage-tables.js";
+
+let selectionChangeListenerAdded = false;
 
 if (!browser.runtime.onMessage.hasListener(onMessage)) {
 	browser.runtime.onMessage.addListener(onMessage);
@@ -34,6 +36,7 @@ function onMessage(message, sender, sendResponse) {
 		"showPlayer": showPlayer,
 		"showPopup": showPopupFromBackground,
 		"changeAlertMaxSelectionOptions": changeAlertMaxSelectionOptionsCB,
+		"setTriggerOnSelection": setTriggerOnSelection,
 	};
 	if (!message.type in actions) {
 		throw new Error(`Invalid message type: ${message.type}`);
@@ -87,16 +90,11 @@ async function getIpaPosition(message) {
 	}
 	const { top, left } = s.getRangeAt(0).getBoundingClientRect();
 	let shiftTimes = -1.9;
-	if (
-		(
-			(message.origin === "menuItem") &&
-			(options.optionPosition.menuTriggered === "below")
-		) ||
-		(
-			(message.origin === "action") &&
-			(options.optionPosition.actionTriggered === "below")
-		)
-	) {
+	const origin = (
+		message.origin == "menuItem" ? "menu" :
+		message.origin == "action" ? "action" : "selection"
+	);
+	if (options.optionPosition[`${origin}Triggered`] === "below") {
 		shiftTimes = 2.5;
 	}
 	return {
@@ -179,9 +177,76 @@ async function changeAlertMaxSelectionOptionsCB(message) {
 	changeAlertMaxSelectionOptions(options);
 }
 
+/**
+ * @param {ClientMessage} message
+ * @returns {Promise<void>}
+ */
+async function setTriggerOnSelection(message) {
+	const options = message.setTriggerOnSelection;
+	if (!options) {
+		throw new Error(
+			"Should pass setTriggerOnSelection in message"
+		);
+	}
+	if (options.enabled && !selectionChangeListenerAdded) {
+		document.addEventListener(
+			"selectionchange",
+			selectionChangeListener,
+		);
+		selectionChangeListenerAdded = true;
+	} else if (!options.enabled && selectionChangeListenerAdded) {
+		document.removeEventListener(
+			"selectionchange",
+			selectionChangeListener,
+		);
+		selectionChangeListenerAdded = false;
+	}
+}
+
+let checkingSelectionChangeTextAfter = false;
+function selectionChangeListener() {
+	if (
+		window.getSelection().isCollapsed ||
+		checkingSelectionChangeTextAfter
+	) {
+		return;
+	}
+	let textBefore = window.getSelection().toString();
+	checkingSelectionChangeTextAfter = true;
+	const intervalId = setInterval(async () => {
+		const selection = window.getSelection();
+		if (selection.isCollapsed) {
+			clearInterval(intervalId);
+			checkingSelectionChangeTextAfter = false;
+			return;
+		}
+		const textAfter = selection.toString();
+		if (textBefore !== textAfter) {
+			textBefore = textAfter;
+			return;
+		}
+		clearInterval(intervalId);
+		checkingSelectionChangeTextAfter = false;
+		/** @type {BackgroundMessage} */
+		const message = {
+			target: "background",
+			type: "pronounce",
+			pronounce: {
+				text: textAfter,
+			},
+		};
+		await browser.runtime.sendMessage(message);
+	}, 1000);
+};
+
 (async () => {
 	/** @type {Options} */
 	const options = await optionsTable.getAll();
+	await setTriggerOnSelection({
+		setTriggerOnSelection: {
+			enabled: options.triggerOnSelection,
+		},
+	});
 	changeAlertMaxSelectionOptions({
 		enabled: options.alertMaxSelectionEnabled,
 		maxLength: options.alertMaxSelectionLength,

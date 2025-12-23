@@ -21,7 +21,7 @@ export default class Pronunciation {
 	 *     ipaTextCache: MemoryCache,
 	 *     sourceLastErrorTable: Table,
 	 *     tabId: number,
-	 *     origin: "menuItem" | "action" | "other",
+	 *     origin: "menuItem" | "action" | "selection" | "other",
 	 * }}
 	 */
 	constructor({

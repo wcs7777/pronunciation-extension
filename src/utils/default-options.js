@@ -2,6 +2,7 @@
 const defaultOptions = {
 	accessKey: "P",
 	allowText: true,
+	triggerOnSelection: false,
 	alertMaxSelectionEnabled: false,
 	alertMaxSelectionLength: 1800,
 	ipa: {
@@ -29,6 +30,7 @@ const defaultOptions = {
 		position: {
 			menuTriggered: "above",
 			actionTriggered: "below",
+			selectionTriggered: "above",
 		},
 		sources: {
 			cambridge: {
