@@ -43,6 +43,10 @@
 		},
 		"default_title": "How2Say"
 	},
+	"web_accessible_resources": [
+		"resources/Andika-Regular.ttf",
+		"resources/NotoSans-Regular.ttf"
+	],
 	"permissions": [
 		"downloads",
 		"menus",

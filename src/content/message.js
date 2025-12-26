@@ -13,6 +13,7 @@ import { showPopup } from "../utils/show-popup.js";
 import { optionsTable } from "../utils/storage-tables.js";
 
 let selectionChangeListenerAdded = false;
+let triggerSelectionTime = 1000;
 
 if (!browser.runtime.onMessage.hasListener(onMessage)) {
 	browser.runtime.onMessage.addListener(onMessage);
@@ -201,6 +202,9 @@ async function setTriggerOnSelection(message) {
 		);
 		selectionChangeListenerAdded = false;
 	}
+	if (options.triggerTime) {
+		triggerSelectionTime = options.triggerTime;
+	}
 }
 
 let checkingSelectionChangeTextAfter = false;
@@ -236,12 +240,13 @@ function selectionChangeListener() {
 			},
 		};
 		await browser.runtime.sendMessage(message);
-	}, 1000);
+	}, triggerSelectionTime);
 };
 
 (async () => {
 	/** @type {Options} */
 	const options = await optionsTable.getAll();
+	triggerOnSelection = options.triggerSelectionTime;
 	await setTriggerOnSelection({
 		setTriggerOnSelection: {
 			enabled: options.triggerOnSelection,

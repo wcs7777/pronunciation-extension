@@ -1,9 +1,6 @@
-document.addEventListener("DOMContentLoaded", async () => await main());
+document.getElementById("open").addEventListener("click", openOptionsPage);
 
-/**
- * @returns {Promise<void>}
- */
-async function main() {
+async function openOptionsPage() {
 	try {
 		const url = browser.runtime.getURL("src/options/pages/general.html");
 		await browser.tabs.create({
@@ -14,3 +11,5 @@ async function main() {
 		console.error(error);
 	}
 }
+
+openOptionsPage().finally();

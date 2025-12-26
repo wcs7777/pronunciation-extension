@@ -86,6 +86,7 @@ declare global {
 		accessKey: string,
 		allowText: boolean,
 		triggerOnSelection: boolean,
+		triggerSelectionTime: number,
 		alertMaxSelectionEnabled: boolean,
 		alertMaxSelectionLength: number,
 		ipa: OptionsIpa,
@@ -303,6 +304,7 @@ declare global {
 		},
 		setTriggerOnSelection:? {
 			enabled: boolean,
+			triggerTime?: number,
 		},
 	};
 

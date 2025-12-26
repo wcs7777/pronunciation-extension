@@ -3,6 +3,7 @@ const defaultOptions = {
 	accessKey: "P",
 	allowText: true,
 	triggerOnSelection: false,
+	triggerSelectionTime: 1000,
 	alertMaxSelectionEnabled: false,
 	alertMaxSelectionLength: 1800,
 	ipa: {
@@ -13,7 +14,7 @@ const defaultOptions = {
 		showSourceLastError: true,
 		style: {
 			font: {
-				family: "'Lucida Sans Unicode', 'Segoe UI', serif",
+				family: "'Andika', 'Noto Sans', 'Lucida Sans Unicode', 'Segoe UI', serif",
 				size: 18, // px
 				color: "#282828",
 			},

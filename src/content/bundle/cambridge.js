@@ -97,6 +97,9 @@
 		}
 	}
 
+	const andikaFont = browser.runtime.getURL("resources/Andika-Regular.ttf");
+	const notoSansFont = browser.runtime.getURL("resources/NotoSans-Regular.ttf");
+
 	const template = createTemplate();
 	document.body.appendChild(template);
 
@@ -105,7 +108,7 @@
 		text: "Default text",
 		style: {
 			font: {
-				family: "Arial, serif",
+				family: "'Noto Sans', Arial, sans-serif",
 				size: 20,
 				color: "#282828",
 			},
@@ -280,6 +283,22 @@
 <!-- Code injected by How2Say addon -->
 
 <style>
+
+@font-face {
+	font-family: 'Andika';
+	src: url('${andikaFont}') format('ttf'),
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Noto Sans';
+	src: url('${notoSansFont}') format('ttf'),
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
 
 :where(div, span) {
 	box-sizing: border-box;
