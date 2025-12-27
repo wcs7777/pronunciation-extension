@@ -1790,7 +1790,6 @@ button {
 
 	}
 
-	let selectionChangeListenerAdded = false;
 	let triggerSelectionTime = 1000;
 
 	if (!browser.runtime.onMessage.hasListener(onMessage)) {
@@ -1963,22 +1962,11 @@ button {
 	async function setTriggerOnSelection(message) {
 		const options = message.setTriggerOnSelection;
 		if (!options) {
-			throw new Error(
-				"Should pass setTriggerOnSelection in message"
-			);
+			throw new Error("Should pass setTriggerOnSelection in message");
 		}
-		if (options.enabled && !selectionChangeListenerAdded) {
-			document.addEventListener(
-				"selectionchange",
-				selectionChangeListener,
-			);
-			selectionChangeListenerAdded = true;
-		} else if (!options.enabled && selectionChangeListenerAdded) {
-			document.removeEventListener(
-				"selectionchange",
-				selectionChangeListener,
-			);
-			selectionChangeListenerAdded = false;
+		document.removeEventListener("selectionchange", selectionChangeListener);
+		if (options.enabled) {
+			document.addEventListener("selectionchange", selectionChangeListener);
 		}
 		if (options.triggerTime) {
 			triggerSelectionTime = options.triggerTime;
@@ -2023,10 +2011,10 @@ button {
 	(async () => {
 		/** @type {Options} */
 		const options = await optionsTable.getAll();
-		triggerOnSelection = options.triggerSelectionTime;
 		await setTriggerOnSelection({
 			setTriggerOnSelection: {
 				enabled: options.triggerOnSelection,
+				triggerTime: options.triggerSelectionTime,
 			},
 		});
 		changeOptions({
