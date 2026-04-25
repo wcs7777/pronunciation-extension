@@ -108,6 +108,7 @@ declare global {
 			},
 			backgroundColor: string,
 			useContextColors: boolean,
+			followScroll: boolean,
 		},
 		close: {
 			timeout: number,
@@ -329,6 +330,7 @@ declare global {
 			},
 			backgroundColor: string,
 			useContextColors: boolean,
+			followScroll: boolean,
 		},
 		close: {
 			timeout: number,
@@ -346,6 +348,7 @@ declare global {
 		centerVertically: boolean,
 		top: number,
 		left: number,
+		scrollY: number,
 	}
 
 	type PlayerAudioSource = {

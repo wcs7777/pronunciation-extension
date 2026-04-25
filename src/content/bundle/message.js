@@ -52,6 +52,7 @@
 				color: "#282828",
 			},
 			backgroundColor: "#FFFFFF",
+			followScroll: false,
 		},
 		close: {
 			timeout: 3000,
@@ -65,6 +66,7 @@
 			centerVertically: false,
 			top: 100,
 			left: 250,
+			scrollY: window.scrollY,
 		},
 	};
 
@@ -76,6 +78,8 @@
 	 */
 	function showPopup(options, textFn=null, closeConditionFn=null) {
 
+		const initialScrollY = window.scrollY;
+		defaultOptionsPopup.position.scrollY = initialScrollY;
 		/** @type {OptionsPopup} */
 		const opt = deepMerge(defaultOptionsPopup, options);
 		const host = document.createElement("span");
@@ -131,7 +135,7 @@
 			opt.position.centerHorizontally = true;
 		}
 		let left = opt.position.left;
-		let top = opt.position.top;
+		let top = opt.position.top - (initialScrollY - opt.position.scrollY);
 		const widthDiff = (
 			(window.innerWidth - minMarge) -
 			(opt.position.left + popupWidth)
@@ -180,6 +184,11 @@
 		function onScroll() {
 			if (opt.close.onScroll) {
 				closePopup();
+				return;
+			}
+			if (opt.style.followScroll) {
+				const diff = window.scrollY - initialScrollY;
+				setProperty("--top", `${top - diff}px`);
 			}
 		}
 
@@ -1781,6 +1790,7 @@ button {
 						color: style.font.color,
 					},
 					backgroundColor: style.backgroundColor,
+					followScroll: this.options.style.followScroll,
 				},
 				close: this.options.close,
 				position: this.position,
@@ -1859,11 +1869,13 @@ button {
 		if (!options) {
 			throw new Error("Should pass getIpaPosition options in message");
 		}
+		const scrollY = window.scrollY;
 		const s = window.getSelection();
 		if (s.rangeCount === 0) {
 			return {
 				centerHorizontally: true,
 				centerVertically: true,
+				scrollY,
 			};
 		}
 		const { top, left } = s.getRangeAt(0).getBoundingClientRect();
@@ -1880,6 +1892,7 @@ button {
 			centerVertically: false,
 			top: top + options.fontSize * shiftTimes,
 			left,
+			scrollY,
 		};
 	}
 

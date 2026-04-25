@@ -81,11 +81,13 @@ async function getIpaPosition(message) {
 	if (!options) {
 		throw new Error("Should pass getIpaPosition options in message");
 	}
+	const scrollY = window.scrollY;
 	const s = window.getSelection();
 	if (s.rangeCount === 0) {
 		return {
 			centerHorizontally: true,
 			centerVertically: true,
+			scrollY,
 		};
 	}
 	const { top, left } = s.getRangeAt(0).getBoundingClientRect();
@@ -102,6 +104,7 @@ async function getIpaPosition(message) {
 		centerVertically: false,
 		top: top + options.fontSize * shiftTimes,
 		left,
+		scrollY,
 	};
 }
 

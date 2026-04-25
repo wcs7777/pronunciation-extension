@@ -1,6 +1,6 @@
 /** @type {Options} */
 const defaultOptions = {
-	accessKey: "P",
+	accessKey: "H",
 	allowText: true,
 	triggerOnSelection: false,
 	triggerSelectionTime: 1000,
@@ -20,6 +20,7 @@ const defaultOptions = {
 			},
 			backgroundColor: "#FFFFFF",
 			useContextColors: false,
+			followScroll: true,
 		},
 		close: {
 			timeout: 3000,

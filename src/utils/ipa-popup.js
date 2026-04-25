@@ -82,6 +82,7 @@ export default class IpaPopup {
 					color: style.font.color,
 				},
 				backgroundColor: style.backgroundColor,
+				followScroll: this.options.style.followScroll,
 			},
 			close: this.options.close,
 			position: this.position,
