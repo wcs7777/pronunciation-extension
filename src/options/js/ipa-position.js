@@ -6,6 +6,7 @@ import { getAllOptions, saveOptions, showInfo } from "./utils.js";
  *     menuTriggered: HTMLSelectElement,
  *     actionTriggered: HTMLSelectElement,
  *     selectionTriggered: HTMLSelectElement,
+ *     commandTriggered: HTMLSelectElement,
  *     save: HTMLButtonElement,
  * }}
  */
@@ -13,6 +14,7 @@ const el = {
 	menuTriggered: byId("menuTriggered"),
 	actionTriggered: byId("actionTriggered"),
 	selectionTriggered: byId("selectionTriggered"),
+	commandTriggered: byId("commandTriggered"),
 	save: byId("save"),
 };
 
@@ -33,6 +35,7 @@ el.save.addEventListener("click", async () => {
 					menuTriggered: el.menuTriggered.value,
 					actionTriggered: el.actionTriggered.value,
 					selectionTriggered: el.selectionTriggered.value,
+					commandTriggered: el.commandTriggered.value,
 				},
 			},
 		};
@@ -53,4 +56,5 @@ async function setFieldsValues() {
 	el.menuTriggered.value = opt.ipa.position.menuTriggered;
 	el.actionTriggered.value = opt.ipa.position.actionTriggered;
 	el.selectionTriggered.value = opt.ipa.position.selectionTriggered;
+	el.commandTriggered.value = opt.ipa.position.commandTriggered;
 }

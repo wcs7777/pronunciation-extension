@@ -43,6 +43,15 @@
 		},
 		"default_title": "How2Say"
 	},
+	"commands": {
+		"pronounce": {
+			"suggested_key": {
+				"default": "Ctrl+Alt+D",
+				"mac": "Command+Alt+D"
+			},
+			"description": "Pronounce selection"
+		}
+	},
 	"web_accessible_resources": [
 		"resources/Andika-Regular.ttf",
 		"resources/NotoSans-Regular.ttf"

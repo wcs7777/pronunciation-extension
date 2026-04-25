@@ -33,6 +33,7 @@ const defaultOptions = {
 			menuTriggered: "above",
 			actionTriggered: "below",
 			selectionTriggered: "above",
+			commandTriggered: "above",
 		},
 		sources: {
 			cambridge: {

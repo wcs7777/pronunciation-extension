@@ -26,6 +26,9 @@ if (!browser.runtime.onInstalled.hasListener(installedCB)) {
 if (!browser.browserAction.onClicked.hasListener(actionOnClickedCB)) {
 	browser.browserAction.onClicked.addListener(actionOnClickedCB);
 }
+if (!browser.commands.onCommand.hasListener(onCommand)) {
+	browser.commands.onCommand.addListener(onCommand);
+}
 if (!browser.storage.onChanged.hasListener(storageOnChangedCB)) {
 	browser.storage.onChanged.addListener(storageOnChangedCB);
 }
@@ -70,7 +73,7 @@ const audioSources = [
 /**
  * @param {string} input
  * @param {number} tabId
- * @param {"menuItem" | "action" | "selection" | "other"} origin
+ * @param {"menuItem" | "action" | "selection" | "command" | "other"} origin
  * @returns {Promise<void>}
  */
 async function pronounce(input, tabId, origin) {
@@ -310,6 +313,38 @@ async function actionOnClickedCB(tab) {
 			return;
 		}
 		await pronounce(selectedText, tab.id, "action");
+	} catch (error) {
+		await saveError("actionOnClicked", error);
+	}
+}
+
+/**
+ * @param {string} command
+ * @param {browser.tabs.Tab} tab
+ * @returns {Promise<void>}
+ */
+async function onCommand(command, tab) {
+	if (command !== "pronounce") {
+		console.erro(`Invalid command: ${command}`);
+		return;
+	}
+	try {
+		/** @type {ClientMessage} */
+		const message = {
+			target: "client",
+			type: "getSelectedText",
+			origin: "command",
+		};
+		/** @type {string | null} */
+		const selectedText = await browser.tabs.sendMessage(
+			tab.id,
+			message,
+		);
+		if (selectedText?.length === 0) {
+			console.log("Nothing was selected");
+			return;
+		}
+		await pronounce(selectedText, tab.id, "command");
 	} catch (error) {
 		await saveError("actionOnClicked", error);
 	}

@@ -130,6 +130,7 @@ declare global {
 		menuTriggered: "above" | "below",
 		actionTriggered: "above" | "below",
 		selectionTriggered: "above" | "below",
+		commandTriggered: "above" | "below",
 	}
 
 	type OptIpaCambridge = PronunciationSourceOptions;
@@ -281,7 +282,7 @@ declare global {
 	type ClientMessage = {
 		target: "client",
 		type: "showIpa" | "getSelectedText" | "getIpaPosition" | "playAudio" | "showPlayer"| "showPopup" | "changeAlertMaxSelectionOptions" | "setTriggerOnSelection",
-		origin: "menuItem" | "action" | "selection" | "other",
+		origin: "menuItem" | "action" | "selection" | "command" | "other",
 		getIpaPosition?: {
 			fontSize: number,
 			optionPosition: IpaPosition,

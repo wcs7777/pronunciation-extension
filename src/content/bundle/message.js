@@ -1882,7 +1882,8 @@ button {
 		let shiftTimes = -1.9;
 		const origin = (
 			message.origin == "menuItem" ? "menu" :
-			message.origin == "action" ? "action" : "selection"
+			message.origin == "action" ? "action" :
+			message.origin == "command" ? "command" : "selection"
 		);
 		if (options.optionPosition[`${origin}Triggered`] === "below") {
 			shiftTimes = 2.5;
