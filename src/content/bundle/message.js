@@ -1,31 +1,6 @@
 (function () {
 	'use strict';
 
-	const digitPattern = /\d+/g;
-
-	/**
-	 * @param {string} text
-	 * @returns {string}
-	 */
-	function filterDigits(text) {
-		return text.match(digitPattern).join("");
-	}
-
-	/**
-	 * @param {string} rgba
-	 * @returns {string}
-	 */
-	function rgba2rgb(rgba) {
-		if (rgba.startsWith("rgba")) {
-			return rgba
-				.replace("a", "")
-				.slice(0, rgba.lastIndexOf(",") -1)
-				.concat(")");
-		} else {
-			return rgba;
-		}
-	}
-
 	/**
 	 * @param {any} target
 	 * @param {any} source
@@ -61,6 +36,9 @@
 		}
 	}
 
+	const andikaFont = chrome.runtime.getURL("resources/Andika-Regular.ttf");
+	const notoSansFont = chrome.runtime.getURL("resources/NotoSans-Regular.ttf");
+
 	const template = createTemplate();
 	document.body.appendChild(template);
 
@@ -69,11 +47,12 @@
 		text: "Default text",
 		style: {
 			font: {
-				family: "Arial, serif",
+				family: "'Noto Sans', Arial, sans-serif",
 				size: 20,
 				color: "#282828",
 			},
 			backgroundColor: "#FFFFFF",
+			followScroll: false,
 		},
 		close: {
 			timeout: 3000,
@@ -87,6 +66,7 @@
 			centerVertically: false,
 			top: 100,
 			left: 250,
+			scrollY: window.scrollY,
 		},
 	};
 
@@ -98,6 +78,8 @@
 	 */
 	function showPopup(options, textFn=null, closeConditionFn=null) {
 
+		const initialScrollY = window.scrollY;
+		defaultOptionsPopup.position.scrollY = initialScrollY;
 		/** @type {OptionsPopup} */
 		const opt = deepMerge(defaultOptionsPopup, options);
 		const host = document.createElement("span");
@@ -153,7 +135,7 @@
 			opt.position.centerHorizontally = true;
 		}
 		let left = opt.position.left;
-		let top = opt.position.top;
+		let top = opt.position.top - (initialScrollY - opt.position.scrollY);
 		const widthDiff = (
 			(window.innerWidth - minMarge) -
 			(opt.position.left + popupWidth)
@@ -202,6 +184,11 @@
 		function onScroll() {
 			if (opt.close.onScroll) {
 				closePopup();
+				return;
+			}
+			if (opt.style.followScroll) {
+				const diff = window.scrollY - initialScrollY;
+				setProperty("--top", `${top - diff}px`);
 			}
 		}
 
@@ -244,6 +231,22 @@
 <!-- Code injected by How2Say addon -->
 
 <style>
+
+@font-face {
+	font-family: 'Andika';
+	src: url('${andikaFont}') format('ttf'),
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Noto Sans';
+	src: url('${notoSansFont}') format('ttf'),
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
 
 :where(div, span) {
 	box-sizing: border-box;
@@ -318,94 +321,133 @@
 		return template;
 	}
 
-	class IpaPopup {
+	const opt$1 = {
+		enabled: false,
+		maxLength: 10000000000,
+	};
+	let alertPopupHost = null;
 
-		#target = null;
-
-		/**
-		 * @param {string} ipa
-		 * @param {PopupPosition} position
-		 * @param {OptionsIpa} options
-		 */
-		constructor(ipa, position, options) {
-			this.ipa = ipa;
-			this.position = position;
-			this.options = options;
+	/**
+	 * @param {{ enabled: boolean, maxLength: number }} options
+	 * @returns {void}
+	 */
+	function changeOptions(options) {
+		opt$1.enabled = options.enabled;
+		opt$1.maxLength = options.maxLength;
+		if (opt$1.enabled) {
+			document.addEventListener("selectionchange", onSelectionChange);
+		} else {
+			document.removeEventListener("selectionchange", onSelectionChange);
 		}
+	}
 
-		/**
-		 * @returns {void}
-		 */
-		show() {
-			showPopup(this.popupOptions());
+	/**
+	 * @returns {void}
+	 */
+	function onSelectionChange() {
+		if (opt$1.enabled) {
+			alertMaxSelection(opt$1.maxLength);
 		}
+	}
 
-		/**
-		 * @returns {Node | HTMLElement}
-		 */
-		target() {
-			if (!this.#target) {
-				const s = window.getSelection();
-				if (s.rangeCount > 0) {
-					this.#target = (
-						s.focusNode.nodeType === Node.ELEMENT_NODE ?
-						s.focusNode :
-						s.focusNode.parentElement
-					);
-				} else {
-					this.#target = document.body;
-				}
-			}
-			return this.#target;
-		}
-
-		/**
-		 * @returns {{ font: { color: string }, backgroundColor: string }}
-		 */
-		style() {
-			let color = this.options.style.font.color;
-			let backgroundColor = this.options.style.backgroundColor;
-			if (this.options.style.useContextColors) {
-				const computed = window.getComputedStyle(this.target());
-				// not 100%, but ok
-				color = rgba2rgb(computed.color); // remove transparency
-				backgroundColor = rgba2rgb(computed.backgroundColor); // default
-				let element = this.target();
-				while (element.parentElement) {
-					const computed = window.getComputedStyle(element);
-					const nonZero = filterDigits(computed.backgroundColor)
-						.replaceAll("0", "");
-					if (nonZero.length > 0) {
-						backgroundColor = rgba2rgb(computed.backgroundColor);
-						break;
-					}
-					element = element.parentElement;
-				}
-			}
-			return { font: { color }, backgroundColor };
-		}
-
-		/**
-		 * @returns {OptionsPopup}
-		 */
-		popupOptions() {
-			const style = this.style();
-			/** @type {OptionsPopup} */
-			const options = {
-				text: this.ipa,
-				style: {
-					font: {
-						...this.options.style.font,
-						color: style.font.color,
-					},
-					backgroundColor: style.backgroundColor,
-				},
-				close: this.options.close,
-				position: this.position,
+	/**
+	 * @param {number} maxLength
+	 * @returns {void}
+	 */
+	function alertMaxSelection(maxLength) {
+		if (
+			selectedLength() >= maxLength &&
+			(!alertPopupHost || !document.body.contains(alertPopupHost))
+		) {
+			const textFn = () => {
+				return `${selectedLength()}/${maxLength} characters selected`;
 			};
-			return options;
+			const closeConditionFn = () => {
+				return selectedLength() < maxLength;
+			};
+			alertPopupHost = showPopup({
+				text: textFn(),
+				close: {
+					timeout: 600000,
+				},
+				position: {
+					centerHorizontally: true,
+					top: 100,
+				},
+			}, textFn, closeConditionFn);
 		}
+	}
 
+	/**
+	 * @returns {number}
+	 */
+	function selectedLength() {
+		return document.getSelection().toString().trim().length;
+	}
+
+	const digitPattern = /\d+/g;
+
+	/**
+	 * @param {string} text
+	 * @returns {string}
+	 */
+	function filterDigits(text) {
+		return text.match(digitPattern).join("");
+	}
+
+	/**
+	 * @param {string} rgba
+	 * @returns {string}
+	 */
+	function rgba2rgb(rgba) {
+		if (rgba.startsWith("rgba")) {
+			return rgba
+				.replace("a", "")
+				.slice(0, rgba.lastIndexOf(",") -1)
+				.concat(")");
+		} else {
+			return rgba;
+		}
+	}
+
+	/**
+	 * @param {Blob} blob
+	 * @returns {Promise<string>}
+	 */
+	async function blob2base64(blob) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.addEventListener("load", onLoad);
+			reader.addEventListener("error", onError);
+			reader.readAsDataURL(blob);
+
+			/**
+			 * @param {ProgressEvent<FileReader>} event
+			 * @returns {void}
+			 */
+			function onLoad(event) {
+				removeListeners();
+				return resolve(event.target.result);
+			}
+
+			/**
+			 * @param {ErrorEvent} error
+			 * @returns {void}
+			 */
+			function onError(error) {
+				removeListeners();
+				return reject(error);
+			}
+
+			/**
+			 * @returns {void}
+			 */
+			function removeListeners() {
+				reader.removeEventListener("load", onLoad);
+				reader.removeEventListener("error", onError);
+			}
+
+		});
 	}
 
 	/**
@@ -546,110 +588,6 @@
 	sourceLastError
 	ta
 	*/
-
-	const opt$1 = {
-		enabled: false,
-		maxLength: 10000000000,
-	};
-	let alertPopupHost = null;
-
-	/**
-	 * @param {{ enabled: boolean, maxLength: number }} options
-	 * @returns {void}
-	 */
-	function changeOptions(options) {
-		opt$1.enabled = options.enabled;
-		opt$1.maxLength = options.maxLength;
-		if (opt$1.enabled) {
-			document.addEventListener("selectionchange", onSelectionChange);
-		} else {
-			document.removeEventListener("selectionchange", onSelectionChange);
-		}
-	}
-
-	/**
-	 * @returns {void}
-	 */
-	function onSelectionChange() {
-		if (opt$1.enabled) {
-			alertMaxSelection(opt$1.maxLength);
-		}
-	}
-
-	/**
-	 * @param {number} maxLength
-	 * @returns {void}
-	 */
-	function alertMaxSelection(maxLength) {
-		if (
-			selectedLength() >= maxLength &&
-			(!alertPopupHost || !document.body.contains(alertPopupHost))
-		) {
-			const textFn = () => {
-				return `${selectedLength()}/${maxLength} characters selected`;
-			};
-			const closeConditionFn = () => {
-				return selectedLength() < maxLength;
-			};
-			alertPopupHost = showPopup({
-				text: textFn(),
-				close: {
-					timeout: 600000,
-				},
-				position: {
-					centerHorizontally: true,
-					top: 100,
-				},
-			}, textFn, closeConditionFn);
-		}
-	}
-
-	/**
-	 * @returns {number}
-	 */
-	function selectedLength() {
-		return document.getSelection().toString().trim().length;
-	}
-
-	/**
-	 * @param {Blob} blob
-	 * @returns {Promise<string>}
-	 */
-	async function blob2base64(blob) {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.addEventListener("load", onLoad);
-			reader.addEventListener("error", onError);
-			reader.readAsDataURL(blob);
-
-			/**
-			 * @param {ProgressEvent<FileReader>} event
-			 * @returns {void}
-			 */
-			function onLoad(event) {
-				removeListeners();
-				return resolve(event.target.result);
-			}
-
-			/**
-			 * @param {ErrorEvent} error
-			 * @returns {void}
-			 */
-			function onError(error) {
-				removeListeners();
-				return reject(error);
-			}
-
-			/**
-			 * @returns {void}
-			 */
-			function removeListeners() {
-				reader.removeEventListener("load", onLoad);
-				reader.removeEventListener("error", onError);
-			}
-
-		});
-	}
 
 	const host = document.createElement("span");
 	host.dataset.role = "pronunciation-addon-audio-player-host";
@@ -1786,6 +1724,99 @@ button {
 		return Array.from(template.content.children);
 	}
 
+	class IpaPopup {
+
+		#target = null;
+
+		/**
+		 * @param {string} ipa
+		 * @param {PopupPosition} position
+		 * @param {OptionsIpa} options
+		 */
+		constructor(ipa, position, options) {
+			this.ipa = ipa;
+			this.position = position;
+			this.options = options;
+		}
+
+		/**
+		 * @returns {void}
+		 */
+		show() {
+			showPopup(this.popupOptions());
+		}
+
+		/**
+		 * @returns {Node | HTMLElement}
+		 */
+		target() {
+			if (!this.#target) {
+				const s = window.getSelection();
+				if (s.rangeCount > 0) {
+					this.#target = (
+						s.focusNode.nodeType === Node.ELEMENT_NODE ?
+						s.focusNode :
+						s.focusNode.parentElement
+					);
+				} else {
+					this.#target = document.body;
+				}
+			}
+			return this.#target;
+		}
+
+		/**
+		 * @returns {{ font: { color: string }, backgroundColor: string }}
+		 */
+		style() {
+			let color = this.options.style.font.color;
+			let backgroundColor = this.options.style.backgroundColor;
+			if (this.options.style.useContextColors) {
+				const computed = window.getComputedStyle(this.target());
+				// not 100%, but ok
+				color = rgba2rgb(computed.color); // remove transparency
+				backgroundColor = rgba2rgb(computed.backgroundColor); // default
+				let element = this.target();
+				while (element.parentElement) {
+					const computed = window.getComputedStyle(element);
+					const nonZero = filterDigits(computed.backgroundColor)
+						.replaceAll("0", "");
+					if (nonZero.length > 0) {
+						backgroundColor = rgba2rgb(computed.backgroundColor);
+						break;
+					}
+					element = element.parentElement;
+				}
+			}
+			return { font: { color }, backgroundColor };
+		}
+
+		/**
+		 * @returns {OptionsPopup}
+		 */
+		popupOptions() {
+			const style = this.style();
+			/** @type {OptionsPopup} */
+			const options = {
+				text: this.ipa,
+				style: {
+					font: {
+						...this.options.style.font,
+						color: style.font.color,
+					},
+					backgroundColor: style.backgroundColor,
+					followScroll: this.options.style.followScroll,
+				},
+				close: this.options.close,
+				position: this.position,
+			};
+			return options;
+		}
+
+	}
+
+	let triggerSelectionTime = 1000;
+
 	if (!chrome.runtime.onMessage.hasListener(onMessage)) {
 		chrome.runtime.onMessage.addListener(onMessage);
 	}
@@ -1807,6 +1838,7 @@ button {
 			"playAudio": playAudio,
 			"showPopup": showPopupFromBackground,
 			"changeAlertMaxSelectionOptions": changeAlertMaxSelectionOptionsCB,
+			"setTriggerOnSelection": setTriggerOnSelection,
 		};
 		if (!message.type in actions) {
 			throw new Error(`Invalid message type: ${message.type}`);
@@ -1851,25 +1883,23 @@ button {
 		if (!options) {
 			throw new Error("Should pass getIpaPosition options in message");
 		}
+		const scrollY = window.scrollY;
 		const s = window.getSelection();
 		if (s.rangeCount === 0) {
 			return {
 				centerHorizontally: true,
 				centerVertically: true,
+				scrollY,
 			};
 		}
 		const { top, left } = s.getRangeAt(0).getBoundingClientRect();
 		let shiftTimes = -1.9;
-		if (
-			(
-				(message.origin === "menuItem") &&
-				(options.optionPosition.menuTriggered === "below")
-			) ||
-			(
-				(message.origin === "action") &&
-				(options.optionPosition.actionTriggered === "below")
-			)
-		) {
+		const origin = (
+			message.origin == "menuItem" ? "menu" :
+			message.origin == "action" ? "action" :
+			message.origin == "command" ? "command" : "selection"
+		);
+		if (options.optionPosition[`${origin}Triggered`] === "below") {
 			shiftTimes = 2.5;
 		}
 		return {
@@ -1877,6 +1907,7 @@ button {
 			centerVertically: false,
 			top: top + options.fontSize * shiftTimes,
 			left,
+			scrollY,
 		};
 	}
 
@@ -1938,9 +1969,68 @@ button {
 		changeOptions(options);
 	}
 
+	/**
+	 * @param {ClientMessage} message
+	 * @returns {Promise<void>}
+	 */
+	async function setTriggerOnSelection(message) {
+		const options = message.setTriggerOnSelection;
+		if (!options) {
+			throw new Error("Should pass setTriggerOnSelection in message");
+		}
+		document.removeEventListener("selectionchange", selectionChangeListener);
+		if (options.enabled) {
+			document.addEventListener("selectionchange", selectionChangeListener);
+		}
+		if (options.triggerTime) {
+			triggerSelectionTime = options.triggerTime;
+		}
+	}
+
+	let checkingSelectionChangeTextAfter = false;
+	function selectionChangeListener() {
+		if (
+			window.getSelection().isCollapsed ||
+			checkingSelectionChangeTextAfter
+		) {
+			return;
+		}
+		let textBefore = window.getSelection().toString();
+		checkingSelectionChangeTextAfter = true;
+		const intervalId = setInterval(async () => {
+			const selection = window.getSelection();
+			if (selection.isCollapsed) {
+				clearInterval(intervalId);
+				checkingSelectionChangeTextAfter = false;
+				return;
+			}
+			const textAfter = selection.toString();
+			if (textBefore !== textAfter) {
+				textBefore = textAfter;
+				return;
+			}
+			clearInterval(intervalId);
+			checkingSelectionChangeTextAfter = false;
+			/** @type {BackgroundMessage} */
+			const message = {
+				target: "background",
+				type: "pronounce",
+				pronounce: {
+					text: textAfter,
+				},
+			};
+			await chrome.runtime.sendMessage(message);
+		}, triggerSelectionTime);
+	}
 	(async () => {
 		/** @type {Options} */
 		const options = await optionsTable.getAll();
+		await setTriggerOnSelection({
+			setTriggerOnSelection: {
+				enabled: options.triggerOnSelection,
+				triggerTime: options.triggerSelectionTime,
+			},
+		});
 		changeOptions({
 			enabled: options.alertMaxSelectionEnabled,
 			maxLength: options.alertMaxSelectionLength,

@@ -2,6 +2,8 @@
 const defaultOptions = {
 	accessKey: "H",
 	allowText: true,
+	triggerOnSelection: false,
+	triggerSelectionTime: 1000,
 	alertMaxSelectionEnabled: false,
 	alertMaxSelectionLength: 1800,
 	ipa: {
@@ -12,12 +14,13 @@ const defaultOptions = {
 		showSourceLastError: true,
 		style: {
 			font: {
-				family: "'Lucida Sans Unicode', 'Segoe UI', serif",
+				family: "'Andika', 'Noto Sans', 'Lucida Sans Unicode', 'Segoe UI', serif",
 				size: 18, // px
 				color: "#282828",
 			},
 			backgroundColor: "#FFFFFF",
 			useContextColors: false,
+			followScroll: true,
 		},
 		close: {
 			timeout: 3000,
@@ -29,6 +32,8 @@ const defaultOptions = {
 		position: {
 			menuTriggered: "above",
 			actionTriggered: "below",
+			selectionTriggered: "above",
+			commandTriggered: "above",
 		},
 		sources: {
 			cambridge: {
@@ -52,9 +57,9 @@ const defaultOptions = {
 				okStatus: [200, 404],
 			},
 			translatorMind: {
-				enabled: true,
+				enabled: false,
 				order: 3,
-				enabledToText: true,
+				enabledToText: false,
 				orderToText: 2,
 				save: true,
 				textMaxLength: 2500,

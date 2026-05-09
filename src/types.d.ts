@@ -86,6 +86,8 @@ declare global {
 	type Options = {
 		accessKey: string,
 		allowText: boolean,
+		triggerOnSelection: boolean,
+		triggerSelectionTime: number,
 		alertMaxSelectionEnabled: boolean,
 		alertMaxSelectionLength: number,
 		ipa: OptionsIpa,
@@ -107,6 +109,7 @@ declare global {
 			},
 			backgroundColor: string,
 			useContextColors: boolean,
+			followScroll: boolean,
 		},
 		close: {
 			timeout: number,
@@ -127,6 +130,8 @@ declare global {
 	type IpaPosition = {
 		menuTriggered: "above" | "below",
 		actionTriggered: "above" | "below",
+		selectionTriggered: "above" | "below",
+		commandTriggered: "above" | "below",
 	}
 
 	type OptIpaCambridge = PronunciationSourceOptions;
@@ -276,8 +281,8 @@ declare global {
 
 	type ClientMessage = {
 		target: "client",
-		type: "showIpa" | "getSelectedText" | "getIpaPosition" | "playAudio" | "showPlayer"| "showPopup" | "changeAlertMaxSelectionOptions",
-		origin: "menuItem" | "action" | "other",
+		type: "showIpa" | "getSelectedText" | "getIpaPosition" | "playAudio" | "showPlayer"| "showPopup" | "changeAlertMaxSelectionOptions" | "setTriggerOnSelection",
+		origin: "menuItem" | "action" | "selection" | "command" | "other",
 		getIpaPosition?: {
 			fontSize: number,
 			optionPosition: IpaPosition,
@@ -299,14 +304,21 @@ declare global {
 			enabled: boolean,
 			maxLength: number,
 		},
+		setTriggerOnSelection:? {
+			enabled: boolean,
+			triggerTime?: number,
+		},
 	};
 
 	type BackgroundMessage = {
 		target: "background",
-		type: "updateTranslatorMindNonce";
+		type: "updateTranslatorMindNonce" | "pronounce";
 		updateTranslatorMindNonce?: {
 			nonce: string,
 		},
+		pronounce: {
+			text: string,
+		}
 	};
 
 	type OffscreenMessage = {
@@ -348,6 +360,7 @@ declare global {
 			},
 			backgroundColor: string,
 			useContextColors: boolean,
+			followScroll: boolean,
 		},
 		close: {
 			timeout: number,
@@ -359,12 +372,12 @@ declare global {
 		position: PopupPosition,
 	};
 
-
 	type PopupPosition = {
 		centerHorizontally: boolean,
 		centerVertically: boolean,
 		top: number,
 		left: number,
+		scrollY: number,
 	}
 
 	type PlayerAudioSource = {

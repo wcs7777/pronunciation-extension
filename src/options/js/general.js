@@ -6,6 +6,8 @@ import { getAllOptions, numOr, saveOptions, strOr, showInfo } from "./utils.js";
  * @type {{
  *     accessKey: HTMLInputElement,
  *     allowText: HTMLInputElement,
+ *     triggerOnSelection: HTMLInputElement,
+ *     triggerSelectionTime: HTMLInputElement,
  *     alertMaxSelectionEnabled: HTMLInputElement,
  *     alertMaxSelectionLength: HTMLInputElement,
  *     save: HTMLButtonElement,
@@ -14,6 +16,8 @@ import { getAllOptions, numOr, saveOptions, strOr, showInfo } from "./utils.js";
 const el = {
 	accessKey: byId("accessKey"),
 	allowText: byId("allowText"),
+	triggerOnSelection: byId("triggerOnSelection"),
+	triggerSelectionTime: byId("triggerSelectionTime"),
 	alertMaxSelectionEnabled: byId("alertMaxSelectionEnabled"),
 	alertMaxSelectionLength: byId("alertMaxSelectionLength"),
 	save: byId("save"),
@@ -22,6 +26,7 @@ const el = {
 document.addEventListener("DOMContentLoaded", async () => {
 	try {
 		onlyShorcut(el.accessKey);
+		onlyNumber(el.triggerSelectionTime, true);
 		onlyNumber(el.alertMaxSelectionLength, false);
 		await setFieldsValues(false);
 	} catch (error) {
@@ -35,6 +40,8 @@ el.save.addEventListener("click", async () => {
 		const options = {
 			accessKey: strOr(el.accessKey.value, defaultOptions.accessKey),
 			allowText: el.allowText.checked,
+			triggerOnSelection: el.triggerOnSelection.checked,
+			triggerSelectionTime: numOr(el.triggerSelectionTime.value, defaultOptions.triggerSelectionTime, 1, 1000000000),
 			alertMaxSelectionEnabled: el.alertMaxSelectionEnabled.checked,
 			alertMaxSelectionLength: numOr(el.alertMaxSelectionLength.value, defaultOptions.alertMaxSelectionLength, 1, 1000000000),
 		};
@@ -55,11 +62,16 @@ async function setFieldsValues(shouldSendMessage=true) {
 	const opt = await getAllOptions();
 	el.accessKey.value = opt.accessKey;
 	el.allowText.checked = opt.allowText;
+	el.triggerOnSelection.checked = opt.triggerOnSelection;
+	el.triggerSelectionTime.value = opt.triggerSelectionTime.toString();
 	el.alertMaxSelectionEnabled.checked = opt.alertMaxSelectionEnabled;
 	el.alertMaxSelectionLength.value = opt.alertMaxSelectionLength.toString();
 	if (shouldSendMessage) {
+		const tabs = await chrome.tabs.query({
+			url: ["https://*/*", "http://*/*"],
+		});
 		/** @type {ClientMessage} */
-		const message = {
+		const changeAlertMaxSelectionOptionsMessage = {
 			target: "client",
 			type: "changeAlertMaxSelectionOptions",
 			origin: "other",
@@ -68,11 +80,31 @@ async function setFieldsValues(shouldSendMessage=true) {
 				maxLength: opt.alertMaxSelectionLength,
 			},
 		};
-		const tabs = await chrome.tabs.query({
-			url: ["https://*/*", "http://*/*"],
-		});
 		await Promise.allSettled(
-			tabs.map(t => chrome.tabs.sendMessage(t.id, message)),
+			tabs.map(
+				t => chrome.tabs.sendMessage(
+					t.id,
+					changeAlertMaxSelectionOptionsMessage,
+				),
+			),
+		);
+		/** @type {ClientMessage} */
+		const setTriggerOnSelectionMessage = {
+			target: "client",
+			type: "setTriggerOnSelection",
+			origin: "other",
+			setTriggerOnSelection: {
+				enabled: opt.triggerOnSelection,
+				triggerTime: opt.triggerSelectionTime,
+			},
+		};
+		await Promise.allSettled(
+			tabs.map(
+				t => chrome.tabs.sendMessage(
+					t.id,
+					setTriggerOnSelectionMessage,
+				),
+			),
 		);
 	}
 }

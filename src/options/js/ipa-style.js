@@ -9,6 +9,7 @@ import { getAllOptions, numOr, saveOptions, showInfo, strOr } from "./utils.js";
  *     fontColor: HTMLInputElement,
  *     backgroundColor: HTMLInputElement,
  *     useContextColors: HTMLInputElement,
+ *     followScroll: HTMLInputElement,
  *     save: HTMLButtonElement,
  * }}
  */
@@ -18,6 +19,7 @@ const el = {
 	fontColor: byId("fontColor"),
 	backgroundColor: byId("backgroundColor"),
 	useContextColors: byId("useContextColors"),
+	followScroll: byId("followScroll"),
 	save: byId("save"),
 };
 
@@ -44,6 +46,7 @@ el.save.addEventListener("click", async () => {
 					},
 					backgroundColor: strOr(el.backgroundColor.value, defaultStyle.backgroundColor),
 					useContextColors: el.useContextColors.checked,
+					followScroll: el.followScroll.checked,
 				},
 			},
 		};
@@ -66,4 +69,5 @@ async function setFieldsValues() {
 	el.fontColor.value = opt.ipa.style.font.color;
 	el.backgroundColor.value = opt.ipa.style.backgroundColor;
 	el.useContextColors.checked = opt.ipa.style.useContextColors;
+	el.followScroll.checked = opt.ipa.style.followScroll;
 }

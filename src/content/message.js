@@ -1,6 +1,3 @@
-import IpaPopup from "../utils/ipa-popup.js";
-import { optionsTable } from "../utils/storage-tables.js";
-import { showPopup } from "../utils/show-popup.js";
 import {
 	changeOptions as changeAlertMaxSelectionOptions,
 } from "../utils/alert-max-selection.js";
@@ -11,6 +8,11 @@ import {
 	toggleAudioControlShortcuts,
 	toggleAudioPlayer,
 } from "../utils/audio-player.js";
+import IpaPopup from "../utils/ipa-popup.js";
+import { showPopup } from "../utils/show-popup.js";
+import { optionsTable } from "../utils/storage-tables.js";
+
+let triggerSelectionTime = 1000;
 
 if (!chrome.runtime.onMessage.hasListener(onMessage)) {
 	chrome.runtime.onMessage.addListener(onMessage);
@@ -33,6 +35,7 @@ function onMessage(message, sender, sendResponse) {
 		"playAudio": playAudio,
 		"showPopup": showPopupFromBackground,
 		"changeAlertMaxSelectionOptions": changeAlertMaxSelectionOptionsCB,
+		"setTriggerOnSelection": setTriggerOnSelection,
 	};
 	if (!message.type in actions) {
 		throw new Error(`Invalid message type: ${message.type}`);
@@ -77,25 +80,23 @@ async function getIpaPosition(message) {
 	if (!options) {
 		throw new Error("Should pass getIpaPosition options in message");
 	}
+	const scrollY = window.scrollY;
 	const s = window.getSelection();
 	if (s.rangeCount === 0) {
 		return {
 			centerHorizontally: true,
 			centerVertically: true,
+			scrollY,
 		};
 	}
 	const { top, left } = s.getRangeAt(0).getBoundingClientRect();
 	let shiftTimes = -1.9;
-	if (
-		(
-			(message.origin === "menuItem") &&
-			(options.optionPosition.menuTriggered === "below")
-		) ||
-		(
-			(message.origin === "action") &&
-			(options.optionPosition.actionTriggered === "below")
-		)
-	) {
+	const origin = (
+		message.origin == "menuItem" ? "menu" :
+		message.origin == "action" ? "action" :
+		message.origin == "command" ? "command" : "selection"
+	);
+	if (options.optionPosition[`${origin}Triggered`] === "below") {
 		shiftTimes = 2.5;
 	}
 	return {
@@ -103,6 +104,7 @@ async function getIpaPosition(message) {
 		centerVertically: false,
 		top: top + options.fontSize * shiftTimes,
 		left,
+		scrollY,
 	};
 }
 
@@ -164,9 +166,69 @@ async function changeAlertMaxSelectionOptionsCB(message) {
 	changeAlertMaxSelectionOptions(options);
 }
 
+/**
+ * @param {ClientMessage} message
+ * @returns {Promise<void>}
+ */
+async function setTriggerOnSelection(message) {
+	const options = message.setTriggerOnSelection;
+	if (!options) {
+		throw new Error("Should pass setTriggerOnSelection in message");
+	}
+	document.removeEventListener("selectionchange", selectionChangeListener);
+	if (options.enabled) {
+		document.addEventListener("selectionchange", selectionChangeListener);
+	}
+	if (options.triggerTime) {
+		triggerSelectionTime = options.triggerTime;
+	}
+}
+
+let checkingSelectionChangeTextAfter = false;
+function selectionChangeListener() {
+	if (
+		window.getSelection().isCollapsed ||
+		checkingSelectionChangeTextAfter
+	) {
+		return;
+	}
+	let textBefore = window.getSelection().toString();
+	checkingSelectionChangeTextAfter = true;
+	const intervalId = setInterval(async () => {
+		const selection = window.getSelection();
+		if (selection.isCollapsed) {
+			clearInterval(intervalId);
+			checkingSelectionChangeTextAfter = false;
+			return;
+		}
+		const textAfter = selection.toString();
+		if (textBefore !== textAfter) {
+			textBefore = textAfter;
+			return;
+		}
+		clearInterval(intervalId);
+		checkingSelectionChangeTextAfter = false;
+		/** @type {BackgroundMessage} */
+		const message = {
+			target: "background",
+			type: "pronounce",
+			pronounce: {
+				text: textAfter,
+			},
+		};
+		await chrome.runtime.sendMessage(message);
+	}, triggerSelectionTime);
+};
+
 (async () => {
 	/** @type {Options} */
 	const options = await optionsTable.getAll();
+	await setTriggerOnSelection({
+		setTriggerOnSelection: {
+			enabled: options.triggerOnSelection,
+			triggerTime: options.triggerSelectionTime,
+		},
+	});
 	changeAlertMaxSelectionOptions({
 		enabled: options.alertMaxSelectionEnabled,
 		maxLength: options.alertMaxSelectionLength,

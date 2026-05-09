@@ -1,5 +1,8 @@
 import { deepMerge }  from "./object.js";
 
+const andikaFont = chrome.runtime.getURL("resources/Andika-Regular.ttf");
+const notoSansFont = chrome.runtime.getURL("resources/NotoSans-Regular.ttf");
+
 const template = createTemplate();
 document.body.appendChild(template);
 
@@ -8,11 +11,12 @@ export const defaultOptionsPopup = {
 	text: "Default text",
 	style: {
 		font: {
-			family: "Arial, serif",
+			family: "'Noto Sans', Arial, sans-serif",
 			size: 20,
 			color: "#282828",
 		},
 		backgroundColor: "#FFFFFF",
+		followScroll: false,
 	},
 	close: {
 		timeout: 3000,
@@ -26,6 +30,7 @@ export const defaultOptionsPopup = {
 		centerVertically: false,
 		top: 100,
 		left: 250,
+		scrollY: window.scrollY,
 	},
 };
 
@@ -37,6 +42,8 @@ export const defaultOptionsPopup = {
  */
 export function showPopup(options, textFn=null, closeConditionFn=null) {
 
+	const initialScrollY = window.scrollY;
+	defaultOptionsPopup.position.scrollY = initialScrollY;
 	/** @type {OptionsPopup} */
 	const opt = deepMerge(defaultOptionsPopup, options);
 	const host = document.createElement("span");
@@ -92,7 +99,7 @@ export function showPopup(options, textFn=null, closeConditionFn=null) {
 		opt.position.centerHorizontally = true;
 	}
 	let left = opt.position.left;
-	let top = opt.position.top;
+	let top = opt.position.top - (initialScrollY - opt.position.scrollY);
 	const widthDiff = (
 		(window.innerWidth - minMarge) -
 		(opt.position.left + popupWidth)
@@ -141,6 +148,11 @@ export function showPopup(options, textFn=null, closeConditionFn=null) {
 	function onScroll() {
 		if (opt.close.onScroll) {
 			closePopup();
+			return;
+		}
+		if (opt.style.followScroll) {
+			const diff = window.scrollY - initialScrollY;
+			setProperty("--top", `${top - diff}px`);
 		}
 	}
 
@@ -183,6 +195,22 @@ const html = `
 <!-- Code injected by How2Say addon -->
 
 <style>
+
+@font-face {
+	font-family: 'Andika';
+	src: url('${andikaFont}') format('ttf'),
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Noto Sans';
+	src: url('${notoSansFont}') format('ttf'),
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
 
 :where(div, span) {
 	box-sizing: border-box;
