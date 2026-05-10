@@ -343,7 +343,6 @@ declare global {
 		position: PopupPosition,
 	};
 
-
 	type PopupPosition = {
 		centerHorizontally: boolean,
 		centerVertically: boolean,

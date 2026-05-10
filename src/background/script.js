@@ -93,7 +93,7 @@ async function pronounce(input, tabId, origin) {
 	const position = await browser.tabs.sendMessage(
 		tabId,
 		message,
-	)
+	);
 	const pronunciation = new Pronunciation({
 		pi,
 		position,
