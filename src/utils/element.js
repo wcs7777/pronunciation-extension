@@ -183,12 +183,6 @@ export function download(url, filename) {
  * @param {string} id
  * @returns {HTMLElement | null}
  */
-export const byIdd = (id) => document.getElementById(id);
-
-/**
- * @param {string} id
- * @returns {HTMLElement | null}
- */
 export function byId(id) {
 	const el = document.getElementById(id);
 	if (el === null) {
