@@ -5,46 +5,44 @@ import { url2blob } from "../../utils/fetch.js";
  * @implements {AudioSource}
  */
 export default class ASGoogleSpeech extends AudioSource {
+  /**
+   * @param {PronunciationInput} pi
+   * @param {OptAudioGoogleSpeech} options
+   * @param {?PronunciationSourceLastError} lastError
+   */
+  constructor(pi, options, lastError) {
+    super(pi, options, lastError);
+    this.options = options;
+  }
 
-	/**
-	 * @param {PronunciationInput} pi
-	 * @param {OptAudioGoogleSpeech} options
-	 * @param {?PronunciationSourceLastError} lastError
-	 */
-	constructor(pi, options, lastError) {
-		super(pi, options, lastError);
-		this.options = options;
-	}
+  /**
+   * @returns {string}
+   */
+  static get name() {
+    return "googleSpeech";
+  }
 
-	/**
-	 * @returns {string}
-	 */
-	static get name() {
-		return "googleSpeech";
-	}
+  /**
+   * @returns {string}
+   */
+  get name() {
+    return ASGoogleSpeech.name;
+  }
 
-	/**
-	 * @returns {string}
-	 */
-	get name() {
-		return ASGoogleSpeech.name;
-	}
-
-	/**
-	 * @returns {Promise<Blob>}
-	 */
-	fetch() {
-		const input = this.pi.input;
-		const endpoint = "https://www.google.com/speech-api/v1/synthesize?";
-		const params = new URLSearchParams({
-			text: input,
-			enc: "mpeg",
-			lang: "en",
-			speed: 0.5,
-			client: "lr-language-tts",
-			use_google_only_voices: 1,
-		}).toString();
-		return url2blob(`${endpoint}${params}`);
-	}
-
+  /**
+   * @returns {Promise<Blob>}
+   */
+  fetch() {
+    const input = this.pi.input;
+    const endpoint = "https://www.google.com/speech-api/v1/synthesize?";
+    const params = new URLSearchParams({
+      text: input,
+      enc: "mpeg",
+      lang: "en",
+      speed: 0.5,
+      client: "lr-language-tts",
+      use_google_only_voices: 1,
+    }).toString();
+    return url2blob(`${endpoint}${params}`);
+  }
 }

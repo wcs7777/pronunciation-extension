@@ -11,53 +11,53 @@ import { splitWords } from "../../utils/string.js";
  * }}
  */
 const el = {
-	word: byId("word"),
-	ipa: byId("ipa"),
-	save: byId("save"),
+  word: byId("word"),
+  ipa: byId("ipa"),
+  save: byId("save"),
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-	try {
-		await setFieldsValues();
-	} catch (error) {
-		console.error(error);
-	}
+  try {
+    await setFieldsValues();
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 el.save.addEventListener("click", async () => {
-	try {
-		const rawWord = el.word.value.trim().toLowerCase();
-		const words = splitWords(rawWord);
-		if (words.length === 0) {
-			showInfo("No word was found in input");
-			return;
-		}
-		const word = words[0];
-		if (word.length > 45) {
-			showInfo(`Word max length is 45, but this has ${word.length}`);
-			return;
-		}
-		const ipa = el.ipa.value.trim();
-		if (ipa.length === 0) {
-			showInfo("No IPA was found in input");
-			return;
-		}
-		if (ipa.length > 60) {
-			showInfo(`IPA max length is 60, but this has ${ipa.length}`);
-			return;
-		}
-		await ipaTable.set(word, ipa);
-		await setFieldsValues();
-		showInfo(`${word} = ${ipa}`);
-	} catch (error) {
-		console.error(error);
-	}
+  try {
+    const rawWord = el.word.value.trim().toLowerCase();
+    const words = splitWords(rawWord);
+    if (words.length === 0) {
+      showInfo("No word was found in input");
+      return;
+    }
+    const word = words[0];
+    if (word.length > 45) {
+      showInfo(`Word max length is 45, but this has ${word.length}`);
+      return;
+    }
+    const ipa = el.ipa.value.trim();
+    if (ipa.length === 0) {
+      showInfo("No IPA was found in input");
+      return;
+    }
+    if (ipa.length > 60) {
+      showInfo(`IPA max length is 60, but this has ${ipa.length}`);
+      return;
+    }
+    await ipaTable.set(word, ipa);
+    await setFieldsValues();
+    showInfo(`${word} = ${ipa}`);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 /**
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	el.word.value = "";
-	el.ipa.value = "";
+  el.word.value = "";
+  el.ipa.value = "";
 }

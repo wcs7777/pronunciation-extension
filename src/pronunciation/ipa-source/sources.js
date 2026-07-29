@@ -3,9 +3,4 @@ import ISOxford from "./isoxford.js";
 import ISUnalengua from "./isunalengua.js";
 import ISTranslatorMind from "./istranslatormind.js";
 
-export {
-	ISCambridge,
-	ISOxford,
-	ISTranslatorMind,
-	ISUnalengua,
-};
+export { ISCambridge, ISOxford, ISTranslatorMind, ISUnalengua };

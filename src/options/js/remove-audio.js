@@ -10,42 +10,42 @@ import { splitWords } from "../../utils/string.js";
  * }}
  */
 const el = {
-	word: byId("word"),
-	remove: byId("remove"),
+  word: byId("word"),
+  remove: byId("remove"),
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-	try {
-		await setFieldsValues();
-	} catch (error) {
-		console.error(error);
-	}
+  try {
+    await setFieldsValues();
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 el.remove.addEventListener("click", async () => {
-	try {
-		const rawWord = el.word.value.trim().toLowerCase();
-		const words = splitWords(rawWord);
-		if (words.length === 0) {
-			showInfo("No word was found in input");
-			return;
-		}
-		const word = words[0];
-		if (word.length > 45) {
-			showInfo(`Word max length is 45, but this has ${word.length}`);
-			return;
-		}
-		await audioTable.remove(word);
-		await setFieldsValues();
-		showInfo(`${word} audio removed`);
-	} catch (error) {
-		console.error(error);
-	}
+  try {
+    const rawWord = el.word.value.trim().toLowerCase();
+    const words = splitWords(rawWord);
+    if (words.length === 0) {
+      showInfo("No word was found in input");
+      return;
+    }
+    const word = words[0];
+    if (word.length > 45) {
+      showInfo(`Word max length is 45, but this has ${word.length}`);
+      return;
+    }
+    await audioTable.remove(word);
+    await setFieldsValues();
+    showInfo(`${word} audio removed`);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 /**
  * @returns {Promise<void>}
  */
 async function setFieldsValues() {
-	el.word.value = "";
+  el.word.value = "";
 }

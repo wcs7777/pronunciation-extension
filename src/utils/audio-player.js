@@ -11,8 +11,8 @@ host.style.border = "0px";
 host.style.margin = "0px";
 host.style.padding = "0px";
 const shadow = host.attachShadow({
-	mode: "closed",
-	clonable: false,
+  mode: "closed",
+  clonable: false,
 });
 const audio = new Audio();
 audio.autoplay = false;
@@ -21,10 +21,10 @@ shadow.appendChild(audio);
 document.body.appendChild(host);
 
 document.addEventListener("securitypolicyviolation", (e) => {
-	if (host.contains(e.target)) {
-		console.log({ pronAddonSecuritypolicyviolation: e });
-		host.remove();
-	}
+  if (host.contains(e.target)) {
+    console.log({ pronAddonSecuritypolicyviolation: e });
+    host.remove();
+  }
 });
 
 /**
@@ -37,196 +37,196 @@ const byId = (id) => shadow.getElementById(id);
 let sources = [];
 
 const el = {
-	audio,
-	sources,
-	player: byId("audio-player"),
-	progressbar: byId("audio-player-progresssbar"),
-	currentTime: byId("audio-player-current-time"),
-	totalTime: byId("audio-player-total-time"),
-	togglePlayButton: byId("audio-player-toggle-play"),
-	playIcon: byId("audio-player-icon-play"),
-	pauseIcon: byId("audio-player-icon-pause"),
-	rewind: byId("audio-player-rewind"),
-	backward: byId("audio-player-backward"),
-	forward: byId("audio-player-forward"),
-	previous: byId("audio-player-previous"),
-	next: byId("audio-player-next"),
-	volumeControl: byId("audio-player-volume-control"),
-	toggleMuteButton: byId("audio-player-toggle-mute"),
-	unmutedIcon: byId("audio-player-icon-unmuted"),
-	mutedIcon: byId("audio-player-icon-muted"),
-	mainTitle: byId("audio-player-main-title"),
-	showSpeedsButton: byId("audio-player-show-speeds"),
-	speedsList: byId("audio-player-speeds"),
-	download: byId("audio-player-download"),
-	linkDownload: byId("audio-player-link-download"),
-	upload: byId("audio-player-upload"),
-	inputUpload: byId("audio-player-input-upload"),
-	close: byId("audio-player-close"),
+  audio,
+  sources,
+  player: byId("audio-player"),
+  progressbar: byId("audio-player-progresssbar"),
+  currentTime: byId("audio-player-current-time"),
+  totalTime: byId("audio-player-total-time"),
+  togglePlayButton: byId("audio-player-toggle-play"),
+  playIcon: byId("audio-player-icon-play"),
+  pauseIcon: byId("audio-player-icon-pause"),
+  rewind: byId("audio-player-rewind"),
+  backward: byId("audio-player-backward"),
+  forward: byId("audio-player-forward"),
+  previous: byId("audio-player-previous"),
+  next: byId("audio-player-next"),
+  volumeControl: byId("audio-player-volume-control"),
+  toggleMuteButton: byId("audio-player-toggle-mute"),
+  unmutedIcon: byId("audio-player-icon-unmuted"),
+  mutedIcon: byId("audio-player-icon-muted"),
+  mainTitle: byId("audio-player-main-title"),
+  showSpeedsButton: byId("audio-player-show-speeds"),
+  speedsList: byId("audio-player-speeds"),
+  download: byId("audio-player-download"),
+  linkDownload: byId("audio-player-link-download"),
+  upload: byId("audio-player-upload"),
+  inputUpload: byId("audio-player-input-upload"),
+  close: byId("audio-player-close"),
 };
 
 const opt = {
-	playerEnabled: true,
-	shortcutsEnabled: true,
-	skipSeconds: 3,
-	shortcuts: {},
-	action2shortcut: {},
-	shortcut2action: {},
+  playerEnabled: true,
+  shortcutsEnabled: true,
+  skipSeconds: 3,
+  shortcuts: {},
+  action2shortcut: {},
+  shortcut2action: {},
 };
 
 const action2function = {
-	togglePlayer: async () => toggleAudioPlayer(),
-	togglePlay: async () => togglePlayAudio(),
-	toggleMute: async () => toggleMuteAudio(),
-	previous: async () => previousAudio(),
-	next: async () => nextAudio(),
-	rewind: async () => rewindAudio(),
-	backward: async () => backwardAudio(opt.skipSeconds),
-	forward: async () => forwardAudio(opt.skipSeconds),
-	decreaseVolume: async () => changeAudioVolume(audio.volume - 0.05),
-	increaseVolume: async () => changeAudioVolume(audio.volume + 0.05),
-	decreaseSpeed: async () => changeAudioSpeed(audio.playbackRate - 0.1),
-	increaseSpeed: async () => changeAudioSpeed(audio.playbackRate + 0.1),
-	resetSpeed: async () => changeAudioSpeed(1),
+  togglePlayer: async () => toggleAudioPlayer(),
+  togglePlay: async () => togglePlayAudio(),
+  toggleMute: async () => toggleMuteAudio(),
+  previous: async () => previousAudio(),
+  next: async () => nextAudio(),
+  rewind: async () => rewindAudio(),
+  backward: async () => backwardAudio(opt.skipSeconds),
+  forward: async () => forwardAudio(opt.skipSeconds),
+  decreaseVolume: async () => changeAudioVolume(audio.volume - 0.05),
+  increaseVolume: async () => changeAudioVolume(audio.volume + 0.05),
+  decreaseSpeed: async () => changeAudioSpeed(audio.playbackRate - 0.1),
+  increaseSpeed: async () => changeAudioSpeed(audio.playbackRate + 0.1),
+  resetSpeed: async () => changeAudioSpeed(1),
 };
 
 (async () => {
-	/** @type {OptionsAudio} */
-	const audioOpt = await optionsTable.getValue("audio");
-	opt.playerEnabled = audioOpt.text.playerEnabled;
-	opt.shortcutsEnabled = audioOpt.text.shortcutsEnabled;
-	opt.skipSeconds = audioOpt.text.skipSeconds;
-	setAudioControlShortcuts(audioOpt.text.shortcuts);
+  /** @type {OptionsAudio} */
+  const audioOpt = await optionsTable.getValue("audio");
+  opt.playerEnabled = audioOpt.text.playerEnabled;
+  opt.shortcutsEnabled = audioOpt.text.shortcutsEnabled;
+  opt.skipSeconds = audioOpt.text.skipSeconds;
+  setAudioControlShortcuts(audioOpt.text.shortcuts);
 })().catch(console.error);
 
 el.currentTime.textContent = formatSeconds(0);
 el.totalTime.textContent = formatSeconds(0);
 
 audio.addEventListener("canplay", async () => {
-	await togglePlayAudio({
-		forcePlay: !audio.paused,
-		forcePause: audio.paused,
-	});
-	toggleMuteAudio({
-		forceMute: audio.muted,
-		forceUnmute: !audio.muted,
-	});
-	const duration = await audioDuration(audio);
-	el.progressbar.max = duration;
-	el.totalTime.textContent = formatSeconds(duration);
-	changeAudioVolume(audio.volume);
-	changeAudioSpeed(audio.playbackRate);
+  await togglePlayAudio({
+    forcePlay: !audio.paused,
+    forcePause: audio.paused,
+  });
+  toggleMuteAudio({
+    forceMute: audio.muted,
+    forceUnmute: !audio.muted,
+  });
+  const duration = await audioDuration(audio);
+  el.progressbar.max = duration;
+  el.totalTime.textContent = formatSeconds(duration);
+  changeAudioVolume(audio.volume);
+  changeAudioSpeed(audio.playbackRate);
 });
 
 audio.addEventListener("ended", async () => {
-	await togglePlayAudio({ forcePause: true });
-	el.progressbar.value = audio.dataset.validDuration;
-	el.totalTime.textContent = formatSeconds(audio.dataset.validDuration);
-	el.progressbar.style.background = "var(--range-progress-color)";
+  await togglePlayAudio({ forcePause: true });
+  el.progressbar.value = audio.dataset.validDuration;
+  el.totalTime.textContent = formatSeconds(audio.dataset.validDuration);
+  el.progressbar.style.background = "var(--range-progress-color)";
 });
 
 el.progressbar.addEventListener("input", () => {
-	audio.currentTime = parseFloat(el.progressbar.value);
+  audio.currentTime = parseFloat(el.progressbar.value);
 });
 
 el.volumeControl.addEventListener("input", () => {
-	audio.volume = parseFloat(el.volumeControl.value);
+  audio.volume = parseFloat(el.volumeControl.value);
 });
 
 audio.addEventListener("timeupdate", async () => {
-	el.totalTime.textContent = formatSeconds(audio.dataset.validDuration);
-	el.progressbar.max = await audioDuration(audio);
-	el.currentTime.textContent = formatSeconds(audio.currentTime);
-	el.progressbar.value = audio.currentTime;
-	el.progressbar.style.background = "var(--range-background-color)";
+  el.totalTime.textContent = formatSeconds(audio.dataset.validDuration);
+  el.progressbar.max = await audioDuration(audio);
+  el.currentTime.textContent = formatSeconds(audio.currentTime);
+  el.progressbar.value = audio.currentTime;
+  el.progressbar.style.background = "var(--range-background-color)";
 });
 
 el.togglePlayButton.addEventListener("click", async () => togglePlayAudio());
 el.toggleMuteButton.addEventListener("click", () => toggleMuteAudio());
 el.rewind.addEventListener("click", () => rewindAudio());
 el.backward.addEventListener("click", () => {
-	backwardAudio(opt.skipSeconds);
+  backwardAudio(opt.skipSeconds);
 });
 el.forward.addEventListener("click", async () => {
-	forwardAudio(opt.skipSeconds);
+  forwardAudio(opt.skipSeconds);
 });
 el.previous.addEventListener("click", async () => previousAudio());
 el.next.addEventListener("click", async () => nextAudio());
 
 el.showSpeedsButton.addEventListener("click", () => {
-	el.speedsList.classList.toggle("invisible");
+  el.speedsList.classList.toggle("invisible");
 });
 
 el.speedsList.addEventListener("click", ({ target }) => {
-	const speed = target.dataset.speed;
-	if (speed) {
-		changeAudioSpeed(parseFloat(speed));
-	}
+  const speed = target.dataset.speed;
+  if (speed) {
+    changeAudioSpeed(parseFloat(speed));
+  }
 });
 
 el.download.addEventListener("click", () => {
-	if (!audio.src) {
-		showInfo("There is no current audio");
-		return;
-	}
-	el.linkDownload.href = audio.src;
-	el.linkDownload.download = audio.dataset.currentId;
-	el.linkDownload.click();
-	el.linkDownload.href = "";
-	el.linkDownload.download = "";
+  if (!audio.src) {
+    showInfo("There is no current audio");
+    return;
+  }
+  el.linkDownload.href = audio.src;
+  el.linkDownload.download = audio.dataset.currentId;
+  el.linkDownload.click();
+  el.linkDownload.href = "";
+  el.linkDownload.download = "";
 });
 
 el.upload.addEventListener("click", () => {
-	el.inputUpload.click();
+  el.inputUpload.click();
 });
 
 el.inputUpload.addEventListener("change", async () => {
-	const file = el.inputUpload.files?.[0];
-	if (!file) {
-		showInfo("No file was found in input");
-		return;
-	}
-	try {
-		const base64 = await blob2base64(file);
-		const testAudio = new Audio(base64);
-		testAudio.volume = 0;
-		await testAudio.play();
-		testAudio.pause();
-		/** @type {PlayerAudioSource} */
-		const source = {
-			id: file.name,
-			title: file.name,
-			url: testAudio.src,
-		};
-		await addAudioSource(source, { play: true });
-	} catch (error) {
-		showInfo(`Error with the file: ${error}`);
-		console.error(error);
-	}
+  const file = el.inputUpload.files?.[0];
+  if (!file) {
+    showInfo("No file was found in input");
+    return;
+  }
+  try {
+    const base64 = await blob2base64(file);
+    const testAudio = new Audio(base64);
+    testAudio.volume = 0;
+    await testAudio.play();
+    testAudio.pause();
+    /** @type {PlayerAudioSource} */
+    const source = {
+      id: file.name,
+      title: file.name,
+      url: testAudio.src,
+    };
+    await addAudioSource(source, { play: true });
+  } catch (error) {
+    showInfo(`Error with the file: ${error}`);
+    console.error(error);
+  }
 });
 
 document.addEventListener("keydown", async (e) => {
-	if (!opt.shortcutsEnabled || sources.length === 0) {
-		return;
-	}
-	const key = e.key.toUpperCase();
-	if (
-		!(key in opt.shortcut2action) ||
-		[e.altKey, e.ctrlKey, e.metaKey].some(v => v)
-	) {
-		return;
-	}
-	e.preventDefault();
-	const action = opt.shortcut2action[key];
-	try {
-		await action2function[action]();
-	} catch (error) {
-		console.error(error);
-	}
+  if (!opt.shortcutsEnabled || sources.length === 0) {
+    return;
+  }
+  const key = e.key.toUpperCase();
+  if (
+    !(key in opt.shortcut2action) ||
+    [e.altKey, e.ctrlKey, e.metaKey].some((v) => v)
+  ) {
+    return;
+  }
+  e.preventDefault();
+  const action = opt.shortcut2action[key];
+  try {
+    await action2function[action]();
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 el.close.addEventListener("click", async () => {
-	return toggleAudioPlayer({ forceDisable: true, forcePause: true });
+  return toggleAudioPlayer({ forceDisable: true, forcePause: true });
 });
 
 /**
@@ -243,35 +243,32 @@ el.close.addEventListener("click", async () => {
  * @returns {Promise<void>}
  */
 export async function toggleAudioPlayer({
-	forceEnable=false,
-	forceDisable=false,
-	forcePause=false,
-	player=el.player,
-	audio=el.audio,
-	togglePlayButton=el.togglePlayButton,
-	playIcon=el.playIcon,
-	pauseIcon=el.pauseIcon,
-}={}) {
-	const enable = (
-		!forceEnable && !forceDisable ?
-		!opt.playerEnabled :
-		forceEnable
-	);
-	if (enable) {
-		player.classList.remove("invisible");
-	} else {
-		if (forcePause) {
-			await togglePlayAudio({
-				audio,
-				togglePlayButton,
-				playIcon,
-				pauseIcon,
-				forcePause,
-			});
-		}
-		player.classList.add("invisible");
-	}
-	opt.playerEnabled = enable;
+  forceEnable = false,
+  forceDisable = false,
+  forcePause = false,
+  player = el.player,
+  audio = el.audio,
+  togglePlayButton = el.togglePlayButton,
+  playIcon = el.playIcon,
+  pauseIcon = el.pauseIcon,
+} = {}) {
+  const enable =
+    !forceEnable && !forceDisable ? !opt.playerEnabled : forceEnable;
+  if (enable) {
+    player.classList.remove("invisible");
+  } else {
+    if (forcePause) {
+      await togglePlayAudio({
+        audio,
+        togglePlayButton,
+        playIcon,
+        pauseIcon,
+        forcePause,
+      });
+    }
+    player.classList.add("invisible");
+  }
+  opt.playerEnabled = enable;
 }
 
 /**
@@ -282,14 +279,11 @@ export async function toggleAudioPlayer({
  * @returns {void}
  */
 export function toggleAudioControlShortcuts({
-	forceEnable=false,
-	forceDisable=false,
-}={}) {
-	opt.shortcutsEnabled = (
-		!forceEnable && !forceDisable ?
-		!opt.shortcutsEnabled :
-		forceEnable
-	);
+  forceEnable = false,
+  forceDisable = false,
+} = {}) {
+  opt.shortcutsEnabled =
+    !forceEnable && !forceDisable ? !opt.shortcutsEnabled : forceEnable;
 }
 
 /**
@@ -297,7 +291,7 @@ export function toggleAudioControlShortcuts({
  * @returns {void}
  */
 export function changeSkipSeconds(seconds) {
-	opt.skipSeconds = seconds;
+  opt.skipSeconds = seconds;
 }
 
 /**
@@ -313,33 +307,36 @@ export function changeSkipSeconds(seconds) {
  * }}
  * @returns {Promise<PlayerAudioSource[]>}
  */
-export async function addAudioSource(source, {
-	audio=el.audio,
-	mainTitle=el.mainTitle,
-	sources=el.sources,
-	togglePlayButton=el.togglePlayButton,
-	playIcon=el.playIcon,
-	pauseIcon=el.pauseIcon,
-	play=false,
-}={}) {
-	let index = sources.findIndex(s => s.id === source.id);
-	if (index === -1) {
-		index = sources.push(source) - 1;
-	}
-	const currentIndex = parseInt(audio.dataset.currentSource ?? "-1");
-	if (play || currentIndex === -1) {
-		await changeAudioSource(index, { audio, mainTitle, sources });
-	}
-	if (play) {
-		await togglePlayAudio({
-			audio,
-			togglePlayButton,
-			playIcon,
-			pauseIcon,
-			forcePlay: true,
-		});
-	}
-	return sources;
+export async function addAudioSource(
+  source,
+  {
+    audio = el.audio,
+    mainTitle = el.mainTitle,
+    sources = el.sources,
+    togglePlayButton = el.togglePlayButton,
+    playIcon = el.playIcon,
+    pauseIcon = el.pauseIcon,
+    play = false,
+  } = {},
+) {
+  let index = sources.findIndex((s) => s.id === source.id);
+  if (index === -1) {
+    index = sources.push(source) - 1;
+  }
+  const currentIndex = parseInt(audio.dataset.currentSource ?? "-1");
+  if (play || currentIndex === -1) {
+    await changeAudioSource(index, { audio, mainTitle, sources });
+  }
+  if (play) {
+    await togglePlayAudio({
+      audio,
+      togglePlayButton,
+      playIcon,
+      pauseIcon,
+      forcePlay: true,
+    });
+  }
+  return sources;
 }
 
 /**
@@ -357,65 +354,70 @@ export async function addAudioSource(source, {
  * }}
  * @returns {Promise<PlayerAudioSource[]>}
  */
-export async function removeAudioSource(id, {
-	audio=el.audio,
-	mainTitle=el.mainTitle,
-	sources=el.sources,
-	togglePlayButton=el.togglePlayButton,
-	playIcon=el.playIcon,
-	pauseIcon=el.pauseIcon,
-	currentTime=el.currentTime,
-	totalTime=el.totalTime,
-	progressbar=el.progressbar,
-}={}) {
-	const index = sources.findIndex(s => s.id === id);
-	if (index === -1) {
-		return console.warn(`Id ${id} is not in audio sources`);
-	}
-	sources.splice(index, 1);
-	const currentIndex = parseInt(audio.dataset.currentSource ?? "-1");
-	if (currentIndex === index) {
-		await togglePlayAudio({
-			audio,
-			togglePlayButton,
-			playIcon,
-			pauseIcon,
-			forcePause: true,
-		});
-		audio.currentTime = 0;
-		audio.src = "";
-		audio.load();
-		if (sources.length > 0) {
-			await changeAudioSource(0, { audio, mainTitle, sources });
-		} else {
-			mainTitle.textContent = "";
-			currentTime.textContent = formatSeconds(0);
-			totalTime.textContent = formatSeconds(0);
-			progressbar.min = 0;
-			progressbar.max = 0;
-			progressbar.value = 0;
-		}
-	}
-	return sources;
+export async function removeAudioSource(
+  id,
+  {
+    audio = el.audio,
+    mainTitle = el.mainTitle,
+    sources = el.sources,
+    togglePlayButton = el.togglePlayButton,
+    playIcon = el.playIcon,
+    pauseIcon = el.pauseIcon,
+    currentTime = el.currentTime,
+    totalTime = el.totalTime,
+    progressbar = el.progressbar,
+  } = {},
+) {
+  const index = sources.findIndex((s) => s.id === id);
+  if (index === -1) {
+    return console.warn(`Id ${id} is not in audio sources`);
+  }
+  sources.splice(index, 1);
+  const currentIndex = parseInt(audio.dataset.currentSource ?? "-1");
+  if (currentIndex === index) {
+    await togglePlayAudio({
+      audio,
+      togglePlayButton,
+      playIcon,
+      pauseIcon,
+      forcePause: true,
+    });
+    audio.currentTime = 0;
+    audio.src = "";
+    audio.load();
+    if (sources.length > 0) {
+      await changeAudioSource(0, { audio, mainTitle, sources });
+    } else {
+      mainTitle.textContent = "";
+      currentTime.textContent = formatSeconds(0);
+      totalTime.textContent = formatSeconds(0);
+      progressbar.min = 0;
+      progressbar.max = 0;
+      progressbar.value = 0;
+    }
+  }
+  return sources;
 }
 
 /**
  * @param {OptAudioShortcuts} shortcuts
  * @returns {void}
  */
-export function setAudioControlShortcuts(shortcuts={}) {
-	opt.action2shortcut = Object
-		.entries(shortcuts)
-		.reduce((obj, [key, value]) => {
-			obj[key] = value.trim().toUpperCase();
-			return obj;
-		}, {});
-	opt.shortcut2action = Object
-		.entries(opt.action2shortcut)
-		.reduce((obj, [key, value]) => {
-			obj[value] = key;
-			return obj;
-		}, {});
+export function setAudioControlShortcuts(shortcuts = {}) {
+  opt.action2shortcut = Object.entries(shortcuts).reduce(
+    (obj, [key, value]) => {
+      obj[key] = value.trim().toUpperCase();
+      return obj;
+    },
+    {},
+  );
+  opt.shortcut2action = Object.entries(opt.action2shortcut).reduce(
+    (obj, [key, value]) => {
+      obj[value] = key;
+      return obj;
+    },
+    {},
+  );
 }
 
 /**
@@ -430,23 +432,23 @@ export function setAudioControlShortcuts(shortcuts={}) {
  * @returns {Promise<void>}
  */
 async function togglePlayAudio({
-	audio=el.audio,
-	togglePlayButton=el.togglePlayButton,
-	playIcon=el.playIcon,
-	pauseIcon=el.pauseIcon,
-	forcePlay=false,
-	forcePause=false,
-}={}) {
-	const pause = !forcePlay && !forcePause ? !audio.paused : forcePause;
-	if (pause) {
-		audio.pause();
-		togglePlayButton.title = "Play";
-	} else {
-		await audio.play();
-		togglePlayButton.title = "Pause";
-	}
-	playIcon.classList.toggle("invisible", !pause);
-	pauseIcon.classList.toggle("invisible", pause);
+  audio = el.audio,
+  togglePlayButton = el.togglePlayButton,
+  playIcon = el.playIcon,
+  pauseIcon = el.pauseIcon,
+  forcePlay = false,
+  forcePause = false,
+} = {}) {
+  const pause = !forcePlay && !forcePause ? !audio.paused : forcePause;
+  if (pause) {
+    audio.pause();
+    togglePlayButton.title = "Play";
+  } else {
+    await audio.play();
+    togglePlayButton.title = "Pause";
+  }
+  playIcon.classList.toggle("invisible", !pause);
+  pauseIcon.classList.toggle("invisible", pause);
 }
 
 /**
@@ -462,22 +464,22 @@ async function togglePlayAudio({
  * @returns {void}
  */
 function toggleMuteAudio({
-	audio=el.audio,
-	toggleMuteButton=el.toggleMuteButton,
-	mutedIcon=el.mutedIcon,
-	unmutedIcon=el.unmutedIcon,
-	forceMute=false,
-	forceUnmute=false,
-}={}) {
-	const mute = !forceMute && !forceUnmute ? !audio.muted : forceMute;
-	if (mute) {
-		toggleMuteButton.title = "Unmute";
-	} else {
-		toggleMuteButton.title = "Mute";
-	}
-	audio.muted = mute;
-	mutedIcon.classList.toggle("invisible", !mute);
-	unmutedIcon.classList.toggle("invisible", mute);
+  audio = el.audio,
+  toggleMuteButton = el.toggleMuteButton,
+  mutedIcon = el.mutedIcon,
+  unmutedIcon = el.unmutedIcon,
+  forceMute = false,
+  forceUnmute = false,
+} = {}) {
+  const mute = !forceMute && !forceUnmute ? !audio.muted : forceMute;
+  if (mute) {
+    toggleMuteButton.title = "Unmute";
+  } else {
+    toggleMuteButton.title = "Mute";
+  }
+  audio.muted = mute;
+  mutedIcon.classList.toggle("invisible", !mute);
+  unmutedIcon.classList.toggle("invisible", mute);
 }
 
 /**
@@ -486,11 +488,9 @@ function toggleMuteAudio({
  * }}
  * @returns {Promise<void>}
  */
-async function rewindAudio({
-	audio=el.audio,
-}={}) {
-	audio.currentTime = 0;
-	await audio.play();
+async function rewindAudio({ audio = el.audio } = {}) {
+  audio.currentTime = 0;
+  await audio.play();
 }
 
 /**
@@ -500,13 +500,11 @@ async function rewindAudio({
  * }}
  * @returns {void}
  */
-async function forwardAudio(seconds, {
-	audio=el.audio,
-}={}) {
-	audio.currentTime = Math.min(
-		audio.currentTime + seconds,
-		await audioDuration(audio),
-	);
+async function forwardAudio(seconds, { audio = el.audio } = {}) {
+  audio.currentTime = Math.min(
+    audio.currentTime + seconds,
+    await audioDuration(audio),
+  );
 }
 
 /**
@@ -516,13 +514,8 @@ async function forwardAudio(seconds, {
  * }}
  * @returns {void}
  */
-function backwardAudio(seconds, {
-	audio=el.audio,
-}={}) {
-	audio.currentTime = Math.max(
-		audio.currentTime - seconds,
-		0,
-	);
+function backwardAudio(seconds, { audio = el.audio } = {}) {
+  audio.currentTime = Math.max(audio.currentTime - seconds, 0);
 }
 
 /**
@@ -534,22 +527,21 @@ function backwardAudio(seconds, {
  * }}
  * @returns {Promise<void>}
  */
-async function changeAudioSource(sourceIndex, {
-	audio=el.audio,
-	mainTitle=el.mainTitle,
-	sources=el.sources,
-}={}) {
-	const paused = audio.paused;
-	const s = sources[sourceIndex];
-	audio.dataset.validDuration = -1;
-	audio.dataset.currentId = s.id;
-	audio.dataset.currentSource = sourceIndex;
-	audio.src = s.url;
-	audio.load();
-	if (!paused) {
-		await audio.play();
-	}
-	mainTitle.textContent = s.title;
+async function changeAudioSource(
+  sourceIndex,
+  { audio = el.audio, mainTitle = el.mainTitle, sources = el.sources } = {},
+) {
+  const paused = audio.paused;
+  const s = sources[sourceIndex];
+  audio.dataset.validDuration = -1;
+  audio.dataset.currentId = s.id;
+  audio.dataset.currentSource = sourceIndex;
+  audio.src = s.url;
+  audio.load();
+  if (!paused) {
+    await audio.play();
+  }
+  mainTitle.textContent = s.title;
 }
 
 /**
@@ -561,20 +553,20 @@ async function changeAudioSource(sourceIndex, {
  * @returns {Promise<void>}
  */
 async function previousAudio({
-	audio=el.audio,
-	mainTitle=el.mainTitle,
-	sources=el.sources,
-}={}) {
-	if (sources.length === 0) {
-		return console.warn("There is no audio source");
-	}
-	const index = parseInt(audio.dataset.currentSource);
-	const newIndex = index - 1;
-	if (newIndex > -1) {
-		await changeAudioSource(newIndex, { audio, mainTitle, sources });
-	} else {
-		audio.currentTime = 0;
-	}
+  audio = el.audio,
+  mainTitle = el.mainTitle,
+  sources = el.sources,
+} = {}) {
+  if (sources.length === 0) {
+    return console.warn("There is no audio source");
+  }
+  const index = parseInt(audio.dataset.currentSource);
+  const newIndex = index - 1;
+  if (newIndex > -1) {
+    await changeAudioSource(newIndex, { audio, mainTitle, sources });
+  } else {
+    audio.currentTime = 0;
+  }
 }
 
 /**
@@ -586,20 +578,20 @@ async function previousAudio({
  * @returns {Promise<void>}
  */
 async function nextAudio({
-	audio=el.audio,
-	mainTitle=el.mainTitle,
-	sources=el.sources,
-}={}) {
-	if (sources.length === 0) {
-		return console.warn("There is no audio source");
-	}
-	const index = parseInt(audio.dataset.currentSource);
-	const newIndex = index + 1;
-	if (newIndex < sources.length) {
-		await changeAudioSource(newIndex, { audio, mainTitle, sources });
-	} else {
-		audio.currentTime = await audioDuration(audio);
-	}
+  audio = el.audio,
+  mainTitle = el.mainTitle,
+  sources = el.sources,
+} = {}) {
+  if (sources.length === 0) {
+    return console.warn("There is no audio source");
+  }
+  const index = parseInt(audio.dataset.currentSource);
+  const newIndex = index + 1;
+  if (newIndex < sources.length) {
+    await changeAudioSource(newIndex, { audio, mainTitle, sources });
+  } else {
+    audio.currentTime = await audioDuration(audio);
+  }
 }
 
 /**
@@ -610,13 +602,13 @@ async function nextAudio({
  * }}
  * @returns {Promise<void>}
  */
-function changeAudioVolume(volume, {
-	audio=el.audio,
-	volumeControl=el.volumeControl,
-}={}) {
-	const value = Math.max(0, Math.min(volume, 1));
-	volumeControl.value = value;
-	audio.volume = value;
+function changeAudioVolume(
+  volume,
+  { audio = el.audio, volumeControl = el.volumeControl } = {},
+) {
+  const value = Math.max(0, Math.min(volume, 1));
+  volumeControl.value = value;
+  audio.volume = value;
 }
 
 /**
@@ -628,28 +620,23 @@ function changeAudioVolume(volume, {
  * }}
  * @returns {Promise<void>}
  */
-function changeAudioSpeed(speed, {
-	audio=el.audio,
-	showSpeedsButton=el.showSpeedsButton,
-	speedsList=el.speedsList,
-}={}) {
-	const rounded = Math.max(
-		0.2,
-		Math.min(
-			Math.round(speed * 10) / 10,
-			2.0,
-		),
-	);
-	const datasetValue = rounded.toFixed(1);
-	const classSelected = "audio-player-speed-option-current";
-	speedsList.querySelector(
-		`.${classSelected}`,
-	).classList.remove(classSelected);
-	speedsList.querySelector(
-		`[data-speed="${datasetValue}"]`,
-	).classList.add(classSelected);
-	showSpeedsButton.textContent = `${rounded}x`;
-	audio.playbackRate = rounded;
+function changeAudioSpeed(
+  speed,
+  {
+    audio = el.audio,
+    showSpeedsButton = el.showSpeedsButton,
+    speedsList = el.speedsList,
+  } = {},
+) {
+  const rounded = Math.max(0.2, Math.min(Math.round(speed * 10) / 10, 2.0));
+  const datasetValue = rounded.toFixed(1);
+  const classSelected = "audio-player-speed-option-current";
+  speedsList.querySelector(`.${classSelected}`).classList.remove(classSelected);
+  speedsList
+    .querySelector(`[data-speed="${datasetValue}"]`)
+    .classList.add(classSelected);
+  showSpeedsButton.textContent = `${rounded}x`;
+  audio.playbackRate = rounded;
 }
 
 /**
@@ -657,22 +644,22 @@ function changeAudioSpeed(speed, {
  * @returns {Promise<number>}
  */
 async function audioDuration(audio) {
-	if (audio.dataset.validDuration < 0) {
-		if (validAudioDuration(audio)) {
-			audio.dataset.validDuration = audio.duration;
-		} else {
-			console.log({ pronAddon: "audio duration from AudioContext" });
-			const response = await fetch(audio.src);
-			if (response.status !== 200) {
-				throw new Error(`Status: ${response.status}`);
-			}
-			const arrayBuffer = await response.arrayBuffer();
-			const audioContext = new AudioContext();
-			const decoded = await audioContext.decodeAudioData(arrayBuffer);
-			audio.dataset.validDuration = decoded.duration;
-		}
-	}
-	return audio.dataset.validDuration;
+  if (audio.dataset.validDuration < 0) {
+    if (validAudioDuration(audio)) {
+      audio.dataset.validDuration = audio.duration;
+    } else {
+      console.log({ pronAddon: "audio duration from AudioContext" });
+      const response = await fetch(audio.src);
+      if (response.status !== 200) {
+        throw new Error(`Status: ${response.status}`);
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      const audioContext = new AudioContext();
+      const decoded = await audioContext.decodeAudioData(arrayBuffer);
+      audio.dataset.validDuration = decoded.duration;
+    }
+  }
+  return audio.dataset.validDuration;
 }
 
 /**
@@ -680,7 +667,7 @@ async function audioDuration(audio) {
  * @returns {boolean}
  */
 function validAudioDuration(audio) {
-	return Number.isFinite(audio.duration) && audio.duration !== 0;
+  return Number.isFinite(audio.duration) && audio.duration !== 0;
 }
 
 /**
@@ -688,16 +675,13 @@ function validAudioDuration(audio) {
  * @returns {string}
  */
 function formatSeconds(seconds) {
-	const [hours, modHours] = divAndMod(seconds, 3600);
-	const [minutes, sec] = divAndMod(modHours, 60);
-	let formatted = [
-		padTime(minutes),
-		padTime(Math.floor(sec)),
-	].join(":");
-	if (hours > 0) {
-		formatted = `${padTime(hours)}:${formatted}`;
-	}
-	return formatted;
+  const [hours, modHours] = divAndMod(seconds, 3600);
+  const [minutes, sec] = divAndMod(modHours, 60);
+  let formatted = [padTime(minutes), padTime(Math.floor(sec))].join(":");
+  if (hours > 0) {
+    formatted = `${padTime(hours)}:${formatted}`;
+  }
+  return formatted;
 }
 
 /**
@@ -705,7 +689,7 @@ function formatSeconds(seconds) {
  * @returns {string}
  */
 function padTime(time) {
-	return time.toString().padStart(2, "0");
+  return time.toString().padStart(2, "0");
 }
 
 /**
@@ -714,10 +698,7 @@ function padTime(time) {
  * @returns {[number, number]}
  */
 function divAndMod(a, b) {
-	return [
-		Math.floor(a / b),
-		a % b,
-	];
+  return [Math.floor(a / b), a % b];
 }
 
 /**
@@ -725,24 +706,24 @@ function divAndMod(a, b) {
  * @param {closeTimeout} number
  * @returns {void}
  */
-export function showInfo(info, closeTimeout=3000) {
-	showPopup({
-		text: info,
-		position: {
-			centerHorizontally: true,
-			top: 200,
-		},
-		close: {
-			timeout: closeTimeout,
-		},
-	});
+export function showInfo(info, closeTimeout = 3000) {
+  showPopup({
+    text: info,
+    position: {
+      centerHorizontally: true,
+      top: 200,
+    },
+    close: {
+      timeout: closeTimeout,
+    },
+  });
 }
 
 /**
  * @returns {HTMLElement[]}
  */
 function createAudioPlayerUI() {
-const html = `
+  const html = `
 
 <!-- Code injected by How2Say addon -->
 
@@ -1175,7 +1156,7 @@ button {
     </div>
 
 `;
-	const template = document.createElement("template");
-	template.innerHTML = html;
-	return Array.from(template.content.children);
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  return Array.from(template.content.children);
 }

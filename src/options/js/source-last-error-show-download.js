@@ -24,62 +24,68 @@ import { sourceLastErrorTable } from "../../utils/storage-tables.js";
  * }}
  */
 const el = {
-	cambridge: byId("cambridge"),
-	linguee: byId("linguee"),
-	oxford: byId("oxford"),
-	gstatic: byId("gstatic"),
-	googleSpeech: byId("googleSpeech"),
-	responsiveVoice: byId("responsiveVoice"),
-	unrealSpeech: byId("unrealSpeech"),
-	speechify: byId("speechify"),
-	playHt: byId("playHt"),
-	elevenLabs: byId("elevenLabs"),
-	amazonPolly: byId("amazonPolly"),
-	openAi: byId("openAi"),
-	deepSeek: byId("deepSeek"),
-	translatorMind: byId("translatorMind"),
-	unalengua: byId("unalengua"),
-	all: byId("all"),
-	sourceName: byId("sourceName"),
-	lastErrorValue: byId("lastErrorValue"),
+  cambridge: byId("cambridge"),
+  linguee: byId("linguee"),
+  oxford: byId("oxford"),
+  gstatic: byId("gstatic"),
+  googleSpeech: byId("googleSpeech"),
+  responsiveVoice: byId("responsiveVoice"),
+  unrealSpeech: byId("unrealSpeech"),
+  speechify: byId("speechify"),
+  playHt: byId("playHt"),
+  elevenLabs: byId("elevenLabs"),
+  amazonPolly: byId("amazonPolly"),
+  openAi: byId("openAi"),
+  deepSeek: byId("deepSeek"),
+  translatorMind: byId("translatorMind"),
+  unalengua: byId("unalengua"),
+  all: byId("all"),
+  sourceName: byId("sourceName"),
+  lastErrorValue: byId("lastErrorValue"),
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-	showLastError("", {});
+  showLastError("", {});
 });
 
 [
-	el.cambridge,
-	el.linguee,
-	el.oxford,
-	el.gstatic,
-	el.googleSpeech,
-	el.responsiveVoice,
-	el.unrealSpeech,
-	el.speechify,
-	el.playHt,
-	el.elevenLabs,
-	el.amazonPolly,
-	el.openAi,
-	el.deepSeek,
-	el.translatorMind,
-	el.unalengua,
-].forEach(s => {
-	s.addEventListener("click", async () => {
-		const le = await sourceLastErrorTable.getValue(s.id) ?? {};
-		showLastError(s.textContent, le);
-		await downloadObject(le, fileName(`pronunciation-${s.id}-source-last-error.json`));
-	});
+  el.cambridge,
+  el.linguee,
+  el.oxford,
+  el.gstatic,
+  el.googleSpeech,
+  el.responsiveVoice,
+  el.unrealSpeech,
+  el.speechify,
+  el.playHt,
+  el.elevenLabs,
+  el.amazonPolly,
+  el.openAi,
+  el.deepSeek,
+  el.translatorMind,
+  el.unalengua,
+].forEach((s) => {
+  s.addEventListener("click", async () => {
+    const le = (await sourceLastErrorTable.getValue(s.id)) ?? {};
+    showLastError(s.textContent, le);
+    await downloadObject(
+      le,
+      fileName(`pronunciation-${s.id}-source-last-error.json`),
+    );
+  });
 });
 
 el.all.addEventListener("click", async () => {
-	try {
-		const le = await sourceLastErrorTable.getAll() ?? {};
-		showLastError("All", le);
-		await downloadObject(le, fileName(`pronunciation-all-source-last-error.json`));
-	} catch (error) {
-		console.error(error);
-	}
+  try {
+    const le = (await sourceLastErrorTable.getAll()) ?? {};
+    showLastError("All", le);
+    await downloadObject(
+      le,
+      fileName(`pronunciation-all-source-last-error.json`),
+    );
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 /**
@@ -87,11 +93,11 @@ el.all.addEventListener("click", async () => {
  * @returns {string}
  */
 function fileName(suffix) {
-	const prefix = new Date()
-		.toISOString()
-		.replaceAll(":", "-")
-		.replaceAll(".", "-");
-	return `${prefix}-${suffix}`;
+  const prefix = new Date()
+    .toISOString()
+    .replaceAll(":", "-")
+    .replaceAll(".", "-");
+  return `${prefix}-${suffix}`;
 }
 
 /**
@@ -100,7 +106,7 @@ function fileName(suffix) {
  * @returns {void}
  */
 function showLastError(sourceName, lastError) {
-	el.sourceName.value = sourceName;
-	el.lastErrorValue.value = JSON.stringify(lastError, null, 4);
-	el.lastErrorValue.select();
+  el.sourceName.value = sourceName;
+  el.lastErrorValue.value = JSON.stringify(lastError, null, 4);
+  el.lastErrorValue.select();
 }

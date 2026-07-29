@@ -4,14 +4,14 @@
  * @returns {Promise<{ error: Error | null, value: string | null }>}
  */
 export async function goString(promise) {
-	let error = null;
-	let value = null;
-	try {
-		value = await promise;
-	} catch (e) {
-		error = e;
-	}
-	return { error, value };
+  let error = null;
+  let value = null;
+  try {
+    value = await promise;
+  } catch (e) {
+    error = e;
+  }
+  return { error, value };
 }
 
 /**
@@ -20,14 +20,14 @@ export async function goString(promise) {
  * @returns {Promise<{ error: Error | null, value: Blob | null }>}
  */
 export async function goBlob(promise) {
-	let error = null;
-	let value = null;
-	try {
-		value = await promise;
-	} catch (e) {
-		error = e;
-	}
-	return { error, value };
+  let error = null;
+  let value = null;
+  try {
+    value = await promise;
+  } catch (e) {
+    error = e;
+  }
+  return { error, value };
 }
 
 /**
@@ -35,9 +35,9 @@ export async function goBlob(promise) {
  * @returns {Promise<void>}
  */
 export function sleep(timeout) {
-	return new Promise((resolve, _) => {
-		setTimeout(() => resolve(), timeout);
-	});
+  return new Promise((resolve, _) => {
+    setTimeout(() => resolve(), timeout);
+  });
 }
 
 /**
@@ -46,9 +46,9 @@ export function sleep(timeout) {
  * @returns {Promise<any>}
  */
 export function resolveTimeout(timeout, value) {
-	return new Promise((resolve, _) => {
-		setTimeout(() => resolve(value), timeout);
-	});
+  return new Promise((resolve, _) => {
+    setTimeout(() => resolve(value), timeout);
+  });
 }
 
 /**
@@ -57,6 +57,6 @@ export function resolveTimeout(timeout, value) {
  * @returns {Promise}
  */
 export async function delayPromise(delay, promise) {
-	await sleep(delay);
-	return promise;
+  await sleep(delay);
+  return promise;
 }

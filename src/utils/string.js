@@ -8,17 +8,14 @@ const newlinePattern = /(\r?\n)+/g;
  * @returns {string[]}
  */
 export function splitWords(text) {
-	// strangely some word matchs results in multiple words
-	const hasSpace = spacePattern.test(text);
-	const words = text
-		.trim()
-		.replaceAll("’", "'")
-		.match(wordPattern)
-	if (words) {
-		return !hasSpace ? [words.join("")] : words;
-	} else {
-		return [];
-	}
+  // strangely some word matchs results in multiple words
+  const hasSpace = spacePattern.test(text);
+  const words = text.trim().replaceAll("’", "'").match(wordPattern);
+  if (words) {
+    return !hasSpace ? [words.join("")] : words;
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -27,9 +24,7 @@ export function splitWords(text) {
  * @returns {string}
  */
 export function removeExtraSpaces(text) {
-	return text
-		.replaceAll(spacePattern, " ")
-		.replaceAll(newlinePattern, "\n");
+  return text.replaceAll(spacePattern, " ").replaceAll(newlinePattern, "\n");
 }
 
 /**
@@ -37,7 +32,7 @@ export function removeExtraSpaces(text) {
  * @returns {string}
  */
 export function filterDigits(text) {
-	return text.match(digitPattern).join("");
+  return text.match(digitPattern).join("");
 }
 
 /**
@@ -45,14 +40,14 @@ export function filterDigits(text) {
  * @returns {string}
  */
 export function rgba2rgb(rgba) {
-	if (rgba.startsWith("rgba")) {
-		return rgba
-			.replace("a", "")
-			.slice(0, rgba.lastIndexOf(",") -1)
-			.concat(")");
-	} else {
-		return rgba;
-	}
+  if (rgba.startsWith("rgba")) {
+    return rgba
+      .replace("a", "")
+      .slice(0, rgba.lastIndexOf(",") - 1)
+      .concat(")");
+  } else {
+    return rgba;
+  }
 }
 
 /**
@@ -60,10 +55,7 @@ export function rgba2rgb(rgba) {
  * @returns {string}
  */
 export function kebab2camel(value) {
-	return value.replaceAll(
-		/-+(.)/g,
-		(_, p1) => p1.toUpperCase(),
-	);
+  return value.replaceAll(/-+(.)/g, (_, p1) => p1.toUpperCase());
 }
 
 /**
@@ -72,7 +64,7 @@ export function kebab2camel(value) {
  * @returns {string[]}
  */
 export function textHierarchy(text, ends) {
-	return ends.map(end => text.slice(0, end));
+  return ends.map((end) => text.slice(0, end));
 }
 
 /**
@@ -80,12 +72,12 @@ export function textHierarchy(text, ends) {
  * @returns {Promise<string>}
  */
 export async function generateSha1(message) {
-	const buffer = await crypto.subtle.digest(
-		"SHA-1",
-		new TextEncoder("utf-8").encode(message),
-	);
-	const array = [...new Uint8Array(buffer)];
-	return array.map(b => b.toString(16).padStart(2, "0")).join("");
+  const buffer = await crypto.subtle.digest(
+    "SHA-1",
+    new TextEncoder("utf-8").encode(message),
+  );
+  const array = [...new Uint8Array(buffer)];
+  return array.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 /**
@@ -93,5 +85,5 @@ export async function generateSha1(message) {
  * @returns {boolean}
  */
 export function isDigit(ch) {
-	return ch.length === 1 && "0123456789".includes(ch);
+  return ch.length === 1 && "0123456789".includes(ch);
 }

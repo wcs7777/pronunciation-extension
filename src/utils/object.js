@@ -4,33 +4,33 @@
  * @param {boolean} prioritizeTargetObj
  * @return {any}
  */
-export function deepMerge(target, source, prioritizeTargetObj=false) {
-	const tgt = structuredClone(target);
-	const src = structuredClone(source);
-	const tgtIsArr = Array.isArray(tgt);
-	const srcIsArr = Array.isArray(src);
-	const tgtIsObj = !tgtIsArr && tgt instanceof Object;
-	const srcIsObj = !srcIsArr && src instanceof Object;
-	if (tgtIsArr && srcIsArr) {
-		const mergedArr = prioritizeTargetObj ? [...tgt] : [...src];
-		for (const item of prioritizeTargetObj ? src : tgt) {
-			if (!mergedArr.includes(item)) {
-				mergedArr.push(item);
-			}
-		}
-		return mergedArr;
-	}
-	if (tgtIsObj && srcIsObj) {
-		for (const key in src) {
-			tgt[key] = deepMerge(tgt[key], src?.[key], prioritizeTargetObj);
-		}
-		return tgt;
-	}
-	if (prioritizeTargetObj && (tgtIsObj || tgtIsArr)) {
-		return tgt;
-	} else {
-		return src;
-	}
+export function deepMerge(target, source, prioritizeTargetObj = false) {
+  const tgt = structuredClone(target);
+  const src = structuredClone(source);
+  const tgtIsArr = Array.isArray(tgt);
+  const srcIsArr = Array.isArray(src);
+  const tgtIsObj = !tgtIsArr && tgt instanceof Object;
+  const srcIsObj = !srcIsArr && src instanceof Object;
+  if (tgtIsArr && srcIsArr) {
+    const mergedArr = prioritizeTargetObj ? [...tgt] : [...src];
+    for (const item of prioritizeTargetObj ? src : tgt) {
+      if (!mergedArr.includes(item)) {
+        mergedArr.push(item);
+      }
+    }
+    return mergedArr;
+  }
+  if (tgtIsObj && srcIsObj) {
+    for (const key in src) {
+      tgt[key] = deepMerge(tgt[key], src?.[key], prioritizeTargetObj);
+    }
+    return tgt;
+  }
+  if (prioritizeTargetObj && (tgtIsObj || tgtIsArr)) {
+    return tgt;
+  } else {
+    return src;
+  }
 }
 
 /**
@@ -39,18 +39,18 @@ export function deepMerge(target, source, prioritizeTargetObj=false) {
  * @return {boolean}
  */
 export function deepEquals(left, right) {
-	if (left === right) {
-		return true;
-	}
-	if (left instanceof Object && right instanceof Object) {
-		for (const key in left) {
-			if (!deepEquals(left[key], right?.[key])) {
-				return false;
-			}
-		}
-		return true;
-	}
-	return false;
+  if (left === right) {
+    return true;
+  }
+  if (left instanceof Object && right instanceof Object) {
+    for (const key in left) {
+      if (!deepEquals(left[key], right?.[key])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -58,13 +58,10 @@ export function deepEquals(left, right) {
  * @return {any}
  */
 export function removeMethods(obj) {
-	const stringified = JSON.stringify(
-		obj,
-		Object.getOwnPropertyNames(obj),
-	);
-	const parsed = JSON.parse(stringified);
-	if (obj instanceof Error && obj?.stack) {
-		parsed["stack"] = obj.stack;
-	}
-	return parsed;
+  const stringified = JSON.stringify(obj, Object.getOwnPropertyNames(obj));
+  const parsed = JSON.parse(stringified);
+  if (obj instanceof Error && obj?.stack) {
+    parsed["stack"] = obj.stack;
+  }
+  return parsed;
 }

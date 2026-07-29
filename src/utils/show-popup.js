@@ -1,4 +1,4 @@
-import { deepMerge }  from "./object.js";
+import { deepMerge } from "./object.js";
 
 const andikaFont = browser.runtime.getURL("resources/Andika-Regular.ttf");
 const notoSansFont = browser.runtime.getURL("resources/NotoSans-Regular.ttf");
@@ -8,30 +8,30 @@ document.body.appendChild(template);
 
 /** @type {OptionsPopup} */
 export const defaultOptionsPopup = {
-	text: "Default text",
-	style: {
-		font: {
-			family: "'Noto Sans', Arial, sans-serif",
-			size: 20,
-			color: "#282828",
-		},
-		backgroundColor: "#FFFFFF",
-		followScroll: false,
-	},
-	close: {
-		timeout: 3000,
-		shortcut: "\\",
-		onScroll: false,
-		buttonColor: "#737373",
-		buttonHoverColor: "#010101",
-	},
-	position: {
-		centerHorizontally: true,
-		centerVertically: false,
-		top: 100,
-		left: 250,
-		scrollY: window.scrollY,
-	},
+  text: "Default text",
+  style: {
+    font: {
+      family: "'Noto Sans', Arial, sans-serif",
+      size: 20,
+      color: "#282828",
+    },
+    backgroundColor: "#FFFFFF",
+    followScroll: false,
+  },
+  close: {
+    timeout: 3000,
+    shortcut: "\\",
+    onScroll: false,
+    buttonColor: "#737373",
+    buttonHoverColor: "#010101",
+  },
+  position: {
+    centerHorizontally: true,
+    centerVertically: false,
+    top: 100,
+    left: 250,
+    scrollY: window.scrollY,
+  },
 };
 
 /**
@@ -40,157 +40,152 @@ export const defaultOptionsPopup = {
  * @param {() => boolean} closeConditionFn
  * @returns {HTMLElement} popup host
  */
-export function showPopup(options, textFn=null, closeConditionFn=null) {
+export function showPopup(options, textFn = null, closeConditionFn = null) {
+  const initialScrollY = window.scrollY;
+  defaultOptionsPopup.position.scrollY = initialScrollY;
+  /** @type {OptionsPopup} */
+  const opt = deepMerge(defaultOptionsPopup, options);
+  const host = document.createElement("span");
+  host.dataset.role = "pronunciation-addon-popup-host";
+  host.style.display = "inline";
+  host.style.width = "0px";
+  host.style.height = "0px";
+  host.style.border = "0px";
+  host.style.margin = "0px";
+  host.style.padding = "0px";
+  const shadow = host.attachShadow({
+    mode: "closed",
+    clonable: false,
+  });
+  shadow.appendChild(template.content.cloneNode(true));
 
-	const initialScrollY = window.scrollY;
-	defaultOptionsPopup.position.scrollY = initialScrollY;
-	/** @type {OptionsPopup} */
-	const opt = deepMerge(defaultOptionsPopup, options);
-	const host = document.createElement("span");
-	host.dataset.role = "pronunciation-addon-popup-host";
-	host.style.display = "inline";
-	host.style.width = "0px";
-	host.style.height = "0px";
-	host.style.border = "0px";
-	host.style.margin = "0px";
-	host.style.padding = "0px";
-	const shadow = host.attachShadow({
-		mode: "closed",
-		clonable: false,
-	});
-	shadow.appendChild(template.content.cloneNode(true));
+  /**
+   * @param {string} role
+   * @returns {HTMLElement | null}
+   */
+  const byRole = (role) => shadow.querySelector(`[data-role="${role}"]`);
 
-	/**
-	 * @param {string} role
-	 * @returns {HTMLElement | null}
-	 */
-	const byRole = (role) => shadow.querySelector(`[data-role="${role}"]`);
+  const textElement = byRole("text");
+  textElement.textContent = opt.text;
+  console.log({ pronuciationPopupText: opt.text });
 
-	const textElement = byRole("text");
-	textElement.textContent = opt.text;
-	console.log({ pronuciationPopupText: opt.text });
+  const popup = byRole("popup");
+  const close = byRole("close");
 
-	const popup = byRole("popup");
-	const close = byRole("close");
+  /**
+   * @param {string} prop
+   * @param {string} val
+   * @returns {void}
+   */
+  const setProperty = (prop, val) => popup.style.setProperty(prop, val);
 
-	/**
-	 * @param {string} prop
-	 * @param {string} val
-	 * @returns {void}
-	 */
-	const setProperty = (prop, val) => popup.style.setProperty(prop, val);
+  setProperty("--background-color", opt.style.backgroundColor);
+  setProperty("--font-family", opt.style.font.family);
+  setProperty("--font-size", `${opt.style.font.size}px`);
+  setProperty("--font-color", opt.style.font.color);
+  setProperty("--close-button-color", opt.close.buttonColor);
+  setProperty("--close-button-color-hover", opt.close.buttonHoverColor);
 
-	setProperty("--background-color", opt.style.backgroundColor);
-	setProperty("--font-family", opt.style.font.family);
-	setProperty("--font-size", `${opt.style.font.size}px`);
-	setProperty("--font-color", opt.style.font.color);
-	setProperty("--close-button-color", opt.close.buttonColor);
-	setProperty("--close-button-color-hover", opt.close.buttonHoverColor);
+  popup.style.visibility = "hidden";
+  document.body.appendChild(host);
+  const rect = popup.getBoundingClientRect();
+  const minMarge = 5;
+  let popupWidth = rect.width;
+  let popupHeight = rect.height;
+  if (popupWidth >= window.innerWidth - minMarge * 2) {
+    popupWidth = window.innerWidth - minMarge * 2;
+    popup.style.width = `${popupWidth}px`;
+    opt.position.centerHorizontally = true;
+  }
+  let left = opt.position.left;
+  let top = opt.position.top - (initialScrollY - opt.position.scrollY);
+  const widthDiff =
+    window.innerWidth - minMarge - (opt.position.left + popupWidth);
+  const heightDiff =
+    window.innerHeight - minMarge - (opt.position.top + popupHeight);
+  if (widthDiff < 0) {
+    left += widthDiff;
+  }
+  if (heightDiff < 0) {
+    top += heightDiff;
+  }
+  if (opt.position.centerHorizontally) {
+    left = (window.innerWidth - popupWidth) / 2;
+  }
+  if (opt.position.centerVertically) {
+    top = (window.innerHeight - popupHeight) / 2;
+  }
+  setProperty("--top", `${top}px`);
+  setProperty("--left", `${left}px`);
+  popup.style.visibility = "visible";
 
-	popup.style.visibility = "hidden";
-	document.body.appendChild(host);
-	const rect = popup.getBoundingClientRect();
-	const minMarge = 5;
-	let popupWidth = rect.width;
-	let popupHeight = rect.height;
-	if (popupWidth >= window.innerWidth - minMarge * 2) {
-		popupWidth = window.innerWidth - minMarge * 2;
-		popup.style.width = `${popupWidth}px`;
-		opt.position.centerHorizontally = true;
-	}
-	let left = opt.position.left;
-	let top = opt.position.top - (initialScrollY - opt.position.scrollY);
-	const widthDiff = (
-		(window.innerWidth - minMarge) -
-		(opt.position.left + popupWidth)
-	);
-	const heightDiff = (
-		(window.innerHeight - minMarge) -
-		(opt.position.top + popupHeight)
-	);
-	if (widthDiff < 0) {
-		left += widthDiff;
-	}
-	if (heightDiff < 0) {
-		top += heightDiff;
-	}
-	if (opt.position.centerHorizontally) {
-		left = (window.innerWidth - popupWidth) / 2;
-	}
-	if (opt.position.centerVertically) {
-		top = (window.innerHeight - popupHeight) / 2;
-	}
-	setProperty("--top", `${top}px`);
-	setProperty("--left", `${left}px`);
-	popup.style.visibility = "visible";
+  const timeoutId = setTimeout(closePopup, opt.close.timeout);
+  let intervalId = null;
 
-	const timeoutId = setTimeout(closePopup, opt.close.timeout);
-	let intervalId = null;
+  if (textFn || closeConditionFn) {
+    intervalId = setInterval(() => {
+      if (textFn) {
+        textElement.textContent = textFn();
+      }
+      if (closeConditionFn) {
+        if (closeConditionFn()) {
+          closePopup();
+        }
+      }
+    }, 300);
+  }
 
-	if (textFn || closeConditionFn) {
-		intervalId = setInterval(() => {
-			if (textFn) {
-				textElement.textContent = textFn();
-			}
-			if (closeConditionFn) {
-				if (closeConditionFn()) {
-					closePopup();
-				}
-			}
-		}, 300);
-	}
+  popup.addEventListener("mousedown", disableTimeout);
+  close.addEventListener("click", closePopup);
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("scroll", onScroll);
 
-	popup.addEventListener("mousedown", disableTimeout);
-	close.addEventListener("click", closePopup);
-	document.addEventListener("keydown", onKeyDown);
-	document.addEventListener("scroll", onScroll);
+  function onScroll() {
+    if (opt.close.onScroll) {
+      closePopup();
+      return;
+    }
+    if (opt.style.followScroll) {
+      const diff = window.scrollY - initialScrollY;
+      setProperty("--top", `${top - diff}px`);
+    }
+  }
 
-	function onScroll() {
-		if (opt.close.onScroll) {
-			closePopup();
-			return;
-		}
-		if (opt.style.followScroll) {
-			const diff = window.scrollY - initialScrollY;
-			setProperty("--top", `${top - diff}px`);
-		}
-	}
+  /**
+   * @param {KeyboardEvent} event
+   * @returns {void}
+   */
+  function onKeyDown(event) {
+    if (event.key.toUpperCase() === opt.close.shortcut) {
+      event.preventDefault();
+      closePopup();
+    }
+  }
 
-	/**
-	 * @param {KeyboardEvent} event
-	 * @returns {void}
-	 */
-	function onKeyDown(event) {
-		if (event.key.toUpperCase() === opt.close.shortcut) {
-			event.preventDefault();
-			closePopup();
-		}
-	}
+  function disableTimeout() {
+    clearTimeout(timeoutId);
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+    popup.removeEventListener("mousedown", disableTimeout);
+    document.removeEventListener("scroll", onScroll);
+  }
 
-	function disableTimeout() {
-		clearTimeout(timeoutId);
-		if (intervalId) {
-			clearInterval(intervalId);
-		}
-		popup.removeEventListener("mousedown", disableTimeout);
-		document.removeEventListener("scroll", onScroll);
-	}
+  function closePopup() {
+    disableTimeout();
+    close.removeEventListener("click", closePopup);
+    document.removeEventListener("keydown", onKeyDown);
+    host.remove();
+  }
 
-	function closePopup() {
-		disableTimeout();
-		close.removeEventListener("click", closePopup);
-		document.removeEventListener("keydown", onKeyDown);
-		host.remove();
-	}
-
-	return host;
+  return host;
 }
 
 /**
  * @returns {HTMLTemplateElement}
  */
 function createTemplate() {
-const html = `
+  const html = `
 
 <!-- Code injected by How2Say addon -->
 
@@ -279,8 +274,8 @@ const html = `
 </div>
 
 `;
-	const template = document.createElement("template");
-	template.id = "pronunciation-addon-popup-template";
-	template.innerHTML = html;
-	return template;
+  const template = document.createElement("template");
+  template.id = "pronunciation-addon-popup-template";
+  template.innerHTML = html;
+  return template;
 }
