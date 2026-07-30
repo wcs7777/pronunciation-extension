@@ -1,102 +1,102 @@
 {
-	"manifest_version": 2,
-	"name": "How2Say",
-	"version": "3.11.0",
-	"description": "Pronunciation for American English words with phonetic IPA and audio",
-	"icons": {
-		"48": "icons/icon.png"
-	},
-	"browser_specific_settings": {
-		"gecko": {
-			"id": "{73c59290-7ab7-41a3-aa76-2c9fca8009da}",
-			"data_collection_permissions": {
-				"required": ["none"]
-			}
-		}
-	},
-	"content_scripts": [
-		{
-			"matches": ["https://*/*", "http://*/*"],
-			"js": ["src/content/bundle/message.js"]
-		},
-		{
-			"matches": ["https://dictionary.cambridge.org/us/dictionary/english/*"],
-			"js": ["src/content/bundle/cambridge.js"]
-		},
-		{
-			"matches": ["https://www.oxfordlearnersdictionaries.com/*"],
-			"js": ["src/content/bundle/oxford.js"]
-		}
-	],
-	"background": {
-		"scripts": ["src/background/script.js"],
-		"type": "module",
-		"persistent": false
-	},
-	"options_ui": {
-		"page": "src/options/entry-point.html"
-	},
-	"browser_action": {
-		"default_icon": {
-			"19": "icons/icon-19.png",
-			"38": "icons/icon-38.png"
-		},
-		"default_title": "How2Say"
-	},
-	"commands": {
-		"pronounce": {
-			"suggested_key": {
-				"default": "Ctrl+Alt+D",
-				"mac": "Command+Alt+D"
-			},
-			"description": "Pronounce selection"
-		}
-	},
-	"web_accessible_resources": [
-		"resources/Andika-Regular.ttf",
-		"resources/NotoSans-Regular.ttf"
-	],
-	"permissions": [
-		"downloads",
-		"menus",
-		"storage",
-		"tabs",
-		"unlimitedStorage",
-		"https://api.elevenlabs.io/v1/text-to-speech/*",
-		"https://api.openai.com/v1/audio/speech/",
-		"https://api.play.ht/api/v2/tts/stream",
-		"https://api.sws.speechify.com/v1/audio/*",
-		"https://api.v7.unrealspeech.com/*",
-		"https://api2.unalengua.com/ipav3/",
-		"https://assets.linguee.com/static/*",
-		"https://dictionary.cambridge.org/*",
-		"https://polly.af-south-1.api.aws/v1/speech",
-		"https://polly.ap-east-1.api.aws/v1/speech",
-		"https://polly.ap-northeast-1.api.aws/v1/speech",
-		"https://polly.ap-northeast-2.api.aws/v1/speech",
-		"https://polly.ap-northeast-3.api.aws/v1/speech",
-		"https://polly.ap-south-1.api.aws/v1/speech",
-		"https://polly.ap-southeast-1.api.aws/v1/speech",
-		"https://polly.ap-southeast-2.api.aws/v1/speech",
-		"https://polly.ca-central-1.api.aws/v1/speech",
-		"https://polly.eu-central-1.api.aws/v1/speech",
-		"https://polly.eu-north-1.api.aws/v1/speech",
-		"https://polly.eu-south-2.api.aws/v1/speech",
-		"https://polly.eu-west-1.api.aws/v1/speech",
-		"https://polly.eu-west-3.api.aws/v1/speech",
-		"https://polly.me-south-1.api.aws/v1/speech",
-		"https://polly.sa-east-1.api.aws/v1/speech",
-		"https://polly.us-east-1.api.aws/v1/speech",
-		"https://polly.us-east-2.api.aws/v1/speech",
-		"https://polly.us-west-1.api.aws/v1/speech",
-		"https://polly.us-west-2.api.aws/v1/speech",
-		"https://s3-us-west-2.amazonaws.com/words.alexmeub.com/*",
-		"https://ssl.gstatic.com/dictionary/static/sounds/*",
-		"https://texttospeech.responsivevoice.org/v1/*",
-		"https://translatormind.com/translator-tool/ipa-phonetic-transcription-translator/",
-		"https://translatormind.com/wp-admin/admin-ajax.php",
-		"https://www.google.com/speech-api/v1/*",
-		"https://www.linguee.com/*",
-		"https://www.oxfordlearnersdictionaries.com/*"
-	]
+  "manifest_version": 2,
+  "name": "How2Say",
+  "version": "3.12.0",
+  "description": "Pronunciation for American English words with phonetic IPA and audio",
+  "icons": {
+    "48": "icons/icon.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{73c59290-7ab7-41a3-aa76-2c9fca8009da}",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": ["src/content/bundle/message.js"]
+    },
+    {
+      "matches": ["https://dictionary.cambridge.org/us/dictionary/english/*"],
+      "js": ["src/content/bundle/cambridge.js"]
+    },
+    {
+      "matches": ["https://www.oxfordlearnersdictionaries.com/*"],
+      "js": ["src/content/bundle/oxford.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["src/background/script.js"],
+    "type": "module",
+    "persistent": false
+  },
+  "options_ui": {
+    "page": "src/options/entry-point.html"
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "icons/icon-19.png",
+      "38": "icons/icon-38.png"
+    },
+    "default_title": "How2Say"
+  },
+  "commands": {
+    "pronounce": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+D",
+        "mac": "Command+Alt+D"
+      },
+      "description": "Pronounce selection"
+    }
+  },
+  "web_accessible_resources": [
+    "resources/Andika-Regular.ttf",
+    "resources/NotoSans-Regular.ttf"
+  ],
+  "permissions": [
+    "downloads",
+    "menus",
+    "storage",
+    "tabs",
+    "unlimitedStorage",
+    "https://api.elevenlabs.io/v1/text-to-speech/*",
+    "https://api.openai.com/v1/audio/speech/",
+    "https://api.play.ht/api/v2/tts/stream",
+    "https://api.sws.speechify.com/v1/audio/*",
+    "https://api.v7.unrealspeech.com/*",
+    "https://api2.unalengua.com/ipav3/",
+    "https://assets.linguee.com/static/*",
+    "https://dictionary.cambridge.org/*",
+    "https://polly.af-south-1.api.aws/v1/speech",
+    "https://polly.ap-east-1.api.aws/v1/speech",
+    "https://polly.ap-northeast-1.api.aws/v1/speech",
+    "https://polly.ap-northeast-2.api.aws/v1/speech",
+    "https://polly.ap-northeast-3.api.aws/v1/speech",
+    "https://polly.ap-south-1.api.aws/v1/speech",
+    "https://polly.ap-southeast-1.api.aws/v1/speech",
+    "https://polly.ap-southeast-2.api.aws/v1/speech",
+    "https://polly.ca-central-1.api.aws/v1/speech",
+    "https://polly.eu-central-1.api.aws/v1/speech",
+    "https://polly.eu-north-1.api.aws/v1/speech",
+    "https://polly.eu-south-2.api.aws/v1/speech",
+    "https://polly.eu-west-1.api.aws/v1/speech",
+    "https://polly.eu-west-3.api.aws/v1/speech",
+    "https://polly.me-south-1.api.aws/v1/speech",
+    "https://polly.sa-east-1.api.aws/v1/speech",
+    "https://polly.us-east-1.api.aws/v1/speech",
+    "https://polly.us-east-2.api.aws/v1/speech",
+    "https://polly.us-west-1.api.aws/v1/speech",
+    "https://polly.us-west-2.api.aws/v1/speech",
+    "https://s3-us-west-2.amazonaws.com/words.alexmeub.com/*",
+    "https://ssl.gstatic.com/dictionary/static/sounds/*",
+    "https://texttospeech.responsivevoice.org/v1/*",
+    "https://translatormind.com/translator-tool/ipa-phonetic-transcription-translator/",
+    "https://translatormind.com/wp-admin/admin-ajax.php",
+    "https://www.google.com/speech-api/v1/*",
+    "https://www.linguee.com/*",
+    "https://www.oxfordlearnersdictionaries.com/*"
+  ]
 }
