@@ -113,7 +113,9 @@ export async function blob2object(blob) {
  * @returns {Blob}
  */
 export function object2blob(obj) {
-  return new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+  return new Blob([JSON.stringify(obj, null, 2)], {
+    type: "application/json",
+  });
 }
 
 /**
@@ -240,4 +242,30 @@ export function isNavigationKey(event) {
       "Enter",
     ].includes(event.key)
   );
+}
+
+/**
+ * @param {HTMLElement} element
+ * @returns {boolean}
+ */
+export function isVerticallyScrollable(element) {
+  if (element.clientHeight > element.scrollHeight) {
+    return false;
+  }
+  const overflowY = window.getComputedStyle(element).overflowY;
+  return overflowY === "auto" || overflowY === "scroll";
+}
+
+/**
+ * @param {HTMLElement} element
+ * @returns {HTMLElement}
+ */
+export function nearestVerticallytScrollableParent(element) {
+  if (element === document.body || !element?.parentElement) {
+    return document;
+  }
+  const p = element.parentElement;
+  return isVerticallyScrollable(p)
+    ? p
+    : nearestVerticallytScrollableParent(p, false);
 }

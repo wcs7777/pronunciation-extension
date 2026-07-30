@@ -5,7 +5,11 @@ import Pronunciation from "../pronunciation/pronunciation.js";
 import defaultOptions from "../utils/default-options.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
 import * as st from "../utils/storage-tables.js";
-import { migrateToV3, migrateToV3_2_0, migrateToV3_5_0 } from "./migrations.js";
+import {
+  migrateToV3,
+  migrateToV3_2_0,
+  migrateToV3_5_0,
+} from "./migrations.js";
 
 let showPlayerMenuItem = {
   id: "A",
@@ -121,7 +125,7 @@ async function storeOptions() {
     const mergedOptions = deepMerge(
       defaultOptions,
       await st.optionsTable.getAll(),
-      true,
+      { prioritizeTargetObj: true },
     );
     await st.optionsTable.setMany(mergedOptions);
     st.optionsCache.setMany(mergedOptions);
@@ -433,7 +437,9 @@ function onMessage(message, sender, sendResponse) {
  */
 async function updateTranslatorMindNonce(message, _sender) {
   if (!message.updateTranslatorMindNonce) {
-    throw new Error("Should pass updateTranslatorMindNonce options in message");
+    throw new Error(
+      "Should pass updateTranslatorMindNonce options in message",
+    );
   }
   const nonce = message.updateTranslatorMindNonce.nonce;
   const options = await ensureOptions();

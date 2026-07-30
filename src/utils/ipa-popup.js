@@ -1,5 +1,6 @@
 import { filterDigits, rgba2rgb } from "./string.js";
 import { showPopup } from "./show-popup.js";
+import { nearestVerticallytScrollableParent } from "./element.js";
 
 export default class IpaPopup {
   #target = null;
@@ -86,6 +87,7 @@ export default class IpaPopup {
       },
       close: this.options.close,
       position: this.position,
+      scrollableParent: nearestVerticallytScrollableParent(this.target()),
     };
     return options;
   }

@@ -22,7 +22,9 @@ export async function saveOptions(options, currentOptions) {
     const tblOpt = await optionsTable.getAll();
     currOpt = tblOpt;
   }
-  return optionsTable.setMany(deepMerge(currOpt, options, true));
+  return optionsTable.setMany(
+    deepMerge(currOpt, options, { prioritizeTargetObj: true }),
+  );
 }
 
 /**

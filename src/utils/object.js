@@ -1,19 +1,21 @@
 /**
  * @param {any} target
  * @param {any} source
- * @param {boolean} prioritizeTargetObj
+ * @param {{ prioritizeTargetObj: boolean, shallowCopyKeys: string[] }}
  * @return {any}
  */
-export function deepMerge(target, source, prioritizeTargetObj = false) {
-  const tgt = structuredClone(target);
-  const src = structuredClone(source);
-  const tgtIsArr = Array.isArray(tgt);
-  const srcIsArr = Array.isArray(src);
-  const tgtIsObj = !tgtIsArr && tgt instanceof Object;
-  const srcIsObj = !srcIsArr && src instanceof Object;
+export function deepMerge(
+  target,
+  source,
+  { prioritizeTargetObj = false, shallowCopyKeys = [] } = {},
+) {
+  const tgtIsArr = Array.isArray(target);
+  const srcIsArr = Array.isArray(source);
+  const tgtIsObj = !tgtIsArr && target instanceof Object;
+  const srcIsObj = !srcIsArr && source instanceof Object;
   if (tgtIsArr && srcIsArr) {
-    const mergedArr = prioritizeTargetObj ? [...tgt] : [...src];
-    for (const item of prioritizeTargetObj ? src : tgt) {
+    const mergedArr = prioritizeTargetObj ? [...target] : [...source];
+    for (const item of prioritizeTargetObj ? source : target) {
       if (!mergedArr.includes(item)) {
         mergedArr.push(item);
       }
@@ -21,15 +23,25 @@ export function deepMerge(target, source, prioritizeTargetObj = false) {
     return mergedArr;
   }
   if (tgtIsObj && srcIsObj) {
-    for (const key in src) {
-      tgt[key] = deepMerge(tgt[key], src?.[key], prioritizeTargetObj);
+    const merged = { ...target };
+    for (const key in source) {
+      const tgt = target?.[key];
+      const src = source[key];
+      if (!shallowCopyKeys.includes(key)) {
+        merged[key] = deepMerge(tgt, src, {
+          prioritizeTargetObj,
+          shallowCopyKeys,
+        });
+      } else {
+        merged[key] = tgt ? (prioritizeTargetObj ? tgt : src) : src;
+      }
     }
-    return tgt;
+    return merged;
   }
   if (prioritizeTargetObj && (tgtIsObj || tgtIsArr)) {
-    return tgt;
+    return target;
   } else {
-    return src;
+    return source;
   }
 }
 

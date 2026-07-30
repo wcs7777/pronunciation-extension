@@ -341,6 +341,7 @@ declare global {
 			buttonHoverColor: string,
 		},
 		position: PopupPosition,
+		scrollableParent: HTMLElement | HTMLDocument,
 	};
 
 	type PopupPosition = {

@@ -1,5 +1,5 @@
 (function () {
-  "use strict";
+  'use strict';
 
   const wordPattern = /([A-Za-z\u00C0-\u024F\-']+)/g;
   const spacePattern = / +/g;
@@ -61,19 +61,21 @@
   /**
    * @param {any} target
    * @param {any} source
-   * @param {boolean} prioritizeTargetObj
+   * @param {{ prioritizeTargetObj: boolean, shallowCopyKeys: string[] }}
    * @return {any}
    */
-  function deepMerge(target, source, prioritizeTargetObj = false) {
-    const tgt = structuredClone(target);
-    const src = structuredClone(source);
-    const tgtIsArr = Array.isArray(tgt);
-    const srcIsArr = Array.isArray(src);
-    const tgtIsObj = !tgtIsArr && tgt instanceof Object;
-    const srcIsObj = !srcIsArr && src instanceof Object;
+  function deepMerge(
+    target,
+    source,
+    { prioritizeTargetObj = false, shallowCopyKeys = [] } = {},
+  ) {
+    const tgtIsArr = Array.isArray(target);
+    const srcIsArr = Array.isArray(source);
+    const tgtIsObj = !tgtIsArr && target instanceof Object;
+    const srcIsObj = !srcIsArr && source instanceof Object;
     if (tgtIsArr && srcIsArr) {
-      const mergedArr = prioritizeTargetObj ? [...tgt] : [...src];
-      for (const item of prioritizeTargetObj ? src : tgt) {
+      const mergedArr = prioritizeTargetObj ? [...target] : [...source];
+      for (const item of prioritizeTargetObj ? source : target) {
         if (!mergedArr.includes(item)) {
           mergedArr.push(item);
         }
@@ -81,15 +83,25 @@
       return mergedArr;
     }
     if (tgtIsObj && srcIsObj) {
-      for (const key in src) {
-        tgt[key] = deepMerge(tgt[key], src?.[key], prioritizeTargetObj);
+      const merged = { ...target };
+      for (const key in source) {
+        const tgt = target?.[key];
+        const src = source[key];
+        if (!shallowCopyKeys.includes(key)) {
+          merged[key] = deepMerge(tgt, src, {
+            prioritizeTargetObj,
+            shallowCopyKeys,
+          });
+        } else {
+          merged[key] = tgt ? (prioritizeTargetObj ? tgt : src) : src;
+        }
       }
-      return tgt;
+      return merged;
     }
     if (prioritizeTargetObj && (tgtIsObj || tgtIsArr)) {
-      return tgt;
+      return target;
     } else {
-      return src;
+      return source;
     }
   }
 
@@ -125,6 +137,7 @@
       left: 250,
       scrollY: window.scrollY,
     },
+    scrollableParent: document,
   };
 
   /**
@@ -134,10 +147,16 @@
    * @returns {HTMLElement} popup host
    */
   function showPopup(options, textFn = null, closeConditionFn = null) {
-    const initialScrollY = window.scrollY;
-    defaultOptionsPopup.position.scrollY = initialScrollY;
     /** @type {OptionsPopup} */
-    const opt = deepMerge(defaultOptionsPopup, options);
+    const opt = deepMerge(defaultOptionsPopup, options, {
+      shallowCopyKeys: ["scrollableParent"],
+    });
+    const scrollY = () => {
+      return opt.scrollableParent === document
+        ? window.scrollY
+        : opt.scrollableParent.scrollTop;
+    };
+    const initialScrollY = scrollY();
     const host = document.createElement("span");
     host.dataset.role = "pronunciation-addon-popup-host";
     host.style.display = "inline";
@@ -231,7 +250,7 @@
     popup.addEventListener("mousedown", disableTimeout);
     close.addEventListener("click", closePopup);
     document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("scroll", onScroll);
+    opt.scrollableParent.addEventListener("scroll", onScroll);
 
     function onScroll() {
       if (opt.close.onScroll) {
@@ -239,7 +258,7 @@
         return;
       }
       if (opt.style.followScroll) {
-        const diff = window.scrollY - initialScrollY;
+        const diff = scrollY() - initialScrollY;
         setProperty("--top", `${top - diff}px`);
       }
     }
@@ -426,13 +445,10 @@
      * @returns {Promise<void>}
      */
     async setMany(values) {
-      const prefixed = Object.entries(values).reduce(
-        (previous, [key, value]) => {
-          previous[this.fullKey(key)] = value;
-          return previous;
-        },
-        {},
-      );
+      const prefixed = Object.entries(values).reduce((previous, [key, value]) => {
+        previous[this.fullKey(key)] = value;
+        return previous;
+      }, {});
       return this.storage.set(prefixed);
     }
 
@@ -657,15 +673,12 @@
     async remove(keys) {
       const results = await this.getAll();
       const keysArray = Array.isArray(keys) ? keys : [keys];
-      const values = Object.entries(results).reduce(
-        (filtered, [key, value]) => {
-          if (!keysArray.includes(key)) {
-            filtered[key] = value;
-          }
-          return filtered;
-        },
-        {},
-      );
+      const values = Object.entries(results).reduce((filtered, [key, value]) => {
+        if (!keysArray.includes(key)) {
+          filtered[key] = value;
+        }
+        return filtered;
+      }, {});
       return this.storage.set({ [this.parentKey]: values });
     }
 
@@ -684,15 +697,15 @@
   const optionsTable = new TableByKeyPrefix(addonStorage, "options");
 
   /*
-	a
-	defaultIpa
-	defaultOptions
-	errorsTable
-	i
-	options
-	sourceLastError
-	ta
-	*/
+  a
+  defaultIpa
+  defaultOptions
+  errorsTable
+  i
+  options
+  sourceLastError
+  ta
+  */
 
   /**
    * @returns {Promise<void>}
@@ -806,4 +819,5 @@
   }
 
   (async () => main())().catch(console.error);
+
 })();

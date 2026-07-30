@@ -32,6 +32,7 @@ export const defaultOptionsPopup = {
     left: 250,
     scrollY: window.scrollY,
   },
+  scrollableParent: document,
 };
 
 /**
@@ -41,10 +42,16 @@ export const defaultOptionsPopup = {
  * @returns {HTMLElement} popup host
  */
 export function showPopup(options, textFn = null, closeConditionFn = null) {
-  const initialScrollY = window.scrollY;
-  defaultOptionsPopup.position.scrollY = initialScrollY;
   /** @type {OptionsPopup} */
-  const opt = deepMerge(defaultOptionsPopup, options);
+  const opt = deepMerge(defaultOptionsPopup, options, {
+    shallowCopyKeys: ["scrollableParent"],
+  });
+  const scrollY = () => {
+    return opt.scrollableParent === document
+      ? window.scrollY
+      : opt.scrollableParent.scrollTop;
+  };
+  const initialScrollY = scrollY();
   const host = document.createElement("span");
   host.dataset.role = "pronunciation-addon-popup-host";
   host.style.display = "inline";
@@ -138,7 +145,7 @@ export function showPopup(options, textFn = null, closeConditionFn = null) {
   popup.addEventListener("mousedown", disableTimeout);
   close.addEventListener("click", closePopup);
   document.addEventListener("keydown", onKeyDown);
-  document.addEventListener("scroll", onScroll);
+  opt.scrollableParent.addEventListener("scroll", onScroll);
 
   function onScroll() {
     if (opt.close.onScroll) {
@@ -146,7 +153,7 @@ export function showPopup(options, textFn = null, closeConditionFn = null) {
       return;
     }
     if (opt.style.followScroll) {
-      const diff = window.scrollY - initialScrollY;
+      const diff = scrollY() - initialScrollY;
       setProperty("--top", `${top - diff}px`);
     }
   }

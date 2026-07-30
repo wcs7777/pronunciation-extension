@@ -6,6 +6,7 @@ import {
   toggleAudioControlShortcuts,
   toggleAudioPlayer,
 } from "../utils/audio-player.js";
+import { nearestVerticallytScrollableParent } from "../utils/element.js";
 import IpaPopup from "../utils/ipa-popup.js";
 import { showPopup } from "../utils/show-popup.js";
 import { optionsTable } from "../utils/storage-tables.js";
@@ -73,13 +74,12 @@ async function getIpaPosition(message) {
   if (!options) {
     throw new Error("Should pass getIpaPosition options in message");
   }
-  const scrollY = window.scrollY;
   const s = window.getSelection();
   if (s.rangeCount === 0) {
     return {
       centerHorizontally: true,
       centerVertically: true,
-      scrollY,
+      scrollY: window.scrollY,
     };
   }
   const { top, left } = s.getRangeAt(0).getBoundingClientRect();
@@ -95,6 +95,15 @@ async function getIpaPosition(message) {
   if (options.optionPosition[`${origin}Triggered`] === "below") {
     shiftTimes = 2.5;
   }
+  const target =
+    s.focusNode.nodeType === Node.ELEMENT_NODE
+      ? s.focusNode
+      : s.focusNode.parentElement;
+  const scrollableParent = nearestVerticallytScrollableParent(target);
+  const scrollY =
+    scrollableParent === document
+      ? window.scrollY
+      : scrollableParent.scrollTop;
   return {
     centerHorizontally: false,
     centerVertically: false,
