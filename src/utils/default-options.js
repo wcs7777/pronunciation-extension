@@ -33,7 +33,7 @@ const defaultOptions = {
     position: {
       menuTriggered: "above",
       actionTriggered: "below",
-      selectionTriggered: "above",
+      selectionTriggered: "below",
       commandTriggered: "above",
     },
     sources: {
