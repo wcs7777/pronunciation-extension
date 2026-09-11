@@ -19,29 +19,7 @@ let showPlayerMenuItem = {
   type: "normal",
   visible: false,
 };
-
-if (!browser.runtime.onInstalled.hasListener(installedCB)) {
-  browser.runtime.onInstalled.addListener(installedCB);
-}
-if (!browser.browserAction.onClicked.hasListener(actionOnClickedCB)) {
-  browser.browserAction.onClicked.addListener(actionOnClickedCB);
-}
-if (!browser.commands.onCommand.hasListener(onCommand)) {
-  browser.commands.onCommand.addListener(onCommand);
-}
-if (!browser.storage.onChanged.hasListener(storageOnChangedCB)) {
-  browser.storage.onChanged.addListener(storageOnChangedCB);
-}
-if (browser.menus) {
-  if (!browser.menus.onClicked.hasListener(menuOnClickedCB)) {
-    browser.menus.onClicked.addListener(menuOnClickedCB);
-  }
-  browser.menus.create(showPlayerMenuItem);
-}
-if (!browser.runtime.onMessage.hasListener(onMessage)) {
-  browser.runtime.onMessage.addListener(onMessage);
-}
-
+let setMenuItemPromise = Promise.resolve();
 /**
  * @type{IpaSource[]}
  */
@@ -69,6 +47,30 @@ const audioSources = [
   as.ASSpeechify,
   as.ASUnrealSpeech,
 ];
+
+if (!browser.runtime.onInstalled.hasListener(installedCB)) {
+  browser.runtime.onInstalled.addListener(installedCB);
+}
+if (!browser.browserAction.onClicked.hasListener(actionOnClickedCB)) {
+  browser.browserAction.onClicked.addListener(actionOnClickedCB);
+}
+if (!browser.storage.onChanged.hasListener(storageOnChangedCB)) {
+  browser.storage.onChanged.addListener(storageOnChangedCB);
+}
+if (!browser.runtime.onMessage.hasListener(onMessage)) {
+  browser.runtime.onMessage.addListener(onMessage);
+}
+if (browser.commands) {
+  if (!browser.commands.onCommand.hasListener(onCommand)) {
+    browser.commands.onCommand.addListener(onCommand);
+  }
+}
+if (browser.menus) {
+  if (!browser.menus.onClicked.hasListener(menuOnClickedCB)) {
+    browser.menus.onClicked.addListener(menuOnClickedCB);
+  }
+  browser.menus.create(showPlayerMenuItem);
+}
 
 /**
  * @param {string} input
@@ -135,8 +137,6 @@ async function storeOptions() {
     await saveError("storeOptions", error);
   }
 }
-
-let setMenuItemPromise = Promise.resolve();
 
 /**
  * @param {string} accessKey
