@@ -1,32 +1,18 @@
 import AudioSource from "./audiosource.js";
-import { url2blob } from "../../utils/fetch.js";
+import { url2base64 } from "../../utils/fetch.js";
 
 /**
- * @implements {AudioSource}
+ * @type {PronunciationSource}
  */
 export default class ASGstatic extends AudioSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptAudioGstatic} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptAudioGstatic} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "gstatic";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ASGstatic.name;
   }
 
   /**
@@ -37,7 +23,7 @@ export default class ASGstatic extends AudioSource {
   }
 
   /**
-   * @returns {Promise<Blob>}
+   * @returns {Promise<string>}
    */
   async fetch() {
     const input = this.pi.input;
@@ -58,6 +44,7 @@ export default class ASGstatic extends AudioSource {
       ].map((fileEnd) => `${base}/${date}/${fileBegin}${fileEnd}`);
       candidates = candidates.concat(candidatesDate);
     }
-    return Promise.any(candidates.map((url) => url2blob(url)));
+    return Promise.any(candidates.map((url) => url2base64(url)));
   }
 }
+

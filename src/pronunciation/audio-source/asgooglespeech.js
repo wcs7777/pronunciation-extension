@@ -1,36 +1,22 @@
 import AudioSource from "./audiosource.js";
-import { url2blob } from "../../utils/fetch.js";
+import { url2base64 } from "../../utils/fetch.js";
 
 /**
- * @implements {AudioSource}
+ * @type {PronunciationSource}
  */
 export default class ASGoogleSpeech extends AudioSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptAudioGoogleSpeech} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptAudioGoogleSpeech} */
+    const options = params.options;
     this.options = options;
   }
 
   /**
-   * @returns {string}
-   */
-  static get name() {
-    return "googleSpeech";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ASGoogleSpeech.name;
-  }
-
-  /**
-   * @returns {Promise<Blob>}
+   * @returns {Promise<string>}
    */
   fetch() {
     const input = this.pi.input;
@@ -43,6 +29,7 @@ export default class ASGoogleSpeech extends AudioSource {
       client: "lr-language-tts",
       use_google_only_voices: 1,
     }).toString();
-    return url2blob(`${endpoint}${params}`);
+    return url2base64(`${endpoint}${params}`);
   }
 }
+

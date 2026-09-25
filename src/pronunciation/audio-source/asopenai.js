@@ -1,31 +1,18 @@
+import { blob2base64 } from "../../utils/element.js";
 import AudioSource from "./audiosource.js";
 
 /**
- * @implements {AudioSource}
+ * @type {PronunciationSource}
  */
 export default class ASOpenAi extends AudioSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptAudioOpenAi} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptAudioOpenAi} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "openAi";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ASOpenAi.name;
   }
 
   /**
@@ -39,7 +26,7 @@ export default class ASOpenAi extends AudioSource {
   }
 
   /**
-   * @returns {Promise<Blob>}
+   * @returns {Promise<string>}
    */
   async fetch() {
     const input = this.pi.input;
@@ -68,6 +55,7 @@ export default class ASOpenAi extends AudioSource {
         error: new Error(response.statusText),
       };
     }
-    return response.blob();
+    return blob2base64(await response.blob());
   }
 }
+

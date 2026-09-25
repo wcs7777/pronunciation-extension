@@ -1,32 +1,17 @@
 import AudioSource from "./audiosource.js";
-import { base64ToBlob } from "../../utils/element.js";
 
 /**
- * @implements {AudioSource}
+ * @type {PronunciationSource}
  */
 export default class ASSpeechify extends AudioSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptAudioSpeechify} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptAudioSpeechify} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "speechify";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ASSpeechify.name;
   }
 
   /**
@@ -40,7 +25,7 @@ export default class ASSpeechify extends AudioSource {
   }
 
   /**
-   * @returns {Promise<Blob>}
+   * @returns {Promise<string>}
    */
   async fetch() {
     const input = this.pi.input;
@@ -74,6 +59,7 @@ export default class ASSpeechify extends AudioSource {
      * @type{{ audio_data: string, audio_format: string }}
      */
     const jsonResponse = await response.json();
-    return base64ToBlob(jsonResponse.audio_data, "audio/mpeg");
+    return jsonResponse.audio_data;
   }
 }
+

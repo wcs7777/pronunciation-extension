@@ -3,31 +3,17 @@ import { url2document } from "../../utils/fetch.js";
 import { splitWords } from "../../utils/string.js";
 
 /**
- * @implements {IpaSource}
+ * @type {PronunciationSource}
  */
 export default class ISOxford extends IpaSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptIpaOxford} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptIpaOxford} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "oxford";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ISOxford.name;
   }
 
   /**
@@ -60,3 +46,4 @@ export default class ISOxford extends IpaSource {
     return button.nextElementSibling.textContent;
   }
 }
+

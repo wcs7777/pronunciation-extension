@@ -1,32 +1,18 @@
 import AudioSource from "./audiosource.js";
-import { url2blob } from "../../utils/fetch.js";
+import { url2base64 } from "../../utils/fetch.js";
 
 /**
- * @implements {AudioSource}
+ * @type {PronunciationSource}
  */
 export default class ASResponsiveVoice extends AudioSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptAudioResponsiveVoice} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptAudioResponsiveVoice} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "responsiveVoice";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ASResponsiveVoice.name;
   }
 
   /**
@@ -40,7 +26,7 @@ export default class ASResponsiveVoice extends AudioSource {
   }
 
   /**
-   * @returns {Promise<Blob>}
+   * @returns {Promise<string>}
    */
   fetch() {
     const input = this.pi.input;
@@ -57,6 +43,7 @@ export default class ASResponsiveVoice extends AudioSource {
       gender: this.options.api.gender,
       text: input,
     }).toString();
-    return url2blob(`${endpoint}${params}`);
+    return url2base64(`${endpoint}${params}`);
   }
 }
+

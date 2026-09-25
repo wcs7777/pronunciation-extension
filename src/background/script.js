@@ -1,5 +1,3 @@
-import * as as from "../pronunciation/audio-source/sources.js";
-import * as is from "../pronunciation/ipa-source/sources.js";
 import PronunciationInput from "../pronunciation/pronunciation-input.js";
 import Pronunciation from "../pronunciation/pronunciation.js";
 import defaultOptions from "../utils/default-options.js";
@@ -20,33 +18,6 @@ let showPlayerMenuItem = {
   visible: false,
 };
 let setMenuItemPromise = Promise.resolve();
-/**
- * @type{IpaSource[]}
- */
-const ipaSources = [
-  is.ISCambridge,
-  is.ISOxford,
-  is.ISTranslatorMind,
-  is.ISUnalengua,
-];
-/**
- * @type{AudioSource[]}
- */
-const audioSources = [
-  as.ASAmazonPolly,
-  as.ASCambridge,
-  as.ASDeepSeek,
-  as.ASElevenLabs,
-  as.ASGoogleSpeech,
-  as.ASGstatic,
-  as.ASLinguee,
-  as.ASOpenAi,
-  as.ASOxford,
-  as.ASPlayHt,
-  as.ASResponsiveVoice,
-  as.ASSpeechify,
-  as.ASUnrealSpeech,
-];
 
 if (!browser.runtime.onInstalled.hasListener(installedCB)) {
   browser.runtime.onInstalled.addListener(installedCB);
@@ -96,8 +67,6 @@ async function pronounce(input, tabId, origin) {
   const pronunciation = new Pronunciation({
     pi,
     position,
-    ipaSources,
-    audioSources,
     options,
     audioTable: st.audioTable,
     audioCache: st.audioCache,

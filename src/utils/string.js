@@ -59,12 +59,15 @@ export function kebab2camel(value) {
 }
 
 /**
- * @param {string} text
- * @param {number[]} ends
+ * @param {string} fileName
+ * @param {number[]} partitions
  * @returns {string[]}
  */
-export function textHierarchy(text, ends) {
-  return ends.map((end) => text.slice(0, end));
+export function directoryPartitioning(fileName, partitions) {
+  const subdirectories = partitions
+    .map((end) => fileName.slice(0, end))
+    .join("/");
+  return `${subdirectories}/${fileName}`;
 }
 
 /**

@@ -2,31 +2,17 @@ import IpaSource from "./ipasource.js";
 import { url2document } from "../../utils/fetch.js";
 
 /**
- * @implements {IpaSource}
+ * @type {PronunciationSource}
  */
 export default class ISCambridge extends IpaSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptIpaCambridge} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptIpaCambridge} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "cambridge";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ISCambridge.name;
   }
 
   /**
@@ -68,3 +54,4 @@ export default class ISCambridge extends IpaSource {
     return `/${ipa.textContent}/`;
   }
 }
+

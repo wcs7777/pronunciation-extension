@@ -1,3 +1,4 @@
+import { blob2base64 } from "./element.js";
 import MemoryCache from "./memory-cache.js";
 
 const documentCache = new MemoryCache("fetchDocumentCache", 6);
@@ -6,12 +7,12 @@ const documentCache = new MemoryCache("fetchDocumentCache", 6);
  * @param {string} url
  * @param {string} credentials
  * @param {boolean} force
- * @returns {Promise<Document>}
+ * @returns {Promise<string>}
  */
-export async function url2document(url, credentials = "omit", force = false) {
-  /** @type {Document | null} */
-  let document = !force ? documentCache.get(url) : null;
-  if (!document) {
+export async function url2text(url, credentials = "omit", force = false) {
+  /** @type {string | null} */
+  let text = !force ? documentCache.get(url) : null;
+  if (!text) {
     const response = await fetch(url, { credentials });
     const status = response.status;
     if (status !== 200) {
@@ -25,11 +26,21 @@ export async function url2document(url, credentials = "omit", force = false) {
       };
       throw le;
     }
-    const text = await response.text();
-    document = new DOMParser().parseFromString(text, "text/html");
-    documentCache.set(url, document);
+    text = await response.text();
+    documentCache.set(url, text);
   }
-  return document;
+  return text;
+}
+
+/**
+ * @param {string} url
+ * @param {string} credentials
+ * @param {boolean} force
+ * @returns {Promise<Document>}
+ */
+export async function url2document(url, credentials = "omit", force = false) {
+  const text = await url2text(url, credentials, force);
+  return new DOMParser().parseFromString(text, "text/html");
 }
 
 /**
@@ -52,4 +63,13 @@ export async function url2blob(url, credentials = "omit") {
   }
   const blob = await response.blob();
   return blob;
+}
+
+/**
+ * @param {string} url
+ * @returns {Promise<string>}
+ */
+export async function url2base64(url, credentials = "omit") {
+  const blob = await url2blob(url, credentials);
+  return blob2base64(blob);
 }

@@ -1,377 +1,391 @@
 export {};
 
 declare global {
+  type PronunciationSourceParams = {
+    name: string;
+    pi: PronunciationInput;
+    options: PronunciationSourceOptions;
+    tabId?: number;
+    lastError?: PronunciationSourceLastError;
+  };
 
-	type PronunciationSource = {
-		static name: string,
-		name: string,
-		enabled: boolean,
-		onlyValid: boolean,
-		onlyRoot: boolean,
-		order: number,
-		save: boolean,
-	};
+  interface PronunciationSource {
+    new: (params: PronunciationSourceOptions) => PronunciationSource;
+    name: string;
+    enabled: boolean;
+    onlyValid: boolean;
+    onlyRoot: boolean;
+    order: number;
+    save: boolean;
+    fetch: () => Promise<string>;
+  }
 
-	type IpaSource = PronunciationSource & {
-		constructor: (pi: PronunciationInput, options: PronunciationSourceOptions, lastError?: PronunciationSourceLastError) => IpaSource;
-		fetch: () => Promise<string>,
-	};
+  type PronunciationSourceOptions = {
+    enabled: boolean;
+    order: number;
+    enabledToText: boolean;
+    orderToText: number;
+    save: boolean;
+    textMaxLength: number;
+    waitRateLimitTimeout: number;
+    okStatus: number[];
+  };
 
-	type AudioSource = PronunciationSource & {
-		constructor: (pi: PronunciationInput, options: PronunciationSourceOptions, lastError?: PronunciationSourceLastError) => AudioSource;
-		fetch: () => Promise<Blob>,
-	};
+  type PronunciationInput = {
+    input: string;
+    firstWord: string;
+    text: string;
+    words: string[];
+    length: number;
+    totalWords: number;
+    hasWords: boolean;
+    isText: boolean;
+    analysis: () => Promise<WordAnalyse>;
+    key: () => Promise<string>;
+    raw: string;
+  };
 
-	type PronunciationSourceOptions = {
-		enabled: boolean,
-		order: number,
-		enabledToText: boolean,
-		orderToText: number,
-		save: boolean,
-		textMaxLength: number,
-		waitRateLimitTimeout: number,
-		okStatus: number[],
-	};
+  type PronunciationSourceLastError = {
+    source: string;
+    datetime: Date;
+    status?: number;
+    timestamp: number;
+    message?: string;
+    messageContentType?: string;
+    error: Error;
+  };
 
-	type PronunciationInput = {
-		input: string,
-		firstWord: string,
-		text: string,
-		words: string[],
-		length: number,
-		totalWords: number,
-		hasWords: boolean,
-		isText: boolean,
-		analysis: () => Promise<WordAnalyse>,
-		key: () => Promise<string>,
-		raw: string,
-	};
+  type Table = {
+    name: string;
+    set: (key: string, value: any) => Promise<void>;
+    setMany: (values: { [key: string]: any }) => Promise<void>;
+    get: (keys: string | string[] | null) => Promise<{ [key: string]: any }>;
+    getValue: (key: string) => Promise<any>;
+    getValues: (keys: string | string[] | null) => Promise<any[]>;
+    getAll: () => Promise<{ [key: string]: any }>;
+    getKeys: () => Promise<string[]>;
+    size: () => Promise<number>;
+    remove: (keys: string | string[]) => Promise<void>;
+    clear: () => Promise<void>;
+  };
 
-	type PronunciationSourceLastError = {
-		source: string,
-		datetime: Date,
-		status?: number,
-		timestamp: number,
-		message?: string,
-		messageContentType?: string,
-		error: Error,
-	};
+  type MemoryCache = {
+    name: string;
+    set(key: string, value: any): void;
+    setMany(value: { [key: string]: any }): void;
+    get(key: string): any;
+    getAll(): { [key: string]: any };
+    hasKey(key: string): boolean;
+    size(): number;
+    clear(): void;
+  };
 
-	type Table = {
-		name: string,
-		set: (key: string, value: any) => Promise<void>,
-		setMany: (values: { [key: string]: any }) => Promise<void>,
-		get: (keys: string | string[] | null) => Promise<{[key: string]: any}>,
-		getValue: (key: string) => Promise<any>,
-		getValues: (keys: string | string[] | null) => Promise<any[]>,
-		getAll: () => Promise<{ [key: string]: any }>,
-		getKeys: () => Promise<string[]>,
-		size: () => Promise<number>,
-		remove: (keys: string | string[]) => Promise<void>,
-		clear: () => Promise<void>,
-	};
+  type Options = {
+    accessKey: string;
+    allowText: boolean;
+    triggerOnSelection: boolean;
+    triggerSelectionTime: number;
+    alertMaxSelectionEnabled: boolean;
+    alertMaxSelectionLength: number;
+    ipa: OptionsIpa;
+    audio: OptionsAudio;
+    setPronuncationByShortcut: OptionsSetPronuncationByShortcut;
+  };
 
-	type MemoryCache = {
-		name: string,
-		set(key: string, value: any): void,
-		setMany(value: { [key: string]: any }): void,
-		get(key: string); any,
-		getAll(): { [key: string]: any },
-		hasKey(key: string): boolean,
-		size(): number,
-		clear(): void,
-	};
+  type OptionsIpa = {
+    enabled: boolean;
+    text: {
+      enabled: boolean;
+    };
+    showSourceLastError: boolean;
+    style: {
+      font: {
+        family: string;
+        size: number; // px
+        color: string;
+      };
+      backgroundColor: string;
+      useContextColors: boolean;
+      followScroll: boolean;
+    };
+    close: {
+      timeout: number;
+      shortcut: string;
+      onScroll: boolean;
+      buttonColor: string;
+      buttonHoverColor: string;
+    };
+    position: IpaPosition;
+    sources: {
+      cambridge: OptIpaCambridge;
+      oxford: OptIpaOxford;
+      translatorMind: OptIpaTranslatorMind;
+      unalengua: OptIpaUnalengua;
+    };
+  };
 
-	type Options = {
-		accessKey: string,
-		allowText: boolean,
-		triggerOnSelection: boolean,
-		triggerSelectionTime: number,
-		alertMaxSelectionEnabled: boolean,
-		alertMaxSelectionLength: number,
-		ipa: OptionsIpa,
-		audio: OptionsAudio,
-		setPronuncationByShortcut: OptionsSetPronuncationByShortcut,
-	};
+  type IpaPosition = {
+    menuTriggered: "above" | "below";
+    actionTriggered: "above" | "below";
+    selectionTriggered: "above" | "below";
+    commandTriggered: "above" | "below";
+  };
 
-	type OptionsIpa = {
-		enabled: boolean,
-		text: {
-			enabled: boolean,
-		},
-		showSourceLastError: boolean,
-		style: {
-			font: {
-				family: string,
-				size: number, // px
-				color: string,
-			},
-			backgroundColor: string,
-			useContextColors: boolean,
-			followScroll: boolean,
-		},
-		close: {
-			timeout: number,
-			shortcut: string,
-			onScroll: boolean,
-			buttonColor: string,
-			buttonHoverColor: string,
-		},
-		position: IpaPosition,
-		sources: {
-			cambridge: OptIpaCambridge,
-			oxford: OptIpaOxford,
-			translatorMind: OptIpaTranslatorMind,
-			unalengua: OptIpaUnalengua,
-		},
-	};
+  type OptIpaCambridge = PronunciationSourceOptions;
+  type OptIpaOxford = PronunciationSourceOptions;
+  type OptIpaTranslatorMind = PronunciationSourceOptions & { nonce: string };
+  type OptIpaUnalengua = PronunciationSourceOptions;
 
-	type IpaPosition = {
-		menuTriggered: "above" | "below",
-		actionTriggered: "above" | "below",
-		selectionTriggered: "above" | "below",
-		commandTriggered: "above" | "below",
-	}
+  type OptionsAudio = {
+    enabled: boolean;
+    text: {
+      enabled: boolean;
+      save: boolean;
+      playerEnabled: boolean;
+      shortcutsEnabled: boolean;
+      tabMenuItemShowPlayer: boolean;
+      skipSeconds: number;
+      shortcuts: OptAudioShortcuts;
+    };
+    showSourceLastError: boolean;
+    volume: number;
+    playbackRate: number;
+    limitLoudness: boolean;
+    sources: {
+      cambridge: OptAudioCambridge;
+      linguee: OptAudioLinguee;
+      oxford: OptAudioOxford;
+      gstatic: OptAudioGstatic;
+      googleSpeech: OptAudioGoogleSpeech;
+      responsiveVoice: OptAudioResponsiveVoice;
+      unrealSpeech: OptAudioUnrealSpeech;
+      speechify: OptAudioSpeechify;
+      playHt: OptAudioPlayHt;
+      elevenLabs: OptAudioElevenLabs;
+      amazonPolly: OptAudioAmazonPolly;
+      openAi: OptAudioOpenAi;
+      deepSeek: OptAudioDeepSeek;
+    };
+  };
 
-	type OptIpaCambridge = PronunciationSourceOptions;
-	type OptIpaOxford = PronunciationSourceOptions;
-	type OptIpaTranslatorMind = PronunciationSourceOptions  & { nonce: string };
-	type OptIpaUnalengua = PronunciationSourceOptions;
+  type OptAudioShortcuts = {
+    togglePlayer: string;
+    togglePlay: string;
+    toggleMute: string;
+    rewind: string;
+    previous: string;
+    next: string;
+    backward: string;
+    forward: string;
+    decreaseVolume: string;
+    increaseVolume: string;
+    decreaseSpeed: string;
+    increaseSpeed: string;
+    resetSpeed: string;
+  };
 
-	type OptionsAudio = {
-		enabled: boolean,
-		text: {
-			enabled: boolean,
-			save: boolean,
-			playerEnabled: boolean,
-			shortcutsEnabled: boolean,
-			tabMenuItemShowPlayer: boolean,
-			skipSeconds: number,
-			shortcuts: OptAudioShortcuts,
-		},
-		showSourceLastError: boolean,
-		volume: number,
-		playbackRate: number,
-		limitLoudness: boolean,
-		sources: {
-			cambridge: OptAudioCambridge,
-			linguee: OptAudioLinguee,
-			oxford: OptAudioOxford,
-			gstatic: OptAudioGstatic,
-			googleSpeech: OptAudioGoogleSpeech,
-			responsiveVoice: OptAudioResponsiveVoice,
-			unrealSpeech: OptAudioUnrealSpeech,
-			speechify: OptAudioSpeechify,
-			playHt: OptAudioPlayHt,
-			elevenLabs: OptAudioElevenLabs,
-			amazonPolly: OptAudioAmazonPolly,
-			openAi: OptAudioOpenAi,
-			deepSeek: OptAudioDeepSeek,
-		},
-	};
+  type OptAudioCambridge = PronunciationSourceOptions;
+  type OptAudioLinguee = PronunciationSourceOptions;
+  type OptAudioOxford = PronunciationSourceOptions;
+  type OptAudioGstatic = PronunciationSourceOptions;
 
-	type OptAudioShortcuts = {
-		togglePlayer: string,
-		togglePlay: string,
-		toggleMute: string,
-		rewind: string,
-		previous: string,
-		next: string,
-		backward: string,
-		forward: string,
-		decreaseVolume: string,
-		increaseVolume: string,
-		decreaseSpeed: string,
-		increaseSpeed: string,
-		resetSpeed: string,
-	};
+  type OptAudioGoogleSpeech = PronunciationSourceOptions;
 
-	type OptAudioCambridge = PronunciationSourceOptions;
-	type OptAudioLinguee = PronunciationSourceOptions;
-	type OptAudioOxford = PronunciationSourceOptions;
-	type OptAudioGstatic = PronunciationSourceOptions;
+  type OptAudioResponsiveVoice = PronunciationSourceOptions & {
+    api: {
+      name: string;
+      key: string;
+      gender: string;
+    };
+  };
 
-	type OptAudioGoogleSpeech = PronunciationSourceOptions;
+  type OptAudioUnrealSpeech = PronunciationSourceOptions & {
+    api: {
+      token?: string;
+      voiceId: string;
+      bitRate: string;
+      pitch: number;
+      codec: string;
+      temperature: number;
+    };
+  };
 
-	type OptAudioResponsiveVoice = PronunciationSourceOptions & {
-		api: {
-			name: string,
-			key: string,
-			gender: string,
-		},
-	};
+  type OptAudioSpeechify = PronunciationSourceOptions & {
+    api: {
+      token?: string;
+      voiceId: string;
+    };
+  };
 
-	type OptAudioUnrealSpeech = PronunciationSourceOptions & {
-		api: {
-			token?: string,
-			voiceId: string,
-			bitRate: string,
-			pitch: number,
-			codec: string,
-			temperature: number,
-		},
-	};
+  type OptAudioPlayHt = PronunciationSourceOptions & {
+    api: {
+      userId?: string;
+      key?: string;
+      voiceId: string;
+      quality: string;
+      outputFormat: string;
+      sampleRate: number;
+      temperature: number | null;
+      voiceEngine: string;
+    };
+  };
 
-	type OptAudioSpeechify = PronunciationSourceOptions & {
-		api: {
-			token?: string,
-			voiceId: string,
-		},
-	};
+  type OptAudioElevenLabs = PronunciationSourceOptions & {
+    api: {
+      key?: string;
+      voiceId: string;
+      outputFormat: string;
+      modelId: string;
+      applyTextNormalization: string;
+    };
+  };
 
-	type OptAudioPlayHt = PronunciationSourceOptions & {
-		api: {
-			userId?: string,
-			key?: string,
-			voiceId: string,
-			quality: string,
-			outputFormat: string,
-			sampleRate: number,
-			temperature: number | null,
-			voiceEngine: string,
-		},
-	};
+  type OptAudioAmazonPolly = PronunciationSourceOptions & {
+    api: {
+      accessKeyId?: string;
+      secretAccessKey?: string;
+      endpoint: string;
+      engine: string;
+      outputFormat: string;
+      sampleRate: string;
+      voiceId: string;
+    };
+  };
 
-	type OptAudioElevenLabs = PronunciationSourceOptions & {
-		api: {
-			key?: string,
-			voiceId: string,
-			outputFormat: string,
-			modelId: string,
-			applyTextNormalization: string,
-		},
-	};
+  type OptAudioOpenAi = PronunciationSourceOptions & {
+    api: {
+      key?: string;
+      model: string;
+      voice: string;
+      responseFormat: string;
+    };
+  };
 
-	type OptAudioAmazonPolly = PronunciationSourceOptions & {
-		api: {
-			accessKeyId?: string,
-			secretAccessKey?: string,
-			endpoint: string,
-			engine: string,
-			outputFormat: string,
-			sampleRate: string,
-			voiceId: string,
-		},
-	};
+  type OptAudioDeepSeek = PronunciationSourceOptions & {
+    api: {
+      key?: string;
+      model: string;
+      voice: string;
+      responseFormat: string;
+    };
+  };
 
-	type OptAudioOpenAi = PronunciationSourceOptions & {
-		api: {
-			key?: string,
-			model: string,
-			voice: string,
-			responseFormat: string,
-		},
-	};
+  type OptionsSetPronuncationByShortcut = {
+    enabled: boolean;
+    audioShortcut: string;
+    ipaShortcut: string;
+    restoreDefaultIpaShortcut: string;
+  };
 
-	type OptAudioDeepSeek = PronunciationSourceOptions & {
-		api: {
-			key?: string,
-			model: string,
-			voice: string,
-			responseFormat: string,
-		},
-	};
+  type ClientMessage = {
+    target: "client";
+    type:
+      | "showIpa"
+      | "getSelectedText"
+      | "getSelectedText"
+      | "getIpaPosition"
+      | "playAudio"
+      | "showPlayer"
+      | "showPopup"
+      | "changeAlertMaxSelectionOptions"
+      | "setTriggerOnSelection"
+      | "fetchAudio"
+      | "fetchText";
+    origin: "menuItem" | "action" | "selection" | "command" | "other";
+    getIpaPosition?: {
+      fontSize: number;
+      optionPosition: IpaPosition;
+    };
+    showIpa?: {
+      ipa: string;
+      position: IpaPosition;
+      options: OptionsIpa;
+    };
+    playAudio?: {
+      source?: PlayerAudioSource;
+      playerEnabled: boolean;
+      shortcutsEnabled: boolean;
+      skipSeconds: number;
+      shortcuts: OptAudioShortcuts;
+    };
+    showPopup?: OptionsPopup;
+    changeAlertMaxSelectionOptions?: {
+      enabled: boolean;
+      maxLength: number;
+    };
+    setTriggerOnSelection?: {
+      enabled: boolean;
+      triggerTime?: number;
+    };
+    fetchAudio?: {
+      url: string;
+    };
+    fetchText?: {
+      url: string;
+    };
+  };
 
-	type OptionsSetPronuncationByShortcut = {
-		enabled: boolean,
-		audioShortcut: string,
-		ipaShortcut: string,
-		restoreDefaultIpaShortcut: string,
-	};
+  type BackgroundMessage = {
+    target: "background";
+    type: "updateTranslatorMindNonce" | "pronounce";
+    updateTranslatorMindNonce?: {
+      nonce: string;
+    };
+    pronounce: {
+      text: string;
+    };
+  };
 
-	type ClientMessage = {
-		target: "client",
-		type: "showIpa" | "getSelectedText" | "getIpaPosition" | "playAudio" | "showPlayer"| "showPopup" | "changeAlertMaxSelectionOptions" | "setTriggerOnSelection",
-		origin: "menuItem" | "action" | "selection" | "command" | "other",
-		getIpaPosition?: {
-			fontSize: number,
-			optionPosition: IpaPosition,
-		},
-		showIpa?: {
-			ipa: string,
-			position: IpaPosition,
-			options: OptionsIpa,
-		},
-		playAudio?: {
-			source?: AudioSource,
-			playerEnabled: boolean,
-			shortcutsEnabled: boolean,
-			skipSeconds: number,
-			shortcuts: OptAudioShortcuts,
-		},
-		showPopup?: OptionsPopup,
-		changeAlertMaxSelectionOptions?: {
-			enabled: boolean,
-			maxLength: number,
-		},
-		setTriggerOnSelection:? {
-			enabled: boolean,
-			triggerTime?: number,
-		},
-	};
+  type OptionsPopup = {
+    text: string;
+    style: {
+      font: {
+        family: string;
+        size: number; // px
+        color: string;
+      };
+      backgroundColor: string;
+      useContextColors: boolean;
+      followScroll: boolean;
+    };
+    close: {
+      timeout: number;
+      shortcut: string;
+      onScroll: boolean;
+      buttonColor: string;
+      buttonHoverColor: string;
+    };
+    position: PopupPosition;
+    scrollableParent: HTMLElement | HTMLDocument;
+  };
 
-	type BackgroundMessage = {
-		target: "background",
-		type: "updateTranslatorMindNonce" | "pronounce";
-		updateTranslatorMindNonce?: {
-			nonce: string,
-		},
-		pronounce: {
-			text: string,
-		}
-	};
+  type PopupPosition = {
+    centerHorizontally: boolean;
+    centerVertically: boolean;
+    top: number;
+    left: number;
+    scrollY: number;
+  };
 
-	type OptionsPopup = {
-		text: string,
-		style: {
-			font: {
-				family: string,
-				size: number, // px
-				color: string,
-			},
-			backgroundColor: string,
-			useContextColors: boolean,
-			followScroll: boolean,
-		},
-		close: {
-			timeout: number,
-			shortcut: string,
-			onScroll: boolean,
-			buttonColor: string,
-			buttonHoverColor: string,
-		},
-		position: PopupPosition,
-		scrollableParent: HTMLElement | HTMLDocument,
-	};
+  type PlayerAudioSource = {
+    id: string;
+    title: string;
+    url: string;
+  };
 
-	type PopupPosition = {
-		centerHorizontally: boolean,
-		centerVertically: boolean,
-		top: number,
-		left: number,
-		scrollY: number,
-	}
+  type SortableJS = {
+    toArray: () => string[];
+    sort: (order: string[], useAnimation: boolean) => void;
+  };
 
-	type PlayerAudioSource = {
-		id: string,
-		title: string,
-		url: string,
-	};
-
-	type SortableJS = {
-		toArray: () => string[],
-		sort: (order: string[], useAnimation: boolean) => void,
-	};
-
-	// compromise
-	type WordAnalyse = {
-		root: string,
-		confidence: number,
-		type: "Noun" | "Verb" | "Text",
-		isNoun: boolean,
-		isVerb: boolean,
-		isValid: boolean,
-		isText: boolean,
-	};
-
+  // compromise
+  type WordAnalyse = {
+    root: string;
+    confidence: number;
+    type: "Noun" | "Verb" | "Text";
+    isNoun: boolean;
+    isVerb: boolean;
+    isValid: boolean;
+    isText: boolean;
+  };
 }

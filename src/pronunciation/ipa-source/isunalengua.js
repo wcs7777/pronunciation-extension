@@ -1,31 +1,17 @@
 import IpaSource from "./ipasource.js";
 
 /**
- * @implements {IpaSource}
+ * @type {PronunciationSource}
  */
 export default class ISUnalengua extends IpaSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptIpaUnalengua} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptIpaUnalengua} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "unalengua";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ISUnalengua.name;
   }
 
   /**
@@ -66,3 +52,4 @@ export default class ISUnalengua extends IpaSource {
     return `/${jsonResponse.ipa}/`;
   }
 }
+

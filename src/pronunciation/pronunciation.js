@@ -2,14 +2,21 @@ import { addLoudnessLimiter } from "../utils/audio.js";
 import { blob2base64 } from "../utils/element.js";
 import { removeMethods } from "../utils/object.js";
 import { threshold } from "../utils/number.js";
+import {
+  ipaSourceFactory,
+  ipaSourceName2class,
+} from "./ipa-source/ipa-source-factory.js";
+import {
+  audioSourceFactory,
+  audioSourceName2class,
+} from "./audio-source/audio-source-factory.js";
+import { sleep } from "../utils/promise.js";
 
 export default class Pronunciation {
   /**
    * @param {{
    *     pi: PronunciationInput,
    *     position: PronunciationInput,
-   *     ipaSources: IpaSource[],
-   *     audioSources: AudioSource[],
    *     options: Options,
    *     audioTable: Table,
    *     audioCache: MemoryCache,
@@ -26,8 +33,6 @@ export default class Pronunciation {
   constructor({
     pi,
     position,
-    ipaSources,
-    audioSources,
     options,
     audioTable,
     audioCache,
@@ -42,8 +47,8 @@ export default class Pronunciation {
   }) {
     this.pi = pi;
     this.position = position;
-    this.ipaSources = ipaSources;
-    this.audioSources = audioSources;
+    this.ipaSources = Object.keys(ipaSourceName2class);
+    this.audioSources = Object.keys(audioSourceName2class);
     this.options = options;
     this.audioTable = audioTable;
     this.audioCache = audioCache;
@@ -229,14 +234,9 @@ export default class Pronunciation {
     }
     ipa = await this.ipaTable.getValue(input);
     if (!ipa) {
-      const { ipa: ipaValue, save } = await this.fetchIpaExternally(options);
-      if (!ipaValue) {
+      ipa = await this.fetchIpaExternally(options);
+      if (!ipa) {
         return null;
-      }
-      ipa = ipaValue;
-      if (save) {
-        console.log(`Adding ${input} to ipa storage`);
-        await this.ipaTable.set(input, ipa);
       }
     }
     this.ipaCache.set(input, ipa);
@@ -260,14 +260,9 @@ export default class Pronunciation {
     }
     url = await this.audioTable.getValue(input);
     if (!url) {
-      const { audio, save } = await this.fetchAudioExternally(options);
-      if (!audio) {
+      url = await this.fetchAudioExternally(options);
+      if (!url) {
         return null;
-      }
-      url = await blob2base64(audio);
-      if (save) {
-        console.log(`Adding ${input} to audio storage`);
-        await this.audioTable.set(input, url);
       }
     }
     this.audioCache.set(input, url);
@@ -333,7 +328,7 @@ export default class Pronunciation {
 
   /**
    * @param {OptionsIpa} options
-   * @returns {Promise<{ ipa: string | null, save: boolean }>}
+   * @returns {Promise<string | null>}
    */
   async fetchIpaExternally(options) {
     /**
@@ -350,10 +345,16 @@ export default class Pronunciation {
     const isRoot = analysis.root === this.pi.firstWord;
     /** @type {string | null} */
     let ipa = null;
-    let save = false;
-    /** @type {IpaSource[]} */
     const sources = this.ipaSources
-      .map((S) => new S(this.pi, options.sources[S.name], le[S.name]))
+      .map((name) =>
+        ipaSourceFactory(name, {
+          name: name,
+          pi: this.pi,
+          options: options.sources[name],
+          tabId: this.tabId,
+          lastError: le[name],
+        }),
+      )
       .filter((s) => {
         return (
           s.enabled && (isValid || !s.onlyValid) && (isRoot || !s.onlyRoot)
@@ -366,7 +367,10 @@ export default class Pronunciation {
         ipa = await s.fetch();
         if (ipa) {
           console.log(`IPA found in ${s.name}`);
-          save = s.save;
+          if (s.save) {
+            console.log(`Adding ${this.pi.input} to ipa storage`);
+            await this.ipaTable.set(this.pi.input, ipa);
+          }
           break;
         }
       } catch (error) {
@@ -392,12 +396,12 @@ export default class Pronunciation {
       }
     }
     this.showLastErrors(showLe, { top: 200 }).then().catch(console.error);
-    return { ipa, save };
+    return ipa;
   }
 
   /**
    * @param {OptionsAudio} options
-   * @returns {Promise<{ audio: Blob | null, save: boolean }>}
+   * @returns {Promise<{ string | null }>}
    */
   async fetchAudioExternally(options) {
     /**
@@ -412,12 +416,18 @@ export default class Pronunciation {
     const analysis = await this.pi.analysis();
     const isValid = analysis.isValid;
     const isRoot = analysis.root === this.pi.firstWord;
-    /** @type {Blob | null} */
-    let audio = null;
-    let save = false;
-    /** @type {AudioSource[]} */
+    /** @type {string | null} */
+    let url = null;
     const sources = this.audioSources
-      .map((S) => new S(this.pi, options.sources[S.name], le[S.name]))
+      .map((name) =>
+        audioSourceFactory(name, {
+          name: name,
+          pi: this.pi,
+          options: options.sources[name],
+          tabId: this.tabId,
+          lastError: le[name],
+        }),
+      )
       .filter((s) => {
         return (
           s.enabled && (isValid || !s.onlyValid) && (isRoot || !s.onlyRoot)
@@ -427,10 +437,13 @@ export default class Pronunciation {
     for (const s of sources) {
       try {
         console.log(`Searching audio in ${s.name}`);
-        audio = await s.fetch();
-        if (audio) {
+        url = await s.fetch();
+        if (url) {
           console.log(`Audio found in ${s.name}`);
-          save = s.save;
+          if (s.save) {
+            console.log(`Adding ${this.pi.input} to audio storage`);
+            await this.audioTable.set(this.pi.input, url);
+          }
           break;
         }
       } catch (error) {
@@ -456,7 +469,7 @@ export default class Pronunciation {
       }
     }
     this.showLastErrors(showLe, { top: 100 }).then().catch(console.error);
-    return { audio, save };
+    return url;
   }
 
   /**

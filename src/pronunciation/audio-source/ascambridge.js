@@ -1,33 +1,19 @@
 import AudioSource from "./audiosource.js";
 import { splitWords } from "../../utils/string.js";
-import { url2blob, url2document } from "../../utils/fetch.js";
+import { url2base64, url2document } from "../../utils/fetch.js";
 
 /**
- * @implements {AudioSource}
+ * @type {PronunciationSource}
  */
 export default class ASCambridge extends AudioSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptAudioCambridge} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptAudioCambridge} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "cambridge";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ASCambridge.name;
   }
 
   /**
@@ -45,7 +31,7 @@ export default class ASCambridge extends AudioSource {
   }
 
   /**
-   * @returns {Promise<Blob>}
+   * @returns {Promise<string>}
    */
   async fetch() {
     const input = this.pi.input;
@@ -73,6 +59,6 @@ export default class ASCambridge extends AudioSource {
     const url = src.startsWith("https://")
       ? src
       : `https://dictionary.cambridge.org${src}`;
-    return url2blob(url);
+    return url2base64(url);
   }
 }

@@ -2,33 +2,19 @@ import { url2document } from "../../utils/fetch.js";
 import IpaSource from "./ipasource.js";
 
 /**
- * @implements {IpaSource}
+ * @type {PronunciationSource}
  */
 export default class ISTranslatorMind extends IpaSource {
   #attempts = 0;
 
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptIpaTranslatorMind} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptIpaTranslatorMind} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "translatorMind";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ISTranslatorMind.name;
   }
 
   /**
@@ -111,3 +97,4 @@ export default class ISTranslatorMind extends IpaSource {
     return `/${ipa}/`;
   }
 }
+

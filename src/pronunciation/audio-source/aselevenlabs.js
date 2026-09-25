@@ -1,31 +1,17 @@
 import AudioSource from "./audiosource.js";
 
 /**
- * @implements {AudioSource}
+ * @type {PronunciationSource}
  */
 export default class ASElevenLabs extends AudioSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptAudioElevenLabs} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptAudioElevenLabs} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "elevenLabs";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ASElevenLabs.name;
   }
 
   /**
@@ -39,7 +25,7 @@ export default class ASElevenLabs extends AudioSource {
   }
 
   /**
-   * @returns {Promise<Blob>}
+   * @returns {Promise<string>}
    */
   async fetch() {
     const input = this.pi.input;
@@ -74,3 +60,4 @@ export default class ASElevenLabs extends AudioSource {
     return response.blob();
   }
 }
+

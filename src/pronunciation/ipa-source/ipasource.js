@@ -1,15 +1,28 @@
 import { waitRateLimit } from "../utils/wait-rate-limit.js";
 
+/**
+ * @type {PronunciationSource}
+ */
 export default class IpaSource {
+  /** @type {string} */
+  #name = "abstract";
+
   /**
-   * @param {PronunciationInput} pi
-   * @param {PronunciationSourceOptions} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
+  constructor({ name, pi, options, tabId, lastError }) {
+    this.#name = name;
     this.pi = pi;
     this.options = options;
+    this.tabId = tabId;
     this.lastError = lastError;
+  }
+
+  /**
+   * @returns {string}
+   */
+  get name() {
+    return this.#name;
   }
 
   /**

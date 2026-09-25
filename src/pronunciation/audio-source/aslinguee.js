@@ -1,36 +1,22 @@
 import AudioSource from "./audiosource.js";
 import { splitWords } from "../../utils/string.js";
-import { url2blob, url2document } from "../../utils/fetch.js";
+import { url2base64, url2document } from "../../utils/fetch.js";
 
 const urlPattern =
   /(https:\/\/assets\.linguee\.com\/static\/[\w-]+\/mp3\/EN_US\/\w+\/[\w-]+.*?)"/;
 
 /**
- * @implements {AudioSource}
+ * @type {PronunciationSource}
  */
 export default class ASLinguee extends AudioSource {
   /**
-   * @param {PronunciationInput} pi
-   * @param {OptAudioLinguee} options
-   * @param {?PronunciationSourceLastError} lastError
+   * @param {PronunciationSourceParams} params
    */
-  constructor(pi, options, lastError) {
-    super(pi, options, lastError);
+  constructor(params) {
+    super(params);
+    /** @type {OptAudioLinguee} */
+    const options = params.options;
     this.options = options;
-  }
-
-  /**
-   * @returns {string}
-   */
-  static get name() {
-    return "linguee";
-  }
-
-  /**
-   * @returns {string}
-   */
-  get name() {
-    return ASLinguee.name;
   }
 
   /**
@@ -41,7 +27,7 @@ export default class ASLinguee extends AudioSource {
   }
 
   /**
-   * @returns {Promise<Blob>}
+   * @returns {Promise<string>}
    */
   async fetch() {
     const input = this.pi.input;
@@ -67,6 +53,7 @@ export default class ASLinguee extends AudioSource {
     if (!url) {
       throw new Error("Audio url not found");
     }
-    return url2blob(`${url}.mp3`);
+    return url2base64(`${url}.mp3`);
   }
 }
+

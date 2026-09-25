@@ -1,5 +1,10 @@
 {
 	"compilerOptions": {
 		"target": "ES2024"
-	}
+	},
+	"include": [
+		"src/**/*",
+		"src/types.d.ts",
+		"src/firefox-webext-browser.d.ts"
+	]
 }

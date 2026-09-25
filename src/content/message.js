@@ -7,6 +7,7 @@ import {
   toggleAudioPlayer,
 } from "../utils/audio-player.js";
 import { nearestVerticallytScrollableParent } from "../utils/element.js";
+import { url2base64, url2text } from "../utils/fetch.js";
 import IpaPopup from "../utils/ipa-popup.js";
 import { showPopup } from "../utils/show-popup.js";
 import { optionsTable } from "../utils/storage-tables.js";
@@ -36,6 +37,8 @@ function onMessage(message, sender, sendResponse) {
     showPopup: showPopupFromBackground,
     changeAlertMaxSelectionOptions: changeAlertMaxSelectionOptionsCB,
     setTriggerOnSelection: setTriggerOnSelection,
+    fetchAudio: fetchAudio,
+    fetchText: fetchText,
   };
   if ((!message.type) in actions) {
     throw new Error(`Invalid message type: ${message.type}`);
@@ -200,6 +203,60 @@ async function setTriggerOnSelection(message) {
   }
   if (options.triggerTime) {
     triggerSelectionTime = options.triggerTime;
+  }
+}
+
+/**
+ * @param {ClientMessage} message
+ * @returns {Promise<{ ok: boolean, status: number, message: string, base64: string | null >}
+ */
+async function fetchAudio(message) {
+  const options = message.fetchAudio;
+  if (!options) {
+    throw new Error("Should pass.fetchAudio in message");
+  }
+  try {
+    const base64 = await url2base64(options.url, undefined);
+    return {
+      ok: true,
+      status: 200,
+      message: "ok",
+      base64,
+    };
+  } catch (error) {
+    return {
+      ok: true,
+      status: error?.status,
+      message: error?.message,
+      base64: null,
+    };
+  }
+}
+
+/**
+ * @param {ClientMessage} message
+ * @returns {Promise<{ ok: boolean, status: number, message: string, text: string | null >}
+ */
+async function fetchText(message) {
+  const options = message.fetchText;
+  if (!options) {
+    throw new Error("Should pass.fetchText in message");
+  }
+  try {
+    const text = await url2text(options.url, undefined);
+    return {
+      ok: true,
+      status: 200,
+      message: "ok",
+      text,
+    };
+  } catch (error) {
+    return {
+      ok: true,
+      status: error?.status,
+      message: error?.message,
+      text: null,
+    };
   }
 }
 
