@@ -5,8 +5,9 @@ declare global {
     name: string;
     pi: PronunciationInput;
     options: PronunciationSourceOptions;
-    tabId?: number;
     lastError?: PronunciationSourceLastError;
+    tabId?: number;
+    origin?: string;
   };
 
   interface PronunciationSource {
@@ -288,9 +289,7 @@ declare global {
       | "showPlayer"
       | "showPopup"
       | "changeAlertMaxSelectionOptions"
-      | "setTriggerOnSelection"
-      | "fetchAudio"
-      | "fetchText";
+      | "setTriggerOnSelection";
     origin: "menuItem" | "action" | "selection" | "command" | "other";
     getIpaPosition?: {
       fontSize: number;
@@ -316,12 +315,6 @@ declare global {
     setTriggerOnSelection?: {
       enabled: boolean;
       triggerTime?: number;
-    };
-    fetchAudio?: {
-      url: string;
-    };
-    fetchText?: {
-      url: string;
     };
   };
 

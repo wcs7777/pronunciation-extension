@@ -1,11 +1,15 @@
+import { url2base64 } from "../../utils/fetch.js";
+import { directoryPartitioning, splitWords } from "../../utils/string.js";
+import { createTabAndGetData } from "../../utils/tabs.js";
 import AudioSource from "./audiosource.js";
-import { splitWords } from "../../utils/string.js";
-import { url2base64, url2document } from "../../utils/fetch.js";
 
 /**
  * @type {PronunciationSource}
  */
 export default class ASCambridge extends AudioSource {
+  #attempts = 0;
+  #searchUrl = false;
+  #base = "https://dictionary.cambridge.org";
   /**
    * @param {PronunciationSourceParams} params
    */
@@ -34,31 +38,66 @@ export default class ASCambridge extends AudioSource {
    * @returns {Promise<string>}
    */
   async fetch() {
-    const input = this.pi.input;
-    const endpoint = "https://dictionary.cambridge.org/us/dictionary/english/";
-    const document = await url2document(`${endpoint}${input}`);
-    const entry = document.querySelector(".entry:has(.ipa)");
-    if (!entry) {
-      throw new Error(`Entry not found for ${input}`);
+    try {
+      const input = this.pi.input;
+      let url = "";
+      if (!this.#searchUrl) {
+        const partitioning = directoryPartitioning(`${input}`);
+        url = `${this.#base}/us/media/english-portuguese/us_pron/${partitioning}/${input}.mp3`;
+      } else {
+        url = `${this.#base}/us/dictionary/english/${input}`;
+        const text = await createTabAndGetData(
+          {
+            url,
+            active: false,
+            muted: true,
+            index: 100,
+          },
+          "text/html",
+        );
+        const document = new DOMParser().parseFromString(text, "text/html");
+        const entry = document.querySelector(".entry:has(.ipa)");
+        if (!entry) {
+          throw new Error(`Entry not found for ${input}`);
+        }
+        const rawWord = entry
+          .querySelector(".hw.dhw")
+          .textContent.trim()
+          .toLowerCase();
+        const word = splitWords(rawWord)[0];
+        if (word.toLowerCase() != input) {
+          throw new Error(`Word (${word}) different from input ${input}`);
+        }
+        const src = document
+          .querySelector("span.us audio source")
+          ?.getAttribute("src");
+        if (!src) {
+          throw new Error(`Audio not found for ${word}`);
+        }
+        url = src.startsWith("https://") ? src : `${this.#base}${src}`;
+      }
+      return await createTabAndGetData(
+        {
+          url,
+          active: false,
+          muted: true,
+          index: 100,
+        },
+        "audio/mpeg",
+      );
+    } catch (error) {
+      this.#attempts++;
+      if (this.#attempts > 3) {
+        throw error;
+      }
+      if (error?.status === 403) {
+        return this.fetch();
+      }
+      if (error?.status === 404 && !this.#searchUrl) {
+        this.#searchUrl = true;
+        return this.fetch();
+      }
+      throw error;
     }
-    const rawWord = entry
-      .querySelector(".hw.dhw")
-      .textContent.trim()
-      .toLowerCase();
-    const word = splitWords(rawWord)[0];
-    console.log({ word });
-    if (word.toLowerCase() != input) {
-      throw new Error(`Word (${word}) different from input ${input}`);
-    }
-    const src = document
-      .querySelector("span.us audio source")
-      ?.getAttribute("src");
-    if (!src) {
-      throw new Error(`Audio not found for ${word}`);
-    }
-    const url = src.startsWith("https://")
-      ? src
-      : `https://dictionary.cambridge.org${src}`;
-    return url2base64(url);
   }
 }

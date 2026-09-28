@@ -11,6 +11,7 @@ import {
   audioSourceName2class,
 } from "./audio-source/audio-source-factory.js";
 import { sleep } from "../utils/promise.js";
+import { sendClientMessage } from "../utils/tabs.js";
 
 export default class Pronunciation {
   /**
@@ -125,8 +126,7 @@ export default class Pronunciation {
       return;
     }
     console.log({ ipa, tabId: this.tabId });
-    /** @type {ClientMessage} */
-    const message = {
+    await this.sendClientMessage({
       target: "client",
       type: "showIpa",
       origin: this.origin,
@@ -135,8 +135,7 @@ export default class Pronunciation {
         position: this.position,
         options,
       },
-    };
-    await this.sendMessage(message);
+    });
   }
 
   /**
@@ -187,26 +186,24 @@ export default class Pronunciation {
       options.text.playerEnabled || options.text.shortcutsEnabled
     );
     if (!playInBackground) {
-      /** @type {ClientMessage} */
-      const message = {
-        target: "client",
-        type: "playAudio",
-        origin: this.origin,
-        playAudio: {
-          source: {
-            id: audioId,
-            title: audioTitle,
-            url: url,
-          },
-          limitLoudness: options.text.limitLoudness,
-          playerEnabled: options.text.playerEnabled,
-          shortcutsEnabled: options.text.shortcutsEnabled,
-          skipSeconds: options.text.skipSeconds,
-          shortcuts: options.text.shortcuts,
-        },
-      };
       try {
-        await this.sendMessage(message);
+        await this.sendClientMessage({
+          target: "client",
+          type: "playAudio",
+          origin: this.origin,
+          playAudio: {
+            source: {
+              id: audioId,
+              title: audioTitle,
+              url: url,
+            },
+            limitLoudness: options.text.limitLoudness,
+            playerEnabled: options.text.playerEnabled,
+            shortcutsEnabled: options.text.shortcutsEnabled,
+            skipSeconds: options.text.skipSeconds,
+            shortcuts: options.text.shortcuts,
+          },
+        });
       } catch (error) {
         console.error(error);
         playInBackground = true;
@@ -351,8 +348,9 @@ export default class Pronunciation {
           name: name,
           pi: this.pi,
           options: options.sources[name],
-          tabId: this.tabId,
           lastError: le[name],
+          tabId: this.tabId,
+          origin: this.origin,
         }),
       )
       .filter((s) => {
@@ -424,8 +422,9 @@ export default class Pronunciation {
           name: name,
           pi: this.pi,
           options: options.sources[name],
-          tabId: this.tabId,
           lastError: le[name],
+          tabId: this.tabId,
+          origin: this.origin,
         }),
       )
       .filter((s) => {
@@ -473,11 +472,11 @@ export default class Pronunciation {
   }
 
   /**
-   * @param {any} message
+   * @param {ClientMessage} message
    * @returns {Promise<any>}
    */
-  async sendMessage(message) {
-    return browser.tabs.sendMessage(this.tabId, message);
+  async sendClientMessage(message) {
+    return sendClientMessage(this.tabId, message);
   }
 
   /**
@@ -489,8 +488,7 @@ export default class Pronunciation {
    * @returns {Promise<void>}
    */
   async showInfo(info, { top = 100, closeTimeout = 5000 } = {}) {
-    /** @type {ClientMessage} */
-    const message = {
+    await this.sendClientMessage({
       target: "client",
       type: "showPopup",
       origin: this.origin,
@@ -504,8 +502,7 @@ export default class Pronunciation {
           timeout: closeTimeout,
         },
       },
-    };
-    await this.sendMessage(message);
+    });
   }
 
   /**

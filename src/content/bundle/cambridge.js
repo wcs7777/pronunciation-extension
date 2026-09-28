@@ -394,6 +394,7 @@
 
   /**
    * @param {string} url
+   * @param {"same-origin" | "include" | "omit"} credentials
    * @returns {Promise<Blob>}
    */
   async function url2blob(url, credentials = "omit") {

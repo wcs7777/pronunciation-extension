@@ -60,14 +60,17 @@ export function kebab2camel(value) {
 
 /**
  * @param {string} fileName
- * @param {number[]} partitions
+ * @param {?number[]} partitions
  * @returns {string[]}
  */
-export function directoryPartitioning(fileName, partitions) {
+export function directoryPartitioning(fileName, partitions = [1, 3, 5]) {
   const subdirectories = partitions
-    .map((end) => fileName.slice(0, end))
+    .map((end) => {
+      const partition = fileName.slice(0, end);
+      return partition.padEnd(end, "_");
+    })
     .join("/");
-  return `${subdirectories}/${fileName}`;
+  return `${subdirectories}`;
 }
 
 /**

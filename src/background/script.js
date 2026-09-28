@@ -3,6 +3,7 @@ import Pronunciation from "../pronunciation/pronunciation.js";
 import defaultOptions from "../utils/default-options.js";
 import { deepEquals, deepMerge, removeMethods } from "../utils/object.js";
 import * as st from "../utils/storage-tables.js";
+import { sendClientMessage } from "../utils/tabs.js";
 import {
   migrateToV3,
   migrateToV3_2_0,
@@ -52,8 +53,8 @@ if (browser.menus) {
 async function pronounce(input, tabId, origin) {
   const options = await ensureOptions();
   const pi = new PronunciationInput(input, options.allowText);
-  /** @type {ClientMessage} */
-  const message = {
+  /** @type {PopupPosition} */
+  const position = await sendClientMessage(tabId, {
     target: "client",
     type: "getIpaPosition",
     origin,
@@ -61,9 +62,7 @@ async function pronounce(input, tabId, origin) {
       fontSize: options.ipa.style.font.size,
       optionPosition: options.ipa.position,
     },
-  };
-  /** @type {PopupPosition} */
-  const position = await browser.tabs.sendMessage(tabId, message);
+  });
   const pronunciation = new Pronunciation({
     pi,
     position,
@@ -239,13 +238,11 @@ async function menuOnClickedCB(info, tab) {
       }
       await pronounce(selectedText, tab.id, "menuItem");
     } else if (info.menuItemId === "A") {
-      /** @type {ClientMessage} */
-      const message = {
+      await sendClientMessage(tab.id, {
         target: "client",
         type: "showPlayer",
         origin,
-      };
-      await browser.tabs.sendMessage(tab.id, message);
+      });
     }
   } catch (error) {
     await saveError("menuOnClicked", error);
@@ -258,14 +255,12 @@ async function menuOnClickedCB(info, tab) {
  */
 async function actionOnClickedCB(tab) {
   try {
-    /** @type {ClientMessage} */
-    const message = {
+    /** @type {string | null} */
+    const selectedText = await sendClientMessage(tab.id, {
       target: "client",
       type: "getSelectedText",
       origin: "action",
-    };
-    /** @type {string | null} */
-    const selectedText = await browser.tabs.sendMessage(tab.id, message);
+    });
     if (selectedText?.length === 0) {
       console.log("Nothing was selected");
       return;
@@ -287,14 +282,12 @@ async function onCommand(command, tab) {
     return;
   }
   try {
-    /** @type {ClientMessage} */
-    const message = {
+    /** @type {string | null} */
+    const selectedText = await sendClientMessage(tab.id, {
       target: "client",
       type: "getSelectedText",
       origin: "command",
-    };
-    /** @type {string | null} */
-    const selectedText = await browser.tabs.sendMessage(tab.id, message);
+    });
     if (selectedText?.length === 0) {
       console.log("Nothing was selected");
       return;

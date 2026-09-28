@@ -5,7 +5,7 @@ const documentCache = new MemoryCache("fetchDocumentCache", 6);
 
 /**
  * @param {string} url
- * @param {string} credentials
+ * @param {"same-origin" | "include" | "omit"} credentials
  * @param {boolean} force
  * @returns {Promise<string>}
  */
@@ -34,7 +34,7 @@ export async function url2text(url, credentials = "omit", force = false) {
 
 /**
  * @param {string} url
- * @param {string} credentials
+ * @param {"same-origin" | "include" | "omit"} credentials
  * @param {boolean} force
  * @returns {Promise<Document>}
  */
@@ -45,6 +45,7 @@ export async function url2document(url, credentials = "omit", force = false) {
 
 /**
  * @param {string} url
+ * @param {"same-origin" | "include" | "omit"} credentials
  * @returns {Promise<Blob>}
  */
 export async function url2blob(url, credentials = "omit") {
@@ -67,6 +68,7 @@ export async function url2blob(url, credentials = "omit") {
 
 /**
  * @param {string} url
+ * @param {"same-origin" | "include" | "omit"} credentials
  * @returns {Promise<string>}
  */
 export async function url2base64(url, credentials = "omit") {

@@ -1,6 +1,13 @@
 import defaultOptions from "../../utils/default-options.js";
 import { byId, onlyNumber, onlyShorcut } from "../../utils/element.js";
-import { getAllOptions, numOr, saveOptions, strOr, showInfo } from "./utils.js";
+import { sendClientMessage } from "../../utils/tabs.js";
+import {
+  getAllOptions,
+  numOr,
+  saveOptions,
+  strOr,
+  showInfo,
+} from "./utils.js";
 
 /**
  * @type {{
@@ -80,35 +87,31 @@ async function setFieldsValues(shouldSendMessage = true) {
     const tabs = await browser.tabs.query({
       url: ["https://*/*", "http://*/*"],
     });
-    /** @type {ClientMessage} */
-    const changeAlertMaxSelectionOptionsMessage = {
-      target: "client",
-      type: "changeAlertMaxSelectionOptions",
-      origin: "other",
-      changeAlertMaxSelectionOptions: {
-        enabled: opt.alertMaxSelectionEnabled,
-        maxLength: opt.alertMaxSelectionLength,
-      },
-    };
     await Promise.allSettled(
-      tabs.map((t) =>
-        browser.tabs.sendMessage(t.id, changeAlertMaxSelectionOptionsMessage),
-      ),
+      tabs.map((t) => {
+        return sendClientMessage(t.id, {
+          target: "client",
+          type: "changeAlertMaxSelectionOptions",
+          origin: "other",
+          changeAlertMaxSelectionOptions: {
+            enabled: opt.alertMaxSelectionEnabled,
+            maxLength: opt.alertMaxSelectionLength,
+          },
+        });
+      }),
     );
-    /** @type {ClientMessage} */
-    const setTriggerOnSelectionMessage = {
-      target: "client",
-      type: "setTriggerOnSelection",
-      origin: "other",
-      setTriggerOnSelection: {
-        enabled: opt.triggerOnSelection,
-        triggerTime: opt.triggerSelectionTime,
-      },
-    };
     await Promise.allSettled(
-      tabs.map((t) =>
-        browser.tabs.sendMessage(t.id, setTriggerOnSelectionMessage),
-      ),
+      tabs.map((t) => {
+        return sendClientMessage(t.id, {
+          target: "client",
+          type: "setTriggerOnSelection",
+          origin: "other",
+          setTriggerOnSelection: {
+            enabled: opt.triggerOnSelection,
+            triggerTime: opt.triggerSelectionTime,
+          },
+        });
+      }),
     );
   }
 }

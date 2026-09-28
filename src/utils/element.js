@@ -59,6 +59,9 @@ export function base64ToBlob(base64, mimeType) {
  * @returns {string}
  */
 export function buffer2base64(buffer) {
+  if (buffer.toBase64 && false) {
+    return buffer.toBase64();
+  }
   const array = [...new Uint8Array(buffer)];
   const binary = array.map((b) => String.fromCharCode(b)).join("");
   return btoa(binary);

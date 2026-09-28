@@ -494,84 +494,6 @@
   }
 
   /**
-   * @implements {MemoryCache}
-   */
-  class MemoryCacheByObj {
-    /**
-     * @param {string} name
-     * @param {number} maxSize
-     */
-    constructor(name, maxSize) {
-      this.name = name;
-      this.maxSize = maxSize;
-      this.entries = {};
-    }
-
-    /**
-     * @param {string} key
-     * @param {any} value
-     * @returns {void}
-     */
-    set(key, value) {
-      if (this.size() > this.maxSize) {
-        this.clear();
-      }
-      this.entries[key] = value;
-    }
-
-    /**
-     * @param {{ [key: string]: any }} values
-     * @returns {void}
-     */
-    setMany(values) {
-      const newValues = { ...this.entries, ...values };
-      const keys = Object.keys(newValues).slice(-this.maxSize);
-      const entries = keys.reduce((obj, k) => {
-        obj[k] = newValues[k];
-        return obj;
-      }, {});
-      this.entries = entries;
-    }
-
-    /**
-     * @param {string} key
-     * @returns {any}
-     */
-    get(key) {
-      return this.entries[key];
-    }
-
-    /**
-     * @returns {{ [key: string]: any }}
-     */
-    getAll() {
-      return structuredClone(this.entries);
-    }
-
-    /**
-     * @param {string} key
-     * @returns {boolean}
-     */
-    hasKey(key) {
-      return key in this.entries;
-    }
-
-    /**
-     * @returns {number}
-     */
-    size() {
-      return Object.keys(this.entries).length;
-    }
-
-    /**
-     * @returns {void}
-     */
-    clear() {
-      this.entries = {};
-    }
-  }
-
-  /**
    * @implements {Table}
    */
   class TableByKeyPrefix {
@@ -1805,68 +1727,6 @@ button {
     return Array.from(template.content.children);
   }
 
-  const documentCache = new MemoryCacheByObj("fetchDocumentCache", 6);
-
-  /**
-   * @param {string} url
-   * @param {string} credentials
-   * @param {boolean} force
-   * @returns {Promise<string>}
-   */
-  async function url2text(url, credentials = "omit", force = false) {
-    /** @type {string | null} */
-    let text = !force ? documentCache.get(url) : null;
-    if (!text) {
-      const response = await fetch(url, { credentials });
-      const status = response.status;
-      if (status !== 200) {
-        const message = await response.text();
-        /** @type {PronunciationSourceLastError} */
-        const le = {
-          status,
-          message,
-          messageContentType: response.headers.get("Content-Type"),
-          error: new Error(response.statusText),
-        };
-        throw le;
-      }
-      text = await response.text();
-      documentCache.set(url, text);
-    }
-    return text;
-  }
-
-  /**
-   * @param {string} url
-   * @returns {Promise<Blob>}
-   */
-  async function url2blob(url, credentials = "omit") {
-    const response = await fetch(url, { credentials });
-    const status = response.status;
-    if (status !== 200) {
-      const message = await response.text();
-      /** @type {PronunciationSourceLastError} */
-      const le = {
-        status,
-        message,
-        messageContentType: response.headers.get("Content-Type"),
-        error: new Error(response.statusText),
-      };
-      throw le;
-    }
-    const blob = await response.blob();
-    return blob;
-  }
-
-  /**
-   * @param {string} url
-   * @returns {Promise<string>}
-   */
-  async function url2base64(url, credentials = "omit") {
-    const blob = await url2blob(url, credentials);
-    return blob2base64(blob);
-  }
-
   class IpaPopup {
     #target = null;
 
@@ -1983,13 +1843,18 @@ button {
       showPopup: showPopupFromBackground,
       changeAlertMaxSelectionOptions: changeAlertMaxSelectionOptionsCB,
       setTriggerOnSelection: setTriggerOnSelection,
-      fetchAudio: fetchAudio,
-      fetchText: fetchText,
     };
     if ((!message.type) in actions) {
       throw new Error(`Invalid message type: ${message.type}`);
     }
-    actions[message.type](message).then(sendResponse).catch(console.error);
+    actions[message.type](message)
+      .then((value) => {
+        return sendResponse([value, null]);
+      })
+      .catch((error) => {
+        console.error("How2say error", error);
+        return sendResponse([null, error]);
+      });
     return true;
   }
 
@@ -2149,60 +2014,6 @@ button {
     }
     if (options.triggerTime) {
       triggerSelectionTime = options.triggerTime;
-    }
-  }
-
-  /**
-   * @param {ClientMessage} message
-   * @returns {Promise<{ ok: boolean, status: number, message: string, base64: string | null >}
-   */
-  async function fetchAudio(message) {
-    const options = message.fetchAudio;
-    if (!options) {
-      throw new Error("Should pass.fetchAudio in message");
-    }
-    try {
-      const base64 = await url2base64(options.url, undefined);
-      return {
-        ok: true,
-        status: 200,
-        message: "ok",
-        base64,
-      };
-    } catch (error) {
-      return {
-        ok: true,
-        status: error?.status,
-        message: error?.message,
-        base64: null,
-      };
-    }
-  }
-
-  /**
-   * @param {ClientMessage} message
-   * @returns {Promise<{ ok: boolean, status: number, message: string, text: string | null >}
-   */
-  async function fetchText(message) {
-    const options = message.fetchText;
-    if (!options) {
-      throw new Error("Should pass.fetchText in message");
-    }
-    try {
-      const text = await url2text(options.url, undefined);
-      return {
-        ok: true,
-        status: 200,
-        message: "ok",
-        text,
-      };
-    } catch (error) {
-      return {
-        ok: true,
-        status: error?.status,
-        message: error?.message,
-        text: null,
-      };
     }
   }
 

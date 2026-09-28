@@ -62,6 +62,8 @@
     "storage",
     "tabs",
     "unlimitedStorage",
+    "webRequest",
+    "webRequestBlocking",
     "https://api.elevenlabs.io/v1/text-to-speech/*",
     "https://api.openai.com/v1/audio/speech/",
     "https://api.play.ht/api/v2/tts/stream",

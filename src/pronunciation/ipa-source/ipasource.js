@@ -10,12 +10,13 @@ export default class IpaSource {
   /**
    * @param {PronunciationSourceParams} params
    */
-  constructor({ name, pi, options, tabId, lastError }) {
+  constructor({ name, pi, options, lastError, tabId, origin }) {
     this.#name = name;
     this.pi = pi;
     this.options = options;
-    this.tabId = tabId;
     this.lastError = lastError;
+    this.tabId = tabId;
+    this.origin = origin;
   }
 
   /**
@@ -71,5 +72,12 @@ export default class IpaSource {
    */
   get save() {
     return this.options.save;
+  }
+
+  /**
+   * @returns {Promise<string>}
+   */
+  async fetch() {
+    throw new Error("Not implemented!");
   }
 }

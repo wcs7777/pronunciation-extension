@@ -1,6 +1,13 @@
 import defaultOptions from "../../utils/default-options.js";
 import { byId, onlyShorcut, onlyNumber } from "../../utils/element.js";
-import { getAllOptions, numOr, strOr, saveOptions, showInfo } from "./utils.js";
+import { sendClientMessage } from "../../utils/tabs.js";
+import {
+  getAllOptions,
+  numOr,
+  strOr,
+  saveOptions,
+  showInfo,
+} from "./utils.js";
 
 /**
  * @type {{
@@ -201,25 +208,25 @@ async function setFieldsValues(shouldSendMessage = true) {
   el.shortcuts.increaseSpeed.value = opt.shortcuts.increaseSpeed;
   el.shortcuts.resetSpeed.value = opt.shortcuts.resetSpeed;
   if (shouldSendMessage) {
-    /** @type {ClientMessage} */
-    const message = {
-      target: "client",
-      type: "playAudio",
-      origin: "other",
-      playAudio: {
-        limitLoudness: allOptions.audio.limitLoudness,
-        playerEnabled: opt.playerEnabled,
-        shortcutsEnabled: opt.shortcutsEnabled,
-        tabMenuItemShowPlayer: opt.tabMenuItemShowPlayer,
-        skipSeconds: opt.skipSeconds,
-        shortcuts: opt.shortcuts,
-      },
-    };
     const tabs = await browser.tabs.query({
       url: ["https://*/*", "http://*/*"],
     });
     await Promise.allSettled(
-      tabs.map((t) => browser.tabs.sendMessage(t.id, message)),
+      tabs.map((t) => {
+        return sendClientMessage(t.id, {
+          target: "client",
+          type: "playAudio",
+          origin: "other",
+          playAudio: {
+            limitLoudness: allOptions.audio.limitLoudness,
+            playerEnabled: opt.playerEnabled,
+            shortcutsEnabled: opt.shortcutsEnabled,
+            tabMenuItemShowPlayer: opt.tabMenuItemShowPlayer,
+            skipSeconds: opt.skipSeconds,
+            shortcuts: opt.shortcuts,
+          },
+        });
+      }),
     );
   }
 }
