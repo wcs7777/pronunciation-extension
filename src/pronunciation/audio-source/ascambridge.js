@@ -1,4 +1,3 @@
-import { url2base64 } from "../../utils/fetch.js";
 import { directoryPartitioning, splitWords } from "../../utils/string.js";
 import { createTabAndGetData } from "../../utils/tabs.js";
 import AudioSource from "./audiosource.js";
@@ -9,7 +8,7 @@ import AudioSource from "./audiosource.js";
 export default class ASCambridge extends AudioSource {
   #attempts = 0;
   #searchUrl = false;
-  #base = "https://dictionary.cambridge.org";
+
   /**
    * @param {PronunciationSourceParams} params
    */
@@ -38,14 +37,15 @@ export default class ASCambridge extends AudioSource {
    * @returns {Promise<string>}
    */
   async fetch() {
+    const input = this.pi.input;
+    const base = "https://dictionary.cambridge.org";
     try {
-      const input = this.pi.input;
       let url = "";
       if (!this.#searchUrl) {
-        const partitioning = directoryPartitioning(`${input}`);
-        url = `${this.#base}/us/media/english-portuguese/us_pron/${partitioning}/${input}.mp3`;
+        const partitioning = directoryPartitioning(input);
+        url = `${base}/us/media/english-portuguese/us_pron/${partitioning}/${input}.mp3`;
       } else {
-        url = `${this.#base}/us/dictionary/english/${input}`;
+        url = `${base}/us/dictionary/english/${input}`;
         const text = await createTabAndGetData(
           {
             url,
@@ -74,7 +74,7 @@ export default class ASCambridge extends AudioSource {
         if (!src) {
           throw new Error(`Audio not found for ${word}`);
         }
-        url = src.startsWith("https://") ? src : `${this.#base}${src}`;
+        url = src.startsWith("https://") ? src : `${base}${src}`;
       }
       return await createTabAndGetData(
         {
