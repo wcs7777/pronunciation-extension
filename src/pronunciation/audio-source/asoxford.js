@@ -1,5 +1,5 @@
 import AudioSource from "./audiosource.js";
-import { splitWords } from "../../utils/string.js";
+import { directoryPartitioning, splitWords } from "../../utils/string.js";
 import { url2base64, url2document } from "../../utils/fetch.js";
 
 /**
@@ -28,11 +28,21 @@ export default class ASOxford extends AudioSource {
    */
   async fetch() {
     const input = this.pi.input;
+    const base = "https://www.oxfordlearnersdictionaries.com";
+    const fileName = `${input}__us_1.mp3`;
+    const partitioning = directoryPartitioning(fileName);
+    try {
+      await url2base64(
+        `${base}/us/media/english/us_pron/${partitioning}/${fileName}`,
+      );
+    } catch (error) {
+      console.error(error?.status);
+    }
     const analysis = await this.pi.analysis();
     const word = analysis.isVerb ? analysis.root : input;
-    const base =
-      "https://www.oxfordlearnersdictionaries.com/us/definition/english/";
-    const document = await url2document(`${base}${word}`);
+    const document = await url2document(
+      `${base}/us/definition/english/${word}`,
+    );
     const button = document.querySelector(
       `div.sound.audio_play_button.pron-us[title^="${input} "]`,
     );
@@ -43,14 +53,11 @@ export default class ASOxford extends AudioSource {
     if (title.toLowerCase() !== input) {
       throw new Error(`${input} is different from ${title}`);
     }
-    const src = button.dataset?.srcOgg;
+    const src = button.dataset?.srcMp3;
     if (!src) {
       throw new Error(`Audio not found for ${input}`);
     }
-    const url = src.startsWith("https://")
-      ? src
-      : `${window.location.origin}${src}`;
+    const url = src.startsWith("https://") ? src : `${base}${src}`;
     return url2base64(url);
   }
 }
-
